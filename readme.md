@@ -1,9 +1,65 @@
+### What is Urlopia?
+Urlopia application is a project developed by five students 
+(Józef Grodzicki, Jakub Licznerski, Tomasz Pilarczyk, Tomasz Urbas, Mateusz Wiśniewski)
+ during summer internship programme at [FINGO](http://www.fingo.pl/en/). 
+ 
+ The idea was to create 
+ a web application, containing e-mail handling system, which will help organizing company's vacation policies and 
+ allow employees to apply and manage vacation applications easily. It also simplifies work
+ of administrative workers by delivering variety of tools and automatically generating reports. Application is
+ available in Polish and English language versions. The application connects with company's Active Directory via LDAP.
+ 
+ Functionality listing is available below.
+ The project is ready to deploy on a server with Docker, further instructions are available in below sections.
+
+#### Technology used
+In the project we used Java **Spring Boot 1.3.6** with **Gradle** for build automatization, 
+**Angular JS** and **PostgreSQL** database with **JPA** as ORM framework. The communication
+ server-client is based on RESTful services, compliant with MVC design pattern. Also:
+
+- **Front-end**
+    - Pascal Precht's [angular-translate](https://github.com/angular-translate/angular-translate) module
+    - [AngularJS](https://angularjs.org/) 1.4.7
+    - [Bootstrap](getbootstrap.com/) 3.3.7
+    - [Bootstrap UI](https://angular-ui.github.io/bootstrap/)
+    - [jQuery](https://jquery.com/) 3.1.0
+- **Back-end**
+    - [JSON WebToken](https://jwt.io/) for stateless authentication
+    - [Handlebars](https://github.com/jknack/handlebars.java) for mail templates
+- **Testing**
+    - [JUnit](junit.org/) 4.12
+    - [Mockito](site.mockito.org/)
+- **Build and deployment**
+    - [Gradle](https://gradle.org/) 2.14
+    - [Jenkins](https://jenkins.io/) for build and tests automatization
+    - [SonarQube](www.sonarqube.org/) for code analysis
+
+#### Functionality
+Urlopia contains following functions:
+
+- **Administration**
+    - Employees list with search and filters
+    - Editing vacation pool individually
+    - Editing company's days off calendar
+    - Vacation requests preview
+    - Annual reports generation (individually)
+    - Automatic actions for managing employees remaining vacation
+    - Team member vacation application consideration via email or web GUI
+- **Employees**
+    - Vacation history with 
+    - Remaining vacation pool preview
+    - Applying for vacation via e-mail or web GUI (Apply form)
+    - Occasional vacation
+
 ### HOW TO BUILD AND RUN THE APP
 
 In terminal type the following:
 
 (Windows) `gradlew build`
+
 (Linux)   `./gradlew build`
+
+Make sure you have JAVA_HOME environmental variable defined properly.
 
 To deploy app on embedded server type:
 `java -jar 'path_to_the_jar'`
@@ -11,13 +67,12 @@ To deploy app on embedded server type:
 In the browser the app will open by default on:
 `localhost:8080`
 
-**Environmental variables**
+#### Environmental variables
 
 In order to run the app you have to provide your configuration variables.
 
-List of required variables with example values is available [here](src/main/resources/env_var.txt)
-
-List of variables with meaning description is available [here](src/main/resources/env_var.md)
+- List of required variables with example values is available [here](src/main/resources/env_var.txt)
+- List of variables with meaning description is available [here](src/main/resources/env_var.md)
 
 *The best way is to:*
 - swap example values with your project specific ones
