@@ -1,0 +1,134 @@
+<div class="jumbotron row" style="width: 100%; margin-left:0; margin-right: 0;">
+    <h2 class="view-title text-left" >{{ 'worker_view.title' | translate }}</h2>
+    <hr>
+
+    <!-- WORKER VIEW -->
+    <div id="worker_view" class="col-xs-12 col-sm-12 col-md-12">
+        <h3 class="text-center">
+            <b translate="workers_view.days_left" translate-values="{days: worker.holidaysPool.days,
+                             hours: worker.holidaysPool.hours}"></b>
+            <br><br>
+            <span ng-if=" worker.holidaysPool.workTimeB == 1">
+                {{'employees_view.full_time' | translate}}
+            </span>
+            <span ng-if=" worker.holidaysPool.workTimeB != 1" translate="workers_view.work_hours"
+                  translate-values="{workTime_a: worker.holidaysPool.workTimeA, workTime_b: worker.holidaysPool.workTimeB}">
+
+            </span>
+
+
+        </h3>
+        <div class="row" ng-controller="modalCtrl">
+            <div class="col-xs-6 text-left">
+                <button type="button" class="btn btn-primary" ng-click="open()" ng-show="showRequestButton">
+                    {{'form.button' | translate}}
+                </button>
+            </div>
+            <div class="col-xs-6 text-right">
+                <a href="history" type="button" class="btn btn-primary">
+                    {{'history_view.title' | translate}}
+                </a>
+            </div>
+        </div>
+
+        <br>
+        <br>
+
+        <div class="requests">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>{{'table.date' | translate}}</th>
+                    <th>{{'table.status' | translate}}</th>
+                    <th></th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr ng-repeat="request in worker.requests">
+                    <td>{{request.term}}</td>
+                    <td>
+                        <div ng-if="request.accepted == null">
+                            <div ng-repeat="acceptance in request.acceptances">
+                            <span>{{acceptance.leader.name}} -
+                                <span ng-if="acceptance.accepted === true">{{'table.accepted' | translate}}</span>
+                                <span ng-if="acceptance.accepted === false">{{'table.denied' | translate}}</span>
+                                <span ng-if="acceptance.accepted === null">{{'table.in_progress' | translate}}</span>
+                            </span>
+                            </div>
+
+                        </div>
+                        <span ng-if="request.accepted == true">{{'table.accepted' | translate}}</span>
+                        <div ng-if="request.accepted == false && request.cancelled == false">
+                            {{'table.denied' | translate}}
+
+                            <span ng-repeat="acceptance in request.acceptances">
+                            <span ng-if="!acceptance.accepted"><br>{{acceptance.leader.name}}</span>
+                        </span>
+                        </div>
+                        <span ng-if="request.accepted == false && request.cancelled == true">{{'table.cancelled' | translate}}</span>
+                    </td>
+                    <td>
+                        <div ng-if="request.accepted == null">
+                            <button class="btn btn-danger text-right" ng-click="worker.cancelRequest(request.id)">
+                                {{'table.button.cancelRequest' | translate}}
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+    <!--todo align properly-->
+    <div permission="['ROLES_LEADER']">
+    <br><br><br><br><br><br><br><br><br><br><br><br><br>
+    </div>
+
+    <!--view header-->
+    <h2 class="view-title text-left" permission="['ROLES_LEADER']">{{ 'leader_view.title' | translate }}</h2>
+    <hr>
+
+    <!-- LEADER VIEW -->
+    <div id="leader_view" class="col-xs-12 col-sm-12 col-md-12" permission="['ROLES_LEADER']">
+        <div id="requests">
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>{{'table.requester' | translate}}</th>
+                    <th>{{'table.date' | translate}}</th>
+                    <th>{{'table.status' | translate}}</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr ng-repeat="request in leader.requests">
+
+                    <td ng-if="request.requester.name">{{request.requester.name}}
+                    </td> <!-- if requester exists -->
+                    <td ng-if="!request.requester.name">{{'user.deleted' | translate}} ({{request.requester.mail}})
+                    </td> <!-- if requester don't exists -->
+
+                    <td>{{request.term}}</td>
+                    <td>
+                        <span ng-if="request.accepted == null">
+                            <button class="btn btn-success" ng-click="leader.accept(request.id)">
+                                {{'table.button.accept' | translate}}</button>
+                            <button class="btn btn-danger" ng-click="leader.reject(request.id)">
+                                {{'table.button.deny' | translate}}</button>
+                        </span>
+                        <span ng-if="request.accepted == true">{{'table.accepted' | translate}}</span>
+                        <span ng-if="request.accepted == false && request.cancelled == false">{{'table.denied' | translate}}</span>
+                        <span ng-if="request.accepted == false && request.cancelled == true">{{'table.cancelled' | translate}}</span>
+                    </td>
+                </tr>
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,25 @@
+<div id="login">
+    <div class="center-box">
+        <div class="box panel panel-default">
+            <div class="logo panel-heading">
+                {{'app.name' | translate}}
+            </div>
+            <div class="alert alert-danger" ng-show="loginError" translate="login.incorrect">
+            </div>
+            <form id="login-form" class="panel-body" ng-submit="login(credentials)" role="form">
+                <div class="form-group">
+                    <label for="mail">{{'login.mail' | translate}}</label>
+                    <input type="email" id="mail" name="mail" ng-model="credentials.mail"
+                           class="form-control" autofocus required>
+                </div>
+                <div class="form-group">
+                    <label for="password">{{'login.password' | translate}}</label>
+                    <input type="password" id="password" name="password" ng-model="credentials.password"
+                           class="form-control"
+                           required>
+                </div>
+                <button type="submit" class="btn btn-block">{{'login.login' | translate}}</button>
+            </form>
+        </div>
+    </div>
+</div>

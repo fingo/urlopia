@@ -1,0 +1,63 @@
+<div class="jumbotron">
+    <h2 class="view-title text-left">{{ 'requests_view.title' | translate}}</h2>
+    <hr>
+
+    <div class="row">
+        <div class="col-xs-6 text-left">
+            <a class="btn btn-primary" role="button" ng-click="prevPage()"><b><</b></a>
+        </div>
+        <div class="col-xs-6 text-right">
+        </div>
+    </div>
+
+    <br>
+
+    <div id="requests">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>{{'table.requester' | translate}}</th>
+                <th>{{'table.leader' | translate}}</th>
+                <th>{{'table.date' | translate}}</th>
+                <th>{{'table.status' | translate}}</th>
+            </tr>
+            </thead>
+            <tr ng-repeat="request in requests">
+
+                <td ng-if="request.requester.name">{{request.requester.name}}</td>
+                <td ng-if="!request.requester.name">{{'user.deleted' | translate}} ({{request.requester.mail}})</td>
+
+                <td>
+                    <span ng-repeat="acceptance in request.acceptances">
+                        <span ng-if="acceptance.decider.name">{{acceptance.decider.name}}</span>
+                        <span ng-if="!acceptance.decider.name">
+                            {{'user.deleted' | translate}}({{acceptance.decider.mail}}
+                        </span>
+                        <br>
+                    </span>
+                </td>
+
+                <td>{{request.term}}</td>
+                <td>
+                    <div ng-if="request.accepted == null">
+                        {{'table.in_progress' | translate}} - {{request.status}}<br>
+                        <button class="btn btn-success" ng-click="accept(request.id)">
+                            {{'table.button.accept' | translate}}
+                        </button>
+                        <button class="btn btn-danger" ng-click="reject(request.id)">
+                            {{'table.button.deny' | translate}}
+                        </button>
+                    </div>
+                    <span ng-if="request.accepted == true">
+                        {{'table.accepted' | translate}}
+                        <button class="btn btn-warning" ng-click="cancel(request.id)">
+                            {{'table.button.cancelRequest' | translate}}
+                        </button>
+                    </span>
+                    <span ng-if="request.accepted == false && request.cancelled == false">{{'table.denied' | translate}}</span>
+                    <span ng-if="request.accepted == false && request.cancelled == true">{{'table.cancelled' | translate}}</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

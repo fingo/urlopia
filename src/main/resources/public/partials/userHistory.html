@@ -1,0 +1,58 @@
+<div class="jumbotron">
+    <title>{{ 'history_view.tile' | translate }} </title>
+
+    <div class="row">
+        <div class="col-xs-6 text-left">
+            <a class="btn btn-primary" role="button" ng-click="prevPage()"><b><</b></a>
+        </div>
+        <div class="col-xs-6 text-right">
+            <div class="btn-group" uib-dropdown is-open="false">
+                <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle
+                        ng-disabled="disabled">
+                    {{ selectedItem }} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                    <li ng-repeat="item in years"><a ng-click="dropBoxItemSelected(item)">{{item}}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <p class="text-center">{{'history_view.title' | translate}} {{userMail}}</p>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>{{'history_view.created' | translate}}</th>
+            <th>{{'history_view.decider' | translate}}</th>
+            <th class="text-center">{{'history_view.pool' | translate}}</th>
+            <th class="text-center">{{'history_view.left' | translate}}</th>
+            <th>{{'history_view.comment' | translate}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="history in histories.list">
+            <td>{{ history.created }}</td>
+            <td ng-if="history.request">
+                <span ng-repeat="acceptance in history.acceptances">
+                    <span ng-if="history.acceptances.length == 1 || $last">{{ acceptance.decider.name }}</span>
+                    <span ng-if="history.acceptances.length > 1 && !$last">{{ acceptance.decider.name + "," }}</span>
+                </span>
+            </td>
+            <td ng-if="!history.request">{{ history.deciderName }}</td>
+            <td>
+                <span ng-if="history.hours > 0">
+                    <span class="text-center text-success">{{ history.days }}</span>
+                </span>
+                <span ng-if="history.hours < 0">
+                    <span class="text-center text-danger">{{ history.days }}</span>
+                </span>
+            </td>
+            <td class="text-center">
+                {{ history.daysLeft }}
+            </td>
+            <td>{{ history.comment }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>

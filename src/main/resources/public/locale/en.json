@@ -1,0 +1,230 @@
+{
+  "app": {
+    "name": "Urlopia",
+    "title": "Urlopia"
+  },
+  "login": {
+    "mail": "E-mail",
+    "password": "Password",
+    "incorrect": "Invalid username or password",
+    "login": "Log in",
+    "logout": "Log out"
+  },
+  "navigation": {
+    "home": "Strona główna",
+    "login": "Login"
+  },
+  "email": {
+    "sender": "Sender",
+    "content": "Content",
+    "date": "Date"
+  },
+  "link": {
+    "forgotten": "Forgot password?"
+  },
+  "footer": {
+    "copyright": "Copyright FINGO © 2016"
+  },
+  "account": {
+    "name": "Name",
+    "surname": "Surname",
+    "email": "E-mail address",
+    "position": "Position"
+  },
+  "lang": {
+    "pl": "pl",
+    "en": "en"
+  },
+  "form": {
+    "button": "Apply",
+    "occasional": "Occasional",
+    "request": {
+      "requester": {
+        "label": "Requester",
+        "placeholder": "Requester"
+      },
+      "leader": {
+        "label": "Team leader",
+        "placeholder": "Team leader"
+      },
+      "days": {
+        "button": "Days",
+        "startDate": "Start date",
+        "endDate": "End date",
+        "startDateError": "You can't pick a start date which is older than a month",
+        "endDateError": "End date must be greater than start day"
+      },
+      "hours": {
+        "button": "Hours",
+        "label": "How many hours",
+        "error": "Number of hours must be between 1-8"
+      },
+      "reason": {
+        "label": "Reason",
+        "placeholder": "What is your reason.. (max 500 characters)"
+      }
+    },
+    "submit": {
+      "button": "Submit"
+    },
+    "cancel": {
+      "button": "Cancel"
+    }
+  },
+  "worker_view": {
+    "title": "My requests"
+  },
+  "leader_view": {
+    "title": "Your team's requests"
+  },
+  "table": {
+    "requester": "Requester",
+    "leader": "Decider",
+    "date": "Days off",
+    "pool_left": "Days left",
+    "status": "Status",
+    "reason": "Reason",
+    "accepted": "Accepted",
+    "denied": "Denied",
+    "cancelled": "Cancelled",
+    "in_progress": "In progress",
+    "button": {
+      "accept": "Accept",
+      "deny": "Deny",
+      "cancelRequest": "Cancel"
+    }
+  },
+  "navbar": {
+    "name": "Name",
+    "teams": "My teams",
+    "leaders": "Leaders",
+    "administration_tools": "Administration tools"
+  },
+  "main_view": {
+    "user": "User view",
+    "leader": "Team leader view",
+    "admin": "Admin view"
+  },
+  "button": {
+    "synchronize": "Synchronize"
+  },
+  "user": {
+    "deleted": "User deleted"
+  },
+  "employees_view": {
+    "title": "Employees",
+    "name": "Name",
+    "add_hours_confirm": "Are you sure you want to add {{daysToAdd}} hours to {{employee}}'s vacation pool?",
+    "subtr_hours_confirm": "Are you sure you want to add {{daysToAdd}} hours to {{employee}}'s vacation pool?",
+    "add_days_confirm": "Are you sure you want to add {{daysToAdd}} hours to {{employee}}'s vacation pool?",
+    "subtr_days_confirm": "Are you sure you want to add {{daysToAdd}} hours to {{employee}}'s vacation pool?",
+    "days_left": "Employee has {{days}} days and {{hours}} hours vacation left",
+    "shift": "WorkTime {{workTime_a}}/{{workTime_b}}",
+    "full_time": "Full time",
+    "modify_pool": "Modify vacation pool",
+    "mail": "E-mail address",
+    "all_teams": "All teams",
+    "all_employees": "All employees",
+    "search_name": "Search",
+    "team": "Teams",
+    "comment_placeholder": "Comment to the operation",
+    "show_all": "Show all",
+    "last_operations": "Last operations",
+    "hours": "hours",
+    "hourly": "Hourly",
+    "days": "days",
+    "only_leaders": "Team leaders only",
+    "others": "Others",
+    "EC_employees": "EC employees",
+    "EC_employee": "EC",
+    "type_of_job": "Type of job"
+  },
+  "workers_view": {
+    "days_left": "{{days}} days {{hours}} hours of vacation left.",
+    "work_hours": "Work hours {{workTime_a}}/{{workTime_b}}"
+  },
+  "history_view": {
+    "back": "Back",
+    "title": "History",
+    "created": "Created",
+    "decider": "Decider",
+    "pool": "Days pool",
+    "left": "Days left",
+    "comment": "Comment"
+  },
+  "requests_view": {
+    "title": "All requests"
+  },
+  "holidays_view": {
+    "title": "Holidays calendar",
+    "table": {
+      "header_name": "For",
+      "header_date": "Date"
+    },
+    "placeholder": "Choose a date from list in order to edit...",
+    "name": "Name",
+    "reset": "Undo changes",
+    "save": "Save changes",
+    "add": "Add",
+    "delete": "Delete",
+    "default": "Restore default",
+    "details": "Details",
+    "confirm": "This operation will undo provided changes!",
+    "exclamation": " - holiday occurs on Saturday"
+  },
+  "admin_view": {
+    "menu": {
+      "requests": "All requests",
+      "employees": "Employees",
+      "holidays": "Holidays"
+    }
+  },
+  "notify": {
+    "auth": {
+      "loginSuccess": "You've logged in successfully",
+      "logoutSuccess": "You've logged out successfully",
+      "sessionTimeout": "Your session has expired, please login again",
+      "notAuthorized": "You don't have permission to view this content",
+      "notAuthenticated": "Login to gain access the content"
+    },
+    "form": {
+      "success": "Your request has been added successfully",
+      "notEnoughDaysPool": "Failed to submit the request due to insufficient remaining days pool"
+    },
+    "request": {
+      "accept": "Employee's request has been accepted",
+      "deny": "Employee's request has been declined",
+      "cancel": "Request has been canceled",
+      "notEnoughDaysPoolAccepting": "Unable to accept the request due to insufficient days pool in employee's account"
+    },
+    "admin": {
+      "synchronize": {
+        "success": "Employees have been synchronized with the database",
+        "failure": "An error occured during synchronization of employees with database"
+      },
+      "employees": {
+        "subtractDaysFail": "You cannot subtract more than current number of days from employee's days pool",
+        "changeDaysPool": "Employee's days pool has been successfully modified"
+      }
+    },
+    "holidays": {
+      "save": {
+        "success": "Changes saved successfully",
+        "failure": "Failed to save changes"
+      },
+      "missingName": "Nie podano nazwy święta"
+    }
+  },
+  "occasional": {
+    "birth2": "Childbirth",
+    "funeral2": "Funeral or death",
+    "wedding2": "Wedding",
+    "funeral1": "Funeral or death ",
+    "wedding1": "Wedding ",
+    "when_birth2": "The two-day occasional vacation is due to z narodzinami dziecka.",
+    "when_funeral2": "The two-day occasional vacation is due to death and funeral of spouse, child, father, mother, stepfather lub stepmother.",
+    "when_wedding2": "The two-day occasional vacation is due to Twoim ślubem.",
+    "when_funeral1": "The one-day occasional vacation is due to death and funeral of sister, brother, mother-in-law, father-in-law, grandmother, grandfather, as well as a person , you directly caring",
+    "when_wedding1": "The one-day occasional vacation is due to wedding of your child."
+  }
+}

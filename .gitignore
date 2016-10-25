@@ -1,0 +1,7 @@
+build
+classes
+out
+.gradle
+.idea
+*.iml
+clone_guide

@@ -1,0 +1,230 @@
+{
+  "app": {
+    "name": "Urlopia",
+    "title": "Urlopia"
+  },
+  "login": {
+    "mail": "E-mail",
+    "password": "Hasło",
+    "incorrect": "Nieprawidłowy login lub hasło",
+    "login": "Zaloguj",
+    "logout": "Wyloguj"
+  },
+  "navigation": {
+    "home": "Strona główna",
+    "login": "Login"
+  },
+  "email": {
+    "sender": "Nadawca",
+    "content": "Treść",
+    "date": "Data"
+  },
+  "link": {
+    "forgotten": "Zapomniałeś hasła?"
+  },
+  "footer": {
+    "copyright": "Copyright FINGO © 2016"
+  },
+  "account": {
+    "name": "Imię",
+    "surname": "Nazwisko",
+    "email": "Adres e-mail",
+    "position": "Stanowisko"
+  },
+  "lang": {
+    "pl": "pl",
+    "en": "en"
+  },
+  "form": {
+    "button": "Złóż wniosek",
+    "occasional": "Okolicznościowy",
+    "request": {
+      "requester": {
+        "label": "Wnioskodawca",
+        "placeholder": "Wnioskodawca"
+      },
+      "leader": {
+        "label": "Team leader",
+        "placeholder": "Team leader"
+      },
+      "days": {
+        "button": "Dni",
+        "startDate": "Data rozpoczęcia",
+        "endDate": "Data zakończenia",
+        "startDateError": "Nie możesz wybrać daty urlopu starszej niż zeszły miesiąc",
+        "endDateError": "Nie możesz skończyć urlopu przed jego rozpoczęciem"
+      },
+      "hours": {
+        "button": "Godziny",
+        "label": "Ile godzin",
+        "error": "Liczba godzin musi być z przedziału 1-8"
+      },
+      "reason": {
+        "label": "Powód",
+        "placeholder": "Podaj swój powód.. (max 500 znaków)"
+      }
+    },
+    "submit": {
+      "button": "Wyślij"
+    },
+    "cancel": {
+      "button": "Anuluj"
+    }
+  },
+  "worker_view": {
+    "title": "Moje wnioski"
+  },
+  "leader_view": {
+    "title": "Wnioski do rozpatrzenia"
+  },
+  "table": {
+    "requester": "Wnioskodawca",
+    "leader": "Rozpatrujący",
+    "date": "Termin urlopu",
+    "pool_left": "Pozostało dni",
+    "status": "Status",
+    "reason": "Powód",
+    "accepted": "Zatwierdzono",
+    "denied": "Odrzucono",
+    "cancelled": "Anulowano",
+    "in_progress": "W trakcie",
+    "button": {
+      "accept": "Zatwierdź",
+      "deny": "Odmów",
+      "cancelRequest": "Anuluj"
+    }
+  },
+  "navbar": {
+    "name": "Imie i nazwisko",
+    "teams": "Moje zespoły",
+    "leaders": "Liderzy",
+    "administration_tools": "Narzędzia administracyjne"
+  },
+  "main_view": {
+    "user": "Widok użytkownika",
+    "leader": "Widok team leadera",
+    "admin": "Widok administratora"
+  },
+  "button": {
+    "synchronize": "Synchronizuj"
+  },
+  "user": {
+    "deleted": "Użytkownik usunięty"
+  },
+  "employees_view": {
+    "title": "Pracownicy",
+    "name": "Imię i nazwisko",
+    "add_hours_confirm": "Czy na pewno chcesz dodać {{daysToAdd}} godzin/y urlopu pracownikowi {{employee}}?",
+    "subtr_hours_confirm": "Czy na pewno chcesz odjąć {{daysToAdd}} godzin/y urlopu pracownikowi {{employee}}?",
+    "add_days_confirm": "Czy na pewno chcesz dodać {{daysToAdd}} dni urlopu pracownikowi {{employee}}?",
+    "subtr_days_confirm": "Czy na pewno chcesz odjąć {{daysToAdd}} dni urlopu pracownikowi {{employee}}?",
+    "days_left": "Pozostały urlop: {{days}} dni {{hours}} godzin.",
+    "shift": "Etat {{workTime_a}}/{{workTime_b}}",
+    "full_time": "Pełen etat",
+    "modify_pool": "Zmień pulę urlopu",
+    "mail": "Adres e-mail",
+    "all_teams": "Wszystkie zespoły",
+    "all_employees": "Wszyscy pracownicy",
+    "search_name": "Szukaj",
+    "team": "Zespoły",
+    "comment_placeholder": "Komentarz do operacji",
+    "show_all": "Pokaż wszystkie",
+    "last_operations": "Ostatnie zmiany",
+    "hours": "godzin",
+    "hourly": "Godzinowo",
+    "days": "dni",
+    "only_leaders": "Tylko liderzy zespołów",
+    "others": "Pozostali",
+    "EC_employees": "Pracownicy na etacie",
+    "EC_employee": "etat",
+    "type_of_job": "Rodzaj zatrudnienia"
+  },
+  "workers_view": {
+    "days_left": "Pozostało {{days}} dni {{hours}} godzin urlopu.",
+    "work_hours": "Wymiar etatu {{workTime_a}}/{{workTime_b}}"
+  },
+  "history_view": {
+    "back": "Powrót",
+    "title": "Historia",
+    "created": "Utworzono",
+    "decider": "Rozpatrujący",
+    "pool": "Liczba dni",
+    "left": "Pozostało dni",
+    "comment": "Komentarz"
+  },
+  "requests_view": {
+    "title": "Wszystkie wnioski"
+  },
+  "holidays_view": {
+    "title": "Kalendarz świąt",
+    "table": {
+      "header_name": "Wolne za",
+      "header_date": "Data"
+    },
+    "placeholder": "Wybierz datę z listy aby edytować...",
+    "name": "Nazwa",
+    "reset": "Cofnij zmiany",
+    "save": "Zapisz zmiany",
+    "add": "Dodaj",
+    "delete": "Usuń",
+    "default": "Przywróć domyślne",
+    "details": "Szczegóły",
+    "confirm": "Ta operacja usunie bieżące zmiany!",
+    "exclamation": " - święto wypada w sobotę"
+  },
+  "admin_view": {
+    "menu": {
+      "requests": "Wszystkie wnioski",
+      "employees": "Pracownicy",
+      "holidays": "Święta"
+    }
+  },
+  "notify": {
+    "auth": {
+      "loginSuccess": "Zostałeś pomyślnie zalogowany",
+      "logoutSuccess": "Zostałeś pomyślnie wylogowany",
+      "sessionTimeout": "Twoja sesja wygasła, prosimy zalogować się ponownie",
+      "notAuthorized": "Brak wymaganych uprawnień do wyświetlenia zawartości",
+      "notAuthenticated": "Zaloguj się, aby uzyskać dostęp do zasobu"
+    },
+    "form": {
+      "success": "Wniosek został pomyślnie dodany",
+      "notEnoughDaysPool": "Nie udało się złożyć wniosku z powodu niewystarczającej ilości pozostałych dni wolnych"
+    },
+    "request": {
+      "accept": "Prośba o urlop pracownika została zaakceptowana",
+      "deny": "Prośba o urlop pracownika została odrzucona",
+      "cancel": "Wniosek został anulowany",
+      "notEnoughDaysPoolAccepting": "Nie udało się zaakceptować wniosku z powodu niewystarczającej ilości dni wolnych dostępnych na koncie pracownika"
+    },
+    "admin": {
+      "synchronize": {
+        "success": "Synchronizacja bazy danych pracowników została wykonana pomyślnie",
+        "failure": "Wystąpił błąd podczas synchronizacji bazy danych pracowników"
+      },
+      "employees": {
+        "subtractDaysFail": "Nie można odjąć pracownikowi więcej dni urlopu niż aktualnie przez niego posiadanych",
+        "changeDaysPool": "Pomyślnie zmodyfikowano pulę dni wolnych pracownika"
+      }
+    },
+    "holidays": {
+      "save": {
+        "success": "Pomyślnie zapisano zmiany",
+        "failure": "Nie udało się zapisać zmian"
+      },
+      "missingName": "Nie podano nazwy święta"
+    }
+  },
+  "occasional": {
+    "birth2": "Narodziny dziecka",
+    "funeral2": "Pogrzeb lub zgon",
+    "wedding2": "Ślub",
+    "funeral1": "Pogrzeb lub zgon ",
+    "wedding1": "Ślub ",
+    "when_birth2": "Dwudniowy urlop okolicznościowy przysługuje w związku z narodzinami dziecka.",
+    "when_funeral2": "Dwudniowy urlop okolicznościowy przysługuje w związku z zgonem i pogrzebem małżonka, dziecka, ojca, matki, ojczyma lub macochy.",
+    "when_wedding2": "Dwudniowy urlop okolicznościowy przysługuje w związku z Twoim ślubem.",
+    "when_funeral1": "Jednodniowy urlop okolicznościowy przysługuje w związku z zgonem i pogrzebem siostry, brata, teściowej, teścia, babki, dziadka, a także innej osoby, którą utrzymujesz lub którą się bezpośrednio opiekujesz",
+    "when_wedding1": "Jednodniowy urlop okolicznościowy przysługuje w związku z ślubem Twojego dziecka."
+  }
+}

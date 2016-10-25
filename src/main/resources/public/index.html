@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Urlopia</title>
+    <base href="/">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/ngProgress.css">
+    <link rel="stylesheet" href="css/hover.css">
+    <link rel="stylesheet" href="css/animate.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body ng-controller="ApplicationController">
+<div id="wrap">
+    <header ng-include="'partials/header.html'" logged-only></header>
+
+    <!-- Main view -->
+    <div class="container">
+        <!-- Subpage injection -->
+        <div id="content" ng-view></div>
+    </div>
+    </div>
+
+<!-- Footer -->
+<footer ng-include="'partials/footer.html'" logged-only=""></footer>
+</body>
+</html>
+
+<!-- Script libraries -->
+<script src="js/libs/jquery/jquery-3.1.0.min.js"></script>
+<script src="js/libs/angular/angular.min.js"></script>
+<script src="js/libs/angular/angular-route.min.js"></script>
+<script src="js/libs/angular-translate/angular-translate.min.js"></script>
+<script src="js/libs/angular-translate/angular-translate-loader-static-files.min.js"></script>
+<script src="js/libs/angular/angular-animate.min.js"></script>
+<script src="js/libs/angular/angular-resource.min.js"></script>
+<script src="js/libs/angular/angular-cookies.min.js"></script>
+<script src="js/libs/bootstrap/ui-bootstrap-tpls-2.0.0.js"></script>
+<script src="js/libs/bootstrap/bootstrap-notify.min.js"></script>
+<script src="js/libs/filesaver.min.js"></script>
+<script src="js/libs/angular/ngProgress.min.js"></script>
+
+<!--Application scripts-->
+<script src="js/app.js"></script>
+<script src="js/constants.js"></script>
+<script src="js/routing.js"></script>
+<script src="js/login.js"></script>
+<script src="js/form.js"></script>
+<script src="js/users.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/autoUpdate.js"></script>
+<script src="js/notify.js"></script>
+<script src="js/progressBar.js"></script>

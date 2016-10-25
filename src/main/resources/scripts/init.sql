@@ -1,0 +1,4 @@
+CREATE USER urlopia WITH CREATEDB
+  PASSWORD 'urlopia123';
+
+CREATE DATABASE urlopiadb OWNER urlopia;

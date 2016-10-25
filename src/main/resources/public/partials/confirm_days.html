@@ -1,0 +1,28 @@
+<div class="well well-sm days_confirm_text" >
+    <span ng-if="isHourly">
+        <span class="confirm_text" ng-if="!isNegative" translate="employees_view.add_hours_confirm"
+              translate-values="{daysToAdd: daysToAdd, employee: employee}"></span>
+        <span class="confirm_text" ng-if="isNegative" translate="employees_view.subtr_hours_confirm"
+              translate-values="{daysToAdd: daysToAdd, employee: employee}"></span>
+    </span>
+    <span ng-if="!isHourly">
+         <span class="confirm_text" ng-if="!isNegative" translate="employees_view.add_days_confirm"
+               translate-values="{daysToAdd: daysToAdd, employee: employee}"></span>
+        <span class="confirm_text" ng-if="isNegative" translate="employees_view.subtr_days_confirm"
+              translate-values="{daysToAdd: daysToAdd, employee: employee}"></span
+    </span>
+</div>
+<div class="button_holder">
+    <div class="btn-group btn-group-justified" role="group">
+        <div class="btn-group btn-group-lg" role="group">
+            <button id="left_button" class="btn btn-default days_confirm_text hvr-back-pulse" type="button" ng-click="cancel()"><span class="glyphicon glyphicon-remove"
+                                                                                    style="color: red"></span></button>
+        </div>
+        <div class="btn-group btn-group-lg" role="group">
+            <button id="right_button" class="btn btn-default days_confirm_text hvr-back-pulse" type="button" ng-click="confirm()"><span class="glyphicon glyphicon-ok"
+                                                                                     style="color: green"></span>
+            </button>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,133 @@
+<div class="modal-header">
+    <h3 class="modal-title">Urlopia</h3>
+</div>
+<div class="container">
+    <form role="form" name="modalForm">
+        <br>
+        <div ng-controller="WorkerCtrl">
+            <span class="holidays_pool"><b>{{ 'table.pool_left' | translate}}: {{ worker.holidaysPool.days }}</b></span>
+        </div>
+        <br>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-sm-3">
+                    <label for="requester">{{'form.request.requester.label' | translate }}</label>
+                    <input type="text" class="form-control" ng-model="requester" id="requester"
+                           placeholder="{{'form.request.requester.placeholder' | translate}}" readonly="readonly"/>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-sm-3">
+                    <label for="leader">{{'form.request.leader.label' | translate }}</label>
+                    <input type="text" class="form-control" id="leader" name="leader" ng-repeat="team in teams"
+                           value="{{ team.leader.name + ' ' + team.leader.surname +' ' }}"
+                           placeholder="{{'form.request.leader.placeholder' | translate}}" readonly="readonly"/>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="checkbox">
+                    <label><input type="checkbox" ng-click="changeOccasional()" value="">{{'form.occasional' |
+                        translate}}</label>
+                </div>
+            </div>
+        </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="btn-group" uib-dropdown is-open="status.isopen" ng-show="isOccasional">
+                        <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle
+                                ng-disabled="disabled">
+                            {{ selectedItem }} <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                            <li class="dropdown-header" ng-disabled="true">2 dniowe</li>
+                            <li class="divider"></li>
+                            <li class="dropdown_button" role="menuitem"><a ng-click="dropBoxItemSelected(reasons[0])">{{reasons[0]}}</a>
+                            </li>
+                            <li class="dropdown_button" role="menuitem"><a ng-click="dropBoxItemSelected(reasons[1])">{{reasons[1]}}</a>
+                            </li>
+                            <li class="dropdown_button" role="menuitem"><a ng-click="dropBoxItemSelected(reasons[2])">{{reasons[2]}}</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li class="dropdown-header">1 dniowe</li>
+                            <li class="divider"></li>
+                            <li class="dropdown_button" role="menuitem"><a ng-click="dropBoxItemSelected(reasons[3])">{{reasons[3]}}</a>
+                            </li>
+                            <li class="dropdown_button" role="menuitem"><a ng-click="dropBoxItemSelected(reasons[4])">{{reasons[4]}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-3">
+                    <span ng-if="type==1"><h6><p class="text-muted">{{ 'occasional.when_birth2' | translate }}</p></h6></span>
+                    <span ng-if="type==2"><h6><p
+                            class="text-muted">{{ 'occasional.when_funeral2' | translate }}</p></h6></span>
+                    <span ng-if="type==3"><h6><p
+                            class="text-muted">{{ 'occasional.when_wedding2' | translate }}</p></h6></span>
+                    <span ng-if="type==4"><h6><p
+                            class="text-muted">{{ 'occasional.when_funeral1' | translate }}</p></h6></span>
+                    <span ng-if="type==5"><h6><p
+                            class="text-muted">{{ 'occasional.when_wedding1' | translate }}</p></h6></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div ng-class="{ 'has-error': modalForm.startdate.$invalid }">
+                        <label for="startdate" id="welcome">{{'form.request.days.startDate' | translate}}</label>
+                        <p class="input-group">
+                            <input type="text" id="startdate" class="form-control" name="startdate" readonly
+                                   ng-model="startDate" ng-change="startDateChange()" uib-datepicker-popup="{{format}}"
+                                   is-open="startDatePopup.opened" datepicker-options="startDateOptions"
+                                   show-button-bar="false"/>
+                            <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="openStartDate()">
+                                <i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                            <span ng-show="modalForm.startdate.$invalid" class="help-block">
+                            {{'form.request.days.startDateError' | translate}}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div ng-class="{ 'has-error': modalForm.enddate.$invalid}">
+                        <label for="enddate">{{'form.request.days.endDate' | translate}}</label>
+                        <p class="input-group">
+                            <input type="text" id="enddate" class="form-control" name="enddate" readonly
+                                   ng-model="endDate" uib-datepicker-popup="{{format}}"
+                                   is-open="endDatePopup.opened" datepicker-options="endDateOptions"
+                                   show-button-bar="false"/>
+                            <span class="input-group-btn">
+                            <button ng-hide="isOccasional" type="button" class="btn btn-default"
+                                    ng-click="openEndDate()">
+                                <i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                            <span ng-show="modalForm.enddate.$invalid" class="help-block">
+                                {{'form.request.days.endDateError' | translate}}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="submit" class="btn btn-success" ng-disabled="modalForm.$invalid" ng-click="sendData()">
+        {{'form.submit.button' | translate}}
+    </button>
+    <button type="submit" class="btn btn-success" ng-click="cancel()">{{'form.cancel.button' | translate}}</button>
+</div>

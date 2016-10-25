@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS history;
+
+DROP TABLE IF EXISTS acceptances;
+
+DROP TABLE IF EXISTS requests;
+
+DROP TABLE IF EXISTS users;
+
+DROP TABLE IF EXISTS holidays;

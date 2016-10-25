@@ -1,0 +1,186 @@
+<!--EmployeesCtrl-->
+<div class="jumbotron">
+    <!--view header-->
+    <h2 class="view-title text-left">{{ 'employees_view.title' | translate}}</h2>
+    <hr>
+
+    <div class="row">
+        <div class="col-xs-6 text-left">
+            <a class="btn btn-primary" role="button" ng-click="prevPage()"><b><</b></a>
+        </div>
+        <div class="col-xs-6 text-right">
+            <button class="btn btn-primary" ng-click="synchronize()">{{'button.synchronize' | translate}}</button>
+        </div>
+    </div>
+    <br>
+    <br>
+
+
+    <!--filters-->
+    <div class="row">
+        <div class="col-sm-3">
+            <input type="text" class="form-control" placeholder="{{ 'employees_view.search_name' | translate }}"
+                   ng-model="nameSearch.fullName">
+        </div>
+        <div class="col-sm-2">
+            <div class="btn-group" uib-dropdown is-open="false">
+                <button id="single-button" Teams type="button" class="btn btn-primary" uib-dropdown-toggle
+                        ng-disabled="disabled">
+                    {{ selectedTeam }} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" uib-dropdown-menu role="menu">
+                    <li>
+                        <a class="dropdown_button" ng-click="allEmployees()">{{ 'employees_view.all_teams' |
+                            translate }}</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li ng-repeat="item in teams">
+                        <a class="dropdown_button" ng-click="dropDownTeams(item)">{{ item.name }}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="btn-group" uib-dropdown is-open="false">
+                <button id="group-button" type="button" class="btn btn-primary" uib-dropdown-toggle
+                        ng-disabled="disabled">
+                    {{ selectedContract }} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" uib-dropdown-menu role="menu">
+                    <li>
+                        <a class="dropdown_button" ng-click="allContracts() ">{{ 'employees_view.all_employees' |
+                            translate }}</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a class="dropdown_button" ng-click="dropDownContracts('ec')">{{
+                            'employees_view.EC_employees' | translate }}</a>
+                        <a class="dropdown_button" ng-click="dropDownContracts('others')">{{
+                            'employees_view.others' | translate }}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="checkbox">
+                <label><input type="checkbox" data-ng-model='leaderSearch.leader' data-ng-true-value='true'
+                              data-ng-false-value=''>{{ 'employees_view.only_leaders' | translate }}</label>
+            </div>
+        </div>
+    </div>
+
+    <!--view body-->
+    <table class="table table-striped" id="employees">
+
+        <thead>
+        <tr>
+            <th class="column_employees">
+                <button class="sorting_button" ng-if="reverse" ng-click="sortBy('surname')">
+                    {{ 'employees_view.name' | translate }}
+                    <span class="glyphicon glyphicon-sort-by-alphabet-alt sorting_icon"></span>
+                </button>
+                <button class="sorting_button" ng-if="!reverse" ng-click="sortBy('surname')">{{ 'employees_view.name' |
+                    translate }}<span class="glyphicon glyphicon-sort-by-alphabet sorting_icon"></span></button>
+                <span ng-show="propertyName === 'user.name'" ng-class="{reverse: reverse}"></span>
+            </th>
+            <th class="column_employees">
+                <button class="sorting_button" ng-if="reverse" ng-click="sortBy('mail')">{{
+                    'employees_view.mail' | translate }}<span
+                            class="glyphicon glyphicon-sort-by-alphabet-alt sorting_icon"></span>
+                </button>
+                <button class="sorting_button" ng-if="!reverse" ng-click="sortBy('mail')">{{
+                    'employees_view.mail' | translate }}<span
+                            class="glyphicon glyphicon-sort-by-alphabet sorting_icon"></span>
+                </button>
+                <span ng-show="propertyName === 'user.mail'" ng-class="{reverse: reverse}"></span>
+            </th>
+            <th class="column_employees">{{ 'employees_view.team' | translate }}</th>
+            <th class="column_employees">{{ 'employees_view.type_of_job' | translate }}</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr class="hvr-grow-shadow"
+            ng-repeat-start="user in users | filter : teamSearch | orderBy : propertyName : reverse | filter : nameSearch : strict | filter : leaderSearch | filter : contractSearch"
+            ng-click="isCollapsed=!isCollapsed">
+            <td ng-if="user.leader"><b>{{ user.name }} {{ user.surname }}</b></td>
+            <td ng-if="!user.leader">{{ user.name }} {{ user.surname }}</td>
+            <td>{{ user.mail }}</td>
+            <td>
+                <span ng-repeat="team in user.teams">
+                    <span ng-if="user.teams.length == 1 || $last">{{ team.name }}</span>
+                    <span ng-if="user.teams.length > 1 && !$last">{{ team.name + ',' }}</span>
+                </span>
+            </td>
+            <td>
+                <span ng-if="user.ec">{{ 'employees_view.EC_employee' | translate }}</span>
+            </td>
+        </tr>
+        <!--User detail-->
+        <tr ng-repeat-end="">
+            <td colspan="4" class="employee_details">
+                <div ng-if="!isCollapsed" ng-controller="UserDetailsCtrl" class="well animated fadeInUp">
+                    <div class="row">
+                        <div class="col-md-6" style="margin-bottom: 1em">
+                            <h4>
+                                <span translate="employees_view.days_left"
+                                      translate-values="{days: response.days,hours: response.hours}">
+                                </span>
+                                <span ng-if="response.workTimeA != 1 && response.workTimeB != 1"
+                                      translate="employees_view.shift"
+                                      translate-values="{workTime_a: response.workTimeA,workTime_b: response.workTimeB}">
+                                </span>
+                                <span ng-if="response.workTimeB == 1 || response.workTimeA == 1">
+                                    {{ 'employees_view.full_time' | translate }}
+                                </span>
+                            </h4>
+                            <br>
+                            <div class="checkbox">
+                                <label><input type="checkbox" ng-click="isHourly = !isHourly" value="">{{'employees_view.hourly'
+                                    | translate}}</label>
+                            </div>
+                            <br>
+                            <b>{{ 'employees_view.modify_pool' | translate}}</b>
+                            <div class="input-group">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button" ng-click="decrement()"><span
+                                            class="glyphicon glyphicon-minus"></span></button>
+                                </span>
+                                <input type="text" class="form-control" value="{{daysToAdd}}" ng-model="daysToAdd">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button" ng-click="increment()"><span
+                                            class="glyphicon glyphicon-plus"></span></button>
+                                    <button class="btn btn-default" type="button" ng-click="ok()"><span
+                                            class="glyphicon glyphicon-ok-sign" style="color: green"></span></button>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control" ng-model="comment"
+                                   placeholder="{{ 'employees_view.comment_placeholder' | translate}}">
+                            <button class="btn btn-danger" ng-click="report()">Raport</button>
+                        </div>
+                        <div class="col-md-6">
+                            <b>{{ 'employees_view.last_operations' | translate}}</b><br>
+                            <table class="table table-striped">
+                                <tbody>
+                                <tr ng-repeat="history in userHistory.list">
+                                    <td>{{history.created}}
+                                    </td>
+                                    <td class="text-center">{{ history.days }}
+                                    </td>
+                                    <td>{{ history.comment }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: center"><a
+                                            href="admin/employees/user?mail={{user.mail}}">
+                                        {{'employees_view.show_all' | translate}}</a></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
