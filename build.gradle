@@ -58,11 +58,11 @@ repositories {
 dependencies {
     compile('javax.ejb:ejb-api:3.0')
     compile('javax.jms:jms-api:1.1-rev-1')
-    compile('javax.persistence:persistence-api:1.0.2')
     compile('javax.resource:javax.resource-api:1.7')
     compile('javax.servlet.jsp:jsp-api:2.2')
     compile('javax.servlet.jsp.jstl:javax.servlet.jsp.jstl-api:1.2.1')
     compile('javax.transaction:jta:1.1')
+    compile('org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final')
     compile('org.springframework.boot:spring-boot-devtools')
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
