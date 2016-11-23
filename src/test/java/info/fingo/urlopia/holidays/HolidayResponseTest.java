@@ -19,6 +19,6 @@ public class HolidayResponseTest {
         HolidayResponse response = new HolidayResponse(holiday);
 
 
-        Assert.assertEquals(Long.parseLong("820278000000"), response.getDate()); //value from milis time generator
+        Assert.assertEquals("Data: " + date.toString(), Long.parseLong("820278000000"), response.getDate()); //value from milis time generator
     }
 }
