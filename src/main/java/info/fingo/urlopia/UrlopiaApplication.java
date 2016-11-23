@@ -43,7 +43,7 @@ public class UrlopiaApplication {
     public static final String DEFAULT_LANGUAGE = "pl";
 
     //External values
-    @Value("${dropCreate}")
+    @Value("${database.drop-create}")
     private String dropCreate;
 
     @Value("${spring.datasource.driver-class-name}")

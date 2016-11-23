@@ -1,38 +1,38 @@
-app.url=http://urlopia.example.com
-database.drop-create=true
-spring.datasource.driver-class-name=org.postgresql.Driver
-spring.jpa.database=postgresql
-spring.jpa.hibernate.ddl-auto=none
-spring.datasource.url=jdbc:postgresql://localhost:5432/urlopiadb
-spring.datasource.username=dbuser
-spring.datasource.password=dbpassword
-ldap.initial.context.factory=com.sun.jndi.ldap.LdapCtxFactory
-ldap.security.authentication=Simple
-ldap.security.principal=user
-ldap.security.credentials=password
-ldap.provider.url=ldap://adserver.example.com:999
-ad.adminsTeam=Admins
-ad.adminUrlopia=admin.urlopia@example.com
-ad.team.identifier= Team,
-ad.team.urlopia.group=CN=Urlopia Team,OU=Users,DC=example,DC=pl
-ad.team.main.group=CN=Main Team,OU=Users,DC=example,DC=pl
-ad.team.leaders.group=CN=Team Leaders,OU=Users,DC=example,DC=pl
-ad.user.container=OU=Users,DC=example,DC=pl
-ad.user.b2b.group=CN=B2BEmployees,OU=Users,DC=example,DC=pl
-ad.user.ec.group=CN=ECEmployees,OU=Users,DC=example,DC=pl
-ad.user.masterLeader=master.leader@example.com
-spring.mail.host=post.example.com
-spring.mail.username=urlopia@example.com
-spring.mail.password=password
-spring.mail.properties.smtp.auth=true
-spring.mail.properties.smtp.socketFactory.port=999
-spring.mail.properties.smtp.socketFactory.class=javax.net.ssl.SSLSocketFactory
-spring.mail.properties.smtp.socketFactory.fallback=false
-mail.template.prefix=/mails
-mail.template.suffix=.hbs
-mail.receiver.host=post.example.com
-mail.receiver.folder=Inbox
-mail.receiver.idle-time=300000
-mail.bot.name=Urlopia
-mail.bot.address=urlopia@example.com
-webtoken.secret=SecretKey
+app_url=http://urlopia.example.com
+database_drop-create=true
+spring_datasource_driver-class-name=org.postgresql.Driver
+spring_jpa_database=postgresql
+spring_jpa_hibernate.ddl-auto=none
+spring_datasource_url=jdbc:postgresql://localhost:5432/urlopiadb
+spring_datasource_username=dbuser
+spring_datasource_password=dbpassword
+ldap_initial_context_factory=com.sun.jndi.ldap.LdapCtxFactory
+ldap_security_authentication=Simple
+ldap_security_principal=user
+ldap_security_credentials=password
+ldap_provider_url=ldap://adserver.example.com:999
+ad_adminsTeam=Admins
+ad_adminUrlopia=admin.urlopia@example.com
+ad_team_identifier= Team,
+ad_team_urlopia_group=CN=Urlopia Team,OU=Users,DC=example,DC=pl
+ad_team_main_group=CN=Main Team,OU=Users,DC=example,DC=pl
+ad_team_leaders_group=CN=Team Leaders,OU=Users,DC=example,DC=pl
+ad_user_container=OU=Users,DC=example,DC=pl
+ad_user_b2b_group=CN=B2BEmployees,OU=Users,DC=example,DC=pl
+ad_user_ec_group=CN=ECEmployees,OU=Users,DC=example,DC=pl
+ad_user_masterLeader=master.leader@example.com
+spring_mail_host=post.example.com
+spring_mail_username=urlopia@example.com
+spring_mail_password=password
+spring_mail_properties_smtp_auth=true
+spring_mail_properties_smtp_socketFactory_port=999
+spring_mail_properties_smtp_socketFactory_class=javax.net.ssl.SSLSocketFactory
+spring_mail_properties_smtp_socketFactory_fallback=false
+mail_template_prefix=/mails
+mail_template_suffix=.hbs
+mail_receiver_host=post.example.com
+mail_receiver_folder=Inbox
+mail_receiver_idle-time=300000
+mail_bot_name=Urlopia
+mail_bot_address=urlopia@example.com
+webtoken_secret=SecretKey
