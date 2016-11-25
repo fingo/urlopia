@@ -42,7 +42,7 @@ public class MailReceiver extends Thread {
     @Value("${mail.receiver.folder}")
     private String folderName;
 
-    @Value("${mail.receiver.idle-time}")
+    @Value("${mail.receiver.idle.time}")
     private int keepAliveFreq;    //time unit: milliseconds
 
     private Store store;

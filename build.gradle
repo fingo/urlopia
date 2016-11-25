@@ -46,6 +46,9 @@ sonarqube {
 jar {
     baseName = 'urlopia'
     version = '0.1.0'
+    manifest {
+        attributes "Main-Class": "info.fingo.urlopia.UrlopiaApplication"
+    }
 }
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
