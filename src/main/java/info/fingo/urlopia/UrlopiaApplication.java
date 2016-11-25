@@ -43,7 +43,7 @@ public class UrlopiaApplication {
     public static final String DEFAULT_LANGUAGE = "pl";
 
     //External values
-    @Value("${database.drop-create}")
+    @Value("${dropCreate}")
     private String dropCreate;
 
     @Value("${spring.datasource.driver-class-name}")
@@ -147,14 +147,15 @@ public class UrlopiaApplication {
     @Bean
     public CommandLineRunner startup() {
         return args -> {
-            if ("true".equals(dropCreate))
+            if ("true".equals(dropCreate)) {
                 dropCreateDatabase();
+
+                // set holidays lists
+                setHolidaysForThisAndNextYear();
+            }
             // synchronize db with ad & set admins
             userService.synchronize();
             setAdminsFromTeam();
-
-            // set holidays lists
-            setHolidaysForThisAndNextYear();
 
             // start listening for new mails
             mailReceiver.start();
