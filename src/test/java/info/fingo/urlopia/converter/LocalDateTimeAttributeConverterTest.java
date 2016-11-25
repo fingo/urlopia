@@ -34,8 +34,8 @@ public class LocalDateTimeAttributeConverterTest {
         Timestamp sqlTimestamp = new Timestamp(current);
         LocalDateTime localDateTime = new LocalDateTimeAttributeConverter().convertToEntityAttribute(sqlTimestamp);
 
-        String sSqlTimestamp = sqlTimestamp.toString();
-        String sLocalDateTime = localDateTime.format(formatter);
+        String sSqlTimestamp = sqlTimestamp.toString().replaceAll("\\[.*?\\] ?", "");
+        String sLocalDateTime = localDateTime.format(formatter).replaceAll("\\[.*?\\] ?", "");
 
         Assert.assertEquals(sSqlTimestamp, sLocalDateTime);
     }
