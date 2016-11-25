@@ -19,10 +19,9 @@ public class LocalDateAttributeConverterTest {
         LocalDate localDate = Instant.ofEpochMilli(current).atZone(ZoneId.systemDefault()).toLocalDate();
         Date sqlDate = new LocalDateAttributeConverter().convertToDatabaseColumn(localDate);
 
-        String sLocalDate = localDate.toString();
-        String sSqlDate = sqlDate.toString();
-
-        Assert.assertEquals(sLocalDate, sSqlDate);
+        Assert.assertEquals(localDate.getYear(), sqlDate.getYear() + 1900);
+        Assert.assertEquals(localDate.getMonthValue(), sqlDate.getMonth() + 1);
+        Assert.assertEquals(localDate.getDayOfMonth(), sqlDate.getDate());
     }
 
     @Test
@@ -31,9 +30,8 @@ public class LocalDateAttributeConverterTest {
         Date sqlDate = new Date(current);
         LocalDate localDate = new LocalDateAttributeConverter().convertToEntityAttribute(sqlDate);
 
-        String sSqlDate = sqlDate.toString();
-        String sLocalDate = localDate.toString();
-
-        Assert.assertEquals(sSqlDate, sLocalDate);
+        Assert.assertEquals(sqlDate.getYear(), localDate.getYear() - 1900);
+        Assert.assertEquals(sqlDate.getMonth(), localDate.getMonthValue() - 1);
+        Assert.assertEquals(sqlDate.getDate(), localDate.getDayOfMonth());
     }
 }
