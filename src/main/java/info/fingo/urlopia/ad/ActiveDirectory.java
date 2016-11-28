@@ -1,6 +1,7 @@
 package info.fingo.urlopia.ad;
 
 import info.fingo.urlopia.authentication.LDAPConnectionService;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,7 +111,8 @@ public class ActiveDirectory {
     }
 
     private boolean isTeam(String group) {
-        return group.contains(TEAM_IDENTIFIER) && !group.equals(MAIN_TEAM_GROUP);
+
+        return group.contains(StringEscapeUtils.unescapeJava(TEAM_IDENTIFIER)) && !group.equals(MAIN_TEAM_GROUP);
     }
 
     private boolean isLeader(String memberOf) {
