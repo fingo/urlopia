@@ -212,6 +212,10 @@ app.controller('EmployeesCtrl', function ($scope, API, $filter, $translate, noti
         return false;
     };
 
+    $scope.leaderSearch = function (item) {
+        return !$scope.leaderSearch.leader || $scope.leaderSearch.leader === item.leader;
+    };
+
     $scope.allContracts = function () {
         $scope.selectedContract = $filter('translate')('employees_view.all_employees');
         $scope.contractFilter = "";
