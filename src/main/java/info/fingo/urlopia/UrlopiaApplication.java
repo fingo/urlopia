@@ -46,7 +46,7 @@ public class UrlopiaApplication {
     @Value("${dropCreate}")
     private String dropCreate;
 
-    @Value("${spring.datasource.driver-class-name}")
+    @Value("${spring.datasource.driver.class.name}")
     private String privateDriverClassName;
     private static String driverClassName;
 
