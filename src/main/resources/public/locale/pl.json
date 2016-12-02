@@ -137,7 +137,8 @@
     "others": "Pozostali",
     "EC_employees": "Pracownicy na etacie",
     "EC_employee": "etat",
-    "type_of_job": "Rodzaj zatrudnienia"
+    "type_of_job": "Rodzaj zatrudnienia",
+    "contract_issue": "brak umowy"
   },
   "workers_view": {
     "days_left": "Pozostało {{days}} dni {{hours}} godzin urlopu.",

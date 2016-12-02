@@ -196,7 +196,10 @@ app.controller('EmployeesCtrl', function ($scope, API, $filter, $translate, noti
     };
 
     $scope.contractSearch = function (item) {
-        if ($scope.contractFilter === "" && (item.b2B || item.ec || item.urlopiaTeam)) {
+        if (!item.mail) { //dont show records without email
+            return false;
+        }
+        if ($scope.contractFilter === "") {
             return true;
         }
         if ((item.b2B || item.urlopiaTeam) && $scope.contractFilter === 'others') {

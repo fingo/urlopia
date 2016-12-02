@@ -137,7 +137,8 @@
     "others": "Others",
     "EC_employees": "EC employees",
     "EC_employee": "EC",
-    "type_of_job": "Type of job"
+    "type_of_job": "Type of job",
+    "contract_issue": "no contract"
   },
   "workers_view": {
     "days_left": "{{days}} days {{hours}} hours of vacation left.",

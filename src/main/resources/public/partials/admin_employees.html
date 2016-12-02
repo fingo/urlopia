@@ -101,7 +101,7 @@
 
         <tbody>
         <tr class="hvr-grow-shadow"
-            ng-repeat-start="user in users | filter : teamSearch | orderBy : propertyName : reverse | filter : nameSearch : strict | filter : leaderSearch | filter : contractSearch"
+            ng-repeat-start="user in users | filter : teamSearch | orderBy : propertyName : reverse | filter : nameSearch.fullName : strict | filter : leaderSearch.leader | filter : contractSearch"
             ng-click="isCollapsed=!isCollapsed">
             <td ng-if="user.leader"><b>{{ user.name }} {{ user.surname }}</b></td>
             <td ng-if="!user.leader">{{ user.name }} {{ user.surname }}</td>
@@ -114,6 +114,7 @@
             </td>
             <td>
                 <span ng-if="user.ec">{{ 'employees_view.EC_employee' | translate }}</span>
+                <span ng-if="!user.ec && !user.b2B" style="color: red"> {{ 'employees_view.contract_issue' | translate }}</span>
             </td>
         </tr>
         <!--User detail-->
