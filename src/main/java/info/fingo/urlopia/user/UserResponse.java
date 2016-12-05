@@ -7,6 +7,7 @@ package info.fingo.urlopia.user;
  */
 public class UserResponse {
     private String id;
+    private String principalName;
     private String mail;
     private String name;
 
@@ -14,6 +15,7 @@ public class UserResponse {
         this.id = String.valueOf(user.getId());
         this.mail = user.getMail();
         this.name = user.getName();
+        this.principalName = user.getPrincipalName();
     }
 
     public String getId() {
@@ -26,5 +28,9 @@ public class UserResponse {
 
     public String getName() {
         return name;
+    }
+
+    public String getPrincipalName() {
+        return principalName;
     }
 }

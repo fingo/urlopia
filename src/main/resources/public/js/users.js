@@ -415,13 +415,13 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
     //Gathering data
     $scope.isHourly = false;
 
-    $scope.response = API.setUrl("/api/history").get({mail: $scope.user.mail}, function (item) {
+    $scope.response = API.setUrl("/api/history").get({mail: $scope.user.principalName}, function (item) {
 
     });
 
     var getHours = function () {
         if ($scope.userHours === undefined) {
-            API.setUrl("/api/history").get({mail: $scope.user.mail}, function (response) {
+            API.setUrl("/api/history").get({mail: $scope.user.principalName}, function (response) {
                 $scope.userHours = response.pool;
                 $scope.workTime = response.workTime;
 
@@ -432,7 +432,7 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
 
     // Recent user's history logs
     $scope.userHistory = API.setUrl("/api/userHistory/recent")
-        .get({userMail: $scope.user.mail});
+        .get({userMail: $scope.user.principalName});
 
     // Saving data
     $scope.daysToAdd = 1;
