@@ -34,7 +34,7 @@ public class AcceptanceController {
 
         Map<String, Object> map = new HashMap<>();
 
-        if ("accept".equals(action) && !requestService.isValidRequest(acceptanceId)) {
+        if ("accept".equals(action) && !requestService.isValidRequestByAcceptance(acceptanceId)) {
             acceptanceService.reject(acceptanceId, userId);
             map.put("value", false);
             return map;

@@ -102,7 +102,7 @@ public class RequestController {
 
         Map<String, Object> map = new HashMap<>();
 
-        if ("accept".equals(action) && !requestService.isValidRequest(requestId)) {
+        if ("accept".equals(action) && !requestService.isValidRequestByRequest(requestId)) {
             requestService.reject(requestId, userId);
             map.put("value", false);
             return map;

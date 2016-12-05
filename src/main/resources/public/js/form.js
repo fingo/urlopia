@@ -130,7 +130,7 @@ app.controller('modalCtrl', function ($scope, $uibModal, Session, AUTH_EVENTS) {
         $uibModal.open(
             {
                 animation: true,
-                templateUrl: 'partials/modal.html',
+                templateUrl: 'partials/request.html',
                 controller: 'formCtrl',
                 size: 'sm'
             });

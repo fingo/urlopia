@@ -450,7 +450,7 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
             confirmData.daysToAdd = parseInt($scope.daysToAdd);
             confirmData.comment = $scope.comment;
             confirmData.employee = $scope.user.surname + " " + $scope.user.name;
-            confirmData.mail = $scope.user.mail;
+            confirmData.mail = $scope.user.principalName;
             confirmData.workTime = $scope.workTime;
             confirmData.isHourly = $scope.isHourly;
             if ($scope.userHours >= -$scope.daysToAdd) {

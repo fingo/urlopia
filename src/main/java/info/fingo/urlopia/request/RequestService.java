@@ -204,9 +204,20 @@ public class RequestService {
         return success;
     }
 
-    boolean isValidRequest(long acceptanceId) {
+    boolean isValidRequestByAcceptance(long acceptanceId) {
 
         Acceptance acceptance = acceptanceRepository.findOne(acceptanceId);
+
+        User requester = acceptance.getRequest().getRequester();
+        RequestDTO requestDTO = requestFactory.create(acceptance.getRequest());
+        float userHolidaysPool = historyService.getHolidaysPool(requester.getId(), null);
+        float requestedPool = DurationCalculator.calculate(requestDTO, holidayService);
+        return userHolidaysPool >= requestedPool;
+    }
+
+    boolean isValidRequestByRequest(long requestId) {
+
+        Acceptance acceptance = acceptanceRepository.findByRequestId(requestId).get(0);
 
         User requester = acceptance.getRequest().getRequester();
         RequestDTO requestDTO = requestFactory.create(acceptance.getRequest());
