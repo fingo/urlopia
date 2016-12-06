@@ -96,12 +96,13 @@ app.controller('formCtrl', function ($scope, $resource, $uibModalInstance, $tran
                 teams: $scope.teams,
                 type: $scope.type
 
-            }, function (item) {
-            updater.load();
-            if (item.requester === $scope.requester) {
+            }, function (valid) {
+                updater.load();
+                if (!valid) {
                     // form request not enough days pool notification
                     notifyService.displayDanger($translate.instant('notify.form.notEnoughDaysPool'));
-                } else {
+                }
+                else {
                     // form request success notification
                     notifyService.displaySuccess($translate.instant('notify.form.success'));
                 }
