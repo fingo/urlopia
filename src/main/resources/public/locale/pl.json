@@ -205,7 +205,8 @@
       },
       "employees": {
         "subtractDaysFail": "Nie można odjąć pracownikowi więcej dni urlopu niż aktualnie przez niego posiadanych",
-        "changeDaysPool": "Pomyślnie zmodyfikowano pulę dni wolnych pracownika"
+        "changeDaysPool": "Pomyślnie zmodyfikowano pulę dni wolnych pracownika",
+        "addDaysFail": "Próba dodania większej ilości dni niż jest to dozwolone"
       }
     },
     "holidays": {

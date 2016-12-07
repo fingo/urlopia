@@ -205,7 +205,8 @@
       },
       "employees": {
         "subtractDaysFail": "You cannot subtract more than current number of days from employee's days pool",
-        "changeDaysPool": "Employee's days pool has been successfully modified"
+        "changeDaysPool": "Employee's days pool has been successfully modified",
+        "addDaysFail": "You cannot add more days than it is allowed"
       }
     },
     "holidays": {
