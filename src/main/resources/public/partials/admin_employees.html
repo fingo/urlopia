@@ -136,11 +136,11 @@
                                 </span>
                             </h4>
                             <br>
-                            <div class="checkbox">
+                            <div ng-if="workTime !== 8" class="checkbox">
                                 <label><input type="checkbox" ng-click="isHourly = !isHourly" value="">{{'employees_view.hourly'
                                     | translate}}</label>
+                                <br><br>
                             </div>
-                            <br>
                             <b>{{ 'employees_view.modify_pool' | translate}}</b>
                             <div class="input-group">
                                 <span class="input-group-btn">
