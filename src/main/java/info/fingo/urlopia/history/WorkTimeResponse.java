@@ -5,8 +5,8 @@ package info.fingo.urlopia.history;
  */
 public class WorkTimeResponse {
 
-    private static float a;
-    private static float res;
+    private float a;
+    private float res;
     private float pool;
     private float workTime;
     private int days;
@@ -79,7 +79,7 @@ public class WorkTimeResponse {
         return workTimeB;
     }
 
-    public void setWorktimeB(int worktimeB) {
-        this.workTimeB = worktimeB;
+    public void setWorktimeB(int workTimeB) {
+        this.workTimeB = workTimeB;
     }
 }

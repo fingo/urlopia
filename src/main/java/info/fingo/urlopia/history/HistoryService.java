@@ -91,7 +91,7 @@ public class HistoryService {
     }
 
     public List<HistoryDTO> getRecentHistories(String userMail) {
-        List<History> histories = historyRepository.findFirst3ByUserMailOrderByCreatedDesc(userMail);
+        List<History> histories = historyRepository.findFirst5ByUserMailOrderByCreatedDesc(userMail);
 
         return histories.stream()
                 .map(historyFactory::create)
