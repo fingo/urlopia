@@ -4,14 +4,18 @@ import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.info.BuildInfoContributor;
+import org.springframework.boot.actuate.info.GitInfoContributor;
+import org.springframework.boot.info.BuildProperties;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
 
 /**
@@ -31,6 +35,12 @@ public class LoginController {
 
     @Autowired
     private LDAPConnectionService ldapConnectionService;
+
+    @Autowired
+    private GitProperties gitProperties;
+
+    @Autowired
+    private BuildProperties buildProperties;
 
     @RequestMapping(value = "/api/login", method = RequestMethod.POST)
     public ResponseEntity<UserData> login(HttpServletRequest request) {
@@ -55,5 +65,13 @@ public class LoginController {
             LOGGER.info("Invalid credentials");
         }
         return new ResponseEntity<>(user, status);
+    }
+
+    @RequestMapping(value = "/specialApi/app/version", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    public String getAppVersion() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String version = buildProperties.getVersion() + "-" + gitProperties.getCommitId().substring(0,6)
+                + " (" + formatter.format(buildProperties.getTime()) + ")";
+        return version;
     }
 }

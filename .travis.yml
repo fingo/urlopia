@@ -4,6 +4,7 @@ jdk:
 
 before_install:
   - export TZ=Europe/Paris
+  - chmod +x gradlew
 
 script:
   - date
