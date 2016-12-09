@@ -146,10 +146,10 @@ app.controller('EmployeesCtrl', function ($scope, API, $filter, $translate, noti
         action.save(
             function () {
                 notifyService.displaySuccess($translate.instant('notify.admin.synchronize.success'));
-        },
+            },
             function () {
                 notifyService.displayDanger($translate.instant('notify.admin.synchronize.failure'))
-        });
+            });
     };
 
     $scope.users = API.setUrl('/api/request/employees').query();
@@ -320,7 +320,7 @@ app.controller('HolidaysCtrl', function ($scope, $route, $location, $uibModal, $
 
     $scope.showWarning = function (holiday) {
         var day = new Date(holiday.date).getDay();
-        return day===6;
+        return day === 6;
     };
 
     $scope.setCurrentHoliday = function (holiday) {
@@ -410,21 +410,46 @@ app.controller('ConfirmResetCtrl', function ($scope, $uibModalInstance) {
 app.value('confirmData', {employee: null, daysToAdd: null, mail: null, comment: ""});
 
 //Controller of displayed data
-app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translate, API, confirmData, notifyService) {
+app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translate, API, confirmData, notifyService, WORK_TIMES) {
+    //worktime table init
+    $scope.workTimes = WORK_TIMES;
+
+    //fit worktime buttons
+    var fit_buttons = function () {
+        for (i = 0; i < $scope.workTimes.length; i++) {
+            // var row = angular.element( document.querySelector( '#buttons-row' + i ))
+            var row = $('#buttons-row-' + $scope.$id + '-' + i).children('button');
+            row.each(function (i, element) {
+                element.style.width = 100 / row.length + '%';
+                var fraction = element.innerText.replace(/\r?\n|\r/g, "").trim().split("/");
+                if ((fraction.length === 1 ? parseInt(fraction[0]) : parseInt(fraction[0])/parseInt(fraction[1])) * 8 == $scope.workTime)
+                    // element.addClass('active');
+                    $(element).addClass('active')
+            })
+        }
+    };
+    $scope.$watch('rendered_buttons', fit_buttons);
+
+    //tooltpis activation
+    $('[data-toggle="tooltip"]').tooltip()
+        .tooltip('hide')
+        .attr('data-original-title', $translate.instant('employees_view.hourly_tooltip'))
+        .tooltip('fixTitle');
 
     //Gathering data
     $scope.isHourly = false;
-
-    $scope.response = API.setUrl("/api/history").get({mail: $scope.user.principalName}, function (item) {
-
-    });
 
     var getHours = function () {
         if ($scope.userHours === undefined) {
             API.setUrl("/api/history").get({mail: $scope.user.principalName}, function (response) {
                 $scope.userHours = response.pool;
                 $scope.workTime = response.workTime;
+                $scope.days = response.days;
+                $scope.hours = response.hours;
+                $scope.workTimeA = response.workTimeA;
+                $scope.workTimeB = response.workTimeB;
 
+                $scope.newWorkTime = response.workTime;
             });
         }
     };
@@ -436,6 +461,14 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
 
     // Saving data
     $scope.daysToAdd = 1;
+
+    $scope.changeMode = function (workTime) {
+        if (workTime != 8) {
+            $scope.isHourly = !$scope.isHourly;
+            $('#mode_switch').toggleClass('active')
+                .tooltip('hide');
+        }
+    };
 
     $scope.decrement = function () {
         $scope.daysToAdd--;
@@ -469,12 +502,31 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
         }
     };
 
-    //TODO authentication before accessing resource
+    $scope.showWorkTimeButtons = function () {
+        if (!angular.isUndefined($scope.workTime)) {
+            $scope.rendered_buttons = true;
+            return true;
+        }
+        else
+            return false;
+
+    };
+
+    $scope.setWorkTime = function (workTimeFraction) {
+        API.setUrl("/api/history/setWorkTime")
+            .save({mail: $scope.user.principalName, workTime: workTimeFraction}, function () {
+                $scope.$parent.$parent.isCollapsed = true;
+                notifyService.displaySuccess($translate.instant('notify.admin.employees.changeWorkTime'));
+            })
+    };
+
+//TODO authentication before accessing resource
     $scope.report = function () {
         var url = '/report?mail=' + $scope.user.principalName;
         window.location.assign(url);
     };
-});
+})
+;
 
 app.controller('ConfirmDaysCtrl', function ($scope, $uibModalInstance, $translate, confirmData, API, notifyService) {
     $scope.isNegative = confirmData.daysToAdd < 0;
@@ -504,6 +556,10 @@ app.controller('ConfirmDaysCtrl', function ($scope, $uibModalInstance, $translat
     $scope.cancel = function () {
         $uibModalInstance.dismiss();
     };
+});
+
+app.controller('ConfirmWorkTimeCtrl', function (confirmData) {
+//todo create body
 });
 
 app.controller('UserInfoCtrl', function ($scope, Session, AUTH_EVENTS) {

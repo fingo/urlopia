@@ -178,21 +178,27 @@ public class HistoryServiceTest {
         History history = new History();
         History history2 = new History();
         History history3 = new History();
+        History history4 = new History();
+        History history5 = new History();
 
         HistoryDTO historyDto = new HistoryDTO(0, 0, null, null, null, null, null, null, 0);
         HistoryDTO historyDto2 = new HistoryDTO(0, 0, null, null, null, null, null, null, 0);
         HistoryDTO historyDto3 = new HistoryDTO(0, 0, null, null, null, null, null, null, 0);
+        HistoryDTO historyDto4 = new HistoryDTO(0, 0, null, null, null, null, null, null, 0);
+        HistoryDTO historyDto5 = new HistoryDTO(0, 0, null, null, null, null, null, null, 0);
 
         // MOCKITO
-        when(historyRepository.findFirst3ByUserMailOrderByCreatedDesc(anyString()))
-                .thenReturn(Arrays.asList(history, history2, history3));
+        when(historyRepository.findFirst5ByUserMailOrderByCreatedDesc(anyString()))
+                .thenReturn(Arrays.asList(history, history2, history3, history4, history5));
         when(historyFactory.create(history)).thenReturn(historyDto);
         when(historyFactory.create(history2)).thenReturn(historyDto2);
         when(historyFactory.create(history3)).thenReturn(historyDto3);
+        when(historyFactory.create(history4)).thenReturn(historyDto4);
+        when(historyFactory.create(history5)).thenReturn(historyDto5);
 
         // TESTS
         List<HistoryDTO> histories = historyService.getRecentHistories("mail@example.com");
-        assertEquals(Arrays.asList(historyDto, historyDto2, historyDto3), histories);
+        assertEquals(Arrays.asList(historyDto, historyDto2, historyDto3, historyDto4, historyDto5), histories);
     }
 
     @Test

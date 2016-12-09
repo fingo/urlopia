@@ -118,9 +118,11 @@
     "subtr_hours_confirm": "Are you sure you want to add {{daysToAdd}} hours to {{employee}}'s vacation pool?",
     "add_days_confirm": "Are you sure you want to add {{daysToAdd}} hours to {{employee}}'s vacation pool?",
     "subtr_days_confirm": "Are you sure you want to add {{daysToAdd}} hours to {{employee}}'s vacation pool?",
-    "days_left": "Employee has {{days}} days and {{hours}} hours vacation left",
-    "shift": "WorkTime {{workTime_a}}/{{workTime_b}}",
-    "full_time": "Full time",
+    "days_left_start": "Employee has ",
+    "days_left": "{{days}} days and {{hours}}",
+    "days_left_end":  "hours vacation left",
+    "shift": "on part-time {{workTime_a}}/{{workTime_b}}",
+    "full_time": "full time",
     "modify_pool": "Modify vacation pool",
     "mail": "E-mail address",
     "all_teams": "All teams",
@@ -138,7 +140,10 @@
     "EC_employees": "EC employees",
     "EC_employee": "EC",
     "type_of_job": "Type of job",
-    "contract_issue": "no contract"
+    "contract_issue": "no contract",
+    "works_on": "Employee works ",
+    "hourly_tooltip": "Change insert mode",
+    "modify_workTime": "Modify work-time"
   },
   "workers_view": {
     "days_left": "{{days}} days {{hours}} hours of vacation left.",
@@ -205,7 +210,8 @@
       },
       "employees": {
         "subtractDaysFail": "You cannot subtract more than current number of days from employee's days pool",
-        "changeDaysPool": "Employee's days pool has been successfully modified"
+        "changeDaysPool": "Employee's days pool has been successfully modified",
+        "changeWorkTime": "Employee's work time has been successfully modified"
       }
     },
     "holidays": {

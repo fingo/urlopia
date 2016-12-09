@@ -126,4 +126,10 @@ public class UserService {
         user.setAdmin(true);
         userRepository.save(user);
     }
+
+    public void setWorkTime(String mail, float workTime) {
+        User user = userRepository.findFirstByMail(mail);
+        user.setWorkTime(workTime);
+        userRepository.save(user);
+    }
 }

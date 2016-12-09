@@ -28,4 +28,6 @@ app.constant('PROGRESS_BAR_EVENTS', {
 // Cookie expiration time
 app.constant('COOKIE_EXP_TIME', 86400000); //set to 1 day
 
+app.constant('WORK_TIMES', [['1', '7/8', '4/5'], ['3/4', '3/5', '1/2', '2/5'], ['1/4', '1/5', '1/8', '1/16']]);
+
 
