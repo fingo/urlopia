@@ -65,7 +65,7 @@ app.controller('formCtrl', function ($scope, $resource, $uibModalInstance, $tran
 
         }
         if ($scope.type >= 4) {
-            $scope.endDate = $scope.startDate.getTime();
+            $scope.endDate = new Date($scope.startDate.getTime());
         }
         if ($scope.endDate < $scope.startDate)
             $scope.endDate = $scope.startDate
