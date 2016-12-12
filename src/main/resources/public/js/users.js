@@ -471,7 +471,7 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
 
     //TODO authentication before accessing resource
     $scope.report = function () {
-        var url = '/report?mail=' + $scope.user.mail;
+        var url = '/report?mail=' + $scope.user.principalName;
         window.location.assign(url);
     };
 });
