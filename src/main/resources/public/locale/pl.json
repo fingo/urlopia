@@ -195,7 +195,9 @@
     },
     "form": {
       "success": "Wniosek został pomyślnie dodany",
-      "notEnoughDaysPool": "Nie udało się złożyć wniosku z powodu niewystarczającej ilości pozostałych dni wolnych"
+      "notEnoughDaysPool": "Nie udało się złożyć wniosku z powodu niewystarczającej ilości pozostałych dni wolnych",
+      "requestOverlapping": "Termin wniosku nakłada się na wcześniej złożony wniosek",
+      "fail": "Nie udało się złożyć wniosku, spróbuj ponownie"
     },
     "request": {
       "accept": "Prośba o urlop pracownika została zaakceptowana",

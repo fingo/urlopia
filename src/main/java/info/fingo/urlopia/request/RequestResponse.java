@@ -14,17 +14,16 @@ public class RequestResponse {
 
     private String id;
     private String term;
-    private String mailContent;
     private List<AcceptanceResponse> acceptances;
     private Boolean accepted;
     private boolean cancelled;
     private String status;
     private UserResponse requester;
+    private String type;
 
     public RequestResponse(RequestDTO request, List<AcceptanceDTO> acceptances) {
         this.id = String.valueOf(request.getId());
         this.term = request.getTerm();
-        this.mailContent = request.getMailContent();
         this.acceptances = new LinkedList<>();
         this.acceptances.addAll(acceptances.stream()
                 .map(AcceptanceResponse::new)
@@ -33,6 +32,7 @@ public class RequestResponse {
         this.cancelled = isCancelled(acceptances, request);
         this.status = countStatus(acceptances);
         this.requester = new UserResponse(request.getRequester());
+        this.type = request.getType().toString();
     }
 
     public RequestResponse(AcceptanceDTO acceptance) {
@@ -85,10 +85,6 @@ public class RequestResponse {
         return term;
     }
 
-    public String getMailContent() {
-        return mailContent;
-    }
-
     public List<AcceptanceResponse> getAcceptances() {
         return acceptances;
     }
@@ -107,5 +103,9 @@ public class RequestResponse {
 
     public String getStatus() {
         return status;
+    }
+
+    public String getType() {
+        return type;
     }
 }

@@ -62,7 +62,7 @@ public class AcceptanceServiceTest {
         ReflectionTestUtils.setField(user_worker, "id", 12L);
 
         // Requests
-        Request request = new Request(user_worker, null, null, null);
+        Request request = new Request(user_worker, null, null, null, null, null);
 
         // Acceptances
         Acceptance acceptance = new Acceptance(request, user_leader);
@@ -197,38 +197,6 @@ public class AcceptanceServiceTest {
         setup();
         rejected = acceptanceService.reject(11L, 10L);
         assertFalse(rejected);
-    }
-
-    @Test
-    public void acceptOccasionalTest() {
-        // 8h when 16 allowed
-        boolean accepted = acceptanceService.acceptOccasional(10L, 12L, 8, 1);
-        assertTrue(accepted);
-
-        // 16h when 16 allowed
-        setup();
-        accepted = acceptanceService.acceptOccasional(10L, 12L, 16, 1);
-        assertTrue(accepted);
-
-        // 24h when 16 allowed
-        setup();
-        accepted = acceptanceService.acceptOccasional(10L, 12L, 24, 1);
-        assertTrue(accepted);
-
-        // 8h when 8 allowed
-        setup();
-        accepted = acceptanceService.acceptOccasional(10L, 12L, 8, 4);
-        assertTrue(accepted);
-
-        // 16h when 8 allowed
-        setup();
-        accepted = acceptanceService.acceptOccasional(10L, 12L, 16, 4);
-        assertTrue(accepted);
-
-        // acceptance already is accepted or rejected
-        setup();
-        accepted = acceptanceService.acceptOccasional(11L, 10L, 8, 1);
-        assertFalse(accepted);
     }
 
     @Test

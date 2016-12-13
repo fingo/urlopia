@@ -3,6 +3,7 @@ package info.fingo.urlopia.history;
 
 import info.fingo.urlopia.request.AcceptanceDTO;
 import info.fingo.urlopia.request.RequestDTO;
+import info.fingo.urlopia.request.RequestResponse;
 import info.fingo.urlopia.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,17 +15,12 @@ import java.util.List;
  */
 public class HistoryResponse {
 
-    @Autowired
-    private UserService userService;
-
     private String deciderName;
     private String created;
     private float hours;
     private float hoursLeft;
     private float workTime;
-    private String days;
-    private String daysLeft;
-    private RequestDTO request;
+    private RequestResponse request;
     private List<AcceptanceDTO> acceptances;
     private int type;
     private String comment;
@@ -39,9 +35,12 @@ public class HistoryResponse {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         this.created = historyDTO.getCreated().format(formatter);
         this.hours = historyDTO.getHours();
-        this.request = historyDTO.getRequest();
-        this.acceptances = historyDTO.getAcceptances();
-        this.type = historyDTO.getType();
+
+        if (historyDTO.getRequest() != null) {
+            this.request = new RequestResponse(historyDTO.getRequest(), historyDTO.getAcceptances());
+            this.acceptances = historyDTO.getAcceptances();
+        }
+
         this.comment = historyDTO.getComment();
     }
 
@@ -55,9 +54,12 @@ public class HistoryResponse {
         this.workTime = historyDTO.getUser().getWorkTime();
         this.created = historyDTO.getCreated().format(formatter);
         this.hours = historyDTO.getHours();
-        this.request = historyDTO.getRequest();
-        this.acceptances = historyDTO.getAcceptances();
-        this.type = historyDTO.getType();
+
+        if (historyDTO.getRequest() != null) {
+            this.request = new RequestResponse(historyDTO.getRequest(), historyDTO.getAcceptances());
+            this.acceptances = historyDTO.getAcceptances();
+        }
+
         this.hoursLeft = hoursLeft;
         this.comment = historyDTO.getComment();
     }
@@ -83,16 +85,8 @@ public class HistoryResponse {
         return printDays(hours);
     }
 
-    public void setDays(String days) {
-        this.days = days;
-    }
-
     public String getDaysLeft() {
         return printDays(hoursLeft);
-    }
-
-    public void setDaysLeft(String daysLeft) {
-        this.daysLeft = daysLeft;
     }
 
     public float getHoursLeft() {
@@ -135,11 +129,11 @@ public class HistoryResponse {
         this.hours = hours;
     }
 
-    public RequestDTO getRequest() {
+    public RequestResponse getRequest() {
         return request;
     }
 
-    public void setRequest(RequestDTO request) {
+    public void setRequest(RequestResponse request) {
         this.request = request;
     }
 

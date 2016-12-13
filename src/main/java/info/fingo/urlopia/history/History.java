@@ -35,9 +35,6 @@ public class History {
     @Column(nullable = false)
     private float hours;
 
-    @Column(nullable = false)
-    private int type;
-
     @Column
     private String comment;
 
@@ -47,13 +44,23 @@ public class History {
     protected History() {
     }
 
-    public History(Request request, float hours, int type) {
+    public History(Request request, float hours) {
         this.created = LocalDateTime.now();
         this.user = request.getRequester();
         this.request = request;
         this.hours = hours;
         this.comment = "";
-        this.type = type;
+    }
+
+    public History(Request request, float hours, String comment) {
+        this(request, hours);
+        this.comment = comment;
+    }
+
+    public History(Request request, float hours, String comment, User decider) {
+        this(request, hours);
+        this.comment = comment;
+        this.decider = decider;
     }
 
     public History(User user, User decider, float hours, String comment, int type) {
@@ -62,7 +69,6 @@ public class History {
         this.decider = decider;
         this.hours = hours;
         this.comment = comment;
-        this.type = type;
     }
 
     public History(Request request, User user, User decider, float hours, String comment, int type) {
@@ -72,7 +78,6 @@ public class History {
         this.decider = decider;
         this.hours = hours;
         this.comment = comment;
-        this.type = type;
     }
 
     @Override
@@ -86,14 +91,6 @@ public class History {
                 ", request=" + request + '\'' +
                 ", hours='" + hours + '\'' +
                 '}';
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     public long getId() {

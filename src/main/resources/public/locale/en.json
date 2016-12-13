@@ -195,7 +195,9 @@
     },
     "form": {
       "success": "Your request has been added successfully",
-      "notEnoughDaysPool": "Failed to submit the request due to insufficient remaining days pool"
+      "notEnoughDaysPool": "Failed to submit the request due to insufficient remaining days pool",
+      "requestOverlapping": "The request's term is overlapping with your another request.",
+      "fail": "Failed to submit the request, try again"
     },
     "request": {
       "accept": "Employee's request has been accepted",

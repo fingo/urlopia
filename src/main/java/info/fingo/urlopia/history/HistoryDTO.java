@@ -19,11 +19,10 @@ public class HistoryDTO implements Serializable {
     private RequestDTO request;
     private UserDTO user;
     private List<AcceptanceDTO> acceptances;
-    private int type;
     private String comment;
 
     public HistoryDTO(long id, float hours, LocalDateTime created, UserDTO decider, RequestDTO request, UserDTO user,
-                      List<AcceptanceDTO> acceptances, String comment, int occasional) {
+                      List<AcceptanceDTO> acceptances, String comment) {
         this.id = id;
         this.hours = hours;
         this.created = created;
@@ -32,15 +31,6 @@ public class HistoryDTO implements Serializable {
         this.user = user;
         this.acceptances = acceptances;
         this.comment = comment;
-        this.type = occasional;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     public long getId() {

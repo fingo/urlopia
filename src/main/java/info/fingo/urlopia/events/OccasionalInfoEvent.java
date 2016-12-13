@@ -1,5 +1,6 @@
 package info.fingo.urlopia.events;
 
+import info.fingo.urlopia.request.RequestDTO;
 import info.fingo.urlopia.user.UserDTO;
 import org.springframework.context.ApplicationEvent;
 
@@ -10,11 +11,7 @@ import java.time.LocalDate;
  */
 public class OccasionalInfoEvent extends ApplicationEvent {
 
-    private UserDTO user;
-    private int type;
-    private float hours;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private RequestDTO request;
 
     /**
      * Create a new ApplicationEvent.
@@ -22,33 +19,12 @@ public class OccasionalInfoEvent extends ApplicationEvent {
      * @param source the object on which the event initially occurred (never {@code null})
      */
 
-    public OccasionalInfoEvent(Object source, UserDTO user, int type, float hours, LocalDate startDate, LocalDate endDate) {
+    public OccasionalInfoEvent(Object source, RequestDTO request) {
         super(source);
-        this.user = user;
-        this.type = type;
-        this.hours = hours;
-        this.startDate = startDate;
-        this.endDate = endDate;
-
+        this.request = request;
     }
 
-    public UserDTO getUser() {
-        return user;
-    }
-
-    public float getHours() {
-        return hours;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
+    public RequestDTO getRequest() {
+        return request;
     }
 }

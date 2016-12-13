@@ -3,6 +3,7 @@ package info.fingo.urlopia.history;
 import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.request.*;
 import info.fingo.urlopia.user.User;
+import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserFactory;
 import info.fingo.urlopia.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,34 +48,32 @@ public class HistoryService {
     public void insert(RequestDTO requestDTO) {
         float hours = -DurationCalculator.calculate(requestDTO, holidayService);
         Request request = requestRepository.findOne(requestDTO.getId());
-        historyRepository.save(new History(request, hours, 0));
+        historyRepository.save(new History(request, hours));
     }
 
     public void insertReversed(RequestDTO requestDTO) {
         float hours = DurationCalculator.calculate(requestDTO, holidayService);
         Request request = requestRepository.findOne(requestDTO.getId());
-        historyRepository.save(new History(request, hours, 0));
+        historyRepository.save(new History(request, hours));
     }
 
-    public void insertForOccasional(Request request, float hours, String comment, int type) {
-        List<AcceptanceDTO> acceptances = acceptanceService.getAcceptancesFromRequest(request.getId());
-        long userId = request.getRequester().getId();
-        int counter = 0;
-        boolean cancelled = false;
-        for (AcceptanceDTO acceptance : acceptances) {
-            if (acceptance.isAccepted()) {
-                counter++;
-            }
+    public void insertWithComment(RequestDTO requestDTO, String comment) {
+        float hours = -DurationCalculator.calculate(requestDTO, holidayService);
+        Request request = requestRepository.findOne(requestDTO.getId());
+        historyRepository.save(new History(request, hours, comment));
+    }
 
-            if (userFactory.create(request.getRequester()).equals(acceptance.getDecider()))
-                if (!acceptance.isAccepted())
-                    cancelled = true;
-        }
+    public void insertWithComment(RequestDTO requestDTO, String comment, UserDTO deciderDTO) {
+        float hours = -DurationCalculator.calculate(requestDTO, holidayService);
+        Request request = requestRepository.findOne(requestDTO.getId());
+        User decider = userRepository.findOne(deciderDTO.getId());
+        historyRepository.save(new History(request, hours, comment, decider));
+    }
 
-        if (counter == acceptances.size() && !cancelled) {
-            User user = userRepository.findOne(userId);
-            historyRepository.save(new History(request, user, user, hours, comment, type));
-        }
+    public void insertReversedWithComment(RequestDTO requestDTO, String comment) {
+        float hours = DurationCalculator.calculate(requestDTO, holidayService);
+        Request request = requestRepository.findOne(requestDTO.getId());
+        historyRepository.save(new History(request, hours, comment));
     }
 
     public void addHistory(long userId, long deciderId, float hours, String comment) {
@@ -144,9 +143,10 @@ public class HistoryService {
         List<HistoryDTO> histories = getHistoriesFromYear(userId, year);
         float pool = 0;
         for (HistoryDTO history : histories) {
-            if (history.getType() == RequestDTO.USUAL) {
-                pool += history.getHours();
+            if (history.getRequest() != null && history.getRequest().getType() == Request.Type.OCCASIONAL) {
+                continue;
             }
+            pool += history.getHours();
         }
         return pool;
     }
