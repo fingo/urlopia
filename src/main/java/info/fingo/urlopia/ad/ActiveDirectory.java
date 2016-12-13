@@ -134,7 +134,7 @@ public class ActiveDirectory {
     private LocalUser getLeaderOfTeam(String team) {
         LocalUser user = new LocalUser();
 
-        String filter = "(&(objectClass=Person)(memberOf=" + team + ")(memberOf=" + LEADERS_GROUP + "))";
+        String filter = "(&(objectClass=Person)(managedObjects=" + team + "))";
         List<SearchResult> results = search(filter);
 
         if (!results.isEmpty()) {
