@@ -10,6 +10,7 @@ import info.fingo.urlopia.ad.LocalTeam;
 import info.fingo.urlopia.events.*;
 import info.fingo.urlopia.request.AcceptanceDTO;
 import info.fingo.urlopia.request.AcceptanceService;
+import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.RequestDTO;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserFactory;
@@ -259,7 +260,8 @@ public class MailBot {
     @TransactionalEventListener(classes = OccasionalResponseEvent.class)
     @Async
     public void sendOccasionalResponse(OccasionalResponseEvent event) {
-        UserDTO requester = event.getUser();
+        RequestDTO requestDTO = event.getRequest();
+        UserDTO requester = requestDTO.getRequester();
         Optional<Template> template = getTemplate("occasionalResponse", requester.getLang());
         Map<String, Object> model = new HashMap<>();
         if (template.isPresent()) {
@@ -270,12 +272,11 @@ public class MailBot {
     @TransactionalEventListener(classes = OccasionalInfoEvent.class)
     @Async
     public void sendOccasionalInfo(OccasionalInfoEvent event) {
-        UserDTO requester = event.getUser();
-        //List<User> allUsers = userRepository.findAll();
-        int type = event.getType();
-        float hours = event.getHours();
-        LocalDate startDate = event.getStartDate();
-        LocalDate endDate = event.getEndDate();
+        RequestDTO requestDTO = event.getRequest();
+        UserDTO requester = requestDTO.getRequester();
+        int type = ((Request.OccasionalType) requestDTO.getTypeInfo()).getIndex();
+        LocalDate startDate = requestDTO.getStartDate();
+        LocalDate endDate = requestDTO.getEndDate();
 
         List<LocalTeam> teams = requester.getTeams();
 
@@ -283,13 +284,12 @@ public class MailBot {
         Map<String, Object> model = new HashMap<>();
         model.put("requester", requester.getName());
         model.put("type", type);
-        model.put("hours", -hours);
         model.put("startDate", startDate);
         model.put("endDate", endDate);
 
         //informing team leaders about the occasion
         for (LocalTeam team : teams) {
-            String leaderMail = team.getLeader().getMail();
+            String leaderMail = team.getLeader().getPrincipalName();
             UserDTO leader = userFactory.create(userRepository.findFirstByMail(leaderMail));
             Optional<Template> leaderTemplate = getTemplate("occasionalInfo", leader.getLang());
             if (leaderTemplate.isPresent()) {

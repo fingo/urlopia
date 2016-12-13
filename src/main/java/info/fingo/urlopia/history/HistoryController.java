@@ -1,5 +1,6 @@
 package info.fingo.urlopia.history;
 
+import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,16 +142,13 @@ public class HistoryController {
 
 
     private void getResponses(List<HistoryDTO> histories, List<HistoryResponse> historyResponses) {
-        for (int i = 0; i < histories.size(); i++) {
-            if (i == 0) historyResponses.add(new HistoryResponse(histories.get(i), histories.get(i).getHours()));
-            else {
-                if (histories.get(i).getType() == 0) {
-                    historyResponses.add(new HistoryResponse(histories.get(i), historyResponses.get(i - 1).getHoursLeft() + histories.get(i).getHours()));
-                } else {
-                    historyResponses.add(new HistoryResponse(histories.get(i), historyResponses.get(i - 1).getHoursLeft()));
-                }
+        int hoursLeft = 0;
 
+        for (int i = 0; i < histories.size(); i++) {
+            if (histories.get(i).getRequest() == null || histories.get(i).getRequest().getType() == Request.Type.NORMAL) {
+                hoursLeft += histories.get(i).getHours();
             }
+            historyResponses.add(new HistoryResponse(histories.get(i), hoursLeft));
         }
     }
 }

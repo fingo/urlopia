@@ -17,7 +17,9 @@ CREATE TABLE Requests (
   requester_id INT REFERENCES Users (id) NOT NULL,
   start_date   DATE                      NOT NULL,
   end_date     DATE                      NOT NULL,
-  mail_content VARCHAR (255)
+  type         VARCHAR (25)              NOT NULL   DEFAULT 'NORMAL',
+  type_info    VARCHAR (25),
+  status       VARCHAR (255)             NOT NULL   DEFAULT 'PENDING'
 );
 
 CREATE INDEX requests_modified_index
@@ -41,7 +43,6 @@ CREATE TABLE History (
   decider_id INT REFERENCES Users (id),
   request_id INT REFERENCES Requests(id),
   hours      REAL                          NOT NULL,
-  type       INT,
   comment    VARCHAR(255)
 );
 

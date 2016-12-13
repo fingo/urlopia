@@ -40,6 +40,7 @@ app.controller('formCtrl', function ($scope, $resource, $uibModalInstance, $tran
             $scope.type = 1;
             $scope.isOccasional = true;
             $scope.startDateChange();
+            dropBoxItemSelected(reasons[0])
         }
     };
 
@@ -96,15 +97,16 @@ app.controller('formCtrl', function ($scope, $resource, $uibModalInstance, $tran
                 teams: $scope.teams,
                 type: $scope.type
 
-            }, function (valid) {
+            }, function (error_code) {
                 updater.load();
-                if (!valid) {
-                    // form request not enough days pool notification
-                    notifyService.displayDanger($translate.instant('notify.form.notEnoughDaysPool'));
-                }
-                else {
-                    // form request success notification
+                if (error_code === "SUCCESS") {
                     notifyService.displaySuccess($translate.instant('notify.form.success'));
+                } else if (error_code === "NOT_ENOUGH_DAYS") {
+                    notifyService.displayDanger($translate.instant('notify.form.notEnoughDaysPool'));
+                } else if (error_code === "REQUEST_OVERLAPPING") {
+                    notifyService.displayDanger($translate.instant('notify.form.requestOverlapping'));
+                } else {
+                    notifyService.displayDanger($translate.instant('notify.form.fail'));
                 }
             }
         );
