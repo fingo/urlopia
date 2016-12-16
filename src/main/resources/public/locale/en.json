@@ -120,7 +120,7 @@
     "subtr_days_confirm": "Are you sure you want to add {{daysToAdd}} hours to {{employee}}'s vacation pool?",
     "days_left_start": "Employee has ",
     "days_left": "{{days}} days and {{hours}}",
-    "days_left_end":  "hours vacation left",
+    "days_left_end": "hours vacation left",
     "shift": "on part-time {{workTime_a}}/{{workTime_b}}",
     "full_time": "full time",
     "modify_pool": "Modify vacation pool",
