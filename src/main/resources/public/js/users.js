@@ -470,19 +470,21 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
         }
         else
             notifyService.displayDanger($translate.instant('notify.admin.employees.changeModeFailure'));
+
+        $scope.isHourly ? $scope.daysToAdd = "1.00" : $scope.daysToAdd = "1";
     };
 
     $scope.decrement = function () {
-        $scope.daysToAdd--;
+        $scope.isHourly ? $scope.daysToAdd = (parseFloat($scope.daysToAdd) - 0.1).toFixed(2) : $scope.daysToAdd--;
     };
 
     $scope.increment = function () {
-        $scope.daysToAdd++;
+        $scope.isHourly ? $scope.daysToAdd = (parseFloat($scope.daysToAdd) + 0.1).toFixed(2) : $scope.daysToAdd++;
     };
 
     $scope.ok = function () {
         if (!($scope.daysToAdd === 0 || isNaN($scope.daysToAdd))) {
-            confirmData.daysToAdd = parseInt($scope.daysToAdd);
+            confirmData.daysToAdd = $scope.isHourly ? parseFloat($scope.daysToAdd) : parseInt($scope.daysToAdd);
             confirmData.comment = $scope.comment;
             confirmData.employee = $scope.user.surname + " " + $scope.user.name;
             confirmData.mail = $scope.user.principalName;
@@ -539,7 +541,7 @@ app.controller('ConfirmDaysCtrl', function ($scope, $uibModalInstance, $translat
 
     //for adding
     if (!confirmData.isHourly) {
-        $scope.toAdd = parseFloat(confirmData.daysToAdd * confirmData.workTime);
+        $scope.toAdd = parseFloat(confirmData.daysToAdd * 8);
     } else {
         $scope.toAdd = parseFloat(confirmData.daysToAdd);
     }
@@ -558,10 +560,6 @@ app.controller('ConfirmDaysCtrl', function ($scope, $uibModalInstance, $translat
     $scope.cancel = function () {
         $uibModalInstance.dismiss();
     };
-});
-
-app.controller('ConfirmWorkTimeCtrl', function (confirmData) {
-//todo create body
 });
 
 app.controller('UserInfoCtrl', function ($scope, Session, AUTH_EVENTS) {
