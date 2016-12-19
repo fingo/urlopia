@@ -30,7 +30,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="history in histories.list">
+        <tr ng-repeat="history in histories.list | orderBy: 'created': true">
             <td>{{ history.created }}</td>
             <td ng-if="history.request">
                 <span ng-repeat="acceptance in history.acceptances">
