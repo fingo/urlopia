@@ -40,8 +40,8 @@ app.controller('formCtrl', function ($scope, $resource, $uibModalInstance, $tran
             $scope.type = 1;
             $scope.isOccasional = true;
             $scope.startDateChange();
-            dropBoxItemSelected(reasons[0])
-        }
+            // $scope.dropBoxItemSelected($scope.reasons[0])
+        }sh
     };
 
     $scope.startDatePopup = {
