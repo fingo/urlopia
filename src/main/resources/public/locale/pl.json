@@ -213,7 +213,8 @@
       "employees": {
         "subtractDaysFail": "Nie można odjąć pracownikowi więcej dni urlopu niż aktualnie przez niego posiadanych",
         "changeDaysPool": "Pomyślnie zmodyfikowano pulę dni wolnych pracownika",
-        "changeWorkTime": "Pomyślnie zmodyfikowano etat pracownika"
+        "changeWorkTime": "Pomyślnie zmodyfikowano etat pracownika",
+        "changeModeFailure": "Nie można wprowadzać godzin pracownikowi, który jest zatrudniony na cały etat!"
       }
     },
     "holidays": {

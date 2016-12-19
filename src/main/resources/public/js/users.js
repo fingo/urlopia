@@ -468,6 +468,8 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
             $('#mode_switch').toggleClass('active')
                 .tooltip('hide');
         }
+        else
+            notifyService.displayDanger($translate.instant('notify.admin.employees.changeModeFailure'));
     };
 
     $scope.decrement = function () {
