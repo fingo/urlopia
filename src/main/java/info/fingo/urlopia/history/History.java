@@ -117,6 +117,10 @@ public class History {
         return hours;
     }
 
+    public void setHours(float hours) {
+        this.hours = hours;
+    }
+
     public String getComment() {
         return comment;
     }

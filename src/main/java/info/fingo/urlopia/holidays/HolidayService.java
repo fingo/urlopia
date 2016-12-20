@@ -135,4 +135,23 @@ public class HolidayService {
 
         return LocalDate.of(year, easterMonth, easterDay);
     }
+
+    /*
+     *  Return the date after 'workingDaysToAdd' working days, starting in 'startDate' date
+     */
+    // TODO: Think about extending LocalDate to calculate working days
+    public LocalDate getWorkingDate(LocalDate startDate, int workingDaysToAdd) {
+        List<LocalDate> holidays = this.getAllHolidaysDates();
+
+        LocalDate date = startDate;
+        for(int i = 0; i < workingDaysToAdd;) {
+            if(date.getDayOfWeek().getValue() <= 5 && !holidays.contains(date)) {
+                i++;
+            }
+
+            date = date.plusDays(1);
+        }
+
+        return date.minusDays(1);
+    }
 }

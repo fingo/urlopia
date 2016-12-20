@@ -142,19 +142,23 @@ public class Request {
     }
 
     public enum OccasionalType implements TypeInfo {
-        WRONG (0, "Niepoprawny typ okazjonalny"),
-        D2_BIRTH (1, "Narodziny dziecka"),
-        D2_FUNERAL (2, "Zgon/pogrzeb osoby z najbliższej rodziny"),
-        D2_WEDDING (3, "Ślub"),
-        D1_FUNERAL (4, "Zgon/pogrzeb osoby bliskiej"),
-        D1_WEDDING (5, "Ślub dziecka");
+        // TODO: Localize it!
+        // TODO: Check days before write in database
+        WRONG (0, "Niepoprawny typ okazjonalny", 0),
+        D2_BIRTH (1, "Narodziny dziecka", 2),
+        D2_FUNERAL (2, "Zgon/pogrzeb osoby z najbliższej rodziny", 2),
+        D2_WEDDING (3, "Ślub", 2),
+        D1_FUNERAL (4, "Zgon/pogrzeb osoby bliskiej", 1),
+        D1_WEDDING (5, "Ślub dziecka", 1);
 
         private int index;
         private String info;
+        private int durationDays;
 
-        OccasionalType(int index, String info) {
+        OccasionalType(int index, String info, int durationDays) {
             this.index = index;
             this.info = info;
+            this.durationDays = durationDays;
         }
 
         public int getIndex() {
@@ -167,6 +171,10 @@ public class Request {
 
         public String getInfo() {
             return info;
+        }
+
+        public int getDurationDays() {
+            return durationDays;
         }
     }
 

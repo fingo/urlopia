@@ -65,20 +65,19 @@ public class HistoryResponse {
     }
 
     private String printDays(float hours) {
-        int lDays;
-        if (hours >= 0) lDays = (int) Math.floor(hours / workTime);
-        else {
-            lDays = (int) Math.ceil(hours / workTime);
+        StringBuilder printing = new StringBuilder();
+
+        if (hours > 0) {
+            printing.append('+');
+        } else if (hours < 0) {
+            printing.append('-');
         }
-        double lHours;
-        int lHoursWithoutMinutes;
-        lHours = Math.round((hours % workTime) * 100.0) / 100.0;
-        lHoursWithoutMinutes = Math.round(hours % workTime);
-        if ((lHours * 10) % 10 != 0) {
-            return lDays + "d " + lHours + "h";
-        } else {
-            return lDays + "d " + lHoursWithoutMinutes + "h";
-        }
+
+        hours = Math.abs(hours);
+        printing.append((int) Math.floor(hours / workTime)).append("d ");
+        printing.append(Math.round(hours % workTime)).append('h');
+
+        return printing.toString();
     }
 
     public String getDays() {
@@ -86,7 +85,7 @@ public class HistoryResponse {
     }
 
     public String getDaysLeft() {
-        return printDays(hoursLeft);
+        return printDays(hoursLeft).replace("+", "");
     }
 
     public float getHoursLeft() {

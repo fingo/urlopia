@@ -34,16 +34,10 @@ public class HistoryService {
     private UserRepository userRepository;
 
     @Autowired
-    private UserFactory userFactory;
-
-    @Autowired
     private RequestRepository requestRepository;
 
     @Autowired
     private HolidayService holidayService;
-
-    @Autowired
-    private AcceptanceService acceptanceService;
 
     public void insert(RequestDTO requestDTO) {
         float hours = -DurationCalculator.calculate(requestDTO, holidayService);
@@ -151,4 +145,14 @@ public class HistoryService {
         return pool;
     }
 
+    public void scaleHistoryDays(UserDTO user, float newWorkTime) {
+        List<History> histories = historyRepository.findByUserId(user.getId());
+
+        float scaleValue = newWorkTime / user.getWorkTime();
+        for(History history : histories) {
+            history.setHours(history.getHours() * scaleValue);
+        }
+
+        historyRepository.save(histories);
+    }
 }
