@@ -145,6 +145,10 @@ public class HistoryService {
         return pool;
     }
 
+    // TODO: Think about better solution (maybe set time to every history row)
+    /*
+     *  Changes all user's requests to fit then to the new time setting
+     */
     public void scaleHistoryDays(UserDTO user, float newWorkTime) {
         List<History> histories = historyRepository.findByUserId(user.getId());
 

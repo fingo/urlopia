@@ -136,10 +136,10 @@ public class HolidayService {
         return LocalDate.of(year, easterMonth, easterDay);
     }
 
+    // TODO: Think about extending LocalDate to calculate working days
     /*
      *  Return the date after 'workingDaysToAdd' working days, starting in 'startDate' date
      */
-    // TODO: Think about extending LocalDate to calculate working days
     public LocalDate getWorkingDate(LocalDate startDate, int workingDaysToAdd) {
         List<LocalDate> holidays = this.getAllHolidaysDates();
 
