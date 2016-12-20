@@ -200,8 +200,10 @@ public class RequestService {
     /*
      *  Insert flow for occasional request
      */
-    public boolean insertOccasional(UserDTO requester, LocalDate startDate, LocalDate endDate, Request.OccasionalType info) throws RequestOverlappingException {
+    public boolean insertOccasional(UserDTO requester, LocalDate startDate, Request.OccasionalType info) throws RequestOverlappingException {
         Request.Type type = Request.Type.OCCASIONAL;
+        LocalDate endDate = holidayService.getWorkingDate(startDate, info.getDurationDays());
+
         Request request = this.insert(requester, startDate, endDate, type, info, Request.Status.ACCEPTED);
 
         if (request != null) {
@@ -284,10 +286,11 @@ public class RequestService {
         requestRepository.save(request);
 
         // reverting days pool
+        // TODO: Localize it!
         if (success && cancelingAfterAccepting && requestDTO.getType() == Request.Type.NORMAL) {
-            historyService.insertReversed(requestDTO);
+            historyService.insertReversedWithComment(requestDTO, "Anulowanie");
         } else if (success && requestDTO.getType() == Request.Type.OCCASIONAL) {
-            historyService.insertReversedWithComment(requestDTO, requestDTO.getTypeInfo().getInfo());
+            historyService.insertReversedWithComment(requestDTO, "Anulowanie: " + requestDTO.getTypeInfo().getInfo());
         }
 
         return success;

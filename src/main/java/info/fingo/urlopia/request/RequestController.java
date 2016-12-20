@@ -153,7 +153,7 @@ public class RequestController {
             if (type == Request.Type.NORMAL) {
                 success = requestService.insertNormal(requester, startDate, endDate);
             } else {
-                success = requestService.insertOccasional(requester, startDate, endDate, occasionalType);
+                success = requestService.insertOccasional(requester, startDate, occasionalType);
             }
         } catch (NotEnoughDaysException e) {
             return e.getCode();
