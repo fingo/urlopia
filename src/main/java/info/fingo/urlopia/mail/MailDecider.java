@@ -1,16 +1,18 @@
 package info.fingo.urlopia.mail;
 
+import info.fingo.urlopia.ad.ActiveDirectory;
+import info.fingo.urlopia.ad.LocalUser;
 import info.fingo.urlopia.request.AcceptanceService;
 import info.fingo.urlopia.request.NotEnoughDaysException;
 import info.fingo.urlopia.request.RequestOverlappingException;
 import info.fingo.urlopia.request.RequestService;
-import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 /**
  * @author Tomasz Urbas
@@ -33,6 +35,9 @@ public class MailDecider {
 
     @Autowired
     private MailBot mailBot;
+
+    @Autowired
+    private ActiveDirectory activeDirectory;
 
 
     private void addRequest(UserDTO requester) {
@@ -62,7 +67,8 @@ public class MailDecider {
     }
 
     public void resolve(Mail mail) {
-        UserDTO sender = userService.getUser(mail.getSenderAddress());
+        Optional<LocalUser> senderAd = activeDirectory.getUser(mail.getSenderAddress());
+        UserDTO sender = (senderAd.isPresent()) ? userService.getUser(senderAd.get().getPrincipalName()) : null;
 
         if (sender != null) {
             mailParser.clear();

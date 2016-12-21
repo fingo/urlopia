@@ -189,10 +189,11 @@ public class ActiveDirectory {
         return new LocalTeam(name, leader);
     }
 
+    // TODO: Think about keeping mail and principalName in the database
     public Optional<LocalUser> getUser(String principalName) {
         Optional<LocalUser> user = Optional.empty();
 
-        String filter = "(&(objectClass=Person)(userPrincipalName=" + principalName + "))";
+        String filter = "(&(objectClass=Person)(|(userPrincipalName=" + principalName + ")(mail=" + principalName + ")))";
         List<SearchResult> results = search(filter);
 
         if (!results.isEmpty()) {
