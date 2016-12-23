@@ -99,22 +99,6 @@ public class RequestService {
         return requests;
     }
 
-    // TODO: change the way to mark request as CANCELLED
-    /*
-     *  Check if request is cancelled
-     */
-    private boolean isCanceled(RequestDTO requestDTO) {
-        List<AcceptanceDTO> acceptances = acceptanceService.getAcceptancesFromRequest(requestDTO.getId());
-
-        for (AcceptanceDTO acceptance : acceptances) {
-            if (acceptance.getDecider() != null
-                    && acceptance.getDecider().getId() == requestDTO.getRequester().getId()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /*
      *  Check if one request overlaps another
      */
@@ -128,11 +112,12 @@ public class RequestService {
     }
 
     /*
-     *  Check if request is overlapped by another, requested from the same worker
+     *  Check if request is overlapped by another request from the same worker
      */
     private boolean isRequestOverlapped(RequestDTO new_request) {
         List<RequestDTO> workerRequests = this.getRequestsFromWorker(new_request.getRequester().getId()).stream()
-                .filter(request -> !isCanceled(request))     // don't care about cancelled requests
+                .filter(request -> request.getStatus() == Request.Status.ACCEPTED
+                                || request.getStatus() == Request.Status.PENDING)
                 .collect(Collectors.toList());
 
         for (RequestDTO workerRequest : workerRequests) {
