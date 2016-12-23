@@ -496,7 +496,7 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
                         animation: true,
                         templateUrl: 'partials/confirm_days.html',
                         controller: 'ConfirmDaysCtrl'
-                    }).closed.then(function () {
+                    }).result.then(function () {
                     $scope.$parent.$parent.isCollapsed = true;
                 })
             } else {
