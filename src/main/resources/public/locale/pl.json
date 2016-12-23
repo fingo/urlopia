@@ -38,6 +38,8 @@
   "form": {
     "button": "Złóż wniosek",
     "occasional": "Okolicznościowy",
+    "1_day": "1 dniowe",
+    "2_days": "2 dniowe",
     "request": {
       "requester": {
         "label": "Wnioskodawca",
@@ -233,7 +235,7 @@
     "wedding1": "Ślub ",
     "when_birth2": "Dwudniowy urlop okolicznościowy przysługuje w związku z narodzinami dziecka.",
     "when_funeral2": "Dwudniowy urlop okolicznościowy przysługuje w związku z zgonem i pogrzebem małżonka, dziecka, ojca, matki, ojczyma lub macochy.",
-    "when_wedding2": "Dwudniowy urlop okolicznościowy przysługuje w związku z Twoim ślubem.",
+    "when_wedding2": "Dwudniowy urlop okolicznościowy przysługuje w związku z twoim ślubem.",
     "when_funeral1": "Jednodniowy urlop okolicznościowy przysługuje w związku z zgonem i pogrzebem siostry, brata, teściowej, teścia, babki, dziadka, a także innej osoby, którą utrzymujesz lub którą się bezpośrednio opiekujesz",
     "when_wedding1": "Jednodniowy urlop okolicznościowy przysługuje w związku z ślubem Twojego dziecka."
   }

@@ -38,6 +38,8 @@
   "form": {
     "button": "Apply",
     "occasional": "Occasional",
+    "1_day": "1 day",
+    "2_days": "2 days",
     "request": {
       "requester": {
         "label": "Requester",
@@ -231,10 +233,10 @@
     "wedding2": "Wedding",
     "funeral1": "Funeral or death ",
     "wedding1": "Wedding ",
-    "when_birth2": "The two-day occasional vacation is due to z narodzinami dziecka.",
-    "when_funeral2": "The two-day occasional vacation is due to death and funeral of spouse, child, father, mother, stepfather lub stepmother.",
-    "when_wedding2": "The two-day occasional vacation is due to Twoim ślubem.",
-    "when_funeral1": "The one-day occasional vacation is due to death and funeral of sister, brother, mother-in-law, father-in-law, grandmother, grandfather, as well as a person , you directly caring",
+    "when_birth2": "The two-day occasional vacation is due to childbirth.",
+    "when_funeral2": "The two-day occasional vacation is due to death and funeral of spouse, child, father, mother, stepfather or stepmother.",
+    "when_wedding2": "The two-day occasional vacation is due to your wedding.",
+    "when_funeral1": "The one-day occasional vacation is due to death and funeral of sister, brother, mother-in-law, father-in-law, grandmother, grandfather, as well as a person you're directly taking care of",
     "when_wedding1": "The one-day occasional vacation is due to wedding of your child."
   }
 }
