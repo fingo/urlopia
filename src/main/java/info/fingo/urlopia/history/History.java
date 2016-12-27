@@ -35,6 +35,9 @@ public class History {
     @Column(nullable = false)
     private float hours;
 
+    @Column(nullable = false)
+    private float workTime;
+
     @Column
     private String comment;
 
@@ -42,13 +45,15 @@ public class History {
      * Default constructor only exists for the sake of JPA
      */
     protected History() {
+        this.created = LocalDateTime.now();
     }
 
     public History(Request request, float hours) {
-        this.created = LocalDateTime.now();
+        this();
         this.user = request.getRequester();
         this.request = request;
         this.hours = hours;
+        this.workTime = request.getRequester().getWorkTime();
         this.comment = "";
     }
 
@@ -63,33 +68,26 @@ public class History {
         this.decider = decider;
     }
 
-    public History(User user, User decider, float hours, String comment, int type) {
-        this.created = LocalDateTime.now();
+    public History(User user, User decider, float hours, String comment) {
+        this();
         this.user = user;
         this.decider = decider;
         this.hours = hours;
-        this.comment = comment;
-    }
-
-    public History(Request request, User user, User decider, float hours, String comment, int type) {
-        this.created = LocalDateTime.now();
-        this.request = request;
-        this.user = user;
-        this.decider = decider;
-        this.hours = hours;
+        this.workTime = user.getWorkTime();
         this.comment = comment;
     }
 
     @Override
     public String toString() {
-
         return "History{" +
                 "id=" + id +
-                ", created='" + created + '\'' +
-                ", user='" + user + '\'' +
-                ", decider='" + decider + '\'' +
-                ", request=" + request + '\'' +
-                ", hours='" + hours + '\'' +
+                ", created=" + created +
+                ", user=" + user +
+                ", decider=" + decider +
+                ", request=" + request +
+                ", hours=" + hours +
+                ", workTime=" + workTime +
+                ", comment='" + comment + '\'' +
                 '}';
     }
 
@@ -119,6 +117,10 @@ public class History {
 
     public void setHours(float hours) {
         this.hours = hours;
+    }
+
+    public float getWorkTime() {
+        return workTime;
     }
 
     public String getComment() {

@@ -50,7 +50,7 @@ public class UserController {
     @RequestMapping(value = "/history", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<HistoryResponse> getUserHistory(String userMail, int year) {
         UserDTO user = service.getUser(userMail);
-        List<HistoryDTO> histories = historyService.getHistoriesFromYear(user.getId(), year);
+        List<HistoryDTO> histories = historyService.getUserHistoriesFromYear(user.getId(), year);
 
         return histories.stream()
                 .map(HistoryResponse::new)

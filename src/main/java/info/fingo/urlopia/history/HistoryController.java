@@ -48,7 +48,7 @@ public class HistoryController {
             userId = userService.getUser(mail).getId();
         }
         Map<String, Object> map = new HashMap<>();
-        List<HistoryDTO> histories = historyService.getHistories(userId);
+        List<HistoryDTO> histories = historyService.getUserHistories(userId);
         int year;
         if (!histories.isEmpty()) {
             year = histories.get(0).getCreated().getYear();
@@ -66,13 +66,11 @@ public class HistoryController {
         if (userId == null) {
             userId = userService.getUser(mail).getId();
         }
-        List<HistoryDTO> histories = historyService.getHistoriesFromYear(userId, year);
-        List<HistoryResponse> historyResponses = new ArrayList<>();
+        List<HistoryDTO> histories = historyService.getUserHistoriesFromYear(userId, year);
+        List<HistoryResponse> historyResponses = getResponses(histories);
 
         Float workTime;
         workTime = userService.getUser(userId).getWorkTime();
-
-        getResponses(histories, historyResponses);
 
         Map<String, Object> map = new HashMap<>();
         //sorting histories by id
@@ -91,10 +89,8 @@ public class HistoryController {
     @RolesAllowed({"ROLES_ADMIN"})
     @RequestMapping(value = "/api/userHistory/recent", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getRecentHistoryFromUser(String userMail) {
-        List<HistoryDTO> histories = historyService.getRecentHistories(userMail);
-        List<HistoryResponse> historyResponses = new ArrayList<>();
-
-        getResponses(histories, historyResponses);
+        List<HistoryDTO> histories = historyService.getRecentUserHistories(userMail);
+        List<HistoryResponse> historyResponses = getResponses(histories);
 
         Map<String, Object> map = new HashMap<>();
 
@@ -141,7 +137,8 @@ public class HistoryController {
     }
 
 
-    private void getResponses(List<HistoryDTO> histories, List<HistoryResponse> historyResponses) {
+    private List<HistoryResponse> getResponses(List<HistoryDTO> histories) {
+        List<HistoryResponse> historyResponses = new ArrayList<>();
         int hoursLeft = 0;
 
         for (int i = 0; i < histories.size(); i++) {
@@ -150,5 +147,7 @@ public class HistoryController {
             }
             historyResponses.add(new HistoryResponse(histories.get(i), hoursLeft));
         }
+
+        return historyResponses;
     }
 }

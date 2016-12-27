@@ -4,7 +4,6 @@ import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.request.*;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserDTO;
-import info.fingo.urlopia.user.UserFactory;
 import info.fingo.urlopia.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -71,19 +70,17 @@ public class HistoryService {
     }
 
     public void addHistory(long userId, long deciderId, float hours, String comment) {
-        int type = 0;
         User user = userRepository.findOne(userId);
         User decider = userRepository.findOne(deciderId);
-        historyRepository.save(new History(user, decider, hours, comment, type));
+        historyRepository.save(new History(user, decider, hours, comment));
     }
 
     public void addHistory(long userId, float hours, String comment) {
-        int type = 0;
         User user = userRepository.findOne(userId);
-        historyRepository.save(new History(user, null, hours, comment, type));
+        historyRepository.save(new History(user, null, hours, comment));
     }
 
-    public List<HistoryDTO> getRecentHistories(String userMail) {
+    public List<HistoryDTO> getRecentUserHistories(String userMail) {
         List<History> histories = historyRepository.findFirst5ByUserMailOrderByCreatedDesc(userMail);
 
         return histories.stream()
@@ -91,7 +88,7 @@ public class HistoryService {
                 .collect(Collectors.toCollection(LinkedList::new));
     }
 
-    public List<HistoryDTO> getHistories(long userId) {
+    public List<HistoryDTO> getUserHistories(long userId) {
         List<History> histories = historyRepository.findByUserId(userId);
 
         return histories.stream()
@@ -99,7 +96,7 @@ public class HistoryService {
                 .collect(Collectors.toCollection(LinkedList::new));
     }
 
-    public List<HistoryDTO> getHistoriesFromYear(long userId, int year) {
+    public List<HistoryDTO> getUserHistoriesFromYear(long userId, int year) {
         LocalDateTime startDate = LocalDateTime.of(year, 1, 1, 0, 0);  //January first of actual year
         LocalDateTime endDate = LocalDateTime.of(year + 1, 1, 1, 0, 0);
 
@@ -134,7 +131,7 @@ public class HistoryService {
         if (userId == null) {
             userId = userRepository.findFirstByMail(mail).getId();
         }
-        List<HistoryDTO> histories = getHistoriesFromYear(userId, year);
+        List<HistoryDTO> histories = getUserHistoriesFromYear(userId, year);
         float pool = 0;
         for (HistoryDTO history : histories) {
             if (history.getRequest() != null && history.getRequest().getType() == Request.Type.OCCASIONAL) {
@@ -143,20 +140,5 @@ public class HistoryService {
             pool += history.getHours();
         }
         return pool;
-    }
-
-    // TODO: Think about better solution (maybe set time to every history row)
-    /*
-     *  Changes all user's requests to fit then to the new time setting
-     */
-    public void scaleHistoryDays(UserDTO user, float newWorkTime) {
-        List<History> histories = historyRepository.findByUserId(user.getId());
-
-        float scaleValue = newWorkTime / user.getWorkTime();
-        for(History history : histories) {
-            history.setHours(history.getHours() * scaleValue);
-        }
-
-        historyRepository.save(histories);
     }
 }

@@ -133,10 +133,6 @@ public class UserService {
 
     public void setWorkTime(String mail, float workTime) {
         User user = userRepository.findFirstByMail(mail);
-        UserDTO userDTO = userFactory.create(user);
-
-        historyService.scaleHistoryDays(userDTO, workTime);
-
         user.setWorkTime(workTime);
         userRepository.save(user);
     }

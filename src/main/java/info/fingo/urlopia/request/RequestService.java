@@ -162,7 +162,7 @@ public class RequestService {
         float remainingPool = historyService.getHolidaysPool(requester.getId(), null);
         float currentPool = DurationCalculator.calculate(requester, startDate, endDate, holidayService);
 
-        if (remainingPool > currentPool) {
+        if (remainingPool >= currentPool) {
             Request.Type type = Request.Type.NORMAL;
             Request request = insert(requester, startDate, endDate, type, null, Request.Status.PENDING);
 

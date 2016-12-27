@@ -2,29 +2,29 @@ package info.fingo.urlopia.history;
 
 
 import info.fingo.urlopia.request.AcceptanceDTO;
-import info.fingo.urlopia.request.RequestDTO;
 import info.fingo.urlopia.request.RequestResponse;
-import info.fingo.urlopia.user.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tomasz Pilarczyk
  */
 public class HistoryResponse {
 
+    private static final float FULL_TIME = 8f;
+
     private String deciderName;
     private String created;
     private float hours;
     private float hoursLeft;
     private float workTime;
+    private float workTimeNominator;
+    private float workTimeDenominator;
     private RequestResponse request;
     private List<AcceptanceDTO> acceptances;
-    private int type;
     private String comment;
-
 
     public HistoryResponse(HistoryDTO historyDTO) {
         if (historyDTO.getDecider() != null) {
@@ -51,7 +51,8 @@ public class HistoryResponse {
             this.deciderName = null;
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        this.workTime = historyDTO.getUser().getWorkTime();
+        this.workTime = historyDTO.getWorkTime();
+        createFraction(workTime);
         this.created = historyDTO.getCreated().format(formatter);
         this.hours = historyDTO.getHours();
 
@@ -64,7 +65,22 @@ public class HistoryResponse {
         this.comment = historyDTO.getComment();
     }
 
-    private String printDays(float hours) {
+    private void createFraction(float value) {
+        value = value / 8;
+
+        float denominator = 0;
+        float nominator;
+
+        do {
+            denominator++;
+            nominator = value * denominator;
+        } while (Math.floor(nominator) != nominator);
+
+        this.workTimeNominator = nominator;
+        this.workTimeDenominator = denominator;
+    }
+
+    private String print(float hours, TimeUnit unit) {
         StringBuilder printing = new StringBuilder();
 
         if (hours > 0) {
@@ -74,18 +90,27 @@ public class HistoryResponse {
         }
 
         hours = Math.abs(hours);
-        printing.append((int) Math.floor(hours / workTime)).append("d ");
-        printing.append(Math.round(hours % workTime)).append('h');
+
+        if(unit == TimeUnit.DAYS) {
+            printing.append((int) Math.floor(hours / workTime)).append("d ");
+            hours %= workTime;
+        }
+
+        if (hours == (long) hours ) {
+            printing.append((long) hours).append('h');
+        } else {
+            printing.append(Math.round(hours * 100f) / 100f).append('h');
+        }
 
         return printing.toString();
     }
 
     public String getDays() {
-        return printDays(hours);
+        return print(hours, TimeUnit.DAYS);
     }
 
     public String getDaysLeft() {
-        return printDays(hoursLeft).replace("+", "");
+        return print(hoursLeft, TimeUnit.DAYS).replace("+", "");
     }
 
     public float getHoursLeft() {
@@ -94,14 +119,6 @@ public class HistoryResponse {
 
     public void setHoursLeft(float hoursLeft) {
         this.hoursLeft = hoursLeft;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     public String getDeciderName() {
@@ -120,12 +137,24 @@ public class HistoryResponse {
         this.created = created;
     }
 
-    public float getHours() {
-        return hours;
+    public String getHours() {
+        return print(hours, TimeUnit.HOURS);
     }
 
     public void setHours(float hours) {
         this.hours = hours;
+    }
+
+    public float getWorkTime() {
+        return workTime;
+    }
+
+    public float getWorkTimeNominator() {
+        return workTimeNominator;
+    }
+
+    public float getWorkTimeDenominator() {
+        return workTimeDenominator;
     }
 
     public RequestResponse getRequest() {
@@ -146,5 +175,9 @@ public class HistoryResponse {
 
     public String getComment() {
         return comment;
+    }
+
+    public boolean isFullTime() {
+        return workTime == this.FULL_TIME;
     }
 }
