@@ -30,6 +30,7 @@ public class HistoryFactory {
     public HistoryDTO create(History history) {
         long id = history.getId();
         float hours = history.getHours();
+        float workTime = history.getWorkTime();
         LocalDateTime created = history.getCreated();
         RequestDTO request;
         List<AcceptanceDTO> acceptances;
@@ -49,6 +50,6 @@ public class HistoryFactory {
         UserDTO user = userFactory.create(history.getUser());
         String comment = history.getComment();
 
-        return new HistoryDTO(id, hours, created, decider, request, user, acceptances, comment);
+        return new HistoryDTO(id, hours, workTime, created, decider, request, user, acceptances, comment);
     }
 }

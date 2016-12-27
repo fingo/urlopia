@@ -145,7 +145,9 @@
     "contract_issue": "no contract",
     "works_on": "Employee works ",
     "hourly_tooltip": "Change insert mode",
-    "modify_workTime": "Modify work-time"
+    "modify_workTime": "Modify work-time",
+    "workTime_changed": "Work time changed",
+    "workTime": "Work time"
   },
   "workers_view": {
     "days_left": "{{days}} days {{hours}} hours of vacation left.",
@@ -156,8 +158,8 @@
     "title": "History",
     "created": "Created",
     "decider": "Decider",
-    "pool": "Days pool",
-    "left": "Days left",
+    "pool": "Value of change",
+    "left": "Remaining vacation",
     "comment": "Comment"
   },
   "requests_view": {

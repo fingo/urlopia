@@ -31,7 +31,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="history in histories.list | orderBy: 'created': true">
+        <tr ng-repeat-start="history in orderedHistory = (histories.list | orderBy: 'created': true)">
             <td>{{ history.created}}</td>
             <td ng-if="history.request">
                 <span ng-repeat="acceptance in history.acceptances">
@@ -55,6 +55,23 @@
                 {{ history.daysLeft}}
             </td>
             <td>{{ history.comment }}</td>
+        </tr>
+        <tr ng-repeat-end ng-if="history.workTime !== orderedHistory[$index + 1].workTime">
+            <td colspan="5">
+                <span ng-if="orderedHistory[$index + 1] != null">
+                    {{'employees_view.workTime_changed' | translate}} :
+                </span>
+                <span ng-if="orderedHistory[$index + 1] == null">
+                    {{'employees_view.workTime' | translate}} :
+                </span>
+                <span ng-if="history.workTime !== 8"
+                      translate="employees_view.shift"
+                      translate-values="{workTime_a: history.workTimeNominator,workTime_b: history.workTimeDenominator}">
+                </span>
+                <span ng-if="history.workTime === 8">
+                    {{ 'employees_view.full_time' | translate }}
+                </span>
+            </td>
         </tr>
         </tbody>
     </table>

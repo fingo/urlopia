@@ -14,6 +14,7 @@ import java.util.List;
 public class HistoryDTO implements Serializable {
     private long id;
     private float hours;
+    private float workTime;
     private LocalDateTime created;
     private UserDTO decider;
     private RequestDTO request;
@@ -21,10 +22,11 @@ public class HistoryDTO implements Serializable {
     private List<AcceptanceDTO> acceptances;
     private String comment;
 
-    public HistoryDTO(long id, float hours, LocalDateTime created, UserDTO decider, RequestDTO request, UserDTO user,
+    public HistoryDTO(long id, float hours, float workTime, LocalDateTime created, UserDTO decider, RequestDTO request, UserDTO user,
                       List<AcceptanceDTO> acceptances, String comment) {
         this.id = id;
         this.hours = hours;
+        this.workTime = workTime;
         this.created = created;
         this.decider = decider;
         this.request = request;
@@ -47,6 +49,14 @@ public class HistoryDTO implements Serializable {
 
     public void setHours(float hours) {
         this.hours = hours;
+    }
+
+    public float getWorkTime() {
+        return workTime;
+    }
+
+    public void setWorkTime(float workTime) {
+        this.workTime = workTime;
     }
 
     public LocalDateTime getCreated() {

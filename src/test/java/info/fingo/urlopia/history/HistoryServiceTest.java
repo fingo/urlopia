@@ -1,7 +1,10 @@
 package info.fingo.urlopia.history;
 
 import info.fingo.urlopia.holidays.HolidayService;
-import info.fingo.urlopia.request.*;
+import info.fingo.urlopia.request.AcceptanceService;
+import info.fingo.urlopia.request.Request;
+import info.fingo.urlopia.request.RequestDTO;
+import info.fingo.urlopia.request.RequestRepository;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserFactory;
@@ -51,12 +54,13 @@ public class HistoryServiceTest {
     @Test
     public void insertTest() {
         // TEST OBJECTS
-        Request request = new Request(null, null, null, null, null, null);
+        User requester = new User(null);
+        Request request = new Request(requester, null, null, null, null, null);
 
-        UserDTO requester = new UserDTO(0, null);
-        requester.setWorkTime(8f);
+        UserDTO requesterDTO = new UserDTO(0, null);
+        requesterDTO.setWorkTime(8f);
 
-        RequestDTO requestDTO = new RequestDTO(10, null, null, requester, LocalDate.now(), LocalDate.now(), null, null, Request.Status.ACCEPTED);
+        RequestDTO requestDTO = new RequestDTO(10, null, null, requesterDTO, LocalDate.now(), LocalDate.now(), null, null, Request.Status.ACCEPTED);
 
         // MOCKITO
         when(holidayService.getAllHolidaysDates()).thenReturn(Collections.emptyList());
@@ -74,12 +78,13 @@ public class HistoryServiceTest {
     @Test
     public void insertReversedTest() {
         // TEST OBJECTS
-        Request request = new Request(null, null, null, null, null, null);
+        User requester = new User(null);
+        Request request = new Request(requester, null, null, null, null, null);
 
-        UserDTO requester = new UserDTO(0, null);
-        requester.setWorkTime(8f);
+        UserDTO requesterDTO = new UserDTO(0, null);
+        requesterDTO.setWorkTime(8f);
 
-        RequestDTO requestDTO = new RequestDTO(10, null, null, requester, LocalDate.now(), LocalDate.now(), null, null, Request.Status.ACCEPTED);
+        RequestDTO requestDTO = new RequestDTO(10, null, null, requesterDTO, LocalDate.now(), LocalDate.now(), null, null, Request.Status.ACCEPTED);
 
         // MOCKITO
         when(holidayService.getAllHolidaysDates()).thenReturn(Collections.emptyList());
@@ -131,11 +136,11 @@ public class HistoryServiceTest {
         History history4 = new History();
         History history5 = new History();
 
-        HistoryDTO historyDto = new HistoryDTO(0, 0, null, null, null, null, null, null);
-        HistoryDTO historyDto2 = new HistoryDTO(0, 0, null, null, null, null, null, null);
-        HistoryDTO historyDto3 = new HistoryDTO(0, 0, null, null, null, null, null, null);
-        HistoryDTO historyDto4 = new HistoryDTO(0, 0, null, null, null, null, null, null);
-        HistoryDTO historyDto5 = new HistoryDTO(0, 0, null, null, null, null, null, null);
+        HistoryDTO historyDto = new HistoryDTO(0, 0, 0,  null, null, null, null, null, null);
+        HistoryDTO historyDto2 = new HistoryDTO(0, 0, 0,  null, null, null, null, null, null);
+        HistoryDTO historyDto3 = new HistoryDTO(0, 0, 0, null, null, null, null, null, null);
+        HistoryDTO historyDto4 = new HistoryDTO(0, 0, 0, null, null, null, null, null, null);
+        HistoryDTO historyDto5 = new HistoryDTO(0, 0, 0, null, null, null, null, null, null);
 
         // MOCKITO
         when(historyRepository.findFirst5ByUserMailOrderByCreatedDesc(anyString()))
@@ -147,7 +152,7 @@ public class HistoryServiceTest {
         when(historyFactory.create(history5)).thenReturn(historyDto5);
 
         // TESTS
-        List<HistoryDTO> histories = historyService.getRecentHistories("mail@example.com");
+        List<HistoryDTO> histories = historyService.getRecentUserHistories("mail@example.com");
         assertEquals(Arrays.asList(historyDto, historyDto2, historyDto3, historyDto4, historyDto5), histories);
     }
 
@@ -157,8 +162,8 @@ public class HistoryServiceTest {
         History history = new History();
         History history2 = new History();
 
-        HistoryDTO historyDto = new HistoryDTO(0, 0, null, null, null, null, null, null);
-        HistoryDTO historyDto2 = new HistoryDTO(0, 0, null, null, null, null, null, null);
+        HistoryDTO historyDto = new HistoryDTO(0, 0, 0, null, null, null, null, null, null);
+        HistoryDTO historyDto2 = new HistoryDTO(0, 0, 0, null, null, null, null, null, null);
 
         // MOCKITO
         when(historyRepository.findByUserId(anyLong()))
@@ -167,7 +172,7 @@ public class HistoryServiceTest {
         when(historyFactory.create(history2)).thenReturn(historyDto2);
 
         // TESTS
-        List<HistoryDTO> histories = historyService.getHistories(0L);
+        List<HistoryDTO> histories = historyService.getUserHistories(0L);
         assertEquals(Arrays.asList(historyDto, historyDto2), histories);
     }
 
@@ -177,8 +182,8 @@ public class HistoryServiceTest {
         History history = new History();
         History history2 = new History();
 
-        HistoryDTO historyDto = new HistoryDTO(0, 0, null, null, null, null, null, null);
-        HistoryDTO historyDto2 = new HistoryDTO(0, 0, null, null, null, null, null, null);
+        HistoryDTO historyDto = new HistoryDTO(0, 0, 0, null, null, null, null, null, null);
+        HistoryDTO historyDto2 = new HistoryDTO(0, 0, 0, null, null, null, null, null, null);
 
         // MOCKITO
         when(historyRepository.findByUserIdAndCreatedBetween(anyLong(), eq(LocalDateTime.of(2016,1,1,0,0)), eq(LocalDateTime.of(2017,1,1,0,0))))
@@ -187,7 +192,7 @@ public class HistoryServiceTest {
         when(historyFactory.create(history2)).thenReturn(historyDto2);
 
         // TESTS
-        List<HistoryDTO> histories = historyService.getHistoriesFromYear(0L, 2016);
+        List<HistoryDTO> histories = historyService.getUserHistoriesFromYear(0L, 2016);
         assertEquals(Arrays.asList(historyDto, historyDto2), histories);
     }
 
@@ -220,12 +225,14 @@ public class HistoryServiceTest {
         RequestDTO requestDTO = new RequestDTO(0, null, null, null, null, null, Request.Type.NORMAL, null, null);
         RequestDTO requestDTO2 = new RequestDTO(0, null, null, null, null, null, Request.Type.OCCASIONAL, null, null);
 
-        HistoryDTO historyDto = new HistoryDTO(0, 15, null, null, null, null, null, null);
-        HistoryDTO historyDto2 = new HistoryDTO(0, 5, null, null, requestDTO2, null, null, null);
-        HistoryDTO historyDto3 = new HistoryDTO(0, 10, null, null, requestDTO, null, null, null);
+        HistoryDTO historyDto = new HistoryDTO(0, 15, 0, null, null, null, null, null, null);
+        HistoryDTO historyDto2 = new HistoryDTO(0, 5, 0, null, null, requestDTO2, null, null, null);
+        HistoryDTO historyDto3 = new HistoryDTO(0, 10, 0, null, null, requestDTO, null, null, null);
 
         // MOCKITO
         when(userRepository.findAll()).thenReturn(Arrays.asList(user, user2));
+        when(userRepository.findOne(eq(10L))).thenReturn(user);
+        when(userRepository.findOne(eq(11L))).thenReturn(user2);
         when(historyRepository.findByUserIdAndCreatedBetween(eq(10L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Arrays.asList(history, history2, history3));
         when(historyRepository.findByUserIdAndCreatedBetween(eq(11L), any(LocalDateTime.class), any(LocalDateTime.class)))
@@ -259,8 +266,8 @@ public class HistoryServiceTest {
         RequestDTO requestDTO = new RequestDTO(0, null, null, null, null, null, Request.Type.NORMAL, null, null);
         RequestDTO requestDTO2 = new RequestDTO(0, null, null, null, null, null, Request.Type.OCCASIONAL, null, null);
 
-        HistoryDTO historyDto = new HistoryDTO(0, 15, null, null, requestDTO, null, null, null);
-        HistoryDTO historyDto2 = new HistoryDTO(0, 5, null, null, requestDTO2, null, null, null);
+        HistoryDTO historyDto = new HistoryDTO(0, 15, 0, null, null, requestDTO, null, null, null);
+        HistoryDTO historyDto2 = new HistoryDTO(0, 5, 0, null, null, requestDTO2, null, null, null);
 
         // MOCKITO
         when(userRepository.findFirstByMail(anyString())).thenReturn(user2);

@@ -43,6 +43,7 @@ CREATE TABLE History (
   decider_id INT REFERENCES Users (id),
   request_id INT REFERENCES Requests (id),
   hours      DECIMAL(6, 2)                NOT NULL,
+  work_time  DECIMAL(4, 2)                NOT NULL,
   comment    VARCHAR(255)
 );
 
