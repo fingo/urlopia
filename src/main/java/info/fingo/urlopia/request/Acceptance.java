@@ -44,13 +44,6 @@ public class Acceptance {
         this.leader = leader;
     }
 
-    public Acceptance(Request request, User leader, boolean accepted) {
-        this();
-        this.accepted = accepted;
-        this.request = request;
-        this.leader = leader;
-    }
-
     public long getId() {
         return id;
     }

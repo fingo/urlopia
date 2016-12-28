@@ -13,6 +13,11 @@ body {
     background: #ddd;
 }
 
+/*global style*/
+.full-width {
+    width: 100%;
+}
+
 .table > tbody > tr > td {
     vertical-align: middle;
     text-align: center;
@@ -56,7 +61,10 @@ body {
 #login .box {
     margin-left: auto;
     margin-right: auto;
+    margin-top: -1px;
     width: 400px;
+    height: 100%;
+    border: 0;
 
     background: #72a200;
 }
@@ -77,6 +85,7 @@ body {
 }
 
 #login .box #login-form {
+    position: relative;
     padding: 20px 30px 30px;
     margin: 0 2px 2px 2px;
     background: #fff;
@@ -86,6 +95,15 @@ body {
     margin-top: 30px;
     background: #f65d00;
     color: #fff;
+}
+
+#login .box #login-form span {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    font-size: 0.9rem;
+    font-weight: normal;
+    color: #888;
 }
 
 .panel {
@@ -157,6 +175,29 @@ body {
     border: 0;
     border-bottom: 3px;
     border-radius: 0 0 15px 15px;
+}
+
+#employees .padded {
+    line-height: 2em;
+}
+
+#employees .comment {
+    min-height: 2em;
+    height: 6em;
+    resize: none;
+    border-top: none;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+
+}
+
+#employees .no-bottom-radius {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#employees .button-bottom-spaced {
+    margin-bottom: 4%;
 }
 
 /*CONFIRM MODAL*/

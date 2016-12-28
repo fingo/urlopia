@@ -11,9 +11,14 @@ app.service('modalPrevent', function () {
     }
 });
 
-app.controller('LoginCtrl', function ($rootScope, $scope, $location, $route, $uibModalInstance, AuthService, AUTH_EVENTS, updater, modalPrevent) {
+app.controller('LoginCtrl', function ($rootScope, $scope, $location, $route, $uibModalInstance, AuthService, AUTH_EVENTS, updater, modalPrevent, $http) {
 
     updater.pause();
+
+    $scope.appVersion = '0.0.0';
+    $http.get("/version").success(function(response) {
+        $scope.appVersion = response;
+    });
 
     //login() function
     $scope.login = function (credentials) {

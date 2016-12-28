@@ -10,7 +10,7 @@
                 <div class="form-group">
                     <label for="mail">{{'login.mail' | translate}}</label>
                     <input type="email" id="mail" name="mail" ng-model="credentials.mail"
-                           class="form-control" autofocus required>
+                           class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label for="password">{{'login.password' | translate}}</label>
@@ -19,6 +19,7 @@
                            required>
                 </div>
                 <button type="submit" class="btn btn-block">{{'login.login' | translate}}</button>
+                <span>ver. {{appVersion}}</span>
             </form>
         </div>
     </div>

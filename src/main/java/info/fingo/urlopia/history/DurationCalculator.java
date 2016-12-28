@@ -2,6 +2,7 @@ package info.fingo.urlopia.history;
 
 import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.request.RequestDTO;
+import info.fingo.urlopia.user.UserDTO;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -16,11 +17,10 @@ public class DurationCalculator {
     private DurationCalculator() {
     }
 
-    private static int calculateDays(RequestDTO request, HolidayService holidayService) {
+    private static int calculateDays(LocalDate startDate, LocalDate endDate, HolidayService holidayService) {
         int workDays = 0;
 
-        LocalDate endDate = request.getEndDate();
-        for (LocalDate date = request.getStartDate(); date.isBefore(endDate) || date.isEqual(endDate); date = date.plusDays(1)) {
+        for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusDays(1)) {
             if (!isWeekend(date) && !isHoliday(date, holidayService))
                 ++workDays;
         }
@@ -28,8 +28,12 @@ public class DurationCalculator {
         return workDays;
     }
 
+    public static float calculate(UserDTO requester, LocalDate startDate, LocalDate endDate, HolidayService holidayService) {
+        return (float) calculateDays(startDate, endDate, holidayService) * requester.getWorkTime();
+    }
+
     public static float calculate(RequestDTO request, HolidayService holidayService) {
-        return (float) calculateDays(request, holidayService) * request.getRequester().getWorkTime();
+        return (float) calculateDays(request.getStartDate(), request.getEndDate(), holidayService) * request.getRequester().getWorkTime();
     }
 
     public static boolean isWeekend(LocalDate localDate) {

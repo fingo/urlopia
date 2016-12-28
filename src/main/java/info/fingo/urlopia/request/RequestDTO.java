@@ -10,22 +10,18 @@ import java.time.LocalDateTime;
  * @author Tomasz Urbas
  */
 public class RequestDTO implements Serializable {
-    public static final int USUAL = 0;
-    public static final int OCC_BIRTH_2 = 1;
-    public static final int OCC_FUNERAL_2 = 2;
-    public static final int OCC_WEDDING_2 = 3;
-    public static final int OCC_FUNERAL_1 = 4;
-    public static final int OCC_WEDDING_1 = 5;
     private long id;
     private LocalDateTime created;
     private LocalDateTime modified;
     private UserDTO requester;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String mailContent;
+    private Request.Type type;
+    private Request.TypeInfo typeInfo;
+    private Request.Status status;
 
     public RequestDTO(long id, LocalDateTime created, LocalDateTime modified, UserDTO requester,
-                      LocalDate startDate, LocalDate endDate, String mailContent) {
+                      LocalDate startDate, LocalDate endDate, Request.Type type, Request.TypeInfo typeInfo, Request.Status status) {
 
         this.id = id;
         this.created = created;
@@ -33,7 +29,9 @@ public class RequestDTO implements Serializable {
         this.requester = requester;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.mailContent = mailContent;
+        this.type = type;
+        this.typeInfo = typeInfo;
+        this.status = status;
     }
 
     public String getTerm() {
@@ -64,8 +62,15 @@ public class RequestDTO implements Serializable {
         return endDate;
     }
 
-    public String getMailContent() {
-        return mailContent;
+    public Request.Type getType() {
+        return type;
     }
 
+    public Request.TypeInfo getTypeInfo() {
+        return typeInfo;
+    }
+
+    public Request.Status getStatus() {
+        return status;
+    }
 }

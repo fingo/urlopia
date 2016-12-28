@@ -2,33 +2,29 @@ package info.fingo.urlopia.history;
 
 
 import info.fingo.urlopia.request.AcceptanceDTO;
-import info.fingo.urlopia.request.RequestDTO;
-import info.fingo.urlopia.user.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import info.fingo.urlopia.request.RequestResponse;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Tomasz Pilarczyk
  */
 public class HistoryResponse {
 
-    @Autowired
-    private UserService userService;
+    private static final float FULL_TIME = 8f;
 
     private String deciderName;
     private String created;
     private float hours;
     private float hoursLeft;
     private float workTime;
-    private String days;
-    private String daysLeft;
-    private RequestDTO request;
+    private float workTimeNominator;
+    private float workTimeDenominator;
+    private RequestResponse request;
     private List<AcceptanceDTO> acceptances;
-    private int type;
     private String comment;
-
 
     public HistoryResponse(HistoryDTO historyDTO) {
         if (historyDTO.getDecider() != null) {
@@ -39,9 +35,12 @@ public class HistoryResponse {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         this.created = historyDTO.getCreated().format(formatter);
         this.hours = historyDTO.getHours();
-        this.request = historyDTO.getRequest();
-        this.acceptances = historyDTO.getAcceptances();
-        this.type = historyDTO.getType();
+
+        if (historyDTO.getRequest() != null) {
+            this.request = new RequestResponse(historyDTO.getRequest(), historyDTO.getAcceptances());
+            this.acceptances = historyDTO.getAcceptances();
+        }
+
         this.comment = historyDTO.getComment();
     }
 
@@ -52,47 +51,66 @@ public class HistoryResponse {
             this.deciderName = null;
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        this.workTime = historyDTO.getUser().getWorkTime();
+        this.workTime = historyDTO.getWorkTime();
+        createFraction(workTime);
         this.created = historyDTO.getCreated().format(formatter);
         this.hours = historyDTO.getHours();
-        this.request = historyDTO.getRequest();
-        this.acceptances = historyDTO.getAcceptances();
-        this.type = historyDTO.getType();
+
+        if (historyDTO.getRequest() != null) {
+            this.request = new RequestResponse(historyDTO.getRequest(), historyDTO.getAcceptances());
+            this.acceptances = historyDTO.getAcceptances();
+        }
+
         this.hoursLeft = hoursLeft;
         this.comment = historyDTO.getComment();
     }
 
-    private String printDays(float hours) {
-        int lDays;
-        if (hours >= 0) lDays = (int) Math.floor(hours / workTime);
-        else {
-            lDays = (int) Math.ceil(hours / workTime);
+    private void createFraction(float value) {
+        value = value / 8;
+
+        float denominator = 0;
+        float nominator;
+
+        do {
+            denominator++;
+            nominator = value * denominator;
+        } while (Math.floor(nominator) != nominator);
+
+        this.workTimeNominator = nominator;
+        this.workTimeDenominator = denominator;
+    }
+
+    private String print(float hours, TimeUnit unit) {
+        StringBuilder printing = new StringBuilder();
+
+        if (hours > 0) {
+            printing.append('+');
+        } else if (hours < 0) {
+            printing.append('-');
         }
-        double lHours;
-        int lHoursWithoutMinutes;
-        lHours = Math.round((hours % workTime) * 100.0) / 100.0;
-        lHoursWithoutMinutes = Math.round(hours % workTime);
-        if ((lHours * 10) % 10 != 0) {
-            return lDays + "d " + lHours + "h";
+
+        hours = Math.abs(hours);
+
+        if(unit == TimeUnit.DAYS) {
+            printing.append((int) Math.floor(hours / workTime)).append("d ");
+            hours %= workTime;
+        }
+
+        if (hours == (long) hours ) {
+            printing.append((long) hours).append('h');
         } else {
-            return lDays + "d " + lHoursWithoutMinutes + "h";
+            printing.append(Math.round(hours * 100f) / 100f).append('h');
         }
+
+        return printing.toString();
     }
 
     public String getDays() {
-        return printDays(hours);
-    }
-
-    public void setDays(String days) {
-        this.days = days;
+        return print(hours, TimeUnit.DAYS);
     }
 
     public String getDaysLeft() {
-        return printDays(hoursLeft);
-    }
-
-    public void setDaysLeft(String daysLeft) {
-        this.daysLeft = daysLeft;
+        return print(hoursLeft, TimeUnit.DAYS).replace("+", "");
     }
 
     public float getHoursLeft() {
@@ -101,14 +119,6 @@ public class HistoryResponse {
 
     public void setHoursLeft(float hoursLeft) {
         this.hoursLeft = hoursLeft;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     public String getDeciderName() {
@@ -127,19 +137,31 @@ public class HistoryResponse {
         this.created = created;
     }
 
-    public float getHours() {
-        return hours;
+    public String getHours() {
+        return print(hours, TimeUnit.HOURS);
     }
 
     public void setHours(float hours) {
         this.hours = hours;
     }
 
-    public RequestDTO getRequest() {
+    public float getWorkTime() {
+        return workTime;
+    }
+
+    public float getWorkTimeNominator() {
+        return workTimeNominator;
+    }
+
+    public float getWorkTimeDenominator() {
+        return workTimeDenominator;
+    }
+
+    public RequestResponse getRequest() {
         return request;
     }
 
-    public void setRequest(RequestDTO request) {
+    public void setRequest(RequestResponse request) {
         this.request = request;
     }
 
@@ -153,5 +175,9 @@ public class HistoryResponse {
 
     public String getComment() {
         return comment;
+    }
+
+    public boolean isFullTime() {
+        return workTime == this.FULL_TIME;
     }
 }

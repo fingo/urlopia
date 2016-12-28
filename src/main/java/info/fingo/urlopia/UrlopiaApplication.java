@@ -39,11 +39,11 @@ import java.util.stream.Collectors;
 @SpringBootApplication  // NOSONAR
 public class UrlopiaApplication {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(UrlopiaApplication.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UrlopiaApplication.class);
     public static final String DEFAULT_LANGUAGE = "pl";
 
     //External values
-    @Value("${dropCreate}")
+    @Value("${drop.create}")
     private String dropCreate;
 
     @Value("${spring.datasource.driver.class.name}")

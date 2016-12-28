@@ -222,6 +222,7 @@ app.factory('PersistService', function ($rootScope, $cookies, AUTH_EVENTS, Sessi
                 if (Date.now() - session.createdAt < COOKIE_EXP_TIME) {
                     // setting user language
                     $translate.use(session.language);
+                    $translate.refresh(session.language);
 
                     // creating session
                     Session.create(session);

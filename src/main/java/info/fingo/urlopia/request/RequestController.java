@@ -1,6 +1,9 @@
 package info.fingo.urlopia.request;
 
 import info.fingo.urlopia.authentication.AuthInterceptor;
+import info.fingo.urlopia.user.UserDTO;
+import info.fingo.urlopia.user.UserFactory;
+import info.fingo.urlopia.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +31,9 @@ public class RequestController {
 
     @Autowired
     private AcceptanceService acceptanceService;
+
+    @Autowired
+    private UserService userService;
 
     @RolesAllowed("ROLES_WORKER")
     @RequestMapping(value = "/api/request/worker", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -120,15 +126,46 @@ public class RequestController {
     }
 
     @RolesAllowed({"ROLES_LEADER", "ROLES_WORKER"})
-    @RequestMapping(value = "/api/modal", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean addRequest(HttpServletRequest request, @RequestBody Map<String, Object> dataObj) {
+    @RequestMapping(value = "/api/modal", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
+    public String addRequest(HttpServletRequest request, @RequestBody Map<String, Object> dataObj) {
         long requesterId = (long) request.getAttribute("userId");
+        UserDTO requester = userService.getUser(requesterId);
         LocalDate startDate = OffsetDateTime.parse((String) dataObj.get("startDate")).toLocalDate();
         LocalDate endDate = OffsetDateTime.parse((String) dataObj.get("endDate")).toLocalDate();
-        int type = (int) dataObj.get("type");
+        int typeIndex = (int) dataObj.get("type");
 
-        return requestService.insert(requesterId, startDate, endDate, null, type);
+        // get occasional type of from int value
+        // TODO: delete the integer front type index
+        Request.Type type = Request.Type.NORMAL;
+        Request.OccasionalType occasionalType = Request.OccasionalType.WRONG;
+        if(typeIndex != 0) {
+            type = Request.Type.OCCASIONAL;
+            for (Request.OccasionalType tempOccasionalType : Request.OccasionalType.values()) {
+                if (tempOccasionalType.getIndex() == typeIndex) {
+                    occasionalType = tempOccasionalType;
+                    break;
+                }
+            }
+        }
 
+        boolean success;
+        try {
+            if (type == Request.Type.NORMAL) {
+                success = requestService.insertNormal(requester, startDate, endDate);
+            } else {
+                success = requestService.insertOccasional(requester, startDate, occasionalType);
+            }
+        } catch (NotEnoughDaysException e) {
+            return e.getCode();
+        } catch (RequestOverlappingException e) {
+            return e.getCode();
+        }
+
+        if(success) {
+            return "SUCCESS";
+        } else {
+            return "FAIL";
+        }
     }
 
     @RolesAllowed({"ROLES_WORKER"})

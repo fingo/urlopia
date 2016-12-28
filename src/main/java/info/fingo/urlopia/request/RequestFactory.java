@@ -28,8 +28,10 @@ public class RequestFactory {
         UserDTO requester = userFactory.create(requestDB.getRequester());
         LocalDate startDate = requestDB.getStartDate();
         LocalDate endDate = requestDB.getEndDate();
-        String mailContent = requestDB.getMailContent();
+        Request.Type type = requestDB.getType();
+        Request.TypeInfo typeInfo = requestDB.getTypeInfo();
+        Request.Status status = requestDB.getStatus();
 
-        return new RequestDTO(id, created, modified, requester, startDate, endDate, mailContent);
+        return new RequestDTO(id, created, modified, requester, startDate, endDate, type, typeInfo, status);
     }
 }

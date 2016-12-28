@@ -80,7 +80,7 @@ class MailConverter {
                 message.setFrom(pickSender());
                 message.setRecipient(Message.RecipientType.TO, pickRecipient());
                 message.setSubject(mail.getSubject());
-                message.setContent(pickContent());
+                message.setContent(pickContent(), "text/plain");
             } catch (MessagingException e) {
                 LOGGER.error("Exception during creating the Message", e);
             }

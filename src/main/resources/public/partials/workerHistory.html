@@ -31,7 +31,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="history in histories.list">
+        <tr ng-repeat-start="history in orderedHistory = (histories.list | orderBy: 'created': true)">
             <td>{{ history.created}}</td>
             <td ng-if="history.request">
                 <span ng-repeat="acceptance in history.acceptances">
@@ -41,17 +41,37 @@
             </td>
             <td ng-if="!history.request">{{ history.deciderName }}</td>
             <td>
-                <span ng-if="history.hours > 0">
+                <span ng-if="!history.request || (history.request.type === 'NORMAL' && history.hours > 0)">
                     <span class="text-center text-success">{{ history.days }}</span>
                 </span>
-                <span ng-if="history.hours < 0">
+                <span ng-if="history.request.type === 'OCCASIONAL'">
+                    <span class="text-center text-warning">{{ history.days }}</span>
+                </span>
+                <span ng-if="history.request.type === 'NORMAL' && history.hours < 0">
                     <span class="text-center text-danger">{{ history.days }} </span>
                 </span>
             </td>
             <td class="text-center">
-                {{history.daysLeft}}
+                {{ history.daysLeft}}
             </td>
             <td>{{ history.comment }}</td>
+        </tr>
+        <tr ng-repeat-end ng-if="history.workTime !== orderedHistory[$index + 1].workTime">
+            <td colspan="5">
+                <span ng-if="orderedHistory[$index + 1] != null">
+                    {{'employees_view.workTime_changed' | translate}} :
+                </span>
+                <span ng-if="orderedHistory[$index + 1] == null">
+                    {{'employees_view.workTime' | translate}} :
+                </span>
+                <span ng-if="history.workTime !== 8"
+                      translate="employees_view.shift"
+                      translate-values="{workTime_a: history.workTimeNominator,workTime_b: history.workTimeDenominator}">
+                </span>
+                <span ng-if="history.workTime === 8">
+                    {{ 'employees_view.full_time' | translate }}
+                </span>
+            </td>
         </tr>
         </tbody>
     </table>

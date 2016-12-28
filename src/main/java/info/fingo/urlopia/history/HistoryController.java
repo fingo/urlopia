@@ -1,5 +1,6 @@
 package info.fingo.urlopia.history;
 
+import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +11,15 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Tomasz Pilarczyk
  */
 @RestController
 public class HistoryController {
+
+    private final String [] WORK_TIMES = {"1", "7/8", "4/5", "3/4", "3/5", "1/2", "2/5", "1/4", "1/5", "1/8", "1/16"};
 
     @Autowired
     private UserService userService;
@@ -48,7 +48,7 @@ public class HistoryController {
             userId = userService.getUser(mail).getId();
         }
         Map<String, Object> map = new HashMap<>();
-        List<HistoryDTO> histories = historyService.getHistories(userId);
+        List<HistoryDTO> histories = historyService.getUserHistories(userId);
         int year;
         if (!histories.isEmpty()) {
             year = histories.get(0).getCreated().getYear();
@@ -66,13 +66,11 @@ public class HistoryController {
         if (userId == null) {
             userId = userService.getUser(mail).getId();
         }
-        List<HistoryDTO> histories = historyService.getHistoriesFromYear(userId, year);
-        List<HistoryResponse> historyResponses = new ArrayList<>();
+        List<HistoryDTO> histories = historyService.getUserHistoriesFromYear(userId, year);
+        List<HistoryResponse> historyResponses = getResponses(histories);
 
         Float workTime;
         workTime = userService.getUser(userId).getWorkTime();
-
-        getResponses(histories, historyResponses);
 
         Map<String, Object> map = new HashMap<>();
         //sorting histories by id
@@ -91,16 +89,12 @@ public class HistoryController {
     @RolesAllowed({"ROLES_ADMIN"})
     @RequestMapping(value = "/api/userHistory/recent", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getRecentHistoryFromUser(String userMail) {
-        List<HistoryDTO> histories = historyService.getRecentHistories(userMail);
-        Float workTime = userService.getUser(userMail).getWorkTime();
-        List<HistoryResponse> historyResponses = new ArrayList<>();
-
-        getResponses(histories, historyResponses);
+        List<HistoryDTO> histories = historyService.getRecentUserHistories(userMail);
+        List<HistoryResponse> historyResponses = getResponses(histories);
 
         Map<String, Object> map = new HashMap<>();
 
         map.put("list", historyResponses);
-        map.put("workTime", workTime);
 
         return map;
     }
@@ -123,17 +117,37 @@ public class HistoryController {
         return status;
     }
 
-    private void getResponses(List<HistoryDTO> histories, List<HistoryResponse> historyResponses) {
-        for (int i = 0; i < histories.size(); i++) {
-            if (i == 0) historyResponses.add(new HistoryResponse(histories.get(i), histories.get(i).getHours()));
-            else {
-                if (histories.get(i).getType() == 0) {
-                    historyResponses.add(new HistoryResponse(histories.get(i), historyResponses.get(i - 1).getHoursLeft() + histories.get(i).getHours()));
-                } else {
-                    historyResponses.add(new HistoryResponse(histories.get(i), historyResponses.get(i - 1).getHoursLeft()));
-                }
 
+    @RolesAllowed("ROLES_ADMIN")
+    @RequestMapping(value ="/api/history/setWorkTime", method = RequestMethod.POST)
+    public HttpStatus setWorkTime(@RequestBody Map<String, Object> data) {
+        String workTime = (String)data.get("workTime");
+        //check if the workTime provided is allowed
+        if (!Arrays.asList(WORK_TIMES).contains(workTime))
+            return HttpStatus.EXPECTATION_FAILED;
+
+        String [] fraction = workTime.split("/");
+
+        if(fraction.length == 1)
+            userService.setWorkTime((String)data.get("mail"), Float.parseFloat(fraction[0]) * 8F);
+        else
+            userService.setWorkTime((String)data.get("mail"), Float.parseFloat(fraction[0])/Float.parseFloat(fraction[1]) * 8F);
+
+        return HttpStatus.OK;
+    }
+
+
+    private List<HistoryResponse> getResponses(List<HistoryDTO> histories) {
+        List<HistoryResponse> historyResponses = new ArrayList<>();
+        int hoursLeft = 0;
+
+        for (int i = 0; i < histories.size(); i++) {
+            if (histories.get(i).getRequest() == null || histories.get(i).getRequest().getType() == Request.Type.NORMAL) {
+                hoursLeft += histories.get(i).getHours();
             }
+            historyResponses.add(new HistoryResponse(histories.get(i), hoursLeft));
         }
+
+        return historyResponses;
     }
 }
