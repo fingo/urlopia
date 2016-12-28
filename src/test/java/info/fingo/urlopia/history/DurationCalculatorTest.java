@@ -1,6 +1,7 @@
 package info.fingo.urlopia.history;
 
 import info.fingo.urlopia.holidays.HolidayService;
+import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.RequestDTO;
 import info.fingo.urlopia.user.UserDTO;
 import org.junit.Assert;
@@ -85,7 +86,7 @@ public class DurationCalculatorTest {
         UserDTO user = new UserDTO(0L, "a@b.pl");
         user.setWorkTime(6.4f);
         request = new RequestDTO(0L, LocalDateTime.now(), LocalDateTime.now(),
-                user, LocalDate.of(2016, 12, 31), LocalDate.of(2017, 1, 8), "sss");
+                user, LocalDate.of(2016, 12, 31), LocalDate.of(2017, 1, 8), null, null, Request.Status.ACCEPTED);
         float workHours = DurationCalculator.calculate(request, mockedService);
 
         Assert.assertEquals(25.6f, workHours, 0);
@@ -96,7 +97,7 @@ public class DurationCalculatorTest {
         UserDTO user = new UserDTO(0L, "a@b.pl");
         user.setWorkTime(6.4f);
         request = new RequestDTO(0L, LocalDateTime.now(), LocalDateTime.now(),
-                user, LocalDate.of(2017, 1, 10), LocalDate.of(2017, 1, 10), "sss");
+                user, LocalDate.of(2017, 1, 10), LocalDate.of(2017, 1, 10), null, null, Request.Status.ACCEPTED);
         float workHours = DurationCalculator.calculate(request, mockedService);
 
         Assert.assertEquals(6.4f, workHours, 0);

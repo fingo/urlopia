@@ -15,5 +15,5 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
 
     List<History> findByUserId(long userId);
 
-    List<History> findFirst3ByUserMailOrderByCreatedDesc(String userMail);
+    List<History> findFirst5ByUserMailOrderByCreatedDesc(String userMail);
 }

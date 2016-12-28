@@ -38,6 +38,8 @@
   "form": {
     "button": "Złóż wniosek",
     "occasional": "Okolicznościowy",
+    "1_day": "1 dniowe",
+    "2_days": "2 dniowe",
     "request": {
       "requester": {
         "label": "Wnioskodawca",
@@ -118,9 +120,11 @@
     "subtr_hours_confirm": "Czy na pewno chcesz odjąć {{daysToAdd}} godzin/y urlopu pracownikowi {{employee}}?",
     "add_days_confirm": "Czy na pewno chcesz dodać {{daysToAdd}} dni urlopu pracownikowi {{employee}}?",
     "subtr_days_confirm": "Czy na pewno chcesz odjąć {{daysToAdd}} dni urlopu pracownikowi {{employee}}?",
-    "days_left": "Pozostały urlop: {{days}} dni {{hours}} godzin.",
-    "shift": "Etat {{workTime_a}}/{{workTime_b}}",
-    "full_time": "Pełen etat",
+    "days_left_start": "Pozostały urlop: ",
+    "days_left": "{{days}} dni {{hours}}",
+    "days_left_end": " godzin.",
+    "shift": "etat {{workTime_a}}/{{workTime_b}}",
+    "full_time": "pełen etat",
     "modify_pool": "Zmień pulę urlopu",
     "mail": "Adres e-mail",
     "all_teams": "Wszystkie zespoły",
@@ -130,7 +134,7 @@
     "comment_placeholder": "Komentarz do operacji",
     "show_all": "Pokaż wszystkie",
     "last_operations": "Ostatnie zmiany",
-    "hours": "godzin",
+    "hours": "godziny",
     "hourly": "Godzinowo",
     "days": "dni",
     "only_leaders": "Tylko liderzy zespołów",
@@ -138,7 +142,12 @@
     "EC_employees": "Pracownicy na etacie",
     "EC_employee": "etat",
     "type_of_job": "Rodzaj zatrudnienia",
-    "contract_issue": "brak umowy"
+    "contract_issue": "brak umowy",
+    "works_on": "Pracownik jest zatrudniony na ",
+    "hourly_tooltip": "Zmień tryb wprowadzania",
+    "modify_workTime": "Zmień etat",
+    "workTime_changed": "Zmiana etatu",
+    "workTime": "Etat"
   },
   "workers_view": {
     "days_left": "Pozostało {{days}} dni {{hours}} godzin urlopu.",
@@ -149,8 +158,8 @@
     "title": "Historia",
     "created": "Utworzono",
     "decider": "Rozpatrujący",
-    "pool": "Liczba dni",
-    "left": "Pozostało dni",
+    "pool": "Wartość zmiany",
+    "left": "Pozostały urlop",
     "comment": "Komentarz"
   },
   "requests_view": {
@@ -190,7 +199,9 @@
     },
     "form": {
       "success": "Wniosek został pomyślnie dodany",
-      "notEnoughDaysPool": "Nie udało się złożyć wniosku z powodu niewystarczającej ilości pozostałych dni wolnych"
+      "notEnoughDaysPool": "Nie udało się złożyć wniosku z powodu niewystarczającej ilości pozostałych dni wolnych",
+      "requestOverlapping": "Termin wniosku nakłada się na wcześniej złożony wniosek",
+      "fail": "Nie udało się złożyć wniosku, spróbuj ponownie"
     },
     "request": {
       "accept": "Prośba o urlop pracownika została zaakceptowana",
@@ -205,7 +216,9 @@
       },
       "employees": {
         "subtractDaysFail": "Nie można odjąć pracownikowi więcej dni urlopu niż aktualnie przez niego posiadanych",
-        "changeDaysPool": "Pomyślnie zmodyfikowano pulę dni wolnych pracownika"
+        "changeDaysPool": "Pomyślnie zmodyfikowano pulę dni wolnych pracownika",
+        "changeWorkTime": "Pomyślnie zmodyfikowano etat pracownika",
+        "changeModeFailure": "Nie można wprowadzać godzin pracownikowi, który jest zatrudniony na cały etat!"
       }
     },
     "holidays": {
@@ -224,7 +237,7 @@
     "wedding1": "Ślub ",
     "when_birth2": "Dwudniowy urlop okolicznościowy przysługuje w związku z narodzinami dziecka.",
     "when_funeral2": "Dwudniowy urlop okolicznościowy przysługuje w związku z zgonem i pogrzebem małżonka, dziecka, ojca, matki, ojczyma lub macochy.",
-    "when_wedding2": "Dwudniowy urlop okolicznościowy przysługuje w związku z Twoim ślubem.",
+    "when_wedding2": "Dwudniowy urlop okolicznościowy przysługuje w związku z twoim ślubem.",
     "when_funeral1": "Jednodniowy urlop okolicznościowy przysługuje w związku z zgonem i pogrzebem siostry, brata, teściowej, teścia, babki, dziadka, a także innej osoby, którą utrzymujesz lub którą się bezpośrednio opiekujesz",
     "when_wedding1": "Jednodniowy urlop okolicznościowy przysługuje w związku z ślubem Twojego dziecka."
   }

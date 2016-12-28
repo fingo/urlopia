@@ -1,5 +1,6 @@
 package info.fingo.urlopia.events;
 
+import info.fingo.urlopia.request.RequestDTO;
 import info.fingo.urlopia.user.UserDTO;
 import org.springframework.context.ApplicationEvent;
 
@@ -9,9 +10,7 @@ import org.springframework.context.ApplicationEvent;
 public class OccasionalResponseEvent extends ApplicationEvent {
 
 
-    private UserDTO user;
-    private int type;
-    private float hours;
+    private RequestDTO request;
 
     /**
      * Create a new ApplicationEvent.
@@ -19,23 +18,12 @@ public class OccasionalResponseEvent extends ApplicationEvent {
      * @param source the object on which the event initially occurred (never {@code null})
      */
 
-    public OccasionalResponseEvent(Object source, UserDTO user, int type, float hours) {
+    public OccasionalResponseEvent(Object source, RequestDTO request) {
         super(source);
-        this.user = user;
-        this.type = type;
-        this.hours = hours;
+        this.request = request;
     }
 
-    public UserDTO getUser() {
-        return user;
+    public RequestDTO getRequest() {
+        return request;
     }
-
-    public float getHours() {
-        return hours;
-    }
-
-    public int getType() {
-        return type;
-    }
-
 }

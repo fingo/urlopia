@@ -67,7 +67,7 @@ public class LoginController {
         return new ResponseEntity<>(user, status);
     }
 
-    @RequestMapping(value = "/specialApi/app/version", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/version", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     public String getAppVersion() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String version = buildProperties.getVersion() + "-" + gitProperties.getCommitId().substring(0,6)

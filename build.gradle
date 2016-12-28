@@ -24,7 +24,7 @@ apply plugin: 'java'
 apply plugin: 'spring-boot'
 apply plugin: 'jacoco'
 
-version = "0.4.13"
+version = "0.4.18"
 
 jacoco {
     toolVersion = "0.7.1.201405082137"

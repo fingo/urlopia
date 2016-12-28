@@ -36,7 +36,7 @@ public class History {
     private float hours;
 
     @Column(nullable = false)
-    private int type;
+    private float workTime;
 
     @Column
     private String comment;
@@ -45,55 +45,50 @@ public class History {
      * Default constructor only exists for the sake of JPA
      */
     protected History() {
+        this.created = LocalDateTime.now();
     }
 
-    public History(Request request, float hours, int type) {
-        this.created = LocalDateTime.now();
+    public History(Request request, float hours) {
+        this();
         this.user = request.getRequester();
         this.request = request;
         this.hours = hours;
+        this.workTime = request.getRequester().getWorkTime();
         this.comment = "";
-        this.type = type;
     }
 
-    public History(User user, User decider, float hours, String comment, int type) {
-        this.created = LocalDateTime.now();
+    public History(Request request, float hours, String comment) {
+        this(request, hours);
+        this.comment = comment;
+    }
+
+    public History(Request request, float hours, String comment, User decider) {
+        this(request, hours);
+        this.comment = comment;
+        this.decider = decider;
+    }
+
+    public History(User user, User decider, float hours, String comment) {
+        this();
         this.user = user;
         this.decider = decider;
         this.hours = hours;
+        this.workTime = user.getWorkTime();
         this.comment = comment;
-        this.type = type;
-    }
-
-    public History(Request request, User user, User decider, float hours, String comment, int type) {
-        this.created = LocalDateTime.now();
-        this.request = request;
-        this.user = user;
-        this.decider = decider;
-        this.hours = hours;
-        this.comment = comment;
-        this.type = type;
     }
 
     @Override
     public String toString() {
-
         return "History{" +
                 "id=" + id +
-                ", created='" + created + '\'' +
-                ", user='" + user + '\'' +
-                ", decider='" + decider + '\'' +
-                ", request=" + request + '\'' +
-                ", hours='" + hours + '\'' +
+                ", created=" + created +
+                ", user=" + user +
+                ", decider=" + decider +
+                ", request=" + request +
+                ", hours=" + hours +
+                ", workTime=" + workTime +
+                ", comment='" + comment + '\'' +
                 '}';
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     public long getId() {
@@ -118,6 +113,14 @@ public class History {
 
     public float getHours() {
         return hours;
+    }
+
+    public void setHours(float hours) {
+        this.hours = hours;
+    }
+
+    public float getWorkTime() {
+        return workTime;
     }
 
     public String getComment() {
