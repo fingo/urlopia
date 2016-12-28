@@ -410,7 +410,10 @@ app.controller('ConfirmResetCtrl', function ($scope, $uibModalInstance) {
 app.value('confirmData', {employee: null, daysToAdd: null, mail: null, comment: ""});
 
 //Controller of displayed data
+
 app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translate, API, confirmData, notifyService, WORK_TIMES) {
+    var maxHours = 8000;
+  
     //worktime table init
     $scope.workTimes = WORK_TIMES;
 
@@ -490,15 +493,26 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
             confirmData.mail = $scope.user.principalName;
             confirmData.workTime = $scope.workTime;
             confirmData.isHourly = $scope.isHourly;
-            if ($scope.userHours >= -$scope.daysToAdd) {
-                $uibModal.open(
-                    {
-                        animation: true,
-                        templateUrl: 'partials/confirm_days.html',
-                        controller: 'ConfirmDaysCtrl'
-                    }).result.then(function () {
-                    $scope.$parent.$parent.isCollapsed = true;
-                })
+          
+            //input validation
+            var hoursToAdd = $scope.daysToAdd;
+            if(!$scope.isHourly) {
+                hoursToAdd = $scope.daysToAdd * $scope.workTime;
+            }
+
+            if ($scope.userHours >= -hoursToAdd) {
+                if (hoursToAdd + $scope.userHours <= maxHours) {
+                    $uibModal.open(
+                        {
+                            animation: true,
+                            templateUrl: 'partials/confirm_days.html',
+                            controller: 'ConfirmDaysCtrl'
+                        }).closed.then(function () {
+                        $scope.$parent.$parent.isCollapsed = true;
+                    })
+                } else {
+                    notifyService.displayDanger($translate.instant('notify.admin.employees.addDaysFail'));
+                }
             } else {
                 // admin can't subtract more days from employee notification
                 notifyService.displayDanger($translate.instant('notify.admin.employees.subtractDaysFail'));
