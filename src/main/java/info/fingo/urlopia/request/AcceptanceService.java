@@ -109,17 +109,18 @@ public class AcceptanceService {
         User decider = userRepository.findOne(deciderId);
         boolean success = false;
 
-        if ((acceptance.getDecider() == null    // rejecting/rejecting is accepted only once
+        if ((acceptance.getDecider() == null    // rejecting is accepted only once
                 && (acceptance.getLeader().getId() == decider.getId() || decider.isAdmin())) // and only by leader or admin
                 || acceptance.getRequest().getRequester().getId() == decider.getId()) {   // canceling is always possible
             acceptance.setAccepted(false);
             acceptance.setDecider(decider);
             acceptance.getRequest().setModified(LocalDateTime.now());
+            acceptance.getRequest().setStatus(Request.Status.REJECTED);
 
             success = true;
         }
 
-        // send mail to requester only if it isn't canceling
+        // send mail to requester only if it is not canceling
         if (!(acceptance.getRequest().getRequester().getId() == decider.getId())) {
             eventPublisher.publishEvent(new DecisionResultEvent(this, acceptance.getId()));
         }
