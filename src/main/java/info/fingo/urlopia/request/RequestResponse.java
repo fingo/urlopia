@@ -18,6 +18,7 @@ public class RequestResponse {
     private Boolean accepted;
     private boolean cancelled;
     private String status;
+    private String statusNumber;
     private UserResponse requester;
     private String type;
 
@@ -30,7 +31,8 @@ public class RequestResponse {
                 .collect(Collectors.toList()));
         this.accepted = isAccepted(acceptances);
         this.cancelled = isCancelled(acceptances, request);
-        this.status = countStatus(acceptances);
+        this.statusNumber = countStatus(acceptances);
+        this.status = request.getStatus().name();
         this.requester = new UserResponse(request.getRequester());
         this.type = request.getType().toString();
     }
@@ -103,6 +105,10 @@ public class RequestResponse {
 
     public String getStatus() {
         return status;
+    }
+
+    public String getStatusNumber() {
+        return statusNumber;
     }
 
     public String getType() {

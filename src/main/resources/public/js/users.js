@@ -8,6 +8,14 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
     $scope.worker.requests = [];
     $scope.worker.holidaysPool = API.setUrl('/api/history').get({userId: Session.data.userId});
 
+    // for smart-table
+    $scope.workerRequests = [];
+    $scope.workerRequestsSafe = [];
+    $scope.$watch('worker', function(newObj) {
+        $scope.workerRequests = newObj.requests;
+        $scope.workerRequestsSafe = newObj.requests;
+    });
+
     $scope.worker.cancelRequest = function (requestID) {
         var action = API.setUrl('/api/request/cancelRequest');
         action.save({requestID: requestID, action: "cancelRequest"}, function () {
@@ -23,6 +31,15 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
     if (isLeader) {
         $scope.leader = {};
         $scope.leader.requests = [];
+
+        // for smart-table
+        $scope.leaderRequests = [];
+        $scope.leaderRequestsSafe = [];
+        $scope.$watch('leader', function(newObj) {
+            $scope.leaderRequests = newObj.requests;
+            $scope.leaderRequestsSafe = newObj.requests;
+        });
+
         $scope.leader.accept = function (acceptanceId) {
             var action = API.setUrl('/api/acceptance/action');
             action.save({acceptanceId: acceptanceId, action: "accept"}, function (item) {
@@ -56,8 +73,19 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
 });
 
 app.controller('RequestsCtrl', function ($scope, $translate, updater, API, Session, $filter, notifyService) {
+    $scope.admin = {};
+    $scope.admin.requests = [];
     $scope.requests = [];
-    var adminRequestsTask = updater.addTask($scope.requests, "/api/request/admin");
+
+    // for smart-table
+    $scope.adminRequests = [];
+    $scope.adminRequestsSafe = [];
+    $scope.$watch('admin', function(newObj) {
+        $scope.adminRequests = newObj.requests;
+        $scope.adminRequestsSafe = newObj.requests;
+    });
+
+    var adminRequestsTask = updater.addTask($scope.admin.requests, "/api/request/admin");
     updater.load();
 
     $scope.userId = Session.data.userId;

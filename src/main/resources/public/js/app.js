@@ -1,4 +1,4 @@
-var app = angular.module("app", ["pascalprecht.translate", "ngRoute", "ui.bootstrap", "ngResource", "autoUpdate", "ngCookies", "ngProgress"]);
+var app = angular.module("app", ["pascalprecht.translate", "ngRoute", "ui.bootstrap", "ngResource", "autoUpdate", "ngCookies", "ngProgress", "smart-table"]);
 
 // i18n
 app.config(function ($translateProvider) {
@@ -66,7 +66,7 @@ app.directive('loggedOnly', function (AuthService) {
     }
 });
 
-app.controller('ApplicationController', function ($scope, $uibModal, $location, $route, $translate, updater, PersistService, AUTH_EVENTS, currentPrevented, modalPrevent, notifyService) {
+app.controller('ApplicationController', function ($scope, $uibModal, $location, $route, $translate, updater, PersistService, AUTH_EVENTS, currentPrevented, modalPrevent, notifyService, $document) {
     // session from cookies
     PersistService.getCookieData();
 
