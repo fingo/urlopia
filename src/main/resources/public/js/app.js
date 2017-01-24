@@ -66,7 +66,7 @@ app.directive('loggedOnly', function (AuthService) {
     }
 });
 
-app.controller('ApplicationController', function ($scope, $uibModal, $location, $route, $translate, updater, PersistService, AUTH_EVENTS, currentPrevented, modalPrevent, notifyService, $document) {
+app.controller('ApplicationController', function ($scope, $uibModal, $location, $route, $translate, updater, PersistService, AUTH_EVENTS, currentPrevented, modalPrevent, notifyService) {
     // session from cookies
     PersistService.getCookieData();
 
