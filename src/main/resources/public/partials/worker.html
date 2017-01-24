@@ -15,8 +15,6 @@
                   translate-values="{workTime_a: worker.holidaysPool.workTimeA, workTime_b: worker.holidaysPool.workTimeB}">
 
             </span>
-
-
         </h3>
         <div class="row" ng-controller="modalCtrl">
             <div class="col-xs-6 text-left">
@@ -35,20 +33,34 @@
         <br>
 
         <div class="requests">
-            <table class="table table-striped">
+            <table st-table="workerRequests" st-safe-src="workerRequestsSafe" class="table table-striped">
                 <thead>
                 <tr>
-                    <th>{{'table.date' | translate}}</th>
+                    <th st-sort="term">{{'table.date' | translate}} <span class="sort glyphicon"></span></th>
                     <th>{{'table.status' | translate}}</th>
                     <th></th>
                 </tr>
+                <tr>
+                    <th>
+                        <input st-search="term" placeholder="{{'table.search.term' | translate}}" class="input-sm form-control" type="search"/>
+                    </th>
+                    <th>
+                        <select st-search="status" class="custom-select">
+                            <option value="">{{'table.filter.all' | translate}}</option>
+                            <option value="PENDING">{{'table.in_progress' | translate}}</option>
+                            <option value="ACCEPTED">{{'table.accepted' | translate}}</option>
+                            <option value="REJECTED">{{'table.denied' | translate}}</option>
+                            <option value="CANCELLED">{{'table.cancelled' | translate}}</option>
+                        </select>
+                    </th>
+                    <th></th>
+                </tr>
                 </thead>
-
                 <tbody>
-                <tr ng-repeat="request in worker.requests">
+                <tr ng-repeat="request in workerRequests">
                     <td>{{request.term}}</td>
                     <td>
-                        <div ng-if="request.accepted == null">
+                        <div ng-if="request.status == 'PENDING'">
                             <div ng-repeat="acceptance in request.acceptances">
                             <span>
                                 {{acceptance.leader.name}} -
@@ -57,7 +69,6 @@
                                 <span ng-if="acceptance.accepted === null">{{'table.in_progress' | translate}}</span>
                             </span>
                             </div>
-
                         </div>
                         <span ng-if="request.accepted == true">{{'table.accepted' | translate}}</span>
                         <div ng-if="request.accepted == false && request.cancelled == false">
@@ -78,10 +89,15 @@
                     </td>
                 </tr>
                 </tbody>
-
+                <tfoot>
+                <tr>
+                    <td colspan="3" class="text-right">
+                        <div st-pagination="" st-items-by-page="5" st-displayed-pages="10"></div>
+                    </td>
+                </tr>
+                </tfoot>
             </table>
         </div>
-    </div>
 
     <!--todo align properly-->
     <div permission="['ROLES_LEADER']">
@@ -95,25 +111,42 @@
     <!-- LEADER VIEW -->
     <div id="leader_view" class="col-xs-12 col-sm-12 col-md-12" permission="['ROLES_LEADER']">
         <div id="requests">
-
-            <table class="table table-striped">
+            <table st-table="leaderRequests" st-safe-src="leaderRequestsSafe" class="table table-striped">
                 <thead>
                 <tr>
-                    <th>{{'table.requester' | translate}}</th>
-                    <th>{{'table.date' | translate}}</th>
+                    <th st-sort="requester">{{'table.requester' | translate}} <span class="sort glyphicon"></span></th>
+                    <th st-sort="term">{{'table.date' | translate}} <span class="sort glyphicon"></span></th>
                     <th>{{'table.status' | translate}}</th>
                 </tr>
+                <tr>
+                    <th>
+                        <input st-search="requester" placeholder="{{'table.search.requester' | translate}}" class="input-sm form-control" type="search"/>
+                    </th>
+                    <th>
+                        <input st-search="term" placeholder="{{'table.search.term' | translate}}" class="input-sm form-control" type="search"/>
+                    </th>
+                    <th>
+                        <select st-search="status" class="custom-select">
+                            <option value="">{{'table.filter.all' | translate}}</option>
+                            <option value="PENDING">{{'table.in_progress' | translate}}</option>
+                            <option value="ACCEPTED">{{'table.accepted' | translate}}</option>
+                            <option value="REJECTED">{{'table.denied' | translate}}</option>
+                            <option value="CANCELLED">{{'table.cancelled' | translate}}</option>
+                        </select>
+                    </th>
+                </tr>
                 </thead>
-
                 <tbody>
-                <tr ng-repeat="request in leader.requests">
-
-                    <td ng-if="request.requester.name">{{request.requester.name}}
-                    </td> <!-- if requester exists -->
-                    <td ng-if="!request.requester.name">{{'user.deleted' | translate}} ({{request.requester.mail}})
-                    </td> <!-- if requester don't exists -->
+                <tr ng-repeat="request in leaderRequests">
+                    <td ng-if="request.requester.name"> <!-- if requester exists -->
+                        {{request.requester.name}}
+                    </td>
+                    <td ng-if="!request.requester.name"> <!-- if requester don't exists -->
+                        {{'user.deleted' | translate}} ({{request.requester.mail}})
+                    </td>
 
                     <td>{{request.term}}</td>
+
                     <td>
                         <span ng-if="request.accepted == null">
                             <button class="btn btn-success" ng-click="leader.accept(request.id)">
@@ -127,7 +160,13 @@
                     </td>
                 </tr>
                 </tbody>
-
+                <tfoot>
+                <tr>
+                    <td colspan="3" class="text-right">
+                        <div st-pagination="" st-items-by-page="10" st-displayed-pages="10"></div>
+                    </td>
+                </tr>
+                </tfoot>
             </table>
         </div>
     </div>
