@@ -413,25 +413,6 @@ app.value('confirmData', {employee: null, daysToAdd: null, mail: null, comment: 
 
 app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translate, API, confirmData, notifyService, WORK_TIMES) {
     var maxHours = 8000;
-  
-    //worktime table init
-    $scope.workTimes = WORK_TIMES;
-
-    //fit worktime buttons
-    var fit_buttons = function () {
-        for (i = 0; i < $scope.workTimes.length; i++) {
-            // var row = angular.element( document.querySelector( '#buttons-row' + i ))
-            var row = $('#buttons-row-' + $scope.$id + '-' + i).children('button');
-            row.each(function (i, element) {
-                element.style.width = 100 / row.length + '%';
-                var fraction = element.innerText.replace(/\r?\n|\r/g, "").trim().split("/");
-                if ((fraction.length === 1 ? parseInt(fraction[0]) : parseInt(fraction[0])/parseInt(fraction[1])) * 8 == $scope.workTime)
-                    // element.addClass('active');
-                    $(element).addClass('active')
-            })
-        }
-    };
-    $scope.$watch('rendered_buttons', fit_buttons);
 
     //tooltpis activation
     $('[data-toggle="tooltip"]').tooltip()
@@ -440,8 +421,6 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
         .tooltip('fixTitle');
 
     //Gathering data
-    $scope.isHourly = false;
-
     var getHours = function () {
         if ($scope.userHours === undefined) {
             API.setUrl("/api/history").get({mail: $scope.user.principalName}, function (response) {
@@ -451,91 +430,105 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
                 $scope.hours = response.hours;
                 $scope.workTimeA = response.workTimeA;
                 $scope.workTimeB = response.workTimeB;
-
+                $scope.selectedWorkTime = ($scope.workTimeA !== $scope.workTimeB) ? $scope.workTimeA + "/" + $scope.workTimeB : "1";
                 $scope.newWorkTime = response.workTime;
             });
         }
     };
     $scope.userHours = getHours();
 
-    // Recent user's history logs
-    $scope.userHistory = API.setUrl("/api/userHistory/recent")
-        .get({userMail: $scope.user.principalName});
+    // LAST CHANGES
+    $scope.userHistory = API.setUrl("/api/userHistory/recent").get({userMail: $scope.user.principalName});
 
-    // Saving data
-    $scope.daysToAdd = 1;
+    // DAYS POOL
+    $scope.daysPoolChange = '';
 
-    $scope.changeMode = function (workTime) {
-        if (workTime != 8) {
-            $scope.isHourly = !$scope.isHourly;
-            $('#mode_switch').toggleClass('active')
-                .tooltip('hide');
-        }
-        else
-            notifyService.displayDanger($translate.instant('notify.admin.employees.changeModeFailure'));
-
-        $scope.isHourly ? $scope.daysToAdd = "1.00" : $scope.daysToAdd = "1";
-    };
-
-    $scope.decrement = function () {
-        $scope.isHourly ? $scope.daysToAdd = (parseFloat($scope.daysToAdd) - 0.1).toFixed(2) : $scope.daysToAdd--;
-    };
-
-    $scope.increment = function () {
-        $scope.isHourly ? $scope.daysToAdd = (parseFloat($scope.daysToAdd) + 0.1).toFixed(2) : $scope.daysToAdd++;
-    };
-
-    $scope.ok = function () {
-        if (!($scope.daysToAdd === 0 || isNaN($scope.daysToAdd))) {
-            confirmData.daysToAdd = $scope.isHourly ? parseFloat($scope.daysToAdd) : parseInt($scope.daysToAdd);
-            confirmData.comment = $scope.comment;
-            confirmData.employee = $scope.user.surname + " " + $scope.user.name;
-            confirmData.mail = $scope.user.principalName;
-            confirmData.workTime = $scope.workTime;
-            confirmData.isHourly = $scope.isHourly;
-          
-            //input validation
-            var hoursToAdd = $scope.daysToAdd;
-            if(!$scope.isHourly) {
-                hoursToAdd = $scope.daysToAdd * $scope.workTime;
-            }
-
-            if ($scope.userHours >= -hoursToAdd) {
-                if (hoursToAdd + $scope.userHours <= maxHours) {
-                    $uibModal.open(
-                        {
-                            animation: true,
-                            templateUrl: 'partials/confirm_days.html',
-                            controller: 'ConfirmDaysCtrl'
-                        }).closed.then(function () {
-                        $scope.$parent.$parent.isCollapsed = true;
-                    })
-                } else {
-                    notifyService.displayDanger($translate.instant('notify.admin.employees.addDaysFail'));
-                }
-            } else {
-                // admin can't subtract more days from employee notification
-                notifyService.displayDanger($translate.instant('notify.admin.employees.subtractDaysFail'));
-            }
-        }
-    };
-
-    $scope.showWorkTimeButtons = function () {
-        if (!angular.isUndefined($scope.workTime)) {
-            $scope.rendered_buttons = true;
-            return true;
-        }
-        else
+    var parseDaysPool = function() {
+        var regEx = /^ *[+-]?( *\d+d)?( *\d+h)?( *\d+m)? *$/;
+        if(!regEx.test($scope.daysPoolChange)) {
             return false;
+        }
 
+        // parse days
+        var parsedPart = new RegExp("(\\d+)d").exec($scope.daysPoolChange);
+        var hours = parsedPart ? parseInt(parsedPart[1]) * 8 : 0;
+
+        // parse hours
+        parsedPart = new RegExp("(\\d+)h").exec($scope.daysPoolChange);
+        hours += parsedPart ? parseInt(parsedPart[1]) : 0;
+
+        // parse minutes
+        parsedPart = new RegExp("(\\d+)m").exec($scope.daysPoolChange);
+        hours += parsedPart ? parseInt(parsedPart[1]) / 60 : 0;
+
+        // determine the sign
+        if(new RegExp("-").test($scope.daysPoolChange)) {
+            hours *= -1;
+        }
+
+        return hours;
     };
 
-    $scope.setWorkTime = function (workTimeFraction) {
+    $scope.changeDaysPool = function () {
+        var hours = parseDaysPool();
+
+        // check format
+        if(!hours) {
+            notifyService.displayDanger($translate.instant('notify.admin.employees.parsingProblem'));
+            return false;
+        }
+
+        // check if user pool will not be less than 0
+        if ($scope.userHours < -hours) {
+            notifyService.displayDanger($translate.instant('notify.admin.employees.subtractDaysFail'));
+            return false;
+        }
+
+        // check if user pool will not be less than MAX
+        if (hours + $scope.userHours > maxHours) {
+            notifyService.displayDanger($translate.instant('notify.admin.employees.addDaysFail'));
+            return false;
+        }
+
+        $uibModal.open({
+            animation: true,
+            templateUrl: 'partials/confirm_days.html',
+            controller: 'ConfirmPoolChangeCtrl',
+            resolve: {
+                values: function() {
+                    return {hours: hours,
+                        userMail: $scope.user.principalName,
+                        comment: $scope.comment,
+                        userName: $scope.user.surname + " " + $scope.user.name};
+                }
+            }
+        }).closed.then(function () {
+            $scope.$parent.$parent.isCollapsed = true;
+
+            /* TODO: make view changes without collapsing
+            $scope.userHours += hours;
+            $scope.daysPoolChange = '';
+            $scope.comment = '';
+            */
+        });
+    };
+
+    // WORK TIME
+    $scope.workTimes = WORK_TIMES;
+
+    $scope.changeWorkTime = function () {
         API.setUrl("/api/history/setWorkTime")
-            .save({mail: $scope.user.principalName, workTime: workTimeFraction}, function () {
-                $scope.$parent.$parent.isCollapsed = true;
+            .save({mail: $scope.user.principalName, workTime: $scope.selectedWorkTime}, function () {
                 notifyService.displaySuccess($translate.instant('notify.admin.employees.changeWorkTime'));
             })
+    };
+
+    $scope.getWorkTimeTranslation = function(time) {
+        if(time === '1') {
+            return $translate.instant('employees_view.full_time');
+        } else {
+            return $translate.instant('employees_view.work_time', {time: time});
+        }
     };
 
 //TODO authentication before accessing resource
@@ -546,29 +539,22 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
 })
 ;
 
-app.controller('ConfirmDaysCtrl', function ($scope, $uibModalInstance, $translate, confirmData, API, notifyService) {
-    $scope.isNegative = confirmData.daysToAdd < 0;
-    $scope.isHourly = confirmData.isHourly;
-    //for displaying
-    $scope.daysToAdd = Math.abs(confirmData.daysToAdd);
-    $scope.employee = confirmData.employee;
-
-    //for adding
-    if (!confirmData.isHourly) {
-        $scope.toAdd = parseFloat(confirmData.daysToAdd * 8);
-    } else {
-        $scope.toAdd = parseFloat(confirmData.daysToAdd);
-    }
+app.controller('ConfirmPoolChangeCtrl', function ($scope, $uibModalInstance, $translate, confirmData, API, notifyService, values) {
+    $scope.isNegative = values.hours < 0;
+    $scope.isHourly = true;
+    $scope.daysToAdd = Math.abs(values.hours);
+    $scope.employee = values.userName;
 
     $scope.confirm = function () {
         API.setUrl("/api/history").save({
-            mail: confirmData.mail,
-            hours: $scope.toAdd,
-            comment: confirmData.comment
+            mail: values.userMail,
+            hours: values.hours,
+            comment: values.comment
+        }, function() {
+            notifyService.displaySuccess($translate.instant('notify.admin.employees.changeDaysPool'));
         });
+
         $uibModalInstance.close();
-        // changed employeee days pool by admin notification
-        notifyService.displaySuccess($translate.instant('notify.admin.employees.changeDaysPool'));
     };
 
     $scope.cancel = function () {

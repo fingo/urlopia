@@ -124,6 +124,7 @@
     "days_left": "{{days}} dni {{hours}}",
     "days_left_end": " godzin.",
     "shift": "etat {{workTime_a}}/{{workTime_b}}",
+    "work_time": "{{time}} etatu",
     "full_time": "pełen etat",
     "modify_pool": "Zmień pulę urlopu",
     "mail": "Adres e-mail",
@@ -215,6 +216,7 @@
         "failure": "Wystąpił błąd podczas synchronizacji bazy danych pracowników"
       },
       "employees": {
+        "parsingProblem": "Nie udało się sparsować puli dni. Sprawdź czy została ona wpisana w formacie '0d 0h 0m'",
         "subtractDaysFail": "Nie można odjąć pracownikowi więcej dni urlopu niż aktualnie przez niego posiadanych",
         "changeDaysPool": "Pomyślnie zmodyfikowano pulę dni wolnych pracownika",
         "addDaysFail": "Próba dodania większej ilości dni niż jest to dozwolone",
