@@ -4,7 +4,7 @@ var app = angular.module("app", ["pascalprecht.translate", "ngRoute", "ui.bootst
 app.config(function ($translateProvider) {
     $translateProvider.useStaticFilesLoader({
         prefix: "locale/",
-        suffix: ".json"
+        suffix: ".json?version=0.4.18"
     })
         .preferredLanguage("pl")
         .fallbackLanguage("en")
