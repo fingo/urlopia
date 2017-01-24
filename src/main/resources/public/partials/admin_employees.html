@@ -134,15 +134,7 @@
                                     <span class="padded" translate="employees_view.works_on">
                                     </span>
                                     <b>
-                                        <span class="padded" ng-if="workTime !== 8"
-                                              translate="employees_view.shift"
-                                              translate-values="{workTime_a: workTimeA,workTime_b: workTimeB}">
-                                        </span>
-                                    </b>
-                                    <b>
-                                        <span class="padded" ng-if="workTime === 8">
-                                            {{ 'employees_view.full_time' | translate }}
-                                        </span>
+                                        <span class="padded">{{getWorkTimeTranslation(selectedWorkTime)}}</span>
                                     </b>
                                     <br>
                                     <span class="padded" translate="employees_view.days_left_start">
@@ -167,47 +159,25 @@
 
                                     <!--input-->
                                     <div class="input-group full-width">
-                                        <span class="input-group-btn">
-                                            <button id="mode_switch" class="btn btn-default no-bottom-radius"
-                                                    type="button" data-toggle="tooltip"
-                                                    data-delay='{"show":"100", "hide":"100"}' title=""
-                                                    ng-click="changeMode(workTime)"><span
-                                                    class="glyphicon glyphicon-time"
-                                                    style="color: dodgerblue"></span></button>
-                                            <button class="btn btn-default no-bottom-radius" style="margin: 0"
-                                                    type="button" ng-click="decrement()"><span
-                                                    class="glyphicon glyphicon-minus"></span></button>
-                                        </span>
-                                        <input type="text" class="form-control no-bottom-radius" value="{{daysToAdd}}"
-                                               ng-model="daysToAdd">
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-default no-bottom-radius" type="button"
-                                                    ng-click="increment()"><span
-                                                    class="glyphicon glyphicon-plus"></span></button>
-                                            <button class="btn btn-default no-bottom-radius" type="button"
-                                                    ng-click="ok()"><span
-                                                    class="glyphicon glyphicon-ok-sign"
-                                                    style="color: green"></span></button>
-                                        </span>
+                                        <input type="text" class="form-control no-bottom-radius"
+                                               ng-model="daysPoolChange" placeholder="1d 5h 40m">
+                                        <textarea class="form-control comment full-width no-bottom-radius" ng-model="comment"
+                                                  placeholder="{{ 'employees_view.comment_placeholder' | translate}}">
+                                        </textarea>
+                                        <button class="btn btn-default no-top-radius btn-block" type="button" ng-click="changeDaysPool()">
+                                            <span class="glyphicon glyphicon-ok-sign" style="color: green"></span>
+                                        </button>
                                     </div>
-                                    <textarea class="form-control comment full-width" ng-model="comment"
-                                              placeholder="{{ 'employees_view.comment_placeholder' | translate}}"></textarea>
                                 </div>
 
                                 <!--User worktime-->
                                 <div class="col-md-6">
                                     <!--title-->
                                     <b>{{ 'employees_view.modify_workTime' | translate}}</b>
-                                    <!--buttons-->
-                                    <div ng-show="showWorkTimeButtons()">
-                                        <div ng-repeat="times_table in workTimes"
-                                             id="buttons-row-{{$parent.$id}}-{{$index}}"
-                                             class="btn-group btn-group-justified button-bottom-spaced" role="group">
-                                            <button ng-repeat="time in times_table"
-                                                    class="btn btn-default" ng-click="setWorkTime(time)">{{time}}
-                                            </button>
-                                        </div>
-                                    </div>
+                                    <!--select-->
+                                    <select ng-options="getWorkTimeTranslation(time) for time in workTimes" ng-model="selectedWorkTime"
+                                            ng-change="changeWorkTime()" class="custom-select">
+                                    </select>
                                 </div>
                             </div>
                         </div>

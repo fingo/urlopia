@@ -183,21 +183,25 @@ body {
 
 #employees .comment {
     min-height: 2em;
-    height: 6em;
+    height: 4em;
     resize: none;
     border-top: none;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-
+    border-bottom: none;
+    border-radius: 0;
 }
 
-#employees .no-bottom-radius {
+.no-bottom-radius {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
 
 #employees .button-bottom-spaced {
     margin-bottom: 4%;
+}
+
+.no-top-radius {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 /*CONFIRM MODAL*/
