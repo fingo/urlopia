@@ -342,6 +342,26 @@ div.days_confirm_text{
     padding-bottom: 9px;
 }
 
+/* WORKER AND LEADER VIEW */
+th[st-sort] {
+    cursor: pointer;
+
+}
+th[st-sort]:not(.st-sort-ascent):not(.st-sort-descent) span.sort.glyphicon:after{
+    content: "\e150";
+    color: #DDD;
+}
+
+th.st-sort-ascent span.sort.glyphicon:after{
+    content: "\e155";
+    color: #337ab7
+}
+
+th.st-sort-descent span.sort.glyphicon:after{
+    content: "\e156";
+    color: #b77a33
+}
+
 .custom-select {
     background: white;
     padding: 0.5em;

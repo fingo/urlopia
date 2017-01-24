@@ -7,8 +7,7 @@ CREATE TABLE Users (
   work_time REAL                    DEFAULT 8.0
 );
 
-CREATE UNIQUE INDEX users_mail_index
-  ON Users (mail);
+CREATE UNIQUE INDEX users_mail_index ON Users (mail);
 
 CREATE TABLE Requests (
   id           SERIAL PRIMARY KEY,
@@ -22,8 +21,8 @@ CREATE TABLE Requests (
   status       VARCHAR(255)              NOT NULL   DEFAULT 'PENDING'
 );
 
-CREATE INDEX requests_modified_index
-  ON Requests (modified);
+CREATE INDEX requests_modified_index ON Requests (modified);
+CREATE INDEX requests_requester_id_index ON Requests (requester_id);
 
 CREATE TABLE Acceptances (
   id         SERIAL PRIMARY KEY,
@@ -33,8 +32,8 @@ CREATE TABLE Acceptances (
   accepted   BOOLEAN                        NOT NULL   DEFAULT FALSE
 );
 
-CREATE INDEX acceptances_requestId_index
-  ON Acceptances (request_id);
+CREATE INDEX acceptances_request_id_index ON Acceptances (request_id);
+CREATE INDEX acceptances_leader_id_index ON Acceptances (leader_id);
 
 CREATE TABLE History (
   id         SERIAL PRIMARY KEY,

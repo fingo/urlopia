@@ -94,6 +94,13 @@
       "accept": "Zatwierdź",
       "deny": "Odmów",
       "cancelRequest": "Anuluj"
+    },
+    "search": {
+      "term": "Szukaj terminu...",
+      "requester": "Szukaj wnioskodawcy..."
+    },
+    "filter": {
+      "all": "Pokaż wszystko"
     }
   },
   "navbar": {

@@ -94,6 +94,13 @@
       "accept": "Accept",
       "deny": "Deny",
       "cancelRequest": "Cancel"
+    },
+    "search": {
+      "term": "Search for term...",
+      "requester": "Search for requester..."
+    },
+    "filter": {
+      "all": "Show all"
     }
   },
   "navbar": {
