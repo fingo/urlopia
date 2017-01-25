@@ -57,7 +57,7 @@
                         </span>
                     </td>
 
-                    <td>{{request.term}}</td>
+                    <td>{{request.term}} ({{request.workDaysNumber}} {{'worker_view.work_days' | translate}})</td>
                     <td>
                         <div ng-if="request.accepted == null">
                             {{'table.in_progress' | translate}} - {{request.statusNumber}}<br>

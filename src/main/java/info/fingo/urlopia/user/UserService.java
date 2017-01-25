@@ -2,7 +2,6 @@ package info.fingo.urlopia.user;
 
 import info.fingo.urlopia.ad.ActiveDirectory;
 import info.fingo.urlopia.ad.LocalUser;
-import info.fingo.urlopia.history.HistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +26,6 @@ public class UserService {
 
     @Autowired
     private UserFactory userFactory;
-
-    @Autowired
-    private HistoryService historyService;
 
     public UserDTO getUser(Long id) {
         User userDB = userRepository.findOne(id);

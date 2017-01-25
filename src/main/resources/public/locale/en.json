@@ -74,7 +74,8 @@
     }
   },
   "worker_view": {
-    "title": "My requests"
+    "title": "My requests",
+    "work_days": "working days"
   },
   "leader_view": {
     "title": "Your team's requests"

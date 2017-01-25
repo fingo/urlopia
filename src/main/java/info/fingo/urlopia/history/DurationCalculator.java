@@ -29,11 +29,15 @@ public class DurationCalculator {
     }
 
     public static float calculate(UserDTO requester, LocalDate startDate, LocalDate endDate, HolidayService holidayService) {
-        return (float) calculateDays(startDate, endDate, holidayService) * requester.getWorkTime();
+        return calculateDays(startDate, endDate, holidayService) * requester.getWorkTime();
     }
 
     public static float calculate(RequestDTO request, HolidayService holidayService) {
-        return (float) calculateDays(request.getStartDate(), request.getEndDate(), holidayService) * request.getRequester().getWorkTime();
+        return calculateDays(request.getStartDate(), request.getEndDate(), holidayService) * request.getRequester().getWorkTime();
+    }
+
+    public static int calculateDays(RequestDTO request, HolidayService holidayService) {
+        return calculateDays(request.getStartDate(), request.getEndDate(), holidayService);
     }
 
     public static boolean isWeekend(LocalDate localDate) {
