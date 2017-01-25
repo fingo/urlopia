@@ -1,8 +1,9 @@
 package info.fingo.urlopia.request;
 
 import info.fingo.urlopia.authentication.AuthInterceptor;
+import info.fingo.urlopia.history.DurationCalculator;
+import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.user.UserDTO;
-import info.fingo.urlopia.user.UserFactory;
 import info.fingo.urlopia.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -35,6 +36,9 @@ public class RequestController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private HolidayService holidayService;
+
     @RolesAllowed("ROLES_WORKER")
     @RequestMapping(value = "/api/request/worker", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<RequestResponse> getRequestsFromWorker(HttpServletRequest httpRequest, @RequestParam(required = false) Long time) {
@@ -53,7 +57,8 @@ public class RequestController {
         Comparator<RequestDTO> comparator = (r1, r2) -> r2.getStartDate().compareTo(r1.getStartDate());
         return requests.stream()
                 .sorted(comparator)
-                .map(r -> new RequestResponse(r, acceptanceService.getAcceptancesFromRequest(r.getId())))
+                .map(r -> new RequestResponse(r, acceptanceService.getAcceptancesFromRequest(r.getId()),
+                        DurationCalculator.calculateDays(r, holidayService)))
                 .collect(Collectors.toList());
     }
 
@@ -75,7 +80,7 @@ public class RequestController {
         Comparator<AcceptanceDTO> comparator = (r1, r2) -> r2.getRequest().getStartDate().compareTo(r1.getRequest().getStartDate());
         return acceptances.stream()
                 .sorted(comparator)
-                .map(RequestResponse::new)
+                .map(a -> new RequestResponse(a, DurationCalculator.calculateDays(a.getRequest(), holidayService)))
                 .collect(Collectors.toList());
     }
 
@@ -95,7 +100,8 @@ public class RequestController {
         Comparator<RequestDTO> comparator = (r1, r2) -> r2.getCreated().compareTo(r1.getCreated());
         return requests.stream()
                 .sorted(comparator)
-                .map(r -> new RequestResponse(r, acceptanceService.getAcceptancesFromRequest(r.getId())))
+                .map(r -> new RequestResponse(r, acceptanceService.getAcceptancesFromRequest(r.getId()),
+                        DurationCalculator.calculateDays(r, holidayService)))
                 .collect(Collectors.toList());
     }
 

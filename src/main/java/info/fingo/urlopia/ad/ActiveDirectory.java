@@ -69,7 +69,7 @@ public class ActiveDirectory {
         URLOPIA_TEAM_GROUP = privateUrlopiaTeamGroup;
         MAIN_TEAM_GROUP = privateMainTeamGroup;
         LEADERS_GROUP = privateLeadersGroup;
-        MASTER_LEADER_MAIL = privateLeadersGroup;
+        MASTER_LEADER_MAIL = privateMasterLeaderMail;
     }
 
     private List<SearchResult> search(String filter) {

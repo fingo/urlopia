@@ -14,6 +14,7 @@ public class RequestResponse {
 
     private String id;
     private String term;
+    private Integer workDaysNumber = null;
     private List<AcceptanceResponse> acceptances;
     private Boolean accepted;
     private boolean cancelled;
@@ -37,8 +38,13 @@ public class RequestResponse {
         this.type = request.getType().toString();
     }
 
-    public RequestResponse(AcceptanceDTO acceptance) {
-        this(acceptance.getRequest(), Arrays.asList(acceptance));
+    public RequestResponse(RequestDTO request, List<AcceptanceDTO> acceptances, int workDaysNumber) {
+        this(request, acceptances);
+        this.workDaysNumber = workDaysNumber;
+    }
+
+    public RequestResponse(AcceptanceDTO acceptance, int workDaysNumber) {
+        this(acceptance.getRequest(), Arrays.asList(acceptance), workDaysNumber);
         this.id = String.valueOf(acceptance.getId());
     }
 
@@ -85,6 +91,10 @@ public class RequestResponse {
 
     public String getTerm() {
         return term;
+    }
+
+    public Integer getWorkDaysNumber() {
+        return workDaysNumber;
     }
 
     public List<AcceptanceResponse> getAcceptances() {

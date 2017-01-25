@@ -58,7 +58,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="request in workerRequests">
-                    <td>{{request.term}}</td>
+                    <td>{{request.term}} ({{request.workDaysNumber}} {{'worker_view.work_days' | translate}})</td>
                     <td>
                         <div ng-if="request.status == 'PENDING'">
                             <div ng-repeat="acceptance in request.acceptances">
@@ -145,7 +145,7 @@
                         {{'user.deleted' | translate}} ({{request.requester.mail}})
                     </td>
 
-                    <td>{{request.term}}</td>
+                    <td>{{request.term}} ({{request.workDaysNumber}} {{'worker_view.work_days' | translate}})</td>
 
                     <td>
                         <span ng-if="request.accepted == null">

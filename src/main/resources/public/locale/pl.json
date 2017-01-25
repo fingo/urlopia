@@ -74,7 +74,8 @@
     }
   },
   "worker_view": {
-    "title": "Moje wnioski"
+    "title": "Moje wnioski",
+    "work_days": "dni robocze"
   },
   "leader_view": {
     "title": "Wnioski do rozpatrzenia"
@@ -132,7 +133,7 @@
     "days_left_end": " godzin.",
     "shift": "etat {{workTime_a}}/{{workTime_b}}",
     "work_time": "{{time}} etatu",
-    "full_time": "pełen etat",
+    "full_time": "pełny etat",
     "modify_pool": "Zmień pulę urlopu",
     "mail": "Adres e-mail",
     "all_teams": "Wszystkie zespoły",
