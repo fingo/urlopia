@@ -111,12 +111,11 @@ public class ActiveDirectory {
     }
 
     private boolean isTeam(String group) {
-
         return group.contains(StringEscapeUtils.unescapeJava(TEAM_IDENTIFIER)) && !group.equals(MAIN_TEAM_GROUP);
     }
 
-    private boolean isLeader(String memberOf) {
-        return memberOf.contains(LEADERS_GROUP);
+    private boolean isLeader(String leaderOf) {
+        return !leaderOf.isEmpty();
     }
 
     private boolean isB2B(String memberOf) {
@@ -161,7 +160,7 @@ public class ActiveDirectory {
         localUser.setPrincipalName(getAttribute(attributes, "userPrincipalName"));
         localUser.setName(getAttribute(attributes, "givenname"));
         localUser.setSurname(getAttribute(attributes, "sn"));
-        localUser.setLeader(isLeader(getAttribute(attributes, "memberOf")));
+        localUser.setLeader(isLeader(getAttribute(attributes, "managedObjects")));
         localUser.setB2B(isB2B(getAttribute(attributes, "memberOf")));
         localUser.setEC(isEC(getAttribute(attributes, "memberOf")));
         localUser.setUrlopiaTeam(isUrlopiaTeam(getAttribute(attributes, "memberOf")));
