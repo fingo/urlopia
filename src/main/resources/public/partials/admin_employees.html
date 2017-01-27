@@ -111,8 +111,14 @@
             <td>{{ user.mail }}</td>
             <td>
                 <span ng-repeat="team in user.teams">
-                    <span ng-if="user.teams.length == 1 || $last">{{ team.name }}</span>
-                    <span ng-if="user.teams.length > 1 && !$last">{{ team.name + ',' }}</span>
+                    <span style="font-weight: 700;" ng-if="team.leader.teams.length">
+                        <span ng-if="user.teams.length == 1 || $last">{{ team.name }}</span>
+                        <span ng-if="user.teams.length > 1 && !$last">{{ team.name + ',' }}</span>
+                    </span>
+                    <span ng-if="!team.leader.teams.length">
+                        <span ng-if="user.teams.length == 1 || $last">{{ team.name }}</span>
+                        <span ng-if="user.teams.length > 1 && !$last">{{ team.name + ',' }}</span>
+                    </span>
                 </span>
             </td>
             <td>
