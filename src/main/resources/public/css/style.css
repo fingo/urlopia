@@ -159,6 +159,10 @@ body {
     margin: auto
 }
 
+.login-modal {
+    background: #808080;
+}
+
 /*EMPLOYEES TABLE*/
 
 /*BOOTSTRAP OVERRIDE*/
