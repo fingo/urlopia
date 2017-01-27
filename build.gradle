@@ -89,3 +89,10 @@ dependencies {
 springBoot  {
     buildInfo()
 }
+
+bootRun {
+    jvmArgs = [
+            "-Dspring.devtools.restart.enabled=false",
+    ]
+    addResources = true
+}

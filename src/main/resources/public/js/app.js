@@ -86,7 +86,7 @@ app.controller('ApplicationController', function ($scope, $uibModal, $location, 
                     controller: 'LoginCtrl',
                     backdrop: 'static',
                     keyboard: false,
-                    windowClass: 'large-Modal'
+                    windowClass: 'large-Modal login-modal'
                 });
         }
     };
