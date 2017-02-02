@@ -53,7 +53,7 @@ public class ActiveDirectory {
     private String privateLeadersGroup;
     private static String LEADERS_GROUP;
 
-    @Value("${ad.user.masterLeader}")
+    @Value("${ad.user.master.leader}")
     private String privateMasterLeaderMail;
     private static String MASTER_LEADER_MAIL;
 
