@@ -4,6 +4,7 @@ import info.fingo.urlopia.ad.ActiveDirectory;
 import info.fingo.urlopia.ad.LocalTeam;
 import info.fingo.urlopia.ad.LocalUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -21,6 +22,9 @@ public class UserFactory {
     @Autowired
     ActiveDirectory activeDirectory;
 
+    @Value("${ad.user.master.leader}")
+    String masterLeader;
+
     public UserDTO create(User userDB) {
         long id = userDB.getId();
         String mail = userDB.getMail();
@@ -31,7 +35,7 @@ public class UserFactory {
             String lang = userDB.getLang();
             String firstName = userAD.get().getName();
             String lastName = userAD.get().getSurname();
-            boolean leader = userAD.get().isLeader();
+            boolean leader = masterLeader.equals(userAD.get().getPrincipalName()) || userAD.get().isLeader();
             boolean B2B = userAD.get().isB2B();
             boolean EC = userAD.get().isEC();
             boolean urlopiaTeam = userAD.get().isUrlopiaTeam();
