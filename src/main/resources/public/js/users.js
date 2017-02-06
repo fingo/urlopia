@@ -132,6 +132,9 @@ app.controller('WorkerHistoryCtrl', function ($scope, API, Session) {
     $scope.year = new Date().getFullYear();
     $scope.years = [];
     $scope.Math = window.Math;
+    API.setUrl('/api/user/contract').get({userId: Session.data.userId}, function (ec) {
+        $scope.ec = ec;
+    });
     $scope.histories = API.setUrl('/api/workerHistory').get({userId: Session.data.userId, year: $scope.year});
     $scope.firstHistory = API.setUrl('/api/firstHistory').get({userId: Session.data.userId}, function (firstHistory) {
 
