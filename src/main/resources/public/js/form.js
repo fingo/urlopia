@@ -1,11 +1,18 @@
 app.controller('formCtrl', function ($scope, $resource, $uibModalInstance, $translate, API, updater, Session, $filter, notifyService) {
 
+    function uniqueFilter(value, index, self) {
+        return self.indexOf(value) === index;
+    }
+
     $scope.day = 24 * 60 * 60 * 1000;   // 24 hours
     $scope.today = new Date();
     $scope.tomorrow = new Date($scope.today.getTime() + $scope.day);
     $scope.requester = Session.data.name + " " + Session.data.surname;
     $scope.requesterMail = Session.data.mail;
     $scope.teams = Session.data.teams;
+    $scope.leadersNames = $scope.teams.map(function (team) {
+        return team.leader.name + ' ' + team.leader.surname;
+    }).filter(uniqueFilter);
     $scope.startDate = new Date($scope.today.getTime());
     $scope.endDate = new Date($scope.today.getTime());
     $scope.format = 'yyyy-MM-dd';

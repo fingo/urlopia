@@ -28,12 +28,10 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Sends messages via email
@@ -288,8 +286,10 @@ public class MailBot {
         model.put("endDate", endDate);
 
         //informing team leaders about the occasion
-        for (LocalTeam team : teams) {
-            String leaderMail = team.getLeader().getPrincipalName();
+        Set<String> leadersMails = teams.stream()
+                .map(t -> t.getLeader().getPrincipalName())
+                .collect(Collectors.toSet());
+        for (String leaderMail : leadersMails) {
             UserDTO leader = userFactory.create(userRepository.findFirstByMail(leaderMail));
             Optional<Template> leaderTemplate = getTemplate("occasionalInfo", leader.getLang());
             if (leaderTemplate.isPresent()) {

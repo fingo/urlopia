@@ -1,13 +1,14 @@
 package info.fingo.urlopia.request;
 
-import info.fingo.urlopia.ad.LocalTeam;
 import info.fingo.urlopia.events.OccasionalInfoEvent;
 import info.fingo.urlopia.events.OccasionalResponseEvent;
 import info.fingo.urlopia.events.RequestAcceptedEvent;
 import info.fingo.urlopia.history.DurationCalculator;
 import info.fingo.urlopia.history.HistoryService;
 import info.fingo.urlopia.holidays.HolidayService;
-import info.fingo.urlopia.user.*;
+import info.fingo.urlopia.user.User;
+import info.fingo.urlopia.user.UserDTO;
+import info.fingo.urlopia.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -16,9 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -168,8 +169,11 @@ public class RequestService {
 
             if (request != null) {
                 // create acceptances for leaders
-                for (LocalTeam team : requester.getTeams()) {
-                    User leader = userRepository.findFirstByMail(team.getLeader().getPrincipalName());
+                Set<String> leadersMails = requester.getTeams().stream()
+                        .map(t -> t.getLeader().getPrincipalName())
+                        .collect(Collectors.toSet());
+                for (String leaderMail : leadersMails) {
+                    User leader = userRepository.findFirstByMail(leaderMail);
                     acceptanceService.insert(request, leader);
                 }
 
