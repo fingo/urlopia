@@ -56,4 +56,11 @@ public class UserController {
                 .map(HistoryResponse::new)
                 .collect(Collectors.toCollection(LinkedList::new));
     }
+
+    @RolesAllowed({"ROLES_ADMIN", "ROLES_LEADER", "ROLES_WORKER"})
+    @RequestMapping(value = "/contract", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Boolean isEC (Long userId) {
+        return service.getUser(userId).isEC();
+    }
+
 }
