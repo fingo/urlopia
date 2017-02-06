@@ -1,4 +1,4 @@
-var app = angular.module("app", ["pascalprecht.translate", "ngRoute", "ui.bootstrap", "ngResource", "autoUpdate", "ngCookies", "ngProgress", "smart-table"]);
+var app = angular.module("app", ["pascalprecht.translate", "ngRoute", "ui.bootstrap", "ngResource", "autoUpdate", "ngCookies", "ngProgress", "smart-table", "ngSanitize"]);
 
 // i18n
 app.config(function ($translateProvider) {
