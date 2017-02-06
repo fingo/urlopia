@@ -56,7 +56,7 @@
             </td>
             <td>{{ history.comment }}</td>
         </tr>
-        <tr ng-repeat-end ng-if="history.workTime !== orderedHistory[$index + 1].workTime">
+        <tr ng-repeat-end ng-if="ec == 'true' && history.workTime !== orderedHistory[$index + 1].workTime">
             <td colspan="5">
                 <span ng-if="orderedHistory[$index + 1] != null">
                     {{'employees_view.workTime_changed' | translate}} :
