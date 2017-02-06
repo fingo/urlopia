@@ -6,12 +6,15 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
     // WORKER VIEW
     $scope.worker = {};
     $scope.worker.requests = [];
+    API.setUrl('/api/user/contract').get({userId: Session.data.userId}, function (response) {
+        $scope.worker.ec = response;
+    });
     $scope.worker.holidaysPool = API.setUrl('/api/history').get({userId: Session.data.userId});
 
     // for smart-table
     $scope.workerRequests = [];
     $scope.workerRequestsSafe = [];
-    $scope.$watch('worker', function(newObj) {
+    $scope.$watch('worker', function (newObj) {
         $scope.workerRequests = newObj.requests;
         $scope.workerRequestsSafe = newObj.requests;
     });
@@ -35,7 +38,7 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
         // for smart-table
         $scope.leaderRequests = [];
         $scope.leaderRequestsSafe = [];
-        $scope.$watch('leader', function(newObj) {
+        $scope.$watch('leader', function (newObj) {
             $scope.leaderRequests = newObj.requests;
             $scope.leaderRequestsSafe = newObj.requests;
         });
@@ -80,7 +83,7 @@ app.controller('RequestsCtrl', function ($scope, $translate, updater, API, Sessi
     // for smart-table
     $scope.adminRequests = [];
     $scope.adminRequestsSafe = [];
-    $scope.$watch('admin', function(newObj) {
+    $scope.$watch('admin', function (newObj) {
         $scope.adminRequests = newObj.requests;
         $scope.adminRequestsSafe = newObj.requests;
     });
@@ -471,9 +474,9 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
     // DAYS POOL
     $scope.daysPoolChange = '';
 
-    var parseDaysPool = function() {
+    var parseDaysPool = function () {
         var regEx = /^ *[+-]?( *\d+d)?( *\d+h)?( *\d+m)? *$/;
-        if(!regEx.test($scope.daysPoolChange)) {
+        if (!regEx.test($scope.daysPoolChange)) {
             return false;
         }
 
@@ -490,7 +493,7 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
         hours += parsedPart ? parseInt(parsedPart[1]) / 60 : 0;
 
         // determine the sign
-        if(new RegExp("-").test($scope.daysPoolChange)) {
+        if (new RegExp("-").test($scope.daysPoolChange)) {
             hours *= -1;
         }
 
@@ -501,7 +504,7 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
         var hours = parseDaysPool();
 
         // check format
-        if(!hours) {
+        if (!hours) {
             notifyService.displayDanger($translate.instant('notify.admin.employees.parsingProblem'));
             return false;
         }
@@ -523,21 +526,23 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
             templateUrl: 'partials/confirm_days.html',
             controller: 'ConfirmPoolChangeCtrl',
             resolve: {
-                values: function() {
-                    return {hours: hours,
+                values: function () {
+                    return {
+                        hours: hours,
                         userMail: $scope.user.principalName,
                         comment: $scope.comment,
-                        userName: $scope.user.surname + " " + $scope.user.name};
+                        userName: $scope.user.surname + " " + $scope.user.name
+                    };
                 }
             }
         }).closed.then(function () {
             $scope.$parent.$parent.isCollapsed = true;
 
             /* TODO: make view changes without collapsing
-            $scope.userHours += hours;
-            $scope.daysPoolChange = '';
-            $scope.comment = '';
-            */
+             $scope.userHours += hours;
+             $scope.daysPoolChange = '';
+             $scope.comment = '';
+             */
         });
     };
 
@@ -551,8 +556,8 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
             })
     };
 
-    $scope.getWorkTimeTranslation = function(time) {
-        if(time === '1') {
+    $scope.getWorkTimeTranslation = function (time) {
+        if (time === '1') {
             return $translate.instant('employees_view.full_time');
         } else {
             return $translate.instant('employees_view.work_time', {time: time});
@@ -578,7 +583,7 @@ app.controller('ConfirmPoolChangeCtrl', function ($scope, $uibModalInstance, $tr
             mail: values.userMail,
             hours: values.hours,
             comment: values.comment
-        }, function() {
+        }, function () {
             notifyService.displaySuccess($translate.instant('notify.admin.employees.changeDaysPool'));
         });
 
