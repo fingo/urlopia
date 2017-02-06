@@ -373,3 +373,16 @@ th.st-sort-descent span.sort.glyphicon:after{
     width: 100%;
     border-radius: 3px;
 }
+
+/* CREATE REQUEST MODAL */
+.popover-content ul {
+    padding-left: 1em;
+}
+
+.occasional-info {
+    padding: 0.2em 0.3em 0.2em 0;
+    font-size: 1.8em;
+    text-align: right;
+    color: #337ab7;
+    float: right;
+}

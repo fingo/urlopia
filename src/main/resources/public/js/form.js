@@ -1,7 +1,13 @@
-app.controller('formCtrl', function ($scope, $resource, $uibModalInstance, $translate, API, updater, Session, $filter, notifyService) {
+app.controller('formCtrl', function ($scope, $resource, $uibModalInstance, $translate, API, updater, Session, $filter, notifyService, $sce) {
 
     function uniqueFilter(value, index, self) {
         return self.indexOf(value) === index;
+    }
+
+    function htmlDecode(input){
+        var e = document.createElement('div');
+        e.innerHTML = input;
+        return e.childNodes[0].nodeValue;
     }
 
     $scope.day = 24 * 60 * 60 * 1000;   // 24 hours
@@ -26,6 +32,8 @@ app.controller('formCtrl', function ($scope, $resource, $uibModalInstance, $tran
     };
 
     //Dropdown
+    $scope.info = htmlDecode($translate.instant('occasional.info'));
+
     $scope.reasons = [$translate.instant('occasional.birth2'), $translate.instant('occasional.funeral2'), $translate.instant('occasional.wedding2'), $translate.instant('occasional.funeral1'), $translate.instant('occasional.wedding1')];
     $scope.status = {
         isopen: false
