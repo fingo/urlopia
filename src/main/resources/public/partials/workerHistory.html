@@ -41,13 +41,13 @@
             </td>
             <td ng-if="!history.request">{{ history.deciderName }}</td>
             <td>
-                <span ng-if="!history.request || (history.request.type === 'NORMAL' && history.hours > 0)">
+                <span ng-if="!history.request || (history.request.type === 'NORMAL' && history.hours[0] !== '-')">
                     <span class="text-center text-success">{{ history.days }}</span>
                 </span>
                 <span ng-if="history.request.type === 'OCCASIONAL'">
                     <span class="text-center text-warning">{{ history.days }}</span>
                 </span>
-                <span ng-if="history.request.type === 'NORMAL' && history.hours < 0">
+                <span ng-if="history.request.type === 'NORMAL' && history.hours[0] === '-'">
                     <span class="text-center text-danger">{{ history.days }} </span>
                 </span>
             </td>
