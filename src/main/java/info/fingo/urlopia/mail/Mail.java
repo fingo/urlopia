@@ -13,6 +13,19 @@ public class Mail {
     private String subject;
     private String content;
 
+    public Mail () {
+
+    }
+
+    public Mail(String senderAddress, String senderName, String recipientAddress, String recipientName, String subject, String content) {
+        this.senderAddress = senderAddress;
+        this.senderName = senderName;
+        this.recipientAddress = recipientAddress;
+        this.recipientName = recipientName;
+        this.subject = subject;
+        this.content = content;
+    }
+
     // PUBLIC METHODS
     public String getSenderAddress() {
         return senderAddress;

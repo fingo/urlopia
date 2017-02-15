@@ -22,22 +22,22 @@ import java.util.Optional;
 public class MailDecider {
 
     @Autowired
-    private UserService userService;
+    UserService userService;
 
     @Autowired
     private RequestService requestService;
 
     @Autowired
-    private AcceptanceService acceptanceService;
+    AcceptanceService acceptanceService;
 
     @Autowired
-    private MailParser mailParser;
+    MailParser mailParser;
 
     @Autowired
     private MailBot mailBot;
 
     @Autowired
-    private ActiveDirectory activeDirectory;
+    ActiveDirectory activeDirectory;
 
 
     private void addRequest(UserDTO requester) {
