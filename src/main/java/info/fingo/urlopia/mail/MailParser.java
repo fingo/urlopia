@@ -65,7 +65,7 @@ public class MailParser {
             return;
         }
 
-        isReply = subject.contains("Re:") || subject.contains("Odp.:");
+        isReply = subject.toLowerCase().matches(".*(re:|odp.:|odp:).*");
         if (isReply) {
             int b1 = subject.indexOf('[');
             int b2 = subject.indexOf(']');
@@ -165,7 +165,7 @@ public class MailParser {
     }
 
     public boolean isAcceptedByMail(String decision) {
-        return "ok".equals(decision) || "tak".equals(decision) || "yes".equals(decision);
+        return decision.matches(".*(tak|yes|ok).*");
     }
 
     public boolean checkDate(LocalDate startDate, LocalDate endDate) {
