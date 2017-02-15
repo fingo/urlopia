@@ -181,14 +181,15 @@ public class MailBot {
         model.put("appUrl", appUrl);
 
         // creating & sending mail
-        for (LocalTeam team : requester.getTeams()) {
-            UserDTO leader = userService.getUser(team.getLeader().getPrincipalName());
-            String lang = leader.getLang();
+        List<LocalTeam> teams = requester.getTeams();
+        Set<String> leadersMails = teams.stream()
+                .map(t -> t.getLeader().getPrincipalName())
+                .collect(Collectors.toSet());
+        for (String leaderMail : leadersMails) {
+            UserDTO leader = userFactory.create(userRepository.findFirstByMail(leaderMail));
 
-            Optional<Template> template = getTemplate("newRequestNotification", lang);
-            if (template.isPresent()) {
-                send(prepareMail(template.get(), model, leader));
-            }
+            Optional<Template> leaderTemplate = getTemplate("newRequestNotification", leader.getLang());
+            leaderTemplate.ifPresent(template -> send(prepareMail(template, model, leader)));
         }
     }
 
