@@ -37,8 +37,7 @@ public class MailParser {
     private String reply;
 
     public boolean parseContent(Mail mail) {
-        String[] emailLines;
-        emailLines = mail.getContent().split("\\r\\n");
+        String[] emailLines = splitByLines(mail.getContent());
         emailContent = "";
 
         for (String line : emailLines) {
@@ -58,6 +57,10 @@ public class MailParser {
         return correct;
     }
 
+    private String[] splitByLines(String text) {
+        return text.split("\\r\\n|\\n|\\r");
+    }
+
     public void parseSubject(Mail mail) {
         String subject = mail.getSubject();
 
@@ -74,7 +77,7 @@ public class MailParser {
     }
 
     public void parseReply(Mail mail) {
-        String[] emailLines = mail.getContent().split("\\r\\n");
+        String[] emailLines = splitByLines(mail.getContent());
         reply = emailLines[0];
     }
 

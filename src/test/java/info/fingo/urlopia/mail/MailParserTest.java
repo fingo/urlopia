@@ -1,16 +1,16 @@
 package info.fingo.urlopia.mail;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
 
+import static org.junit.Assert.*;
+
 /**
  * @author Józef Grodzicki
  */
 public class MailParserTest {
-    private LocalDate date;
     private Mail mail;
     private MailParser mailParser;
     private LocalDate expectedStartDate;
@@ -20,7 +20,6 @@ public class MailParserTest {
 
     @Before
     public void init() {
-        date = LocalDate.now();
         mail = new Mail();
         mailParser = new MailParser();
         expectedStartDate = LocalDate.now();
@@ -58,9 +57,9 @@ public class MailParserTest {
 
         for (String[] dateFormat : dateFormats) {
             boolean parsedIsCorrect = parseSingleDate(dateFormat[0], dateFormat[1]);
-            Assert.assertTrue(dateFormat[0], parsedIsCorrect);
-            Assert.assertEquals(dateFormat[0], expectedStartDate, startDate);
-            Assert.assertEquals(dateFormat[0], expectedEndDate, endDate);
+            assertTrue(dateFormat[0], parsedIsCorrect);
+            assertEquals(dateFormat[0], expectedStartDate, startDate);
+            assertEquals(dateFormat[0], expectedEndDate, endDate);
         }
     }
 
@@ -79,7 +78,25 @@ public class MailParserTest {
 
         for (String[] dateFormat : dateFormats) {
             boolean parsedIsCorrect = parseSingleDate(dateFormat[0], dateFormat[1]);
-            Assert.assertFalse(dateFormat[0], parsedIsCorrect);
+            assertFalse(dateFormat[0], parsedIsCorrect);
         }
+    }
+
+    @Test
+    public void shouldParseAsReplyAndFindRequestId() throws Exception {
+        mail.setSubject("Odp: Prośba o urlop [98]");
+        mailParser.parseSubject(mail);
+        assertTrue(mailParser.isReply());
+        assertEquals(98, mailParser.getId());
+
+    }
+
+    @Test
+    public void shouldFindOKanswer() {
+        mail.setContent("Ok\n" +
+                "Jan Nowak\n" +
+                "superfirma sp. z o.o.");
+        mailParser.parseReply(mail);
+        assertEquals("Ok", mailParser.getReply());
     }
 }
