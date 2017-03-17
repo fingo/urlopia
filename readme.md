@@ -80,6 +80,8 @@ In order to run the app you have to provide your configuration variables.
 - in IntelliJ Idea go to: `Run`>`Edit Configurations`>`UrlopiaApplication`
 - on the Configuration page select Environment variables and click the paste icon
 
+You can also create application.properties file in src/main/resources.
+
 #### PostgreSQL
 To create PostgreSQL role & database, navigate to `\bin` folder in your
 PostgreSQL installation location in the terminal and type:
