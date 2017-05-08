@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
@@ -37,6 +38,9 @@ public class ReportView extends AbstractXlsxView {
             "choroba do 33 dni", "choroba pow. 33 dni", "opieka nad chorym", "opieka nad dzieckiem",
             "nieob. inne płatne", "nieob. inne niepłatne", "nieob. nieusprawiedliwione", "dyżury"
     };
+
+    @Autowired
+    private HolidayService holidayService;
 
     @Value("${report.company.name}")
     private String companyName;
@@ -168,7 +172,7 @@ public class ReportView extends AbstractXlsxView {
         }
 
         // for every month row till today
-        int currentMonth = LocalDate.now().getMonthValue();
+        int currentMonth = LocalDate.now().getMonthValue() - 1;
         for (int i = 0; i < currentMonth; ++i) {
             XSSFRow monthRow = sheet.createRow(8 + i);
             XSSFCell monthNumberCell = monthRow.createCell(0);
@@ -229,7 +233,7 @@ public class ReportView extends AbstractXlsxView {
 
                 if (isAccepted) {
                     for (LocalDate k = r.getStartDate(); !k.isAfter(r.getEndDate()); k = k.plusDays(1)) {
-                        if (!DurationCalculator.isWeekend(k)) {
+                        if (k.getMonthValue() < currentMonth && !DurationCalculator.isFreeDay(k, holidayService)) {
                             XSSFCell uwCell = sheet.getRow(7 + k.getMonthValue()).getCell(k.getDayOfMonth());
                             uwCell.setCellValue("uw");
                         }

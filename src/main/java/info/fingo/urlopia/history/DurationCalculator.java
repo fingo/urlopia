@@ -46,7 +46,10 @@ public class DurationCalculator {
 
     public static boolean isHoliday(LocalDate date, HolidayService holidayService) {
         List<LocalDate> holidays = holidayService.getAllHolidaysDates();
-
         return holidays.contains(date);
+    }
+
+    public static boolean isFreeDay(LocalDate date, HolidayService holidayService) {
+        return isWeekend(date) || isHoliday(date, holidayService);
     }
 }
