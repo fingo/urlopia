@@ -29,7 +29,7 @@ public class AcceptanceService {
     private UserRepository userRepository;
 
     @Autowired
-    private AcceptanceFactory factory;
+    private AcceptanceFactory acceptanceFactory;
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
@@ -38,16 +38,13 @@ public class AcceptanceService {
     private RequestService requestService;
 
     @Autowired
-    private AcceptanceFactory acceptanceFactory;
-
-    @Autowired
     private RequestRepository requestRepository;
 
 
     public AcceptanceDTO getAcceptance(long acceptanceId) {
         Acceptance acceptance = acceptanceRepository.findOne(acceptanceId);
 
-        return factory.create(acceptance);
+        return acceptanceFactory.create(acceptance);
     }
 
     public List<AcceptanceDTO> getAcceptancesFromRequest(long requestId) {
@@ -55,7 +52,7 @@ public class AcceptanceService {
 
         List<AcceptanceDTO> requestAcceptances = new LinkedList<>();
         requestAcceptances.addAll(acceptances.stream()
-                .map(factory::create)
+                .map(acceptanceFactory::create)
                 .collect(Collectors.toList()));
 
         return requestAcceptances;
@@ -66,7 +63,7 @@ public class AcceptanceService {
 
         List<AcceptanceDTO> leaderAcceptances = new LinkedList<>();
         leaderAcceptances.addAll(acceptances.stream()
-                .map(factory::create)
+                .map(acceptanceFactory::create)
                 .collect(Collectors.toList()));
 
         return leaderAcceptances;
@@ -96,7 +93,7 @@ public class AcceptanceService {
             acceptance.setDecider(decider);
             acceptance.getRequest().setModified(LocalDateTime.now());
 
-            eventPublisher.publishEvent(new DecisionResultEvent(this, acceptance.getId()));
+            eventPublisher.publishEvent(new DecisionResultEvent(this, acceptanceFactory.create(acceptance)));
             requestService.checkForActions(acceptance.getRequest());
             success = true;
         }
@@ -122,7 +119,7 @@ public class AcceptanceService {
 
         // send mail to requester only if it is not canceling
         if (!(acceptance.getRequest().getRequester().getId() == decider.getId())) {
-            eventPublisher.publishEvent(new DecisionResultEvent(this, acceptance.getId()));
+            eventPublisher.publishEvent(new DecisionResultEvent(this, acceptanceFactory.create(acceptance)));
         }
 
         return success;
@@ -130,7 +127,7 @@ public class AcceptanceService {
 
     public void insert(Request request, User leader) {
         Acceptance acceptance = acceptanceRepository.save(new Acceptance(request, leader));
-        eventPublisher.publishEvent(new NewRequestNotificationEvent(this, acceptance.getId()));
+        eventPublisher.publishEvent(new NewRequestNotificationEvent(this, acceptanceFactory.create(acceptance)));
     }
 
     /*

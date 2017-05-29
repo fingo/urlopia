@@ -14,7 +14,12 @@ public class Mail {
     private String content;
 
     public Mail () {
+        // No-args constructor to build emails
+    }
 
+    public Mail(EmailTemplate template) {
+        this.subject = template.getSubject();
+        this.content = template.getContent();
     }
 
     public Mail(String senderAddress, String senderName, String recipientAddress, String recipientName, String subject, String content) {

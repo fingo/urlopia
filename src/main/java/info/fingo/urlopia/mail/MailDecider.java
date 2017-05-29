@@ -2,6 +2,8 @@ package info.fingo.urlopia.mail;
 
 import info.fingo.urlopia.ad.ActiveDirectory;
 import info.fingo.urlopia.ad.LocalUser;
+import info.fingo.urlopia.events.MailParsingProblemEvent;
+import info.fingo.urlopia.events.RequestFailedEvent;
 import info.fingo.urlopia.request.AcceptanceService;
 import info.fingo.urlopia.request.NotEnoughDaysException;
 import info.fingo.urlopia.request.RequestOverlappingException;
@@ -9,6 +11,7 @@ import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -34,10 +37,10 @@ public class MailDecider {
     MailParser mailParser;
 
     @Autowired
-    private MailBot mailBot;
+    ActiveDirectory activeDirectory;
 
     @Autowired
-    ActiveDirectory activeDirectory;
+    private ApplicationEventPublisher eventPublisher;
 
 
     private void addRequest(UserDTO requester) {
@@ -47,7 +50,7 @@ public class MailDecider {
         try {
             requestService.insertNormal(requester, startDate, endDate);
         } catch (NotEnoughDaysException | RequestOverlappingException e) {
-            mailBot.sendRequestFailed(requester);
+            eventPublisher.publishEvent(new RequestFailedEvent(this, requester));
         }
     }
 
@@ -63,7 +66,7 @@ public class MailDecider {
     }
 
     private void resolvingProblem(UserDTO sender) {
-        mailBot.sendMailParsingProblem(sender);
+        eventPublisher.publishEvent(new MailParsingProblemEvent(this, sender));
     }
 
     public void resolve(Mail mail) {
