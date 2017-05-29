@@ -2,18 +2,15 @@ package info.fingo.urlopia.mail;
 
 import info.fingo.urlopia.ad.ActiveDirectory;
 import info.fingo.urlopia.ad.LocalUser;
-import info.fingo.urlopia.request.Acceptance;
 import info.fingo.urlopia.request.AcceptanceService;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserService;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.LinkedList;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -68,7 +65,6 @@ public class MailDeciderTest {
 
         mailDecider.resolve(mail);
     }
-
 
     private class RequestAccepted extends Exception {}
     private class RequestRejected extends Exception {}

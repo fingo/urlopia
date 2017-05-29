@@ -1,5 +1,6 @@
 package info.fingo.urlopia.events;
 
+import info.fingo.urlopia.request.AcceptanceDTO;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -7,19 +8,19 @@ import org.springframework.context.ApplicationEvent;
  */
 public class NewRequestNotificationEvent extends ApplicationEvent {
 
-    private final long id;
+    private final AcceptanceDTO acceptance;
 
     /**
      * Create a new ApplicationEvent.
      *
      * @param source the object on which the event initially occurred (never {@code null})
      */
-    public NewRequestNotificationEvent(Object source, long id) {
+    public NewRequestNotificationEvent(Object source, AcceptanceDTO acceptance) {
         super(source);
-        this.id = id;
+        this.acceptance = acceptance;
     }
 
-    public long getId() {
-        return id;
+    public AcceptanceDTO getAcceptance() {
+        return acceptance;
     }
 }
