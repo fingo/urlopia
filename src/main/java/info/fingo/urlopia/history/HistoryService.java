@@ -1,7 +1,9 @@
 package info.fingo.urlopia.history;
 
 import info.fingo.urlopia.holidays.HolidayService;
-import info.fingo.urlopia.request.*;
+import info.fingo.urlopia.request.Request;
+import info.fingo.urlopia.request.RequestDTO;
+import info.fingo.urlopia.request.RequestRepository;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserRepository;
@@ -41,7 +43,8 @@ public class HistoryService {
     public void insert(RequestDTO requestDTO) {
         float hours = -DurationCalculator.calculate(requestDTO, holidayService);
         Request request = requestRepository.findOne(requestDTO.getId());
-        historyRepository.save(new History(request, hours));
+        String term = requestDTO.getTerm();
+        historyRepository.save(new History(request, hours, term));
     }
 
     public void insertReversed(RequestDTO requestDTO) {
