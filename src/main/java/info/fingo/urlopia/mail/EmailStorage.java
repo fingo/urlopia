@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EmailStorage {
 
-    @Value("${email.storage.vacations-ec}")
+    @Value("${email.storage.vacations.ec}")
     private String ecVacationsStorage;
 
     @Autowired
