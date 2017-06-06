@@ -1,131 +1,170 @@
 app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session, notifyService) {
     var isLeader = Session.data.userRoles.indexOf("ROLES_LEADER") !== -1;
-    var workerRequestsTask = null;
-    var leaderRequestsTask = null;
 
     // WORKER VIEW
     $scope.worker = {};
-    $scope.worker.requests = [];
-    API.setUrl('/api/user/contract').get({userId: Session.data.userId}, function (response) {
-        $scope.worker.ec = response;
-    });
+    $scope.worker.ec = API.setUrl('/api/user/contract').get({userId: Session.data.userId});
     $scope.worker.holidaysPool = API.setUrl('/api/history').get({userId: Session.data.userId});
+    $scope.worker.isLoading = false;
+    $scope.worker.displayed = [];
+    $scope.worker.currentRequest = null;
 
-    // for smart-table
-    $scope.workerRequests = [];
-    $scope.workerRequestsSafe = [];
-    $scope.$watch('worker', function (newObj) {
-        $scope.workerRequests = newObj.requests;
-        $scope.workerRequestsSafe = newObj.requests;
-    });
+    $scope.worker.callServer = function (tableState) {
+        $scope.worker.isLoading = true;
 
-    $scope.worker.cancelRequest = function (requestID) {
-        var action = API.setUrl('/api/request/cancelRequest');
-        action.save({requestID: requestID, action: "cancelRequest"}, function () {
-            updater.load();
+        // paging
+        var pagination = tableState.pagination;
+        var entriesPerPage = pagination.number || 5;
+        var selectedPage = parseInt(pagination.start / entriesPerPage) || 0;
+
+        // sorting
+        var sort = tableState.sort;
+        var sortColumn = sort.predicate || 'startDate';
+        var sortDirection = (sort.reverse || !sort.predicate) ? 'DESC' : 'ASC';
+
+        var server = API.setUrl('/api/request/worker?page=:page&size=:size&sort=:sort', {
+            page: selectedPage,
+            size: entriesPerPage,
+            sort: sortColumn + ',' + sortDirection
         });
-
-        // request canceled notification
-        notifyService.displayInfo($translate.instant('notify.request.cancel'));
+        $scope.worker.currentRequest = server.get(function (response) {
+            if (response.content ===  $scope.worker.currentRequest.content) {
+                $scope.worker.displayed = response.content;
+                tableState.pagination.numberOfPages = response.totalPages;
+                $scope.worker.isLoading = false;
+            }
+        })
     };
-    workerRequestsTask = updater.addTask($scope.worker.requests, "/api/request/worker");
+
+    $scope.worker.cancelRequest = function (request) {
+        var action = API.setUrl('/api/request/cancelRequest');
+        action.save({requestID: request.id, action: "cancelRequest"}, function () {
+            notifyService.displayInfo($translate.instant('notify.request.cancel'));
+            request.status = 'CANCELLED';
+        });
+    };
 
     // LEADER VIEW
     if (isLeader) {
         $scope.leader = {};
-        $scope.leader.requests = [];
+        $scope.leader.isLoading = false;
+        $scope.leader.displayed = [];
+        $scope.leader.currentRequest = null;
 
-        // for smart-table
-        $scope.leaderRequests = [];
-        $scope.leaderRequestsSafe = [];
-        $scope.$watch('leader', function (newObj) {
-            $scope.leaderRequests = newObj.requests;
-            $scope.leaderRequestsSafe = newObj.requests;
-        });
+        $scope.leader.callServer = function (tableState) {
+            $scope.leader.isLoading = true;
 
-        $scope.leader.accept = function (acceptanceId) {
+            // paging
+            var pagination = tableState.pagination;
+            var entriesPerPage = pagination.number || 8;
+            var selectedPage = parseInt(pagination.start / entriesPerPage) || 0;
+
+            // sorting
+            var sort = tableState.sort;
+            var sortColumn = sort.predicate || 'request.created';
+            var sortDirection = (sort.reverse || !sort.predicate) ? 'DESC' : 'ASC';
+
+            var server = API.setUrl('/api/request/leader?page=:page&size=:size&sort=:sort', {
+                page: selectedPage,
+                size: entriesPerPage,
+                sort: sortColumn + ',' + sortDirection
+            });
+            $scope.leader.currentRequest = server.get(function (response) {
+                if (response.content ===  $scope.leader.currentRequest.content) {
+                    $scope.leader.displayed = response.content;
+                    tableState.pagination.numberOfPages = response.totalPages;
+                    $scope.leader.isLoading = false;
+                }
+            })
+        };
+
+        $scope.leader.accept = function (acceptance) {
             var action = API.setUrl('/api/acceptance/action');
-            action.save({acceptanceId: acceptanceId, action: "accept"}, function (item) {
-                updater.load();
+            action.save({acceptanceId: acceptance.id, action: "accept"}, function (item) {
                 if (item.value === false) {
                     // form request not enough days pool when accepting notification
                     notifyService.displayInfo($translate.instant('notify.request.notEnoughDaysPoolAccepting'));
                 } else {
                     // granted holidays notification
                     notifyService.displaySuccess($translate.instant('notify.request.accept'));
+                    acceptance.status = 'ACCEPTED';
                 }
             });
         };
-        $scope.leader.reject = function (acceptanceId) {
+        $scope.leader.reject = function (acceptance) {
             var action = API.setUrl('/api/acceptance/action');
-            action.save({acceptanceId: acceptanceId, action: "reject"}, function () {
-                updater.load();
+            action.save({acceptanceId: acceptance.id, action: "reject"}, function () {
                 // rejected holidays notification
                 notifyService.displayDanger($translate.instant('notify.request.deny'));
+                acceptance.status = 'REJECTED';
             });
         };
-        leaderRequestsTask = updater.addTask($scope.leader.requests, "/api/request/leader");
     }
-
-    // ALL VIEWS
-    updater.load();
-    $scope.$on('$destroy', function () {
-        updater.deleteTask(workerRequestsTask);
-        updater.deleteTask(leaderRequestsTask);
-    });
 });
 
 app.controller('RequestsCtrl', function ($scope, $translate, updater, API, Session, $filter, notifyService) {
-    $scope.admin = {};
-    $scope.admin.requests = [];
-    $scope.requests = [];
+    $scope.isLoading = false;
+    $scope.displayed = [];
+    var currentRequest = null;
 
-    // for smart-table
-    $scope.adminRequests = [];
-    $scope.adminRequestsSafe = [];
-    $scope.$watch('admin', function (newObj) {
-        $scope.adminRequests = newObj.requests;
-        $scope.adminRequestsSafe = newObj.requests;
-    });
+    $scope.callServer = function (tableState) {
+        $scope.isLoading = true;
 
-    var adminRequestsTask = updater.addTask($scope.admin.requests, "/api/request/admin");
-    updater.load();
+        // paging
+        var pagination = tableState.pagination;
+        var entriesPerPage = pagination.number || 10;
+        var selectedPage = parseInt(pagination.start / entriesPerPage) || 0;
+
+        // sorting
+        var sort = tableState.sort;
+        var sortColumn = sort.predicate || 'created';
+        var sortDirection = (sort.reverse) ? 'DESC' : 'ASC';
+
+        var server = API.setUrl('/api/request/admin?page=:page&size=:size&sort=:sort', {
+            page: selectedPage,
+            size: entriesPerPage,
+            sort: sortColumn + ',' + sortDirection
+        });
+        currentRequest = server.get(function (response) {
+            if (response.content === currentRequest.content) {
+                $scope.displayed = response.content;
+                tableState.pagination.numberOfPages = response.totalPages;
+                $scope.isLoading = false;
+            }
+        })
+    };
 
     $scope.userId = Session.data.userId;
 
-    $scope.accept = function (requestId) {
+    $scope.accept = function (request) {
         var action = API.setUrl('/api/request/action');
-        action.save({requestId: requestId, action: "accept"}, function (item) {
-            updater.load();
-            if (item.value === false) {
+        action.save({requestId: request.id, action: "accept"}, function (success) {
+            if (success.value === false) {
                 // request not enough days pool when accepting notification
                 notifyService.displayDanger($translate.instant('notify.request.notEnoughDaysPoolAccepting'));
             } else {
                 // granted holidays notification
                 notifyService.displayInfo($translate.instant('notify.request.accept'));
+                request.status = 'ACCEPTED'
             }
         });
     };
 
-    $scope.reject = function (requestId) {
+    $scope.reject = function (request) {
         var action = API.setUrl('/api/request/action');
-        action.save({requestId: requestId, action: "reject"}, function () {
-            updater.load();
+        action.save({requestId: request.id, action: "reject"}, function () {
             notifyService.displayInfo($translate.instant('notify.request.deny'));
+            request.status = 'REJECTED'
         });
     };
 
-    $scope.cancel = function (requestId) {
+    $scope.cancel = function (request) {
         var action = API.setUrl('/api/request/action');
-        action.save({requestId: requestId, action: "cancel"}, function () {
-            updater.load();
+        action.save({requestId: request.id, action: "cancel"}, function () {
             notifyService.displayInfo($translate.instant('notify.request.cancel'));
+            request.status = 'CANCELLED'
         });
     };
-
-    $scope.$on('$destroy', function () {
-        updater.deleteTask(adminRequestsTask);
-    });
 });
 
 app.controller('WorkerHistoryCtrl', function ($scope, API, Session) {

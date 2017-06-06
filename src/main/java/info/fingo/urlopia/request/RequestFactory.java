@@ -1,5 +1,6 @@
 package info.fingo.urlopia.request;
 
+import info.fingo.urlopia.request.acceptance.AcceptanceService;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserFactory;
 import org.springframework.beans.factory.annotation.Autowired;

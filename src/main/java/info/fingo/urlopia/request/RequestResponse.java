@@ -1,5 +1,7 @@
 package info.fingo.urlopia.request;
 
+import info.fingo.urlopia.request.acceptance.AcceptanceDTO;
+import info.fingo.urlopia.request.acceptance.AcceptanceResponse;
 import info.fingo.urlopia.user.UserResponse;
 
 import java.util.Arrays;

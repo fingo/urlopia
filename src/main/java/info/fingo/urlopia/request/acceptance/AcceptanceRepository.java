@@ -1,5 +1,7 @@
-package info.fingo.urlopia.request;
+package info.fingo.urlopia.request.acceptance;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -14,6 +16,7 @@ public interface AcceptanceRepository extends JpaRepository<Acceptance, Long> {
     List<Acceptance> findByRequestId(long requestId);
 
     List<Acceptance> findByLeaderId(long leaderId);
+    Page<Acceptance> findByLeaderId(long leaderId, Pageable pageable);
 
     Integer countByLeaderIdAndRequestModifiedAfter(Long leaderId, LocalDateTime time);
 }

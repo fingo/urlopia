@@ -1,10 +1,10 @@
 package info.fingo.urlopia.history;
 
 import info.fingo.urlopia.holidays.HolidayService;
-import info.fingo.urlopia.request.AcceptanceService;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.RequestDTO;
 import info.fingo.urlopia.request.RequestRepository;
+import info.fingo.urlopia.request.acceptance.AcceptanceService;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserFactory;

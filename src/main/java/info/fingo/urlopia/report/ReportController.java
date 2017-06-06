@@ -2,9 +2,9 @@ package info.fingo.urlopia.report;
 
 import info.fingo.urlopia.history.HistoryService;
 import info.fingo.urlopia.holidays.HolidayService;
-import info.fingo.urlopia.request.AcceptanceService;
 import info.fingo.urlopia.request.RequestDTO;
 import info.fingo.urlopia.request.RequestService;
+import info.fingo.urlopia.request.acceptance.AcceptanceService;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

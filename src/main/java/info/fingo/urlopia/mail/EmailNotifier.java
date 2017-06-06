@@ -2,9 +2,9 @@ package info.fingo.urlopia.mail;
 
 import info.fingo.urlopia.ad.LocalTeam;
 import info.fingo.urlopia.events.*;
-import info.fingo.urlopia.request.AcceptanceDTO;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.RequestDTO;
+import info.fingo.urlopia.request.acceptance.AcceptanceDTO;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserFactory;
 import info.fingo.urlopia.user.UserRepository;

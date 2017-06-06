@@ -3,19 +3,25 @@ package info.fingo.urlopia.request;
 import info.fingo.urlopia.authentication.AuthInterceptor;
 import info.fingo.urlopia.history.DurationCalculator;
 import info.fingo.urlopia.holidays.HolidayService;
+import info.fingo.urlopia.request.acceptance.AcceptanceDTO;
+import info.fingo.urlopia.request.acceptance.AcceptanceService;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,70 +45,45 @@ public class RequestController {
     @Autowired
     private HolidayService holidayService;
 
+
     @RolesAllowed("ROLES_WORKER")
     @RequestMapping(value = "/api/request/worker", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<RequestResponse> getRequestsFromWorker(HttpServletRequest httpRequest, @RequestParam(required = false) Long time) {
+    public ResponseEntity<?> getRequestsFromWorkerNew(HttpServletRequest httpRequest, Pageable pageable) {
         Long userId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
-
-        List<RequestDTO> requests;
-        if (time == null) {
-            requests = requestService.getRequestsFromWorker(userId);
-        } else {
-            Timestamp timestamp = new Timestamp(time);
-            LocalDateTime lastUpdate = timestamp.toLocalDateTime();
-
-            requests = requestService.getRequestsFromWorker(userId, lastUpdate);
-        }
-
-        Comparator<RequestDTO> comparator = (r1, r2) -> r2.getStartDate().compareTo(r1.getStartDate());
-        return requests.stream()
-                .sorted(comparator)
+        Page<RequestDTO> requestsPage = requestService.getRequestsFromWorker(userId, pageable);
+        List<RequestDTO> requests = requestsPage.getContent();
+        List<RequestResponse> response = requests.stream()
                 .map(r -> new RequestResponse(r, acceptanceService.getAcceptancesFromRequest(r.getId()),
                         DurationCalculator.calculateDays(r, holidayService)))
                 .collect(Collectors.toList());
+        Page<RequestResponse> responsePage = new PageImpl<>(response, pageable, requestsPage.getTotalElements());
+        return ResponseEntity.ok(responsePage);
     }
 
     @RolesAllowed({"ROLES_LEADER", "ROLES_ADMIN"})
     @RequestMapping(value = "/api/request/leader", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<RequestResponse> getRequestsFromLeader(HttpServletRequest httpRequest, @RequestParam(required = false) Long time) {
+    public ResponseEntity<?> getRequestsFromLeader(HttpServletRequest httpRequest, Pageable pageable) {
         Long userId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
-
-        List<AcceptanceDTO> acceptances;
-        if (time == null) {
-            acceptances = acceptanceService.getAcceptancesFromLeader(userId);
-        } else {
-            Timestamp timestamp = new Timestamp(time);
-            LocalDateTime lastUpdate = timestamp.toLocalDateTime();
-
-            acceptances = acceptanceService.getAcceptancesFromLeader(userId, lastUpdate);
-        }
-
-        Comparator<AcceptanceDTO> comparator = (r1, r2) -> r2.getRequest().getStartDate().compareTo(r1.getRequest().getStartDate());
-        return acceptances.stream()
-                .sorted(comparator)
+        Page<AcceptanceDTO> acceptancesPage = acceptanceService.getAcceptancesFromLeader(userId, pageable);
+        List<AcceptanceDTO> acceptances = acceptancesPage.getContent();
+        List<RequestResponse> response = acceptances.stream()
                 .map(a -> new RequestResponse(a, DurationCalculator.calculateDays(a.getRequest(), holidayService)))
                 .collect(Collectors.toList());
+        Page<RequestResponse> responsePage = new PageImpl<>(response, pageable, acceptancesPage.getTotalElements());
+        return ResponseEntity.ok(responsePage);
     }
 
     @RolesAllowed("ROLES_ADMIN")
     @RequestMapping(value = "/api/request/admin", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<RequestResponse> getRequestsFromAdmin(@RequestParam(required = false) Long time) {
-        List<RequestDTO> requests;
-        if (time == null) {
-            requests = requestService.getRequestsFromAdmin();
-        } else {
-            Timestamp timestamp = new Timestamp(time);
-            LocalDateTime lastUpdate = timestamp.toLocalDateTime();
-
-            requests = requestService.getRequestsFromAdmin(lastUpdate);
-        }
-
-        Comparator<RequestDTO> comparator = (r1, r2) -> r2.getCreated().compareTo(r1.getCreated());
-        return requests.stream()
-                .sorted(comparator)
+    public ResponseEntity<?> getRequestsFromAdminTest(Pageable pageable) {
+        Page<RequestDTO> requestsPage = requestService.getRequestsFromAdmin(pageable);
+        List<RequestDTO> requests = requestsPage.getContent();
+        List<RequestResponse> response = requests.stream()
                 .map(r -> new RequestResponse(r, acceptanceService.getAcceptancesFromRequest(r.getId()),
                         DurationCalculator.calculateDays(r, holidayService)))
                 .collect(Collectors.toList());
+        Page<RequestResponse> responsePage = new PageImpl<>(response, pageable, requestsPage.getTotalElements());
+        return ResponseEntity.ok(responsePage);
     }
 
     @RolesAllowed({"ROLES_ADMIN"})

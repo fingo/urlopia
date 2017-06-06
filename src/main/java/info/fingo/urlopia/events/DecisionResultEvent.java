@@ -1,6 +1,6 @@
 package info.fingo.urlopia.events;
 
-import info.fingo.urlopia.request.AcceptanceDTO;
+import info.fingo.urlopia.request.acceptance.AcceptanceDTO;
 import org.springframework.context.ApplicationEvent;
 
 /**

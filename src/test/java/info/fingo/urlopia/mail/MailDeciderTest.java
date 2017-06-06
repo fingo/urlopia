@@ -2,7 +2,7 @@ package info.fingo.urlopia.mail;
 
 import info.fingo.urlopia.ad.ActiveDirectory;
 import info.fingo.urlopia.ad.LocalUser;
-import info.fingo.urlopia.request.AcceptanceService;
+import info.fingo.urlopia.request.acceptance.AcceptanceService;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserService;
 import org.junit.Before;

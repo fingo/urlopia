@@ -1,9 +1,9 @@
 package info.fingo.urlopia.history;
 
-import info.fingo.urlopia.request.AcceptanceDTO;
-import info.fingo.urlopia.request.AcceptanceService;
 import info.fingo.urlopia.request.RequestDTO;
 import info.fingo.urlopia.request.RequestFactory;
+import info.fingo.urlopia.request.acceptance.AcceptanceDTO;
+import info.fingo.urlopia.request.acceptance.AcceptanceService;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserFactory;
 import org.springframework.beans.factory.annotation.Autowired;

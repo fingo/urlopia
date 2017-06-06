@@ -50,7 +50,7 @@ public class Request {
     /**
      * Default constructor only exists for the sake of JPA
      */
-    protected Request() {
+    public Request() {
         this.created = LocalDateTime.now();
         this.modified = LocalDateTime.now();
     }

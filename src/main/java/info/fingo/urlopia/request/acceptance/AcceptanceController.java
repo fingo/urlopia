@@ -1,5 +1,6 @@
-package info.fingo.urlopia.request;
+package info.fingo.urlopia.request.acceptance;
 
+import info.fingo.urlopia.request.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;

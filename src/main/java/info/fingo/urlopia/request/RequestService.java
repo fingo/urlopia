@@ -6,11 +6,18 @@ import info.fingo.urlopia.events.RequestAcceptedEvent;
 import info.fingo.urlopia.history.DurationCalculator;
 import info.fingo.urlopia.history.HistoryService;
 import info.fingo.urlopia.holidays.HolidayService;
+import info.fingo.urlopia.request.acceptance.Acceptance;
+import info.fingo.urlopia.request.acceptance.AcceptanceDTO;
+import info.fingo.urlopia.request.acceptance.AcceptanceRepository;
+import info.fingo.urlopia.request.acceptance.AcceptanceService;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,20 +65,22 @@ public class RequestService {
         return requestFactory.create(request);
     }
 
-    public List<RequestDTO> getRequestsFromWorker(long userId) {
-        List<Request> requests = requestRepository.findByRequesterId(userId);
-
-        return requests.stream()
+    public Page<RequestDTO> getRequestsFromWorker(long userId, Pageable pageable) {
+        Page<Request> requestsPage = requestRepository.findByRequesterId(userId, pageable);
+        List<Request> requests = requestsPage.getContent();
+        List<RequestDTO> requestsDTO = requests.stream()
                 .map(requestFactory::create)
                 .collect(Collectors.toList());
+        return new PageImpl<>(requestsDTO, pageable, requestsPage.getTotalElements());
     }
 
-    public List<RequestDTO> getRequestsFromAdmin() {
-        List<Request> requests = requestRepository.findAll();
-
-        return requests.stream()
+    public Page<RequestDTO> getRequestsFromAdmin(Pageable pageable) {
+        Page<Request> requestsPage = requestRepository.findAll(pageable);
+        List<Request> requests = requestsPage.getContent();
+        List<RequestDTO> requestsDTO = requests.stream()
                 .map(requestFactory::create)
                 .collect(Collectors.toList());
+        return new PageImpl<>(requestsDTO, pageable, requestsPage.getTotalElements());
     }
 
     public List<RequestDTO> getRequestsFromWorker(long userId, LocalDateTime lastUpdate) {
@@ -81,20 +90,9 @@ public class RequestService {
 
         // if there is any new request
         if (newsCount > 0) {
-            requests = getRequestsFromWorker(userId);
-        }
-
-        return requests;
-    }
-
-    public List<RequestDTO> getRequestsFromAdmin(LocalDateTime lastUpdate) {
-        int newsCount = requestRepository.countByModifiedAfter(lastUpdate);
-
-        List<RequestDTO> requests = new LinkedList<>();
-
-        // if there is any new request
-        if (newsCount > 0) {
-            requests = getRequestsFromAdmin();
+            requests = requestRepository.findByRequesterId(userId).stream()
+                    .map(requestFactory::create)
+                    .collect(Collectors.toList());
         }
 
         return requests;
@@ -108,7 +106,6 @@ public class RequestService {
             return !(request.getEndDate().isBefore(new_request.getStartDate()))
                     && !(new_request.getEndDate().isBefore(request.getStartDate()));
         }
-
         return false;
     }
 
@@ -116,7 +113,8 @@ public class RequestService {
      *  Check if request is overlapped by another request from the same worker
      */
     private boolean isRequestOverlapped(RequestDTO new_request) {
-        List<RequestDTO> workerRequests = this.getRequestsFromWorker(new_request.getRequester().getId()).stream()
+        List<RequestDTO> workerRequests = requestRepository.findByRequesterId(new_request.getRequester().getId()).stream()
+                .map(requestFactory::create)
                 .filter(request -> request.getStatus() == Request.Status.ACCEPTED
                                 || request.getStatus() == Request.Status.PENDING)
                 .collect(Collectors.toList());
@@ -285,7 +283,7 @@ public class RequestService {
         return success;
     }
 
-    boolean isValidRequestByAcceptance(long acceptanceId) {
+    public boolean isValidRequestByAcceptance(long acceptanceId) {
 
         Acceptance acceptance = acceptanceRepository.findOne(acceptanceId);
 
@@ -307,7 +305,7 @@ public class RequestService {
         return userHolidaysPool >= requestedPool;
     }
 
-    void checkForActions(Request request) {
+    public void checkForActions(Request request) {
         RequestDTO requestDTO = requestFactory.create(request);
         List<AcceptanceDTO> acceptances = acceptanceService.getAcceptancesFromRequest(request.getId());
 

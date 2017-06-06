@@ -1,4 +1,4 @@
-package info.fingo.urlopia.request;
+package info.fingo.urlopia.request.acceptance;
 
 import info.fingo.urlopia.user.UserResponse;
 
@@ -12,7 +12,7 @@ public class AcceptanceResponse {
     private UserResponse decider;
     private Boolean accepted;
 
-    AcceptanceResponse(AcceptanceDTO acceptance) {
+    public AcceptanceResponse(AcceptanceDTO acceptance) {
         this.id = String.valueOf(acceptance.getId());
         this.leader = new UserResponse(acceptance.getLeader());
         if (acceptance.getDecider() != null) {

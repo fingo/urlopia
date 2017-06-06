@@ -1,11 +1,18 @@
-package info.fingo.urlopia.request;
+package info.fingo.urlopia.request.acceptance;
 
 import info.fingo.urlopia.events.DecisionResultEvent;
 import info.fingo.urlopia.events.NewRequestNotificationEvent;
+import info.fingo.urlopia.request.Request;
+import info.fingo.urlopia.request.RequestDTO;
+import info.fingo.urlopia.request.RequestRepository;
+import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,17 +76,13 @@ public class AcceptanceService {
         return leaderAcceptances;
     }
 
-    public List<AcceptanceDTO> getAcceptancesFromLeader(long leaderId, LocalDateTime lastUpdate) {
-        int newsCount = acceptanceRepository.countByLeaderIdAndRequestModifiedAfter(leaderId, lastUpdate);
-
-        List<AcceptanceDTO> acceptances = new LinkedList<>();
-
-        // if there is any new request
-        if (newsCount > 0) {
-            acceptances = getAcceptancesFromLeader(leaderId);
-        }
-
-        return acceptances;
+    public Page<AcceptanceDTO> getAcceptancesFromLeader(long leaderId, Pageable pageable) {
+        Page<Acceptance> acceptancePage = acceptanceRepository.findByLeaderId(leaderId, pageable);
+        List<Acceptance> acceptances = acceptancePage.getContent();
+        List<AcceptanceDTO> acceptancesDTO = acceptances.stream()
+                .map(acceptanceFactory::create)
+                .collect(Collectors.toList());
+        return new PageImpl<>(acceptancesDTO, pageable, acceptancePage.getTotalElements());
     }
 
     public boolean accept(long id, long deciderId) {

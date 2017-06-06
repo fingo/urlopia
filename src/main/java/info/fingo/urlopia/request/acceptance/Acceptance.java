@@ -1,5 +1,6 @@
-package info.fingo.urlopia.request;
+package info.fingo.urlopia.request.acceptance;
 
+import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.user.User;
 
 import javax.persistence.*;

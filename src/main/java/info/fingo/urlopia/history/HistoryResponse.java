@@ -1,8 +1,8 @@
 package info.fingo.urlopia.history;
 
 
-import info.fingo.urlopia.request.AcceptanceDTO;
 import info.fingo.urlopia.request.RequestResponse;
+import info.fingo.urlopia.request.acceptance.AcceptanceDTO;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -178,6 +178,6 @@ public class HistoryResponse {
     }
 
     public boolean isFullTime() {
-        return workTime == this.FULL_TIME;
+        return workTime == FULL_TIME;
     }
 }

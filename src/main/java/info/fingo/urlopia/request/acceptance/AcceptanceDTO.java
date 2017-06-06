@@ -1,5 +1,6 @@
-package info.fingo.urlopia.request;
+package info.fingo.urlopia.request.acceptance;
 
+import info.fingo.urlopia.request.RequestDTO;
 import info.fingo.urlopia.user.UserDTO;
 
 import java.io.Serializable;

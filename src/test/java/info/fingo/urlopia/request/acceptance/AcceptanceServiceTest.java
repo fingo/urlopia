@@ -1,6 +1,8 @@
-package info.fingo.urlopia.request;
+package info.fingo.urlopia.request.acceptance;
 
 import info.fingo.urlopia.history.HistoryService;
+import info.fingo.urlopia.request.Request;
+import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserFactory;
@@ -13,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
@@ -90,6 +94,11 @@ public class AcceptanceServiceTest {
         when(acceptanceRepository.findByLeaderId(eq(10L)))
                 .thenReturn(Arrays.asList(acceptance, acceptance2));
 
+        when(acceptanceRepository.findByLeaderId(anyLong(), any()))
+                .thenReturn(new PageImpl<>(Collections.emptyList()));
+        when(acceptanceRepository.findByLeaderId(eq(10L), any()))
+                .thenReturn(new PageImpl<>(Arrays.asList(acceptance, acceptance2)));
+
         when(acceptanceRepository.countByLeaderIdAndRequestModifiedAfter(anyLong(), any(LocalDateTime.class)))
                 .thenReturn(0);
         when(acceptanceRepository.countByLeaderIdAndRequestModifiedAfter(anyLong(), eq(LocalDateTime.of(2016, 10, 1, 10, 10))))
@@ -141,13 +150,10 @@ public class AcceptanceServiceTest {
         assertEquals(10L, leaderAcceptances.get(0).getId());
         assertEquals(11L, leaderAcceptances.get(1).getId());
 
-        leaderAcceptances = acceptanceService.getAcceptancesFromLeader(10, LocalDateTime.of(2016, 10, 1, 10, 10));
+        leaderAcceptances = acceptanceService.getAcceptancesFromLeader(10, new PageRequest(0,5)).getContent();
         assertEquals(2, leaderAcceptances.size());
         assertEquals(10L, leaderAcceptances.get(0).getId());
         assertEquals(11L, leaderAcceptances.get(1).getId());
-
-        leaderAcceptances = acceptanceService.getAcceptancesFromLeader(10, LocalDateTime.of(2016, 10, 1, 10, 20));
-        assertEquals(0, leaderAcceptances.size());
     }
 
     @Test
