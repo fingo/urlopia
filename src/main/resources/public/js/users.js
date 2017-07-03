@@ -22,7 +22,7 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
         var sortColumn = sort.predicate || 'startDate';
         var sortDirection = (sort.reverse || !sort.predicate) ? 'DESC' : 'ASC';
 
-        var server = API.setUrl('/api/request/worker?page=:page&size=:size&sort=:sort', {
+        var server = API.setUrl('/api/request/worker?page=:page&size=:size&sort=:sort&sort=id,ASC', {
             page: selectedPage,
             size: entriesPerPage,
             sort: sortColumn + ',' + sortDirection
@@ -64,7 +64,7 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
             var sortColumn = sort.predicate || 'request.created';
             var sortDirection = (sort.reverse || !sort.predicate) ? 'DESC' : 'ASC';
 
-            var server = API.setUrl('/api/request/leader?page=:page&size=:size&sort=:sort', {
+            var server = API.setUrl('/api/request/leader?page=:page&size=:size&sort=:sort&sort=id,ASC', {
                 page: selectedPage,
                 size: entriesPerPage,
                 sort: sortColumn + ',' + sortDirection
@@ -120,7 +120,7 @@ app.controller('RequestsCtrl', function ($scope, $translate, updater, API, Sessi
         var sortColumn = sort.predicate || 'created';
         var sortDirection = (sort.reverse) ? 'DESC' : 'ASC';
 
-        var server = API.setUrl('/api/request/admin?page=:page&size=:size&sort=:sort', {
+        var server = API.setUrl('/api/request/admin?page=:page&size=:size&sort=:sort&sort=id,ASC', {
             page: selectedPage,
             size: entriesPerPage,
             sort: sortColumn + ',' + sortDirection

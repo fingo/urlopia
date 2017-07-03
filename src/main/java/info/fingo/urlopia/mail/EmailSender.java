@@ -20,6 +20,6 @@ public class EmailSender {
     public void send(Mail mail) {
         mail.setSenderName(senderName);
         mail.setSenderAddress(senderAddress);
-        mailSender.send(new MailConverter(mail).toMimeMessage());
+//        mailSender.send(new MailConverter(mail).toMimeMessage());
     }
 }
