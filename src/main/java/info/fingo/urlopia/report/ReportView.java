@@ -172,8 +172,8 @@ public class ReportView extends AbstractXlsxView {
         }
 
         // for every month row till today
-        int currentMonth = LocalDate.now().getMonthValue() - 1;
-        for (int i = 0; i < currentMonth; ++i) {
+        int previousMonth = LocalDate.now().getMonthValue() - 1;
+        for (int i = 0; i < previousMonth; ++i) {
             XSSFRow monthRow = sheet.createRow(8 + i);
             XSSFCell monthNumberCell = monthRow.createCell(0);
             monthNumberCell.setCellStyle(defaultStyle);
@@ -208,7 +208,7 @@ public class ReportView extends AbstractXlsxView {
         }
 
         // fill in rest of the months
-        for (int i = currentMonth; i < 12; ++i) {
+        for (int i = previousMonth; i < 12; ++i) {
             XSSFRow monthRow = sheet.createRow(8 + i);
             XSSFCell monthNumberCell = monthRow.createCell(0);
             monthNumberCell.setCellStyle(defaultStyle);
@@ -233,7 +233,7 @@ public class ReportView extends AbstractXlsxView {
 
                 if (isAccepted) {
                     for (LocalDate k = r.getStartDate(); !k.isAfter(r.getEndDate()); k = k.plusDays(1)) {
-                        if (k.getMonthValue() < currentMonth && !DurationCalculator.isFreeDay(k, holidayService)) {
+                        if (k.getMonthValue() <= previousMonth && !DurationCalculator.isFreeDay(k, holidayService)) {
                             XSSFCell uwCell = sheet.getRow(7 + k.getMonthValue()).getCell(k.getDayOfMonth());
                             uwCell.setCellValue("uw");
                         }
@@ -297,7 +297,7 @@ public class ReportView extends AbstractXlsxView {
         }
 
         // calculate work time sum of a month
-        for (int i = 0; i < currentMonth; ++i) {
+        for (int i = 0; i < previousMonth; ++i) {
             float sum = 0;
             XSSFRow sumRow = sheet.getRow(8 + i);
             for (int j = 1; j <= 31; ++j) {
@@ -314,7 +314,7 @@ public class ReportView extends AbstractXlsxView {
         }
 
         // calculate used holidays time
-        for (int i = 0; i < currentMonth; ++i) {
+        for (int i = 0; i < previousMonth; ++i) {
             float time = (Math.abs(8f - worktime) < 0.1) ? user.getWorkTime() / 8 : user.getWorkTime();
             float sum = 0;
             XSSFRow sumRow = sheet.getRow(8 + i);
@@ -337,7 +337,7 @@ public class ReportView extends AbstractXlsxView {
         XSSFRow totalUsedRow = sheet.getRow(20);
         XSSFCell totalUsedCell = totalUsedRow.getCell(41);
         float totalUsedSum = 0;
-        for (int i = 0; i < currentMonth; ++i) {
+        for (int i = 0; i < previousMonth; ++i) {
             XSSFRow sumRow = sheet.getRow(8 + i);
             XSSFCell valueCell = sumRow.getCell(41);
             double cellValue;
