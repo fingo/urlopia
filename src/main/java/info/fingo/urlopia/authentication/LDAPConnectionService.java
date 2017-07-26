@@ -48,6 +48,9 @@ public class LDAPConnectionService {
     private String privateProviderUrl;
     private static String PROVIDER_URL;
 
+    @Value("${ad.team.main.group}")
+    private String mainGroup;
+
     @PostConstruct
     public void init() {
         INITIAL_CONTEXT_FACTORY = privateInitialContextFactory;
@@ -80,7 +83,9 @@ public class LDAPConnectionService {
         try {
             SearchControls controls = new SearchControls();
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            NamingEnumeration<SearchResult> results = ctx.search(ActiveDirectory.USERS_CONTAINER, "(userPrincipalName=" + credentials.getMail() + ")", controls);
+            NamingEnumeration<SearchResult> results = ctx.search(ActiveDirectory.USERS_CONTAINER,
+                    "(&(memberOf=" + ActiveDirectory.MAIN_TEAM_GROUP + ")" +
+                            "(userPrincipalName=" + credentials.getMail() + "))", controls);
 
             if (results.hasMore()) {
                 Properties authEnv = new Properties();

@@ -47,7 +47,7 @@ public class ActiveDirectory {
 
     @Value("${ad.team.main.group}")
     private String privateMainTeamGroup;
-    private static String MAIN_TEAM_GROUP;
+    public static String MAIN_TEAM_GROUP;
 
     @Value("${ad.team.leaders.group}")
     private String privateLeadersGroup;
@@ -192,7 +192,8 @@ public class ActiveDirectory {
     public Optional<LocalUser> getUser(String principalName) {
         Optional<LocalUser> user = Optional.empty();
 
-        String filter = "(&(objectClass=Person)(|(userPrincipalName=" + principalName + ")(mail=" + principalName + ")))";
+        String filter = "(&(objectClass=Person)(memberOf=" + MAIN_TEAM_GROUP + ")" +
+                "(|(userPrincipalName=" + principalName + ")(mail=" + principalName + ")))";
         List<SearchResult> results = search(filter);
 
         if (!results.isEmpty()) {
@@ -203,7 +204,7 @@ public class ActiveDirectory {
     }
 
     public List<LocalUser> getUsers() {
-        String filter = "(&(objectClass=Person))";
+        String filter = "(&(objectClass=Person)(memberOf=" + MAIN_TEAM_GROUP + "))";
         List<SearchResult> results = search(filter);
 
         return results.parallelStream().map(this::createLocalUser)
@@ -211,7 +212,7 @@ public class ActiveDirectory {
     }
 
     public List<LocalUser> getUsersFromTeam(LocalTeam team) {
-        String filter = "(&(objectClass=Person)(memberOf=" + team.getFullName() + "))";
+        String filter = "(&(objectClass=Person)(memberOf=" + MAIN_TEAM_GROUP + ")(memberOf=" + team.getFullName() + "))";
         List<SearchResult> results = search(filter);
 
         return results.parallelStream()
