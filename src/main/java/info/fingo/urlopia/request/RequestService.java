@@ -226,13 +226,12 @@ public class RequestService {
         return success;
     }
 
-    public boolean reject(long id, long deciderId) {
+    public void reject(long id, long deciderId) {
         List<AcceptanceDTO> acceptances = acceptanceService.getAcceptancesFromRequest(id);
-        boolean success = true;
 
         for (AcceptanceDTO acceptance : acceptances) {
             if (!acceptanceService.reject(acceptance.getId(), deciderId)) {
-                success = false;
+                throw new RuntimeException("Rejection failed");
             }
         }
 
@@ -240,30 +239,24 @@ public class RequestService {
         Request request = requestRepository.findOne(id);
         request.setStatus(Request.Status.REJECTED);
         requestRepository.save(request);
-
-        return success;
     }
 
-    public boolean cancel(long id) {
+    public void cancel(long id) {
         RequestDTO requestDTO = this.getRequest(id);
 
-        boolean success = true;
-        boolean cancelingAfterAccepting = true;
+        if (requestDTO.getStatus() == Request.Status.CANCELLED) {
+            return;
+        }
 
         List<AcceptanceDTO> acceptances = acceptanceService.getAcceptancesFromRequest(id);
-        // TODO: another way to mark requests CANCELED (maybe PENDING, REJECTED and ACCEPTED also)
         if(acceptances.isEmpty()) {
             acceptances.add(acceptanceService.insertCancelAcceptance(requestDTO));
         }
 
         // canceling all acceptances
         for (AcceptanceDTO acceptance : acceptances) {
-            if (acceptance.getDecider() == null) {
-                cancelingAfterAccepting = false;
-            }
-
             if (!acceptanceService.reject(acceptance.getId(), acceptance.getRequest().getRequester().getId())) {
-                success = false;
+                throw new RuntimeException("Cancellation failed");
             }
         }
 
@@ -274,13 +267,12 @@ public class RequestService {
 
         // reverting days pool
         // TODO: Localize it!
-        if (success && cancelingAfterAccepting && requestDTO.getType() == Request.Type.NORMAL) {
+        if (requestDTO.getStatus() == Request.Status.ACCEPTED
+                && requestDTO.getType() == Request.Type.NORMAL) {
             historyService.insertReversedWithComment(requestDTO, "Anulowanie");
-        } else if (success && requestDTO.getType() == Request.Type.OCCASIONAL) {
+        } else if (requestDTO.getType() == Request.Type.OCCASIONAL) {
             historyService.insertReversedWithComment(requestDTO, "Anulowanie: " + requestDTO.getTypeInfo().getInfo());
         }
-
-        return success;
     }
 
     public boolean isValidRequestByAcceptance(long acceptanceId) {
@@ -320,7 +312,6 @@ public class RequestService {
         if (accepted == acceptances.size()) {
             request.setStatus(Request.Status.ACCEPTED);
             requestRepository.save(request);
-
             eventPublisher.publishEvent(new RequestAcceptedEvent(this, requestDTO));
             historyService.insert(requestDTO);
         }

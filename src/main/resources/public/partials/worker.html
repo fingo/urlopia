@@ -67,7 +67,7 @@
                         <span ng-if="request.status === 'CANCELLED'">{{'table.cancelled' | translate}}</span>
                     </td>
                     <td>
-                        <div ng-if="request.accepted == null">
+                        <div ng-if="request.status === 'PENDING'">
                             <button class="btn btn-danger text-right" ng-click="worker.cancelRequest(request)">
                                 {{'table.button.cancelRequest' | translate}}
                             </button>
