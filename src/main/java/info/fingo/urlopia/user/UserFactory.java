@@ -53,7 +53,7 @@ public class UserFactory {
                 roles.add(UserDTO.Role.ADMIN);
             }
 
-            return new UserDTO(id, principalName, mail, firstName, lastName, admin, B2B, EC, urlopiaTeam, leader, lang, workTime, teams, roles);
+            return new UserDTO(id, principalName, mail, firstName, lastName, admin, leader, B2B, EC, urlopiaTeam, lang, workTime, teams, roles);
         } else {
             return new UserDTO(id, mail);
         }
