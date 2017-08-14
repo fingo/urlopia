@@ -9,6 +9,7 @@ import java.util.List;
  * @author Józef Grodzicki
  */
 public interface HistoryRepository extends JpaRepository<History, Long> {
+
     List<History> findByUserIdAndCreatedAfter(long userId, LocalDateTime date);
 
     List<History> findByUserIdAndCreatedBetween(long userId, LocalDateTime startDate, LocalDateTime endDate);
@@ -16,4 +17,5 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
     List<History> findByUserId(long userId);
 
     List<History> findFirst5ByUserMailOrderByCreatedDesc(String userMail);
+
 }

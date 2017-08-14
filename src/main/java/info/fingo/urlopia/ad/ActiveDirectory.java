@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.naming.NamingException;
+import javax.naming.directory.Attribute;
 import javax.naming.directory.*;
 import java.util.*;
 import java.util.stream.Collectors;
