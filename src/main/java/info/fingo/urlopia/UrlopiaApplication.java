@@ -1,10 +1,7 @@
 package info.fingo.urlopia;
 
-import info.fingo.urlopia.ad.ActiveDirectory;
-import info.fingo.urlopia.ad.LocalUser;
 import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.mail.MailReceiver;
-import info.fingo.urlopia.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,13 +66,7 @@ public class UrlopiaApplication {
     private String adminUrlopia;
 
     @Autowired
-    private ActiveDirectory activeDirectory;
-
-    @Autowired
     private MailReceiver mailReceiver;
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private HolidayService holidayService;
@@ -147,35 +138,9 @@ public class UrlopiaApplication {
     @Bean
     public CommandLineRunner startup() {
         return args -> {
-            if ("true".equals(dropCreate)) {
-                dropCreateDatabase();
-
-                // set holidays lists
-                setHolidaysForThisAndNextYear();
-            }
-            // synchronize db with ad & set admins
-            userService.synchronize();
-            setAdminsFromTeam();
-
             // start listening for new mails
             mailReceiver.start();
         };
-    }
-
-    // set all users from team specified in application-default.properties as admins
-    private void setAdminsFromTeam() {
-        String teamName = adminsTeam;
-        assert teamName != null;
-
-        // Setting admins from admins team
-        for (LocalUser localUser : activeDirectory.getUsers()) {
-            localUser.getTeams().stream()
-                    .filter(userTeam -> teamName.equals(userTeam.getName()))
-                    .forEach(userTeam -> userService.setAdmin(localUser.getPrincipalName()));
-        }
-
-        // Setting admin from app admin
-        userService.setAdmin(adminUrlopia);
     }
 
     private void setHolidaysForThisAndNextYear() {
