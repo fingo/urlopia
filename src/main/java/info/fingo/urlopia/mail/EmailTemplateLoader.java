@@ -35,7 +35,7 @@ public class EmailTemplateLoader {
     }
 
     public EmailTemplate load(String name) {
-        String defaultLanguage = "PL";
+        String defaultLanguage = "pl";
         return this.load(name, defaultLanguage);
     }
 
