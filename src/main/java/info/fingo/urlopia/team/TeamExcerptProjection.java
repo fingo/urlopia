@@ -6,7 +6,7 @@ public interface TeamExcerptProjection {
 
     String getName();
 
-    @Value("#{target.leader.mail}")
+    @Value("#{(target.leader != null) ? target.leader.mail : ''}")
     String getLeader();
 
 }
