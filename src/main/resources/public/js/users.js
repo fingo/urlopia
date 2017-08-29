@@ -225,7 +225,7 @@ app.controller('EmployeesCtrl', function ($scope, API, $filter, $translate, noti
             });
     };
 
-    $scope.users = API.setUrl('/api/request/employees').query();
+    $scope.users = API.setUrl('/api/users').query();
     $scope.teams = API.setUrl('/api/request/teams').query();
 
     $scope.isCollapsed = true;
