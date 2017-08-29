@@ -11,7 +11,11 @@ import java.util.List;
 public class UserServiceX {
 
     @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserServiceX(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public List<UserExcerptProjection> getAll() {
         return userRepository.findAllByOrderByLastName();

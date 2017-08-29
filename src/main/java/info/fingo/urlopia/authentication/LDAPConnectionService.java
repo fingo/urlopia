@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -23,52 +22,37 @@ import java.util.Properties;
  *
  * @author Józef Grodzicki
  */
-
 @Component
 public class LDAPConnectionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(LDAPConnectionService.class);
 
     @Value("${ldap.initial.context.factory}")
-    private String privateInitialContextFactory;
-    private static String INITIAL_CONTEXT_FACTORY;
+    private String initialContextFactory;
 
     @Value("${ldap.security.authentication}")
-    private String privateSecurityAuthentication;
-    private static String SECURITY_AUTHENTICATION;
+    private String securityAuthentication;
 
     @Value("${ldap.security.principal}")
-    private String privateSecurityPrincipal;
-    private static String SECURITY_PRINCIPAL;
+    private String securityPrincipal;
 
     @Value("${ldap.security.credentials}")
-    private String privateSecurityCredentials;
-    private static String SECURITY_CREDENTIALS;
+    private String securityCredentials;
 
     @Value("${ldap.provider.url}")
-    private String privateProviderUrl;
-    private static String PROVIDER_URL;
+    private String providerUrl;
 
     @Value("${ad.team.main.group}")
     private String mainGroup;
-
-    @PostConstruct
-    public void init() {
-        INITIAL_CONTEXT_FACTORY = privateInitialContextFactory;
-        SECURITY_AUTHENTICATION = privateSecurityAuthentication;
-        SECURITY_PRINCIPAL = privateSecurityPrincipal;
-        SECURITY_CREDENTIALS = privateSecurityCredentials;
-        PROVIDER_URL = privateProviderUrl;
-    }
 
 
     public DirContext getContext() {
         Hashtable<String, String> env = new Hashtable<>(); // NOSONAR
 
-        env.put(Context.INITIAL_CONTEXT_FACTORY, INITIAL_CONTEXT_FACTORY);
-        env.put(Context.SECURITY_AUTHENTICATION, SECURITY_AUTHENTICATION);
-        env.put(Context.SECURITY_PRINCIPAL, SECURITY_PRINCIPAL);
-        env.put(Context.SECURITY_CREDENTIALS, SECURITY_CREDENTIALS);
-        env.put(Context.PROVIDER_URL, PROVIDER_URL);
+        env.put(Context.INITIAL_CONTEXT_FACTORY, initialContextFactory);
+        env.put(Context.SECURITY_AUTHENTICATION, securityAuthentication);
+        env.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
+        env.put(Context.SECURITY_CREDENTIALS, securityCredentials);
+        env.put(Context.PROVIDER_URL, providerUrl);
 
         try {
             return new InitialLdapContext(env, null);
@@ -89,8 +73,8 @@ public class LDAPConnectionService {
 
             if (results.hasMore()) {
                 Properties authEnv = new Properties();
-                authEnv.put(Context.INITIAL_CONTEXT_FACTORY, INITIAL_CONTEXT_FACTORY);
-                authEnv.put(Context.PROVIDER_URL, PROVIDER_URL);
+                authEnv.put(Context.INITIAL_CONTEXT_FACTORY, initialContextFactory);
+                authEnv.put(Context.PROVIDER_URL, providerUrl);
                 authEnv.put(Context.SECURITY_PRINCIPAL, credentials.getMail());
                 authEnv.put(Context.SECURITY_CREDENTIALS, credentials.getPassword());
 
