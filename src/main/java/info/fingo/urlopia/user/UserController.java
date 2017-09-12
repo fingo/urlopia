@@ -1,66 +1,64 @@
 package info.fingo.urlopia.user;
 
+import info.fingo.urlopia.ActiveDirectorySynchronizationScheduler;
 import info.fingo.urlopia.authentication.AuthInterceptor;
-import info.fingo.urlopia.history.HistoryDTO;
-import info.fingo.urlopia.history.HistoryResponse;
-import info.fingo.urlopia.history.HistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-/**
- * @author Tomasz Urbas
- */
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping(path = "/api/users")
 public class UserController {
 
-    @Autowired
-    private UserService service;
+    private final UserServiceX userService;
+    private final ActiveDirectorySynchronizationScheduler synchronizer;
 
     @Autowired
-    private HistoryService historyService;
-
-    @RolesAllowed({"ROLES_ADMIN"})
-    @RequestMapping(value = "/synchronize", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void synchronize() {
-        service.synchronize();
-    }
-
-    @RolesAllowed({"ROLES_ADMIN", "ROLES_LEADER", "ROLES_WORKER"})
-    @RequestMapping(value = "/language", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void setLanguage(HttpServletRequest httpRequest, @RequestBody Map<String, String> data) {
-        long userId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
-        String language = data.get("language");
-
-        service.setLanguage(userId, language);
+    public UserController(UserServiceX userService, ActiveDirectorySynchronizationScheduler synchronizer) {
+        this.userService = userService;
+        this.synchronizer = synchronizer;
     }
 
     @RolesAllowed("ROLES_ADMIN")
-    @RequestMapping(value = "/history", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<HistoryResponse> getUserHistory(String userMail, int year) {
-        UserDTO user = service.getUser(userMail);
-        List<HistoryDTO> histories = historyService.getUserHistoriesFromYear(user.getId(), year);
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List> getAll() {
+        List<UserExcerptProjection> users = userService.getAll();
+        return ResponseEntity.ok(users);
+    }
 
-        return histories.stream()
-                .map(HistoryResponse::new)
-                .collect(Collectors.toCollection(LinkedList::new));
+    @RolesAllowed("ROLES_ADMIN")
+    @RequestMapping(value ="{userId}/setWorkTime", method = RequestMethod.POST)
+    public ResponseEntity<Void> setWorkTime(@PathVariable Long userId, @RequestBody Map<String, Object> data) {
+        String workTime = (String)data.get("workTime");
+        userService.setWorkTime(userId, workTime);
+        return ResponseEntity.ok().build();
     }
 
     @RolesAllowed({"ROLES_ADMIN", "ROLES_LEADER", "ROLES_WORKER"})
     @RequestMapping(value = "/contract", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Boolean isEC (Long userId) {
-        return service.getUser(userId).isEC();
+    public ResponseEntity<Boolean> isEC (Long userId) {
+        return ResponseEntity.ok(userService.isEC(userId));
     }
 
+    @RolesAllowed({"ROLES_ADMIN", "ROLES_LEADER", "ROLES_WORKER"})
+    @RequestMapping(value = "/language", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> setLanguage(HttpServletRequest httpRequest, @RequestBody Map<String, String> data) {
+        long userId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        String language = data.get("language");
+        userService.setLanguage(userId, language);
+        return ResponseEntity.ok().build();
+    }
+
+    @RolesAllowed({"ROLES_ADMIN"})
+    @RequestMapping(value = "/synchronize", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> synchronize() {
+        synchronizer.dailySynchronization();
+        return ResponseEntity.ok().build();
+    }
 }

@@ -61,14 +61,11 @@ app.factory('API', function ($resource, Session, progressBarInterceptor) {
 // Authentication service
 app.factory('Login', function ($resource) {
     return {
-        prepare: function (credentials) {
-            return $resource('/api/login', {}, {
+        prepare: function () {
+            var url = '/api/session';
+            return $resource(url, {}, {
                 save: {
-                    method: 'POST',
-                    withCredentials: true,
-                    headers: {
-                        'Authorization': credentials.mail + ' ' + credentials.password
-                    }
+                    method: 'POST'
                 }
             })
         }
@@ -80,9 +77,9 @@ app.factory('AuthService', function ($rootScope, $translate, Login, Session, Per
 
     // login function
     authService.login = function (credentials) {
-        var login = Login.prepare(credentials);
+        var login = Login.prepare();
 
-        login.save(function (response) {
+        login.save({}, credentials, function (response) {
             if (!angular.isUndefined(response.token)) {
                 // setting user language
                 $translate.use(response.language);

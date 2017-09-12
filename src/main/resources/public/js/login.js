@@ -16,7 +16,7 @@ app.controller('LoginCtrl', function ($rootScope, $scope, $location, $route, $ui
     updater.pause();
 
     $scope.appVersion = '0.0.0';
-    $http.get("/version").success(function(response) {
+    $http.get("api/session/version").success(function(response) {
         $scope.appVersion = response;
     });
 
