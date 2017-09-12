@@ -16,7 +16,7 @@ public class Team {
     private String adName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User leader;    // TODO: fix the loop
+    private User leader;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "Users_Teams",

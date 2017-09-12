@@ -54,7 +54,7 @@ public class User {
     @Column(nullable = false)
     private Float workTime = 8.0f;
 
-    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "users")
     private Set<Team> teams;
 
     public User() {

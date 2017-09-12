@@ -66,6 +66,12 @@ app.directive('loggedOnly', function (AuthService) {
     }
 });
 
+app.filter('reverse', function() {
+  return function(items) {
+    return items.slice().reverse();
+  };
+});
+
 app.controller('ApplicationController', function ($scope, $uibModal, $location, $route, $translate, updater, PersistService, AUTH_EVENTS, currentPrevented, modalPrevent, notifyService) {
     // session from cookies
     PersistService.getCookieData();

@@ -193,23 +193,23 @@
                             <b>{{ 'employees_view.last_operations' | translate}}</b><br>
                             <table class="table table-striped">
                                 <tbody>
-                                    <tr ng-repeat-start="history in userHistory.list">
+                                    <tr ng-repeat-start="history in userHistory">
                                         <td>{{history.created}}
                                         </td>
-                                        <td ng-if="history.fullTime" class="text-center">
-                                            {{ history.days }}
+                                        <td ng-if="history.workTime === 8" class="text-center">
+                                            {{ Math.floor(history.hours / 8) }}d {{ history.hours - (Math.floor(history.hours / 8) * 8) }}h
                                         </td>
-                                        <td ng-if="!history.fullTime" class="text-center">
-                                            {{ history.hours }}
+                                        <td ng-if="history.workTime !== 8" class="text-center">
+                                            {{ history.hours }}h
                                         </td>
                                         <td>{{ history.comment }}</td>
                                     </tr>
-                                    <tr ng-repeat-end ng-if="history.workTime !== userHistory.list[$index + 1].workTime">
+                                    <tr ng-repeat-end ng-if="history.workTime !== userHistory[$index + 1].workTime">
                                         <td colspan="3">
-                                            <span ng-if="userHistory.list[$index + 1] != null">
+                                            <span ng-if="userHistory[$index + 1] != null">
                                                 {{'employees_view.workTime_changed' | translate}} :
                                             </span>
-                                            <span ng-if="userHistory.list[$index + 1] == null">
+                                            <span ng-if="userHistory[$index + 1] == null">
                                                 {{'employees_view.workTime' | translate}} :
                                             </span>
                                             <span ng-if="history.workTime !== 8"
@@ -221,11 +221,11 @@
                                             </span>
                                         </td>
                                     </tr>
-                                <tr>
-                                    <td colspan="3" style="text-align: center"><a
-                                            href="admin/employees/user?mail={{user.principalName}}">
-                                        {{'employees_view.show_all' | translate}}</a></td>
-                                </tr>
+                                    <tr>
+                                        <td colspan="3" style="text-align: center"><a
+                                                href="admin/employees/user?id={{user.id}}">
+                                            {{'employees_view.show_all' | translate}}</a></td>
+                                    </tr>
                                 </tbody>
                             </table>
                             <button style="margin-top: -10px" class="btn btn-danger" ng-click="report()">Raport</button>

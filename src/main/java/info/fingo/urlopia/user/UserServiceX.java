@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -48,6 +49,16 @@ public class UserServiceX {
     public void setAdminByMail(String userMail) {
         User user = userRepository.findFirstByMail(userMail);
         user.setAdmin(true);
+        userRepository.save(user);
+    }
+
+    public void setWorkTime(Long userId, String workTimeString) {
+        Float workTime = 8f * Arrays.stream(workTimeString.split("/")) // 8 hours lasts full-time
+                .map(Float::parseFloat)
+                .reduce((a, b) -> a / b)
+                .orElse(1f);    // TODO: thing about throwing runtime exception
+        User user = userRepository.findOne(userId);
+        user.setWorkTime(workTime);
         userRepository.save(user);
     }
 

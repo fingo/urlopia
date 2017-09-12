@@ -5,13 +5,12 @@ import info.fingo.urlopia.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
-/**
- * @author Józef Grodzicki
- */
 @Entity
 @Table(name = "History")
 public class History {
+
     @Id
     @SequenceGenerator(name = "history_id_seq", sequenceName = "history_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "history_id_seq")
@@ -20,15 +19,15 @@ public class History {
     @Column(nullable = false)
     private LocalDateTime created;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(nullable = false)
     private User user;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn
     private User decider;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn
     private Request request;
 
@@ -36,14 +35,17 @@ public class History {
     private float hours;
 
     @Column(nullable = false)
+    private float hoursRemaining = 0;
+
+    @Column(nullable = false)
     private float workTime;
 
-    @Column
-    private String comment;
+    private String comment = "";
 
-    /**
-     * Default constructor only exists for the sake of JPA
-     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(unique = true)
+    private History prevHistory;
+
     protected History() {
         this.created = LocalDateTime.now();
     }
@@ -53,6 +55,7 @@ public class History {
         this.user = request.getRequester();
         this.request = request;
         this.hours = hours;
+        this.hoursRemaining = Optional.ofNullable(prevHistory).map(History::getHours).orElse(0f);
         this.workTime = request.getRequester().getWorkTime();
         this.comment = "";
     }
@@ -77,18 +80,44 @@ public class History {
         this.comment = comment;
     }
 
-    @Override
-    public String toString() {
-        return "History{" +
-                "id=" + id +
-                ", created=" + created +
-                ", user=" + user +
-                ", decider=" + decider +
-                ", request=" + request +
-                ", hours=" + hours +
-                ", workTime=" + workTime +
-                ", comment='" + comment + '\'' +
-                '}';
+    public History(User user, User decider, float hours, String comment, History prevHistory) {
+        this();
+        this.user = user;
+        this.decider = decider;
+        this.hours = hours;
+        this.hoursRemaining = Optional.ofNullable(prevHistory)
+                .map(history -> history.getHoursRemaining() + hours).orElse(hours);
+        this.workTime = user.getWorkTime();
+        this.comment = comment;
+        this.prevHistory = prevHistory;
+    }
+
+    public float getWorkTimeNominator() {
+        float value = this.workTime / 8;
+
+        float denominator = 0;
+        float nominator;
+
+        do {
+            denominator++;
+            nominator = value * denominator;
+        } while (Math.floor(nominator) != nominator);
+
+        return nominator;
+    }
+
+    public float getWorkTimeDenominator() {
+        float value = this.workTime / 8;
+
+        float denominator = 0;
+        float nominator;
+
+        do {
+            denominator++;
+            nominator = value * denominator;
+        } while (Math.floor(nominator) != nominator);
+
+        return denominator;
     }
 
     public long getId() {
@@ -125,5 +154,13 @@ public class History {
 
     public String getComment() {
         return comment;
+    }
+
+    public float getHoursRemaining() {
+        return hoursRemaining;
+    }
+
+    public History getPrevHistory() {
+        return prevHistory;
     }
 }
