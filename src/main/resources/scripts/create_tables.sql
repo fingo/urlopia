@@ -62,14 +62,16 @@ CREATE INDEX acceptances_request_id_index ON Acceptances(request_id);
 CREATE INDEX acceptances_leader_id_index ON Acceptances(leader_id);
 
 CREATE TABLE History (
-  id         SERIAL PRIMARY KEY,
-  created    TIMESTAMP                    NOT NULL,
-  user_id    INT REFERENCES Users (id)    NOT NULL,
-  decider_id INT REFERENCES Users (id),
-  request_id INT REFERENCES Requests (id),
-  hours      DECIMAL(6, 2)                NOT NULL,
-  work_time  DECIMAL(4, 2)                NOT NULL,
-  comment    VARCHAR(255)
+  id                SERIAL          PRIMARY KEY,
+  created           TIMESTAMP       NOT NULL,
+  user_id           INT             REFERENCES Users (id) NOT NULL,
+  decider_id        INT             REFERENCES Users (id),
+  request_id        INT             REFERENCES Requests (id),
+  hours             DECIMAL(6, 2)   NOT NULL,
+  hours_remaining   DECIMAL(6, 2)   NOT NULL DEFAULT 0,
+  work_time         DECIMAL(4, 2)   NOT NULL,
+  comment           VARCHAR(255)    NOT NULL DEFAULT '',
+  prev_history_id   INT             REFERENCES History (id) UNIQUE
 );
 
 -- CREATE UNIQUE INDEX history_userId_index ON History (user_id);

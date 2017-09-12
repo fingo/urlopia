@@ -4,7 +4,7 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
     // WORKER VIEW
     $scope.worker = {};
     $scope.worker.ec = API.setUrl('/api/user/contract').get({userId: Session.data.userId});
-    $scope.worker.holidaysPool = API.setUrl('/api/history').get({userId: Session.data.userId});
+    $scope.worker.holidaysPool = API.setUrl('/api/users/' + Session.data.userId + '/days/remaining').get();
     $scope.worker.isLoading = false;
     $scope.worker.displayed = [];
     $scope.worker.currentRequest = null;
@@ -174,20 +174,20 @@ app.controller('WorkerHistoryCtrl', function ($scope, API, Session) {
     API.setUrl('/api/user/contract').get({userId: Session.data.userId}, function (ec) {
         $scope.ec = ec;
     });
-    $scope.histories = API.setUrl('/api/workerHistory').get({userId: Session.data.userId, year: $scope.year});
-    $scope.firstHistory = API.setUrl('/api/firstHistory').get({userId: Session.data.userId}, function (firstHistory) {
-
-        var i;
-        for (i = $scope.year; i >= firstHistory.year; i--) {
-            $scope.years.push(i);
-        }
-    });
+    $scope.histories = API.setUrl('/api/users/' + Session.data.userId + '/days').query({year: $scope.year});
+    $scope.firstHistory = API.setUrl('/api/users/' + Session.data.userId + '/days/employment-year')
+        .get(function (firstYear) {
+            var i;
+            for (i = $scope.year; i >= firstYear; i--) {
+                $scope.years.push(i);
+            }
+        });
     $scope.obj = {pool: 0};
 
     $scope.selectedItem = $scope.year;
-    $scope.dropBoxItemSelected = function (item) {
-        $scope.selectedItem = item;
-        $scope.histories = API.setUrl('/api/workerHistory').get({userId: Session.data.userId, year: item});
+    $scope.dropBoxItemSelected = function (selectedYear) {
+        $scope.selectedItem = selectedYear;
+        $scope.histories = API.setUrl('/api/users/' + Session.data.userId + '/days').query({year: selectedYear});
     }
 });
 
@@ -195,21 +195,21 @@ app.controller('UserHistoryCtrl', function ($scope, $routeParams, API, Session) 
     $scope.year = new Date().getFullYear();
     $scope.years = [];
     $scope.Math = window.Math;
-    $scope.userMail = $routeParams.mail;
-    $scope.histories = API.setUrl('/api/workerHistory').get({mail: $scope.userMail, year: $scope.year});
-    $scope.firstHistory = API.setUrl('/api/firstHistory').get({mail: $scope.userMail}, function (firstHistory) {
-        var i;
-        for (i = $scope.year; i >= firstHistory.year; i--) {
-            $scope.years.push(i);
-        }
-    });
+    $scope.userId = $routeParams.id;
+    $scope.histories = API.setUrl('/api/users/' + $scope.userId + '/days').query({year: $scope.year});
+    $scope.firstHistory = API.setUrl('/api/users/' + $scope.userId + '/days/employment-year')
+        .get(function (firstYear) {
+            var i;
+            for (i = $scope.year; i >= firstYear; i--) {
+                $scope.years.push(i);
+            }
+        });
     $scope.obj = {pool: 0};
 
     $scope.selectedItem = $scope.year;
-
-    $scope.dropBoxItemSelected = function (item) {
-        $scope.selectedItem = item;
-        $scope.histories = API.setUrl('/api/workerHistory').get({mail: $scope.userMail, year: item});
+    $scope.dropBoxItemSelected = function (selectedYear) {
+        $scope.selectedItem = selectedYear;
+        $scope.histories = API.setUrl('/api/users/' + $scope.userId + '/days').query({year: selectedYear});
     }
 });
 
@@ -486,6 +486,7 @@ app.value('confirmData', {employee: null, daysToAdd: null, mail: null, comment: 
 
 app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translate, API, confirmData, notifyService, WORK_TIMES) {
     var maxHours = 8000;
+    $scope.Math = Math;
 
     //tooltpis activation
     $('[data-toggle="tooltip"]').tooltip()
@@ -496,7 +497,7 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
     //Gathering data
     var getHours = function () {
         if ($scope.userHours === undefined) {
-            API.setUrl("/api/history").get({mail: $scope.user.principalName}, function (response) {
+            API.setUrl("/api/users/" + $scope.user.id + "/days/remaining").get(function (response) {
                 $scope.userHours = response.pool;
                 $scope.workTime = response.workTime;
                 $scope.days = response.days;
@@ -511,7 +512,7 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
     $scope.userHours = getHours();
 
     // LAST CHANGES
-    $scope.userHistory = API.setUrl("/api/userHistory/recent").get({userMail: $scope.user.principalName});
+    $scope.userHistory = API.setUrl('/api/users/' + $scope.user.id + '/days/recent').query();
 
     // DAYS POOL
     $scope.daysPoolChange = '';
@@ -571,9 +572,9 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
                 values: function () {
                     return {
                         hours: hours,
-                        userMail: $scope.user.principalName,
-                        comment: $scope.comment,
-                        userName: $scope.user.surname + " " + $scope.user.name
+                        userId: $scope.user.id,
+                        comment: $scope.comment || '',
+                        userName: $scope.user.name
                     };
                 }
             }
@@ -592,8 +593,8 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
     $scope.workTimes = WORK_TIMES;
 
     $scope.changeWorkTime = function () {
-        API.setUrl("/api/history/setWorkTime")
-            .save({mail: $scope.user.principalName, workTime: $scope.selectedWorkTime}, function () {
+        API.setUrl("/api/users/" + $scope.user.id + "/setWorkTime")
+            .save({workTime: $scope.selectedWorkTime}, function () {
                 notifyService.displaySuccess($translate.instant('notify.admin.employees.changeWorkTime'));
             })
     };
@@ -621,8 +622,7 @@ app.controller('ConfirmPoolChangeCtrl', function ($scope, $uibModalInstance, $tr
     $scope.employee = values.userName;
 
     $scope.confirm = function () {
-        API.setUrl("/api/history").save({
-            mail: values.userMail,
+        API.setUrl("/api/users/" + values.userId + "/days").save({
             hours: values.hours,
             comment: values.comment
         }, function () {

@@ -21,7 +21,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         @RequestMapping({
                 "/worker/**",
                 "/leader/**",
-                "/admin/**"
+                "/admin/**",
+                "/history/**"
         })
         public String index() {
             return "forward:/index.html";

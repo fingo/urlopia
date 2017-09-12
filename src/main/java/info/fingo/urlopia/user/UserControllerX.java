@@ -1,12 +1,10 @@
 package info.fingo.urlopia.user;
 
 import info.fingo.urlopia.authentication.AuthInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +17,7 @@ public class UserControllerX {
 
     private final UserServiceX userService;
 
+    @Autowired
     public UserControllerX(UserServiceX userService) {
         this.userService = userService;
     }
@@ -30,10 +29,18 @@ public class UserControllerX {
         return ResponseEntity.ok(users);
     }
 
+    @RolesAllowed("ROLES_ADMIN")
+    @RequestMapping(value ="{userId}/setWorkTime", method = RequestMethod.POST)
+    public ResponseEntity<Void> setWorkTime(@PathVariable Long userId, @RequestBody Map<String, Object> data) {
+        String workTime = (String)data.get("workTime");
+        userService.setWorkTime(userId, workTime);
+        return ResponseEntity.ok().build();
+    }
+
     @RolesAllowed({"ROLES_ADMIN", "ROLES_LEADER", "ROLES_WORKER"})
     @RequestMapping(value = "/contract", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Boolean isEC (Long userId) {
-        return userService.isEC(userId);
+    public ResponseEntity<Boolean> isEC (Long userId) {
+        return ResponseEntity.ok(userService.isEC(userId));
     }
 
     @RolesAllowed({"ROLES_ADMIN", "ROLES_LEADER", "ROLES_WORKER"})

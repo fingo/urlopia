@@ -1,10 +1,13 @@
 package info.fingo.urlopia.request;
 
+import info.fingo.urlopia.request.acceptance.Acceptance;
 import info.fingo.urlopia.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * RequestDTO entity.
@@ -26,7 +29,7 @@ public class Request {
     @Column(nullable = false)
     private LocalDateTime modified;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(nullable = false)
     private User requester;
 
@@ -46,6 +49,9 @@ public class Request {
     @Column
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @OneToMany(mappedBy = "request")
+    private Set<Acceptance> acceptances;
 
     /**
      * Default constructor only exists for the sake of JPA
@@ -129,6 +135,14 @@ public class Request {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Set<String> getDeciders() {
+        Set<String> users = this.acceptances.stream()
+                .map(acceptance -> acceptance.getDecider() != null ? acceptance.getDecider() : acceptance.getLeader())
+                .map(user -> String.format("%s %s", user.getFirstName(), user.getLastName()))
+                .collect(Collectors.toSet());
+        return users;
     }
 
     public enum Type {
