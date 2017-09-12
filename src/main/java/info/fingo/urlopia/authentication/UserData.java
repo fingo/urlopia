@@ -1,54 +1,31 @@
 package info.fingo.urlopia.authentication;
 
-import info.fingo.urlopia.ad.LocalTeam;
-import info.fingo.urlopia.user.UserDTO;
-
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Set;
 
-/**
- * @author Jakub Licznerski
- *         Created on 27.07.2016.
- */
-//Server response after succesful login (we assume that we create UserData of existing user)
 public class UserData {
 
     private long userId;
-    private List<String> userRoles;
+    protected List<String> userRoles;
     private String name;
     private String surname;
     private String mail;
     private String language;
     private String token;
-    private List<LocalTeam> teams;
+    private Set<Map> teams;
 
-    public UserData(UserDTO user, String token) {
-        this.userId = user.getId();
-        this.userRoles = user.getRoles().stream()
-                .map(UserDTO.Role::toString)
-                .collect(Collectors.toList());
-        this.name = user.getFirstName();
-        this.surname = user.getLastName();
-        this.mail = user.getMail();
-        this.language = user.getLang();
-        this.token = token;
-        this.teams = user.getTeams();
+    UserData(long userId, List<String> userRoles) {
+        this.userId = userId;
+        this.userRoles = userRoles;
     }
 
     public long getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
-
     public List<String> getUserRoles() {
         return userRoles;
-    }
-
-    public void setUserRoles(List<String> userRoles) {
-        this.userRoles = userRoles;
     }
 
     public String getToken() {
@@ -83,12 +60,16 @@ public class UserData {
         this.mail = mail;
     }
 
-    public List<LocalTeam> getTeams() {
+    public Set<Map> getTeams() {
         return teams;
     }
 
-    public void setTeams(List<LocalTeam> teams) {
+    public void setTeams(Set<Map> teams) {
         this.teams = teams;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     public String getLanguage() {

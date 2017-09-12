@@ -19,7 +19,7 @@ app.config(function ($translateProvider) {
         PersistService.setCookie();
 
         // setting language in the database
-        API.setUrl('/api/user/language')
+        API.setUrl('/api/users/language')
             .save({language: langKey});
     }
 });

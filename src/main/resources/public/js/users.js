@@ -3,7 +3,7 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
 
     // WORKER VIEW
     $scope.worker = {};
-    $scope.worker.ec = API.setUrl('/api/user/contract').get({userId: Session.data.userId});
+    $scope.worker.ec = API.setUrl('/api/users/contract').get({userId: Session.data.userId});
     $scope.worker.holidaysPool = API.setUrl('/api/users/' + Session.data.userId + '/days/remaining').get();
     $scope.worker.isLoading = false;
     $scope.worker.displayed = [];
@@ -171,7 +171,7 @@ app.controller('WorkerHistoryCtrl', function ($scope, API, Session) {
     $scope.year = new Date().getFullYear();
     $scope.years = [];
     $scope.Math = window.Math;
-    API.setUrl('/api/user/contract').get({userId: Session.data.userId}, function (ec) {
+    API.setUrl('/api/users/contract').get({userId: Session.data.userId}, function (ec) {
         $scope.ec = ec;
     });
     $scope.histories = API.setUrl('/api/users/' + Session.data.userId + '/days').query({year: $scope.year});
@@ -215,7 +215,7 @@ app.controller('UserHistoryCtrl', function ($scope, $routeParams, API, Session) 
 
 app.controller('EmployeesCtrl', function ($scope, API, $filter, $translate, notifyService) {
     $scope.synchronize = function () {
-        var action = API.setUrl('/api/user/synchronize');
+        var action = API.setUrl('/api/users/synchronize');
         action.save(
             function () {
                 notifyService.displaySuccess($translate.instant('notify.admin.synchronize.success'));
