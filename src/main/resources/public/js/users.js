@@ -22,7 +22,7 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
         var sortColumn = sort.predicate || 'startDate';
         var sortDirection = (sort.reverse || !sort.predicate) ? 'DESC' : 'ASC';
 
-        var server = API.setUrl('/api/request/worker?page=:page&size=:size&sort=:sort&sort=id,ASC', {
+        var server = API.setUrl('/api/users/' + Session.data.userId + '/requests?page=:page&size=:size&sort=:sort&sort=id,ASC', {
             page: selectedPage,
             size: entriesPerPage,
             sort: sortColumn + ',' + sortDirection
@@ -37,10 +37,16 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
     };
 
     $scope.worker.cancelRequest = function (request) {
-        var action = API.setUrl('/api/request/cancelRequest');
-        action.save({requestID: request.id, action: "cancelRequest"}, function () {
+      API.setUrl('/api/requests/' + request.id + '/cancel').save().$promise
+        .then(function(response) {
+          if(response.$status < 400) {
             notifyService.displayInfo($translate.instant('notify.request.cancel'));
-            request.status = 'CANCELLED';
+            request.status = 'CANCELED';
+          } else {
+            notifyService.displayDanger($translate.instant('ERROR'));
+          }
+        }).catch(function() {
+          notifyService.displayDanger($translate.instant('ERROR'));
         });
     };
 
@@ -64,7 +70,7 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
             var sortColumn = sort.predicate || 'request.created';
             var sortDirection = (sort.reverse || !sort.predicate) ? 'DESC' : 'ASC';
 
-            var server = API.setUrl('/api/request/leader?page=:page&size=:size&sort=:sort&sort=id,ASC', {
+            var server = API.setUrl('/api/users/' + Session.data.userId + '/acceptances?page=:page&size=:size&sort=:sort&sort=id,ASC', {
                 page: selectedPage,
                 size: entriesPerPage,
                 sort: sortColumn + ',' + sortDirection
@@ -78,25 +84,30 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
             })
         };
 
-        $scope.leader.accept = function (acceptance) {
-            var action = API.setUrl('/api/acceptance/action');
-            action.save({acceptanceId: acceptance.id, action: "accept"}, function (item) {
-                if (item.value === false) {
-                    // form request not enough days pool when accepting notification
-                    notifyService.displayInfo($translate.instant('notify.request.notEnoughDaysPoolAccepting'));
+        $scope.leader.accept = function(acceptance) {
+            API.setUrl('/api/acceptances/' + acceptance.id + '/accept').save().$promise
+              .then(function(response) {
+                if(response.$status < 400) {
+                  notifyService.displaySuccess($translate.instant('notify.request.accept'));
+                  acceptance.status = 'ACCEPTED';
                 } else {
-                    // granted holidays notification
-                    notifyService.displaySuccess($translate.instant('notify.request.accept'));
-                    acceptance.status = 'ACCEPTED';
+                  notifyService.displayDanger($translate.instant('notify.request.notEnoughDaysPoolAccepting'));
                 }
-            });
+              }).catch(function() {
+                notifyService.displayDanger($translate.instant('notify.request.notEnoughDaysPoolAccepting'));
+              });
         };
-        $scope.leader.reject = function (acceptance) {
-            var action = API.setUrl('/api/acceptance/action');
-            action.save({acceptanceId: acceptance.id, action: "reject"}, function () {
-                // rejected holidays notification
-                notifyService.displayDanger($translate.instant('notify.request.deny'));
+        $scope.leader.reject = function(acceptance) {
+          API.setUrl('/api/acceptances/' + acceptance.id + '/reject').save().$promise
+            .then(function(response) {
+              if(response.$status < 400) {
+                notifyService.displaySuccess($translate.instant('notify.request.deny'));
                 acceptance.status = 'REJECTED';
+              } else {
+                notifyService.displayDanger($translate.instant('ERROR'));
+              }
+            }).catch(function() {
+              notifyService.displayDanger($translate.instant('ERROR'));
             });
         };
     }
@@ -120,7 +131,7 @@ app.controller('RequestsCtrl', function ($scope, $translate, updater, API, Sessi
         var sortColumn = sort.predicate || 'created';
         var sortDirection = (sort.reverse) ? 'DESC' : 'ASC';
 
-        var server = API.setUrl('/api/request/admin?page=:page&size=:size&sort=:sort&sort=id,ASC', {
+        var server = API.setUrl('/api/requests?page=:page&size=:size&sort=:sort&sort=id,ASC', {
             page: selectedPage,
             size: entriesPerPage,
             sort: sortColumn + ',' + sortDirection
@@ -137,32 +148,44 @@ app.controller('RequestsCtrl', function ($scope, $translate, updater, API, Sessi
     $scope.userId = Session.data.userId;
 
     $scope.accept = function (request) {
-        var action = API.setUrl('/api/request/action');
-        action.save({requestId: request.id, action: "accept"}, function (success) {
-            if (success.value === false) {
-                // request not enough days pool when accepting notification
-                notifyService.displayDanger($translate.instant('notify.request.notEnoughDaysPoolAccepting'));
+        API.setUrl('/api/requests/' + request.id + '/accept').save().$promise
+          .then(function(response) {
+            if(response.$status < 400) {
+              notifyService.displayInfo($translate.instant('notify.request.accept'));
+              request.status = 'ACCEPTED'
             } else {
-                // granted holidays notification
-                notifyService.displayInfo($translate.instant('notify.request.accept'));
-                request.status = 'ACCEPTED'
+              notifyService.displayDanger($translate.instant('notify.request.notEnoughDaysPoolAccepting'));
             }
-        });
+          }).catch(function() {
+            notifyService.displayDanger($translate.instant('notify.request.notEnoughDaysPoolAccepting'));
+          });
     };
 
     $scope.reject = function (request) {
-        var action = API.setUrl('/api/request/action');
-        action.save({requestId: request.id, action: "reject"}, function () {
+      API.setUrl('/api/requests/' + request.id + '/reject').save().$promise
+        .then(function(response) {
+          if(response.$status < 400) {
             notifyService.displayInfo($translate.instant('notify.request.deny'));
             request.status = 'REJECTED'
+          } else {
+            notifyService.displayDanger($translate.instant('ERROR'));
+          }
+        }).catch(function() {
+          notifyService.displayDanger($translate.instant('ERROR'));
         });
     };
 
     $scope.cancel = function (request) {
-        var action = API.setUrl('/api/request/action');
-        action.save({requestId: request.id, action: "cancel"}, function () {
+      API.setUrl('/api/requests/' + request.id + '/cancel').save().$promise
+        .then(function(response) {
+          if(response.$status < 400) {
             notifyService.displayInfo($translate.instant('notify.request.cancel'));
-            request.status = 'CANCELLED'
+            request.status = 'CANCELED'
+          } else {
+            notifyService.displayDanger($translate.instant('ERROR'));
+          }
+        }).catch(function() {
+          notifyService.displayDanger($translate.instant('ERROR'));
         });
     };
 });

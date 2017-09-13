@@ -14,9 +14,11 @@ import java.util.List;
  * @author Tomasz Urbas
  */
 public interface RequestRepository extends JpaRepository<Request, Long> {
+
     List<Request> findByRequesterId(Long id);
 
     Page<Request> findAll(Pageable pageable);
+
     Page<Request> findByRequesterId(Long id, Pageable pageable);
 
     Integer countByRequesterIdAndModifiedAfter(Long id, LocalDateTime time);

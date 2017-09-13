@@ -83,8 +83,9 @@
   "table": {
     "requester": "Wnioskodawca",
     "leader": "Rozpatrujący",
-    "date": "Termin urlopu",
+    "date": "Termin",
     "pool_left": "Pozostało dni",
+    "type": "Typ",
     "status": "Status",
     "reason": "Powód",
     "accepted": "Zatwierdzono",
@@ -253,5 +254,16 @@
     "when_funeral1": "Jednodniowy urlop okolicznościowy przysługuje w związku z zgonem i pogrzebem siostry, brata, teściowej, teścia, babki, dziadka, a także innej osoby, którą utrzymujesz lub którą się bezpośrednio opiekujesz",
     "when_wedding1": "Jednodniowy urlop okolicznościowy przysługuje w związku z ślubem Twojego dziecka.",
     "info": "<b>2 dni przysługuje w związku z:</b><ul><li>Twoim ślubem,</li><li>narodzinami dziecka,</li><li>zgonem i pogrzebem małżonka, dziecka, ojca, matki, ojczyma lub macochy.</li></ul><br><b>1 dzień przysługuje w razie:</b><ul><li>ślubu Twojego dziecka,</li><li>zgonu i pogrzebu siostry, brata, teściowej, teścia, babki, dziadka, a także innej osoby, którą utrzymujesz lub którą się bezpośrednio opiekujesz.</li></ul>"
+  },
+  "status": {
+    "ACCEPTED": "Zatwierdzone",
+    "REJECTED": "Odrzucone",
+    "PENDING": "W trakcie",
+    "CANCELED": "Anulowane",
+    "EXPIRED": "Przedawnione"
+  },
+  "type": {
+    "NORMAL": "Normalny",
+    "OCCASIONAL": "Okazjonalny"
   }
 }

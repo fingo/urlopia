@@ -6,9 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-/**
- * @author Mateusz Wiśniewski
- */
 @Configuration
 public class WebConfig extends WebMvcConfigurerAdapter {
 

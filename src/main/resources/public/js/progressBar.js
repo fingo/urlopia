@@ -46,11 +46,19 @@ app.factory('progressBarInterceptor', function (progressBar) {
     return {
         'response': function (response) {
             progressBar.stop();
-            return response.data;
+            var result = response.data;
+            if (!result) result = {};
+            result["$status"] = response.status;
+            result["$statusText"] = response.statusText;
+            return result;
         },
         'responseError': function (response) {
             progressBar.stop();
-            return response.data;
+            var result = response.data;
+            if (!result) result = {};
+            result["$status"] = response.status;
+            result["$statusText"] = response.statusText;
+            return result;
         },
         start: function () {
             progressBar.start();

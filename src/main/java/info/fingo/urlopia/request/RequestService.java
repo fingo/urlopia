@@ -1,23 +1,16 @@
 package info.fingo.urlopia.request;
 
-import info.fingo.urlopia.events.OccasionalInfoEvent;
-import info.fingo.urlopia.events.OccasionalResponseEvent;
 import info.fingo.urlopia.events.RequestAcceptedEvent;
 import info.fingo.urlopia.history.DurationCalculator;
 import info.fingo.urlopia.history.HistoryService;
 import info.fingo.urlopia.holidays.HolidayService;
-import info.fingo.urlopia.request.acceptance.Acceptance;
 import info.fingo.urlopia.request.acceptance.AcceptanceDTO;
-import info.fingo.urlopia.request.acceptance.AcceptanceRepository;
 import info.fingo.urlopia.request.acceptance.AcceptanceService;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,9 +45,6 @@ public class RequestService {
     private HistoryService historyService;
 
     @Autowired
-    private AcceptanceRepository acceptanceRepository;
-
-    @Autowired
     private HolidayService holidayService;
 
     @Autowired
@@ -63,24 +53,6 @@ public class RequestService {
     public RequestDTO getRequest(long id) {
         Request request = requestRepository.findOne(id);
         return requestFactory.create(request);
-    }
-
-    public Page<RequestDTO> getRequestsFromWorker(long userId, Pageable pageable) {
-        Page<Request> requestsPage = requestRepository.findByRequesterId(userId, pageable);
-        List<Request> requests = requestsPage.getContent();
-        List<RequestDTO> requestsDTO = requests.stream()
-                .map(requestFactory::create)
-                .collect(Collectors.toList());
-        return new PageImpl<>(requestsDTO, pageable, requestsPage.getTotalElements());
-    }
-
-    public Page<RequestDTO> getRequestsFromAdmin(Pageable pageable) {
-        Page<Request> requestsPage = requestRepository.findAll(pageable);
-        List<Request> requests = requestsPage.getContent();
-        List<RequestDTO> requestsDTO = requests.stream()
-                .map(requestFactory::create)
-                .collect(Collectors.toList());
-        return new PageImpl<>(requestsDTO, pageable, requestsPage.getTotalElements());
     }
 
     public List<RequestDTO> getRequestsFromWorker(long userId, LocalDateTime lastUpdate) {
@@ -184,30 +156,6 @@ public class RequestService {
         return false;
     }
 
-    /*
-     *  Insert flow for occasional request
-     */
-    public boolean insertOccasional(UserDTO requester, LocalDate startDate, Request.OccasionalType info) throws RequestOverlappingException {
-        Request.Type type = Request.Type.OCCASIONAL;
-        LocalDate endDate = holidayService.getWorkingDate(startDate, info.getDurationDays());
-
-        Request request = this.insert(requester, startDate, endDate, type, info, Request.Status.ACCEPTED);
-
-        if (request != null) {
-            RequestDTO requestDTO = requestFactory.create(request);
-
-            // Sending info to admins and leaders, then remaining mail to requester
-            eventPublisher.publishEvent(new OccasionalInfoEvent(this, requestDTO));
-            eventPublisher.publishEvent(new OccasionalResponseEvent(this, requestDTO));
-
-            // Send info to history
-            historyService.insertWithComment(requestDTO, info.getInfo(), requestDTO.getRequester());
-
-            return true;
-        }
-        return false;
-    }
-
     public boolean accept(long id, long deciderId) {
         List<AcceptanceDTO> acceptances = acceptanceService.getAcceptancesFromRequest(id);
         boolean success = true;
@@ -244,7 +192,7 @@ public class RequestService {
     public void cancel(long id) {
         RequestDTO requestDTO = this.getRequest(id);
 
-        if (requestDTO.getStatus() == Request.Status.CANCELLED) {
+        if (requestDTO.getStatus() == Request.Status.CANCELED) {
             return;
         }
 
@@ -262,7 +210,7 @@ public class RequestService {
 
         // change the status to rejected
         Request request = requestRepository.findOne(id);
-        request.setStatus(Request.Status.CANCELLED);
+        request.setStatus(Request.Status.CANCELED);
         requestRepository.save(request);
 
         // reverting days pool
@@ -273,28 +221,6 @@ public class RequestService {
         } else if (requestDTO.getType() == Request.Type.OCCASIONAL) {
             historyService.insertReversedWithComment(requestDTO, "Anulowanie: " + requestDTO.getTypeInfo().getInfo());
         }
-    }
-
-    public boolean isValidRequestByAcceptance(long acceptanceId) {
-
-        Acceptance acceptance = acceptanceRepository.findOne(acceptanceId);
-
-        User requester = acceptance.getRequest().getRequester();
-        RequestDTO requestDTO = requestFactory.create(acceptance.getRequest());
-        float userHolidaysPool = historyService.getHolidaysPool(requester.getId(), null);
-        float requestedPool = DurationCalculator.calculate(requestDTO, holidayService);
-        return userHolidaysPool >= requestedPool;
-    }
-
-    boolean isValidRequestByRequest(long requestId) {
-
-        Acceptance acceptance = acceptanceRepository.findByRequestId(requestId).get(0);
-
-        User requester = acceptance.getRequest().getRequester();
-        RequestDTO requestDTO = requestFactory.create(acceptance.getRequest());
-        float userHolidaysPool = historyService.getHolidaysPool(requester.getId(), null);
-        float requestedPool = DurationCalculator.calculate(requestDTO, holidayService);
-        return userHolidaysPool >= requestedPool;
     }
 
     public void checkForActions(Request request) {

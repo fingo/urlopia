@@ -85,6 +85,7 @@
     "leader": "Decider",
     "date": "Days off",
     "pool_left": "Days left",
+    "type": "Type",
     "status": "Status",
     "reason": "Reason",
     "accepted": "Accepted",
@@ -252,5 +253,16 @@
     "when_wedding2": "The two-day occasional vacation is due to your wedding.",
     "when_funeral1": "The one-day occasional vacation is due to death and funeral of sister, brother, mother-in-law, father-in-law, grandmother, grandfather, as well as a person you're directly taking care of",
     "when_wedding1": "The one-day occasional vacation is due to wedding of your child."
+  },
+  "status": {
+    "ACCEPTED": "Accepted",
+    "REJECTED": "Rejected",
+    "PENDING": "In progress",
+    "CANCELED": "Cancelled",
+    "EXPIRED": "Expired"
+  },
+  "type": {
+    "NORMAL": "Normal",
+    "OCCASIONAL": "Occasional"
   }
 }

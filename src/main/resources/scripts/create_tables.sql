@@ -42,9 +42,10 @@ CREATE TABLE Requests (
   requester_id INT REFERENCES Users (id)  NOT NULL,
   start_date   DATE                       NOT NULL,
   end_date     DATE                       NOT NULL,
-  type         VARCHAR(25)                NOT NULL   DEFAULT 'NORMAL',
+  work_days    INT                        NOT NULL,
+  type         VARCHAR(25)                NOT NULL DEFAULT 'NORMAL',
   type_info    VARCHAR(25),
-  status       VARCHAR(255)               NOT NULL   DEFAULT 'PENDING'
+  status       VARCHAR(25)               NOT NULL DEFAULT 'PENDING'
 );
 
 CREATE INDEX requests_modified_index ON Requests(modified);
@@ -54,8 +55,7 @@ CREATE TABLE Acceptances (
   id         SERIAL                         PRIMARY KEY,
   request_id INT REFERENCES Requests (id)   NOT NULL,
   leader_id  INT REFERENCES Users (id)      NOT NULL,
-  decider_id INT REFERENCES Users (id),
-  accepted   BOOLEAN                        NOT NULL   DEFAULT FALSE
+  status     VARCHAR(25)                    NOT NULL
 );
 
 CREATE INDEX acceptances_request_id_index ON Acceptances(request_id);

@@ -25,12 +25,6 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.stream.Collectors;
 
-/**
- * Main class with runner.
- * Beans are used to generate & add some data to the db on app startup.
- *
- * @author Mateusz Wiśniewski
- */
 @EnableScheduling
 @EnableAsync
 @SpringBootApplication  // NOSONAR
