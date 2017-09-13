@@ -5,11 +5,6 @@ import info.fingo.urlopia.user.User;
 
 import javax.persistence.*;
 
-/**
- * AcceptanceDTO entity.
- *
- * @author Tomasz Urbas
- */
 @Entity
 @Table(name = "Acceptances")
 public class Acceptance {
@@ -27,22 +22,19 @@ public class Acceptance {
     @JoinColumn(nullable = false)
     private User leader;
 
-    @OneToOne
-    @JoinColumn
-    private User decider;
-
     @Column(nullable = false)
-    private boolean accepted;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     protected Acceptance() {
-        this.decider = null;
-        this.accepted = false;
+        // No-args constructor required by *Hibernate*
     }
 
     public Acceptance(Request request, User leader) {
         this();
         this.request = request;
         this.leader = leader;
+        this.status = Status.PENDING;
     }
 
     public long getId() {
@@ -70,18 +62,33 @@ public class Acceptance {
     }
 
     public User getDecider() {
-        return decider;
+        return null;
     }
 
     public void setDecider(User decider) {
-        this.decider = decider;
+        // TODO: remove: it
     }
 
     public boolean isAccepted() {
-        return accepted;
+        return false;
     }
 
     public void setAccepted(boolean accepted) {
-        this.accepted = accepted;
+        // TODO: remove it
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public enum Status {
+        PENDING,
+        ACCEPTED,
+        REJECTED,
+        EXPIRED
     }
 }

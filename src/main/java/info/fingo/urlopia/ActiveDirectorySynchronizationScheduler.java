@@ -24,7 +24,7 @@ public class ActiveDirectorySynchronizationScheduler {
 
     @Scheduled(cron = "0 00 01 * * *")
     public void dailySynchronization() {
-        LOGGER.info("*** DAILY SYNCHRONIZATION START ***");
+        LOGGER.info("*** DAILY SYNCHRONIZATION BEGIN ***");
         userSynchronizer.findNewUsers();
         userSynchronizer.deactivateDeletedUsers();
         userSynchronizer.fullSynchronize();
@@ -32,27 +32,27 @@ public class ActiveDirectorySynchronizationScheduler {
         teamSynchronizer.fullSynchronize();
         teamSynchronizer.assignUsersToTeams();
         teamSynchronizer.removeDeletedTeams();
-        LOGGER.info("*** DAILY SYNCHRONIZATION STOP ***");
+        LOGGER.info("*** DAILY SYNCHRONIZATION END ***");
     }
 
     @Scheduled(cron = "0 0-59/5 * * * *")
     public void continuousSynchronization() {
-        LOGGER.info("*** CONTINUOUS SYNCHRONIZATION START ***");
+        LOGGER.info("*** CONTINUOUS SYNCHRONIZATION BEGIN ***");
         userSynchronizer.findNewUsers();
         userSynchronizer.checkModifications();
         teamSynchronizer.findNewTeams();
         teamSynchronizer.checkModifications();
-        LOGGER.info("*** CONTINUOUS SYNCHRONIZATION STOP ***");
+        LOGGER.info("*** CONTINUOUS SYNCHRONIZATION END ***");
     }
 
     @Bean
     public CommandLineRunner startupSynchronization() {
         return args -> {
-            LOGGER.info("*** STARTUP SYNCHRONIZATION START ***");
+            LOGGER.info("*** STARTUP SYNCHRONIZATION BEGIN ***");
             userSynchronizer.findNewUsers();
             teamSynchronizer.findNewTeams();
             teamSynchronizer.assignUsersToTeams();
-            LOGGER.info("*** STARTUP SYNCHRONIZATION STOP ***");
+            LOGGER.info("*** STARTUP SYNCHRONIZATION END ***");
         };
     }
 

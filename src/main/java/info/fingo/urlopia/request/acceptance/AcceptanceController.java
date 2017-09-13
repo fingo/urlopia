@@ -1,54 +1,52 @@
 package info.fingo.urlopia.request.acceptance;
 
-import info.fingo.urlopia.request.RequestService;
-import org.springframework.beans.factory.annotation.Autowired;
+import info.fingo.urlopia.authentication.AuthInterceptor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * @author Tomasz Urbas
- */
 
 @RestController
+@RequestMapping("/api")
 public class AcceptanceController {
 
-    @Autowired
-    private AcceptanceService acceptanceService;
+    private final AcceptanceServiceX acceptanceService;
 
-    @Autowired
-    private RequestService requestService;
-
-    @RolesAllowed({"ROLES_LEADER", "ROLES_ADMIN"})
-    @RequestMapping(value = "/api/acceptance/action", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> acceptanceAction(HttpServletRequest httpRequest, @RequestBody Map<String, String> data) {
-        long userId = (Long) httpRequest.getAttribute("userId");
-        long acceptanceId = Long.parseLong(data.get("acceptanceId"));
-        String action = data.get("action");
-
-        Map<String, Object> map = new HashMap<>();
-
-        if ("accept".equals(action) && !requestService.isValidRequestByAcceptance(acceptanceId)) {
-            acceptanceService.reject(acceptanceId, userId);
-            map.put("value", false);
-            return map;
-        }
-
-        if ("accept".equals(action)) {
-            acceptanceService.accept(acceptanceId, userId);
-        } else if ("reject".equals(action)) {
-            acceptanceService.reject(acceptanceId, userId);
-        }
-
-        map.put("value", true);
-        return map;
-
+    public AcceptanceController(AcceptanceServiceX acceptanceService) {
+        this.acceptanceService = acceptanceService;
     }
+
+    @RolesAllowed("ROLES_LEADER")
+    @RequestMapping(path = "/users/{userId}/acceptances", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page> getForLeader(HttpServletRequest httpRequest, Pageable pageable) {
+        Long userId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        Page<AcceptanceExcerptProjection> acceptances = acceptanceService.get(userId, pageable);
+        return ResponseEntity.ok(acceptances);
+    }
+
+    // *** ACTIONS ***
+
+    @RolesAllowed("ROLES_LEADER")
+    @RequestMapping(path = "/acceptances/{acceptanceId}/accept", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> accept(@PathVariable Long acceptanceId) {
+        acceptanceService.accept(acceptanceId);
+        return ResponseEntity.ok().build();
+    }
+
+    @RolesAllowed("ROLES_LEADER")
+    @RequestMapping(path = "/acceptances/{acceptanceId}/reject", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> reject(@PathVariable Long acceptanceId) {
+        acceptanceService.reject(acceptanceId);
+        return ResponseEntity.ok().build();
+    }
+
 }

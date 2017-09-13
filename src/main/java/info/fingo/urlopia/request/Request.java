@@ -40,6 +40,9 @@ public class Request {
     private LocalDate endDate;
 
     @Column(nullable = false)
+    private Integer workDays; // rename to working days
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Type type;
 
@@ -59,6 +62,17 @@ public class Request {
     public Request() {
         this.created = LocalDateTime.now();
         this.modified = LocalDateTime.now();
+    }
+
+    public Request(User requester, LocalDate startDate, LocalDate endDate, Integer workDays, Type type, TypeInfo typeInfo, Status status) {
+        this();
+        this.requester = requester;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.workDays = workDays;
+        this.type = type;
+        this.typeInfo = (typeInfo != null) ? typeInfo.getName() : null;
+        this.status = status;
     }
 
     public Request(User requester, LocalDate startDate, LocalDate endDate, Type type, TypeInfo typeInfo, Status status) {
@@ -137,6 +151,18 @@ public class Request {
         this.status = status;
     }
 
+    public Integer getWorkingDays() {
+        return workDays;
+    }
+
+    public void setWorkingDays(Integer workDays) {
+        this.workDays = workDays;
+    }
+
+    public Set<Acceptance> getAcceptances() {
+        return acceptances;
+    }
+
     public Set<String> getDeciders() {
         Set<String> users = this.acceptances.stream()
                 .map(acceptance -> acceptance.getDecider() != null ? acceptance.getDecider() : acceptance.getLeader())
@@ -196,6 +222,6 @@ public class Request {
         PENDING,
         ACCEPTED,
         REJECTED,
-        CANCELLED
+        CANCELED
     }
 }

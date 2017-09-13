@@ -1,13 +1,13 @@
 package info.fingo.urlopia.request;
 
-/**
- * Created by Tomasz Urbas on 16.12.2016.
- */
-public class NotEnoughDaysException extends Exception {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(code = HttpStatus.PRECONDITION_FAILED, reason = "NOT_ENOUGH_DAYS")
+public class NotEnoughDaysException extends RuntimeException {
     private String code = "NOT_ENOUGH_DAYS";
 
     NotEnoughDaysException() {
-        super();
     }
 
     public String getCode() {

@@ -38,39 +38,28 @@
                 <thead>
                 <tr>
                     <th st-sort="startDate">{{'table.date' | translate}} <span class="sort glyphicon"></span></th>
+                    <th st-sort="type">{{'table.type' | translate}} <span class="sort glyphicon"></span></th>
                     <th st-sort="status">{{'table.status' | translate}} <span class="sort glyphicon"></span></th>
-                    <th></th>
                 </tr>
                 </thead>
                 <tbody ng-show="!worker.isLoading">
                 <tr ng-repeat="request in worker.displayed">
-                    <td>{{request.term}} ({{request.workDaysNumber}} {{'worker_view.work_days' | translate}})</td>
+                    <td>{{request.startDate}} - {{request.endDate}} ({{request.workingDays}} {{'worker_view.work_days' | translate}})</td>
+                    <td>{{'type.' + request.type | translate}}</td>
                     <td>
-                        <div ng-if="request.status == 'PENDING'">
-                            <div ng-repeat="acceptance in request.acceptances">
-                            <span>
-                                {{acceptance.leader.name}} -
-                                <span ng-if="acceptance.accepted === true">{{'table.accepted' | translate}}</span>
-                                <span ng-if="acceptance.accepted === false">{{'table.denied' | translate}}</span>
-                                <span ng-if="acceptance.accepted === null">{{'table.in_progress' | translate}}</span>
-                            </span>
-                            </div>
-                        </div>
-                        <span ng-if="request.status === 'ACCEPTED'">{{'table.accepted' | translate}}</span>
-                        <div ng-if="request.status === 'REJECTED'">
-                            {{'table.denied' | translate}}
-
-                            <span ng-repeat="acceptance in request.acceptances">
-                            <span ng-if="!acceptance.accepted"><br>{{acceptance.decider.name}}</span>
-                        </span>
-                        </div>
-                        <span ng-if="request.status === 'CANCELLED'">{{'table.cancelled' | translate}}</span>
-                    </td>
-                    <td>
+                        <strong>{{'status.' + request.status | translate}}</strong>
                         <div ng-if="request.status === 'PENDING'">
+                            <div ng-repeat="acceptance in request.acceptances" ng-if="acceptance.status === 'PENDING'">
+                                <span>{{acceptance.leaderName}}</span>
+                            </div>
                             <button class="btn btn-danger text-right" ng-click="worker.cancelRequest(request)">
                                 {{'table.button.cancelRequest' | translate}}
                             </button>
+                        </div>
+                        <div ng-if="request.status === 'REJECTED'">
+                            <div ng-repeat="acceptance in request.acceptances" ng-if="acceptance.status === 'REJECTED'">
+                                <span>{{acceptance.leaderName}}</span>
+                            </div>
                         </div>
                     </td>
                 </tr>
@@ -86,17 +75,12 @@
             </table>
         </div>
 
-        <!--todo align properly-->
-        <div permission="['ROLES_LEADER']">
-            <br><br><br><br><br><br><br><br><br><br><br><br><br>
-        </div>
-
-        <!--view header-->
-        <h2 class="view-title text-left" permission="['ROLES_LEADER']">{{ 'leader_view.title' | translate }}</h2>
-        <hr>
-
         <!-- LEADER VIEW -->
         <div id="leader_view" class="col-xs-12 col-sm-12 col-md-12" permission="['ROLES_LEADER']">
+            <br><br>
+            <h2 class="view-title text-left" permission="['ROLES_LEADER']">{{ 'leader_view.title' | translate }}</h2>
+            <hr>
+
             <div id="requests">
                 <table st-table="leader.displayed" st-pipe="leader.callServer" class="table table-striped">
                     <thead>
@@ -108,26 +92,22 @@
                     </tr>
                     </thead>
                     <tbody ng-show="!leader.isLoading">
-                    <tr ng-repeat="request in leader.displayed">
-                        <td ng-if="request.requester.name"> <!-- if requester exists -->
-                            {{request.requester.name}}
-                        </td>
-                        <td ng-if="!request.requester.name"> <!-- if requester don't exists -->
-                            {{'user.deleted' | translate}} ({{request.requester.mail}})
-                        </td>
-
-                        <td>{{request.term}} ({{request.workDaysNumber}} {{'worker_view.work_days' | translate}})</td>
-
+                    <tr ng-repeat="acceptance in leader.displayed">
                         <td>
-                        <span ng-if="request.status === 'PENDING'">
-                            <button class="btn btn-success" ng-click="leader.accept(request)">
-                                {{'table.button.accept' | translate}}</button>
-                            <button class="btn btn-danger" ng-click="leader.reject(request)">
-                                {{'table.button.deny' | translate}}</button>
-                        </span>
-                            <span ng-if="request.status === 'ACCEPTED'">{{'table.accepted' | translate}}</span>
-                            <span ng-if="request.status === 'REJECTED'">{{'table.denied' | translate}}</span>
-                            <span ng-if="request.status === 'CANCELLED'">{{'table.cancelled' | translate}}</span>
+                            {{acceptance.requesterName}}
+                        </td>
+                        <td>
+                            {{acceptance.startDate}} - {{acceptance.endDate}}
+                            ({{acceptance.workingDays}} {{'worker_view.work_days' | translate}})
+                        </td>
+                        <td>
+                            <span ng-if="acceptance.status === 'PENDING'">
+                                <button class="btn btn-success" ng-click="leader.accept(acceptance)">
+                                    {{'table.button.accept' | translate}}</button>
+                                <button class="btn btn-danger" ng-click="leader.reject(acceptance)">
+                                    {{'table.button.deny' | translate}}</button>
+                            </span>
+                            <span ng-if="acceptance.status !== 'PENDING'">{{'status.' + acceptance.status | translate}}</span>
                         </td>
                     </tr>
                     </tbody>

@@ -18,7 +18,7 @@ public class UserServiceX {
         this.userRepository = userRepository;
     }
 
-    public List<UserExcerptProjection> getAll() {
+    public List<UserExcerptProjection> get() {
         return userRepository.findAllByOrderByLastName();
     }
 
@@ -30,10 +30,7 @@ public class UserServiceX {
         return userRepository.findFirstByMail(userMail);
     }
 
-    // CUSTOM ACTIONS
-    public List<User> getAdmins() {
-        return userRepository.findAllByAdminTrue();
-    }
+    // *** ACTIONS ***
 
     public void setLanguage(Long userId, String language) {
         User user = userRepository.findOne(userId);
@@ -46,24 +43,12 @@ public class UserServiceX {
         return user.getEc();
     }
 
-    public void setAdminByMail(String userMail) {
-        User user = userRepository.findFirstByMail(userMail);
-        user.setAdmin(true);
-        userRepository.save(user);
-    }
-
     public void setWorkTime(Long userId, String workTimeString) {
         Float workTime = 8f * Arrays.stream(workTimeString.split("/")) // 8 hours lasts full-time
                 .map(Float::parseFloat)
                 .reduce((a, b) -> a / b)
                 .orElse(1f);    // TODO: thing about throwing runtime exception
         User user = userRepository.findOne(userId);
-        user.setWorkTime(workTime);
-        userRepository.save(user);
-    }
-
-    public void setWorkTimeByMail(String userMail, float workTime) {
-        User user = userRepository.findFirstByMail(userMail);
         user.setWorkTime(workTime);
         userRepository.save(user);
     }

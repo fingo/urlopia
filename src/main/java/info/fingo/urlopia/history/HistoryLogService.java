@@ -1,55 +1,79 @@
 package info.fingo.urlopia.history;
 
+import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class HistoryLogService {
 
-    private final HistoryLogRepository historyRepository;
+    private final HistoryLogRepository historyLogRepository;
     private final UserRepository userRepository;
 
-    public HistoryLogService(HistoryLogRepository historyRepository, UserRepository userRepository) {
-        this.historyRepository = historyRepository;
+    public HistoryLogService(HistoryLogRepository historyLogRepository, UserRepository userRepository) {
+        this.historyLogRepository = historyLogRepository;
         this.userRepository = userRepository;
     }
 
-    public List<HistoryLogExcerptProjection> getHistoryLogs(Long userId, Integer year) {
+    public List<HistoryLogExcerptProjection> get(Long userId, Integer year) {
         if (year == null) {
-            return historyRepository.findByUserId(userId);
+            return historyLogRepository.findByUserId(userId);
         }
         LocalDateTime yearStart = LocalDateTime.of(year, 1, 1, 0, 0);
         LocalDateTime nextYearStart = LocalDateTime.of(year + 1, 1, 1, 0, 0);
-        return historyRepository.findByUserIdAndCreatedBetween(userId, yearStart, nextYearStart);
+        return historyLogRepository.findByUserIdAndCreatedBetween(userId, yearStart, nextYearStart);
     }
 
-    public void addLog(HistoryLogInput historyLog, Long targetUserId, Long deciderId) {
+    public void create(HistoryLogInput historyLog, Long targetUserId, Long deciderId) {
         User targetUser = userRepository.findOne(targetUserId);
         User decider = userRepository.findOne(deciderId);
-        History prevHistoryLog = historyRepository.findFirstByUserIdOrderByCreatedDesc(targetUserId);
+        History prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByCreatedDesc(targetUserId);
         Float hoursChange = historyLog.getHours();
         String comment = Optional.ofNullable(historyLog.getComment()).orElse("");
         History history = new History(targetUser, decider, hoursChange, comment, prevHistoryLog);
-        historyRepository.save(history);
+        historyLogRepository.save(history);
     }
 
+    public void create(Request request, Float hours, String comment, Long targetUserId, Long deciderId) {
+        User targetUser = userRepository.findOne(targetUserId);
+        User decider = userRepository.findOne(deciderId);
+        History prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByCreatedDesc(targetUserId);
+        History history = new History(request, targetUser, decider, hours, comment, prevHistoryLog);
+        historyLogRepository.save(history);
+    }
+
+    public void createReverse(Request request, String comment, Long deciderId) {
+        History reversible = historyLogRepository.findFirstByRequestId(request.getId());
+        Float hours = -reversible.getHours();
+        Long targetUserId = reversible.getUser().getId();
+        this.create(request, hours, comment, targetUserId, deciderId);
+    }
+
+    // *** ACTIONS ***
+
     public WorkTimeResponse countRemainingDays(Long userId) {
-        Float hours = historyRepository.sumHours(userId);
+        Float hours = historyLogRepository.sumHours(userId);
         Float workTime = userRepository.findOne(userId).getWorkTime();
         return new WorkTimeResponse(workTime, hours);
     }
 
+    public Float countRemainingHours(Long userId) {
+        return historyLogRepository.sumHours(userId);
+    }
+
     public List<HistoryLogExcerptProjection> getRecent(Long userId) {
-        return historyRepository.findFirst5ByUserIdOrderByCreatedDesc(userId);
+        return historyLogRepository.findFirst5ByUserIdOrderByCreatedDesc(userId);
     }
 
     public Integer getEmploymentYear(Long userId) {
-        History firstLog = historyRepository.findFirstByUserIdOrderByCreated(userId);
+        History firstLog = historyLogRepository.findFirstByUserIdOrderByCreated(userId);
         LocalDateTime firstDate = Optional.ofNullable(firstLog)
                 .map(History::getCreated).orElse(LocalDateTime.now());
         return firstDate.getYear();

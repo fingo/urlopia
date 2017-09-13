@@ -13,6 +13,8 @@ public interface HistoryLogRepository extends JpaRepository<History, Long> {
 
     History findFirstByUserIdOrderByCreatedDesc(Long userId);
 
+    History findFirstByRequestId(Long requestId);
+
     List<HistoryLogExcerptProjection> findByUserIdAndCreatedBetween(long userId, LocalDateTime startDate, LocalDateTime endDate);
 
     List<HistoryLogExcerptProjection> findByUserId(long userId);

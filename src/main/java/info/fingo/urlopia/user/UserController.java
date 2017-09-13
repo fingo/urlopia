@@ -28,9 +28,11 @@ public class UserController {
     @RolesAllowed("ROLES_ADMIN")
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List> getAll() {
-        List<UserExcerptProjection> users = userService.getAll();
+        List<UserExcerptProjection> users = userService.get();
         return ResponseEntity.ok(users);
     }
+
+    // *** ACTIONS ***
 
     @RolesAllowed("ROLES_ADMIN")
     @RequestMapping(value ="{userId}/setWorkTime", method = RequestMethod.POST)

@@ -24,21 +24,19 @@ public class History {
     private User user;
 
     @ManyToOne
-    @JoinColumn
-    private User decider;
+    private User decider;       // change to list of deciders
 
     @ManyToOne
-    @JoinColumn
     private Request request;
 
     @Column(nullable = false)
     private float hours;
 
     @Column(nullable = false)
-    private float hoursRemaining = 0;
+    private float hoursRemaining;
 
     @Column(nullable = false)
-    private float workTime;
+    private float workTime;     // rename to userWorkHours
 
     private String comment = "";
 
@@ -90,6 +88,11 @@ public class History {
         this.workTime = user.getWorkTime();
         this.comment = comment;
         this.prevHistory = prevHistory;
+    }
+
+    public History(Request request, User user, User decider, float hours, String comment, History prevHistory) {
+        this(user, decider, hours, comment, prevHistory);
+        this.request = request;
     }
 
     public float getWorkTimeNominator() {

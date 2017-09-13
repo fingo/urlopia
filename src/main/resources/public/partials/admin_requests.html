@@ -19,29 +19,24 @@
                 <th st-sort="requester.mail">{{'table.requester' | translate}} <span class="sort glyphicon"></span></th>
                 <th>{{'table.leader' | translate}}</th>
                 <th st-sort="startDate">{{'table.date' | translate}} <span class="sort glyphicon"></span></th>
+                <th st-sort="type">{{'table.type' | translate}} <span class="sort glyphicon"></span></th>
                 <th st-sort="status">{{'table.status' | translate}} <span class="sort glyphicon"></span></th>
             </tr>
             </thead>
             <tbody ng-show="!isLoading">
             <tr ng-repeat="request in displayed">
-
-                <td ng-if="request.requester.name">{{request.requester.name}}</td>
-                <td ng-if="!request.requester.name">{{'user.deleted' | translate}} ({{request.requester.mail}})</td>
-
+                {{console.log(request)}}
+                <td>{{request.requesterName}}</td>
                 <td>
-                    <span ng-repeat="acceptance in request.acceptances">
-                        <span ng-if="acceptance.decider.name">{{acceptance.decider.name}}</span>
-                        <span ng-if="!acceptance.decider.name">
-                            {{'user.deleted' | translate}}({{acceptance.decider.mail}}
-                        </span>
-                        <br>
-                    </span>
+                    <div ng-repeat="acceptance in request.acceptances">
+                        <span>{{acceptance.leaderName}}</span>
+                    </div>
                 </td>
-
-                <td>{{request.term}} ({{request.workDaysNumber}} {{'worker_view.work_days' | translate}})</td>
+                <td>{{request.startDate}} - {{request.endDate}} ({{request.workingDays}} {{'worker_view.work_days' | translate}})</td>
+                <td>{{'type.' + request.type | translate}}</td>
                 <td>
+                    <strong>{{'status.' + request.status | translate}}</strong>
                     <div ng-if="request.status === 'PENDING'">
-                        {{'table.in_progress' | translate}} - {{request.statusNumber}}<br>
                         <button class="btn btn-success" ng-click="accept(request)">
                             {{'table.button.accept' | translate}}
                         </button>
@@ -49,14 +44,11 @@
                             {{'table.button.deny' | translate}}
                         </button>
                     </div>
-                    <span ng-if="request.status === 'ACCEPTED'">
-                            {{'table.accepted' | translate}}
-                            <button class="btn btn-warning" ng-click="cancel(request)">
-                                {{'table.button.cancelRequest' | translate}}
-                            </button>
-                        </span>
-                    <span ng-if="request.status === 'REJECTED'">{{'table.denied' | translate}}</span>
-                    <span ng-if="request.status === 'CANCELLED'">{{'table.cancelled' | translate}}</span>
+                    <div ng-if="request.status === 'ACCEPTED'">
+                        <button class="btn btn-warning" ng-click="cancel(request)">
+                            {{'table.button.cancelRequest' | translate}}
+                        </button>
+                    </div>
                 </td>
             </tr>
             </tbody>
@@ -65,7 +57,7 @@
             </tbody>
             <tfoot>
             <tr>
-                <td class="text-right" st-pagination="" st-items-by-page="10" colspan="4"></td>
+                <td class="text-right" st-pagination="" st-items-by-page="10" colspan="5"></td>
             </tr>
             </tfoot>
         </table>

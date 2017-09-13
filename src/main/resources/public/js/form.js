@@ -102,29 +102,28 @@ app.controller('formCtrl', function ($scope, $resource, $uibModalInstance, $tran
     };
 
     $scope.sendData = function () {
-
-        API.setUrl('/api/modal', {}).save({
-                startDate: $scope.startDate,
-                endDate: $scope.endDate,
-                leader: $scope.leader,
-                requester: $scope.requester,
-                requesterMail: $scope.requesterMail,
-                teams: $scope.teams,
-                type: $scope.type
-
-            }, function (error_code) {
-                updater.load();
-                if (error_code === "SUCCESS") {
-                    notifyService.displaySuccess($translate.instant('notify.form.success'));
-                } else if (error_code === "NOT_ENOUGH_DAYS") {
-                    notifyService.displayDanger($translate.instant('notify.form.notEnoughDaysPool'));
-                } else if (error_code === "REQUEST_OVERLAPPING") {
-                    notifyService.displayDanger($translate.instant('notify.form.requestOverlapping'));
-                } else {
-                    notifyService.displayDanger($translate.instant('notify.form.fail'));
-                }
+        var type = null;
+        switch ($scope.type) {
+          case 1: type = "D2_BIRTH"; break;
+          case 2: type = "D2_FUNERAL"; break;
+          case 3: type = "D2_WEDDING"; break;
+          case 4: type = "D1_FUNERAL"; break;
+          case 5: type = "D1_WEDDING";
+        }
+        API.setUrl('/api/users/' + Session.data.userId + '/requests', {}).save({
+          startDate: $scope.startDate,
+          endDate: $scope.endDate,
+          type: ($scope.isOccasional) ? "OCCASIONAL" : "NORMAL",
+          occasionalType: type
+        }).$promise.then(function(response) {
+            if(response.$status < 400) {
+              notifyService.displaySuccess($translate.instant('notify.form.success'));
+            } else {
+              notifyService.displayDanger($translate.instant('notify.form.fail'));
             }
-        );
+        }).catch(function() {
+            notifyService.displayDanger($translate.instant('notify.form.fail'));
+        });
 
         $uibModalInstance.close();
     };
