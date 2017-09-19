@@ -9,11 +9,6 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * RequestDTO entity.
- *
- * @author Mateusz Wiśniewski
- */
 @Entity
 @Table(name = "Requests")
 public class Request {
@@ -40,7 +35,7 @@ public class Request {
     private LocalDate endDate;
 
     @Column(nullable = false)
-    private Integer workDays; // rename to working days
+    private Integer workingDays;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -64,12 +59,12 @@ public class Request {
         this.modified = LocalDateTime.now();
     }
 
-    public Request(User requester, LocalDate startDate, LocalDate endDate, Integer workDays, Type type, TypeInfo typeInfo, Status status) {
+    public Request(User requester, LocalDate startDate, LocalDate endDate, Integer workingDays, Type type, TypeInfo typeInfo, Status status) {
         this();
         this.requester = requester;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.workDays = workDays;
+        this.workingDays = workingDays;
         this.type = type;
         this.typeInfo = (typeInfo != null) ? typeInfo.getName() : null;
         this.status = status;
@@ -152,11 +147,11 @@ public class Request {
     }
 
     public Integer getWorkingDays() {
-        return workDays;
+        return workingDays;
     }
 
-    public void setWorkingDays(Integer workDays) {
-        this.workDays = workDays;
+    public void setWorkingDays(Integer workingDays) {
+        this.workingDays = workingDays;
     }
 
     public Set<Acceptance> getAcceptances() {
@@ -165,7 +160,7 @@ public class Request {
 
     public Set<String> getDeciders() {
         Set<String> users = this.acceptances.stream()
-                .map(acceptance -> acceptance.getDecider() != null ? acceptance.getDecider() : acceptance.getLeader())
+                .map(Acceptance::getLeader)
                 .map(user -> String.format("%s %s", user.getFirstName(), user.getLastName()))
                 .collect(Collectors.toSet());
         return users;
@@ -184,25 +179,19 @@ public class Request {
     public enum OccasionalType implements TypeInfo {
         // TODO: Localize it!
         // TODO: Check days before write in database
-        WRONG (0, "Niepoprawny typ okazjonalny", 0),
-        D2_BIRTH (1, "Narodziny dziecka", 2),
-        D2_FUNERAL (2, "Zgon/pogrzeb osoby z najbliższej rodziny", 2),
-        D2_WEDDING (3, "Ślub", 2),
-        D1_FUNERAL (4, "Zgon/pogrzeb osoby bliskiej", 1),
-        D1_WEDDING (5, "Ślub dziecka", 1);
+        WRONG ("Niepoprawny typ okazjonalny", 0),
+        D2_BIRTH ("Narodziny dziecka", 2),
+        D2_FUNERAL ("Zgon/pogrzeb osoby z najbliższej rodziny", 2),
+        D2_WEDDING ("Ślub", 2),
+        D1_FUNERAL ("Zgon/pogrzeb osoby bliskiej", 1),
+        D1_WEDDING ("Ślub dziecka", 1);
 
-        private int index;
         private String info;
         private int durationDays;
 
-        OccasionalType(int index, String info, int durationDays) {
-            this.index = index;
+        OccasionalType(String info, int durationDays) {
             this.info = info;
             this.durationDays = durationDays;
-        }
-
-        public int getIndex() {
-            return index;
         }
 
         public String getName() {

@@ -15,8 +15,6 @@ import java.io.UnsupportedEncodingException;
 
 /**
  * Converts Mail to Message
- *
- * @author Tomasz Urbas
  */
 class MailConverter {
     private static final Logger LOGGER = LoggerFactory.getLogger(MailConverter.class);

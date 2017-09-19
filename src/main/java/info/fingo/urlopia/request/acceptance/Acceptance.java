@@ -61,22 +61,6 @@ public class Acceptance {
         this.leader = leader;
     }
 
-    public User getDecider() {
-        return null;
-    }
-
-    public void setDecider(User decider) {
-        // TODO: remove: it
-    }
-
-    public boolean isAccepted() {
-        return false;
-    }
-
-    public void setAccepted(boolean accepted) {
-        // TODO: remove it
-    }
-
     public Status getStatus() {
         return status;
     }

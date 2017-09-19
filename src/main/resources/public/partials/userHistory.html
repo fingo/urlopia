@@ -30,43 +30,43 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat-start="history in reversedHistories = (histories | reverse)">
-            <td>{{ history.created }}</td>
+        <tr ng-repeat-start="historyLog in reversedHistories = (histories | reverse)">
+            <td>{{ historyLog.created }}</td>
             <td>
-                <span ng-repeat="decider in history.deciders">
-                    <span ng-if="history.deciders.length == 1 || $last">{{ decider}}</span>
-                    <span ng-if="history.deciders.length > 1 && !$last">{{ decider + "," }}</span>
+                <span ng-repeat="decider in historyLog.deciders">
+                    <span ng-if="historyLog.deciders.length == 1 || $last">{{ decider}}</span>
+                    <span ng-if="historyLog.deciders.length > 1 && !$last">{{ decider + "," }}</span>
                 </span>
             </td>
             <td>
-                <span ng-if="history.hours >= 0">
-                    <span ng-if="history.workTime === 8" class="text-center text-success">
-                        {{ Math.floor(history.hours / 8) }}d {{ history.hours - (Math.floor(history.hours / 8) * 8) }}h
+                <span ng-if="historyLog.hours >= 0">
+                    <span ng-if="historyLog.userWorkTime === 8" class="text-center text-success">
+                        {{ Math.floor(historyLog.hours / 8) }}d {{ historyLog.hours - (Math.floor(historyLog.hours / 8) * 8) }}h
                     </span>
-                    <span ng-if="history.workTime !== 8" class="text-center text-success">
-                        {{ history.hours }}h
+                    <span ng-if="historyLog.userWorkTime !== 8" class="text-center text-success">
+                        {{ historyLog.hours }}h
                     </span>
                 </span>
-                <span ng-if="history.hours < 0">
-                    <span ng-if="history.workTime === 8" class="text-center text-danger">
-                        {{ Math.floor(history.hours / 8) }}d {{ history.hours - (Math.floor(history.hours / 8) * 8) }}h
+                <span ng-if="historyLog.hours < 0">
+                    <span ng-if="historyLog.userWorkTime === 8" class="text-center text-danger">
+                        {{ Math.floor(historyLog.hours / 8) }}d {{ historyLog.hours - (Math.floor(historyLog.hours / 8) * 8) }}h
                     </span>
-                    <span ng-if="history.workTime !== 8" class="text-center text-danger">
-                        {{ history.hours }}h
+                    <span ng-if="historyLog.userWorkTime !== 8" class="text-center text-danger">
+                        {{ historyLog.hours }}h
                     </span>
                 </span>
             </td>
             <td class="text-center">
-                <span ng-if="history.workTime === 8" class="text-center">
-                    {{ Math.floor(history.hoursRemaining / 8) }}d {{ history.hoursRemaining - (Math.floor(history.hoursRemaining / 8) * 8) }}h
+                <span ng-if="historyLog.userWorkTime === 8" class="text-center">
+                    {{ Math.floor(historyLog.hoursRemaining / 8) }}d {{ historyLog.hoursRemaining - (Math.floor(historyLog.hoursRemaining / 8) * 8) }}h
                 </span>
-                <span ng-if="history.workTime !== 8" class="text-center">
-                    {{ history.hoursRemaining }}h
+                <span ng-if="historyLog.userWorkTime !== 8" class="text-center">
+                    {{ historyLog.hoursRemaining }}h
                 </span>
             </td>
-            <td>{{ history.comment }} </td>
+            <td>{{ historyLog.comment }} </td>
         </tr>
-        <tr ng-repeat-end ng-if="history.workTime !== reversedHistories[$index + 1].workTime">
+        <tr ng-repeat-end ng-if="historyLog.userWorkTime !== reversedHistories[$index + 1].userWorkTime">
             <td colspan="5">
                 <span ng-if="reversedHistories[$index + 1] != null">
                     {{'employees_view.workTime_changed' | translate}} :
@@ -74,11 +74,11 @@
                 <span ng-if="reversedHistories[$index + 1] == null">
                     {{'employees_view.workTime' | translate}} :
                 </span>
-                <span ng-if="history.workTime !== 8"
+                <span ng-if="historyLog.userWorkTime !== 8"
                       translate="employees_view.shift"
-                      translate-values="{workTime_a: history.workTimeNominator,workTime_b: history.workTimeDenominator}">
+                      translate-values="{workTime_a: historyLog.workTimeNominator,workTime_b: historyLog.workTimeDenominator}">
                 </span>
-                <span ng-if="history.workTime === 8">
+                <span ng-if="historyLog.userWorkTime === 8">
                     {{ 'employees_view.full_time' | translate }}
                 </span>
             </td>

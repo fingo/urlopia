@@ -4,73 +4,53 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author Tomasz Urbas
- */
 @Service
 @Transactional
 public class UserService {
 
     @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserFactory userFactory;
-
-    public UserDTO getUser(Long id) {
-        User userDB = userRepository.findOne(id);
-
-        UserDTO user = null;
-        if (userDB != null) {
-            user = userFactory.create(userDB);
-        }
-
-        return user;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    public UserDTO getUser(String mail) {
-        User userDB = userRepository.findFirstByMail(mail);
-
-        UserDTO user = null;
-        if (userDB != null) {
-            user = userFactory.create(userDB);
-        }
-
-        return user;
+    public List<UserExcerptProjection> get() {
+        return userRepository.findAllByOrderByLastName();
     }
 
-    public List<UserDTO> getUsers() {
-        List<User> usersDB = userRepository.findAll();
-
-        List<UserDTO> usersDTO = new ArrayList<>();
-        usersDB.stream().filter(userDB -> userDB != null).forEach(userDB -> {
-            UserDTO userDTO = userFactory.create(userDB);
-            usersDTO.add(userDTO);
-        });
-
-        return usersDTO;
+    public User get(Long userId) {
+        return userRepository.findOne(userId);
     }
 
-    public List<UserDTO> getAdmins() {
-        List<User> allUsers = userRepository.findAll();
-        List<UserDTO> admins = new LinkedList<>();
-
-        allUsers.stream()
-                .filter(User::isAdmin)
-                .forEach(user -> {
-                    UserDTO admin = userFactory.create(user);
-                    admins.add(admin);
-                });
-        return admins;
+    public User get(String userMail) {
+        return userRepository.findFirstByMail(userMail);
     }
 
-    public void setAdmin(String adminMail) {
-        User user = userRepository.findFirstByMail(adminMail);
-        user.setAdmin(true);
+    // *** ACTIONS ***
+
+    public void setLanguage(Long userId, String language) {
+        User user = userRepository.findOne(userId);
+        user.setLang(language);
         userRepository.save(user);
     }
+
+    public boolean isEC(Long userId) {
+        User user = userRepository.findOne(userId);
+        return user.getEc();
+    }
+
+    public void setWorkTime(Long userId, String workTimeString) {
+        Float workTime = 8f * Arrays.stream(workTimeString.split("/")) // 8 hours lasts full-time
+                .map(Float::parseFloat)
+                .reduce((a, b) -> a / b)
+                .orElse(1f);    // TODO: thing about throwing runtime exception
+        User user = userRepository.findOne(userId);
+        user.setWorkTime(workTime);
+        userRepository.save(user);
+    }
+
 }

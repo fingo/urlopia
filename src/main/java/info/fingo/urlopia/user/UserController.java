@@ -16,11 +16,11 @@ import java.util.Map;
 @RequestMapping(path = "/api/users")
 public class UserController {
 
-    private final UserServiceX userService;
+    private final UserService userService;
     private final ActiveDirectorySynchronizationScheduler synchronizer;
 
     @Autowired
-    public UserController(UserServiceX userService, ActiveDirectorySynchronizationScheduler synchronizer) {
+    public UserController(UserService userService, ActiveDirectorySynchronizationScheduler synchronizer) {
         this.userService = userService;
         this.synchronizer = synchronizer;
     }

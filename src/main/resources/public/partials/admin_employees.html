@@ -21,7 +21,7 @@
     <div class="row">
         <div class="col-sm-3">
             <input type="text" class="form-control" placeholder="{{ 'employees_view.search_name' | translate }}"
-                   ng-model="nameSearch.fullName">
+                   data-ng-model="searchName" />
         </div>
         <div class="col-sm-2">
             <div class="btn-group" uib-dropdown is-open="false">
@@ -76,24 +76,22 @@
         <thead>
         <tr>
             <th class="column_employees">
-                <button class="sorting_button" ng-if="reverse" ng-click="sortBy('surname')">
+                <button class="sorting_button" ng-click="sortBy('name')">
                     {{ 'employees_view.name' | translate }}
-                    <span class="glyphicon glyphicon-sort-by-alphabet-alt sorting_icon"></span>
+                    <span ng-if="propertyName == 'name'">
+                        <span ng-if="reverse" class="glyphicon glyphicon-sort-by-alphabet-alt sorting_icon"></span>
+                        <span ng-if="!reverse" class="glyphicon glyphicon-sort-by-alphabet sorting_icon"></span>
+                    </span>
                 </button>
-                <button class="sorting_button" ng-if="!reverse" ng-click="sortBy('surname')">{{ 'employees_view.name' |
-                    translate }}<span class="glyphicon glyphicon-sort-by-alphabet sorting_icon"></span></button>
-                <span ng-show="propertyName === 'user.name'" ng-class="{reverse: reverse}"></span>
             </th>
             <th class="column_employees">
-                <button class="sorting_button" ng-if="reverse" ng-click="sortBy('mail')">{{
-                    'employees_view.mail' | translate }}<span
-                            class="glyphicon glyphicon-sort-by-alphabet-alt sorting_icon"></span>
+                <button class="sorting_button" ng-click="sortBy('mail')">
+                    {{ 'employees_view.mail' | translate }}
+                    <span ng-if="propertyName == 'mail'">
+                        <span ng-if="reverse" class="glyphicon glyphicon-sort-by-alphabet-alt sorting_icon"></span>
+                        <span ng-if="!reverse" class="glyphicon glyphicon-sort-by-alphabet sorting_icon"></span>
+                    </span>
                 </button>
-                <button class="sorting_button" ng-if="!reverse" ng-click="sortBy('mail')">{{
-                    'employees_view.mail' | translate }}<span
-                            class="glyphicon glyphicon-sort-by-alphabet sorting_icon"></span>
-                </button>
-                <span ng-show="propertyName === 'user.mail'" ng-class="{reverse: reverse}"></span>
             </th>
             <th class="column_employees">{{ 'employees_view.team' | translate }}</th>
             <th class="column_employees">{{ 'employees_view.type_of_job' | translate }}</th>
@@ -104,7 +102,7 @@
 
         <!--User header-->
         <tr class="hvr-grow-shadow"
-            ng-repeat-start="user in users | filter : teamSearch | orderBy : propertyName : reverse | filter : nameSearch : strict | filter : leaderSearch | filter : contractSearch"
+            ng-repeat-start="user in users | filter : teamSearch | orderBy : propertyName : reverse | filter : nameSearch | filter : leaderSearch | filter : contractSearch"
             ng-click="isCollapsed=!isCollapsed">
             <td ng-if="user.leader"><b>{{ user.name }} {{ user.surname }}</b></td>
             <td ng-if="!user.leader">{{ user.name }} {{ user.surname }}</td>
@@ -188,23 +186,23 @@
                             </div>
                         </div>
 
-                        <!--User history-->
+                        <!--User historyLog-->
                         <div class="col-md-6">
                             <b>{{ 'employees_view.last_operations' | translate}}</b><br>
                             <table class="table table-striped">
                                 <tbody>
-                                    <tr ng-repeat-start="history in userHistory">
-                                        <td>{{history.created}}
+                                    <tr ng-repeat-start="historyLog in userHistory">
+                                        <td>{{historyLog.created}}
                                         </td>
-                                        <td ng-if="history.workTime === 8" class="text-center">
-                                            {{ Math.floor(history.hours / 8) }}d {{ history.hours - (Math.floor(history.hours / 8) * 8) }}h
+                                        <td ng-if="historyLog.userWorkTime === 8" class="text-center">
+                                            {{ Math.floor(historyLog.hours / 8) }}d {{ historyLog.hours - (Math.floor(historyLog.hours / 8) * 8) }}h
                                         </td>
-                                        <td ng-if="history.workTime !== 8" class="text-center">
-                                            {{ history.hours }}h
+                                        <td ng-if="historyLog.userWorkTime !== 8" class="text-center">
+                                            {{ historyLog.hours }}h
                                         </td>
-                                        <td>{{ history.comment }}</td>
+                                        <td>{{ historyLog.comment }}</td>
                                     </tr>
-                                    <tr ng-repeat-end ng-if="history.workTime !== userHistory[$index + 1].workTime">
+                                    <tr ng-repeat-end ng-if="historyLog.userWorkTime !== userHistory[$index + 1].userWorkTime">
                                         <td colspan="3">
                                             <span ng-if="userHistory[$index + 1] != null">
                                                 {{'employees_view.workTime_changed' | translate}} :
@@ -212,11 +210,11 @@
                                             <span ng-if="userHistory[$index + 1] == null">
                                                 {{'employees_view.workTime' | translate}} :
                                             </span>
-                                            <span ng-if="history.workTime !== 8"
+                                            <span ng-if="historyLog.userWorkTime !== 8"
                                                   translate="employees_view.shift"
-                                                  translate-values="{workTime_a: history.workTimeNominator,workTime_b: history.workTimeDenominator}">
+                                                  translate-values="{workTime_a: historyLog.workTimeNominator,workTime_b: historyLog.workTimeDenominator}">
                                             </span>
-                                            <span ng-if="history.workTime === 8">
+                                            <span ng-if="historyLog.userWorkTime === 8">
                                                 {{ 'employees_view.full_time' | translate }}
                                             </span>
                                         </td>

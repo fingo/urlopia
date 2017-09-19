@@ -2,10 +2,6 @@ package info.fingo.urlopia.holidays;
 
 import java.time.ZoneId;
 
-/**
- * @author Jakub Licznerski
- *         Created on 30.08.2016.
- */
 public class HolidayResponse {
     private String name;
     private long date;

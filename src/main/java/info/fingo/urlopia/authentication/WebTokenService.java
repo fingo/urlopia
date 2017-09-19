@@ -6,11 +6,6 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-/**
- *
- * @author Jakub Licznerski
- */
-
 @Service
 public class WebTokenService {
 

@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS history;
+DROP TABLE IF EXISTS history_logs;
 
 DROP TABLE IF EXISTS acceptances;
 

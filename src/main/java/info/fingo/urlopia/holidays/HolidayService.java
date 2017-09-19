@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,29 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
-/**
- * @author Jakub Licznerski
- *         Created on 30.08.2016.
- */
-
 @Service
 @Transactional
 public class HolidayService {
 
     @Autowired
     private HolidayRepository holidayRepository;
-
-    public List<HolidayResponse> getAllHolidays() {
-        List<Holiday> holidays = holidayRepository.findAll();
-        List<HolidayResponse> result = new ArrayList<>(holidays.size());
-
-        for (Holiday h :
-                holidays) {
-            result.add(new HolidayResponse(h));
-        }
-
-        return result;
-    }
 
     public List<LocalDate> getAllHolidaysDates() {
         List<Holiday> holidays = holidayRepository.findAll();
@@ -136,22 +120,16 @@ public class HolidayService {
         return LocalDate.of(year, easterMonth, easterDay);
     }
 
-    // TODO: Think about extending LocalDate to calculate working days
-    /*
-     *  Return the date after 'workingDaysToAdd' working days, starting in 'startDate' date
-     */
-    public LocalDate getWorkingDate(LocalDate startDate, int workingDaysToAdd) {
-        List<LocalDate> holidays = this.getAllHolidaysDates();
+    public boolean isWorkingDay(LocalDate date) {
+        return !this.isWeekend(date) & !this.isHoliday(date);
+    }
 
-        LocalDate date = startDate;
-        for(int i = 0; i < workingDaysToAdd;) {
-            if(date.getDayOfWeek().getValue() <= 5 && !holidays.contains(date)) {
-                i++;
-            }
+    public boolean isWeekend(LocalDate date) {
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
+    }
 
-            date = date.plusDays(1);
-        }
-
-        return date.minusDays(1);
+    public boolean isHoliday(LocalDate date) {
+        return holidayRepository.existsByDate(date);
     }
 }

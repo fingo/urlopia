@@ -6,11 +6,6 @@ import info.fingo.urlopia.team.Team;
 import javax.persistence.*;
 import java.util.Set;
 
-/**
- * UserDTO entity.
- *
- * @author Tomasz Urbas
- */
 @Entity
 @Table(name = "Users")
 public class User {
@@ -195,5 +190,22 @@ public class User {
 
     public Set<Team> getTeams() {
         return teams;
+    }
+
+    public enum Role {
+        WORKER("ROLES_WORKER"),
+        LEADER("ROLES_LEADER"),
+        ADMIN("ROLES_ADMIN");
+
+        private final String name;
+
+        Role(final String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 }

@@ -2,8 +2,6 @@ package info.fingo.urlopia.mail;
 
 /**
  * Stores information about the mail
- *
- * @author Tomasz Urbas
  */
 public class Mail {
     private String senderAddress;

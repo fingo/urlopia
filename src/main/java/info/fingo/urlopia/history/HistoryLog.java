@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity
-@Table(name = "History")
-public class History {
+@Table(name = "history_logs")
+public class HistoryLog {
 
     @Id
     @SequenceGenerator(name = "history_id_seq", sequenceName = "history_id_seq", allocationSize = 1)
@@ -36,67 +36,67 @@ public class History {
     private float hoursRemaining;
 
     @Column(nullable = false)
-    private float workTime;     // rename to userWorkHours
+    private float userWorkTime;
 
     private String comment = "";
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
-    private History prevHistory;
+    private HistoryLog prevHistoryLog;
 
-    protected History() {
+    protected HistoryLog() {
         this.created = LocalDateTime.now();
     }
 
-    public History(Request request, float hours) {
+    public HistoryLog(Request request, float hours) {
         this();
         this.user = request.getRequester();
         this.request = request;
         this.hours = hours;
-        this.hoursRemaining = Optional.ofNullable(prevHistory).map(History::getHours).orElse(0f);
-        this.workTime = request.getRequester().getWorkTime();
+        this.hoursRemaining = Optional.ofNullable(prevHistoryLog).map(HistoryLog::getHours).orElse(0f);
+        this.userWorkTime = request.getRequester().getWorkTime();
         this.comment = "";
     }
 
-    public History(Request request, float hours, String comment) {
+    public HistoryLog(Request request, float hours, String comment) {
         this(request, hours);
         this.comment = comment;
     }
 
-    public History(Request request, float hours, String comment, User decider) {
+    public HistoryLog(Request request, float hours, String comment, User decider) {
         this(request, hours);
         this.comment = comment;
         this.decider = decider;
     }
 
-    public History(User user, User decider, float hours, String comment) {
+    public HistoryLog(User user, User decider, float hours, String comment) {
         this();
         this.user = user;
         this.decider = decider;
         this.hours = hours;
-        this.workTime = user.getWorkTime();
+        this.userWorkTime = user.getWorkTime();
         this.comment = comment;
     }
 
-    public History(User user, User decider, float hours, String comment, History prevHistory) {
+    public HistoryLog(User user, User decider, float hours, String comment, HistoryLog prevHistoryLog) {
         this();
         this.user = user;
         this.decider = decider;
         this.hours = hours;
-        this.hoursRemaining = Optional.ofNullable(prevHistory)
-                .map(history -> history.getHoursRemaining() + hours).orElse(hours);
-        this.workTime = user.getWorkTime();
+        this.hoursRemaining = Optional.ofNullable(prevHistoryLog)
+                .map(historyLog -> historyLog.getHoursRemaining() + hours).orElse(hours);
+        this.userWorkTime = user.getWorkTime();
         this.comment = comment;
-        this.prevHistory = prevHistory;
+        this.prevHistoryLog = prevHistoryLog;
     }
 
-    public History(Request request, User user, User decider, float hours, String comment, History prevHistory) {
-        this(user, decider, hours, comment, prevHistory);
+    public HistoryLog(Request request, User user, User decider, float hours, String comment, HistoryLog prevHistoryLog) {
+        this(user, decider, hours, comment, prevHistoryLog);
         this.request = request;
     }
 
     public float getWorkTimeNominator() {
-        float value = this.workTime / 8;
+        float value = this.userWorkTime / 8;
 
         float denominator = 0;
         float nominator;
@@ -110,7 +110,7 @@ public class History {
     }
 
     public float getWorkTimeDenominator() {
-        float value = this.workTime / 8;
+        float value = this.userWorkTime / 8;
 
         float denominator = 0;
         float nominator;
@@ -151,8 +151,8 @@ public class History {
         this.hours = hours;
     }
 
-    public float getWorkTime() {
-        return workTime;
+    public float getUserWorkTime() {
+        return userWorkTime;
     }
 
     public String getComment() {
@@ -163,7 +163,7 @@ public class History {
         return hoursRemaining;
     }
 
-    public History getPrevHistory() {
-        return prevHistory;
+    public HistoryLog getPrevHistoryLog() {
+        return prevHistoryLog;
     }
 }

@@ -7,13 +7,13 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface HistoryLogRepository extends JpaRepository<History, Long> {
+public interface HistoryLogRepository extends JpaRepository<HistoryLog, Long> {
 
-    History findFirstByUserIdOrderByCreated(Long userId);
+    HistoryLog findFirstByUserIdOrderByCreated(Long userId);
 
-    History findFirstByUserIdOrderByCreatedDesc(Long userId);
+    HistoryLog findFirstByUserIdOrderByCreatedDesc(Long userId);
 
-    History findFirstByRequestId(Long requestId);
+    HistoryLog findFirstByRequestId(Long requestId);
 
     List<HistoryLogExcerptProjection> findByUserIdAndCreatedBetween(long userId, LocalDateTime startDate, LocalDateTime endDate);
 
@@ -22,7 +22,7 @@ public interface HistoryLogRepository extends JpaRepository<History, Long> {
     List<HistoryLogExcerptProjection> findFirst5ByUserIdOrderByCreatedDesc(Long userId);
 
     @Query("SELECT COALESCE(SUM(h.hours), 0) " +
-            "FROM History h " +
+            "FROM HistoryLog h " +
             "WHERE h.user.id = :userId")
     Float sumHours(@Param("userId") Long userId);
 

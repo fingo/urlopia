@@ -12,8 +12,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findFirstByAdName(String adName);
 
-    List<User> findAllByAdminTrue();
-
     List<UserExcerptProjection> findAllByOrderByLastName();
 
 }

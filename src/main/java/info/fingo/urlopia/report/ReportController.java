@@ -1,11 +1,6 @@
 package info.fingo.urlopia.report;
 
-import info.fingo.urlopia.history.HistoryService;
-import info.fingo.urlopia.holidays.HolidayService;
-import info.fingo.urlopia.request.RequestDTO;
-import info.fingo.urlopia.request.RequestService;
-import info.fingo.urlopia.request.acceptance.AcceptanceService;
-import info.fingo.urlopia.user.UserDTO;
+import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,59 +12,36 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-/**
- * REST controller for .xlsx file creation.
- *
- * @author Mateusz Wiśniewski
- */
 @Controller
 public class ReportController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    private final ReportView reportView;
 
     @Autowired
-    private RequestService requestService;
-
-    @Autowired
-    private HolidayService holidayService;
-
-    @Autowired
-    private AcceptanceService acceptanceService;
-
-    @Autowired
-    private HistoryService historyService;
-
-    @Autowired
-    private ReportView reportView;
+    public ReportController(UserService userService, ReportView reportView) {
+        this.userService = userService;
+        this.reportView = reportView;
+    }
 
     @RolesAllowed("ROLES_ADMIN")
-    @RequestMapping(value = "/report", method = RequestMethod.GET)
-    public ModelAndView getExcelReport(HttpServletResponse httpResponse, @RequestParam String mail) {
+    @RequestMapping(path = "/report", method = RequestMethod.GET)
+    public ModelAndView getExcelReport(HttpServletResponse httpResponse, @RequestParam Long id) {
 
-        Map<String, Object> model = new HashMap<>();
-
-        LocalDateTime currentYear = LocalDateTime.of(LocalDate.now().getYear(), 1, 1, 0, 0);
-
-        // get user info from services
-        UserDTO userDTO = userService.getUser(mail);
-        List<RequestDTO> requestDTO = requestService.getRequestsFromWorker(userDTO.getId(), currentYear);
+        Integer year = LocalDate.now().getYear();
+        User user = userService.get(id);
 
         // model data
-        model.put("userDTO", userDTO);
-        model.put("requestDTO", requestDTO);
-        model.put("holidayService", holidayService);
-        model.put("historyService", historyService);
-        model.put("acceptanceService", acceptanceService);
-        model.put("currentYear", currentYear.getYear());
+        Map<String, Object> model = new HashMap<>();
+        model.put("currentYear", year);
+        model.put("userId", id);
 
         // set the file name
-        String fileName = "ewidencja_czasu_pracy_" + currentYear.getYear() + "_" + userDTO.getFirstName() + userDTO.getLastName();
+        String fileName = "ewidencja_czasu_pracy_" + year + "_" + user.getFirstName() + user.getLastName();
         httpResponse.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         httpResponse.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xlsx");
 
