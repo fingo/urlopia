@@ -1,6 +1,5 @@
 package info.fingo.urlopia.authentication;
 
-import info.fingo.urlopia.ad.ActiveDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,11 +16,6 @@ import javax.naming.ldap.InitialLdapContext;
 import java.util.Hashtable;
 import java.util.Properties;
 
-/**
- * Class which authenticates username and password with LDAP
- *
- * @author Józef Grodzicki
- */
 @Component
 public class LDAPConnectionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(LDAPConnectionService.class);
@@ -41,8 +35,11 @@ public class LDAPConnectionService {
     @Value("${ldap.provider.url}")
     private String providerUrl;
 
-    @Value("${ad.team.main.group}")
-    private String mainGroup;
+    @Value("${ad.containers.main}")
+    private String mainContainer;
+
+    @Value("${ad.groups.users}")
+    private String usersGroup;
 
 
     public DirContext getContext() {
@@ -67,8 +64,8 @@ public class LDAPConnectionService {
         try {
             SearchControls controls = new SearchControls();
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            NamingEnumeration<SearchResult> results = ctx.search(ActiveDirectory.USERS_CONTAINER,
-                    "(&(memberOf=" + ActiveDirectory.MAIN_TEAM_GROUP + ")" +
+            NamingEnumeration<SearchResult> results = ctx.search(mainContainer,
+                    "(&(memberOf=" + usersGroup + ")" +
                             "(userPrincipalName=" + credentials.getMail() + "))", controls);
 
             if (results.hasMore()) {

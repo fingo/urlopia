@@ -3,25 +3,22 @@ package info.fingo.urlopia.request;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Repository interface for {@link Request} entity.
- *
- * @author Mateusz Wiśniewski
- * @author Tomasz Urbas
- */
 public interface RequestRepository extends JpaRepository<Request, Long> {
 
-    List<Request> findByRequesterId(Long id);
+    Page<RequestExcerptProjection> findBy(Pageable pageable);
 
-    Page<Request> findAll(Pageable pageable);
+    Page<RequestExcerptProjection> findByRequesterId(Long requesterId, Pageable pageable);
 
-    Page<Request> findByRequesterId(Long id, Pageable pageable);
+    List<Request> findByRequesterId(Long requesterId);
 
-    Integer countByRequesterIdAndModifiedAfter(Long id, LocalDateTime time);
+    @Query("SELECT r FROM Request r " +
+            "WHERE r.requester.id = :requesterId " +
+                "AND (YEAR(r.startDate) = :year OR YEAR(r.endDate) = :year)")
+    List<Request> findByRequesterIdAndYear(@Param("requesterId") Long requesterId, @Param("year") Integer year);
 
-    Integer countByModifiedAfter(LocalDateTime time);
 }

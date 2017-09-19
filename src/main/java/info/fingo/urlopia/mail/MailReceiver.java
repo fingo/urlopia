@@ -18,8 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Checks for new mails in inbox
- *
- * @author Tomasz Urbas
  */
 @Component
 @Scope("prototype")
@@ -167,6 +165,7 @@ public class MailReceiver extends Thread {
      * Listening new messages
      */
     private class InboxMessageCountListener implements MessageCountListener {
+
         @Override
         public void messagesAdded(MessageCountEvent ex) {
             try {
@@ -174,8 +173,6 @@ public class MailReceiver extends Thread {
                 for (int messageId = currentMessageCount + 1; messageId <= newMessageCount; messageId++) {
                     Message message = inbox.getMessage(messageId);
                     Mail mail = new MessageConverter(message).toMail();
-
-                    // Mail parsing and saving request in database
                     mailDecider.resolve(mail);
                 }
                 currentMessageCount = newMessageCount;

@@ -19,7 +19,7 @@ public interface HistoryLogExcerptProjection {
 
     Float getHoursRemaining();
 
-    Float getWorkTime();
+    Float getUserWorkTime();
 
     String getComment();
 

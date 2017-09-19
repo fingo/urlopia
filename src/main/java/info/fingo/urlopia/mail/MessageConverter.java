@@ -10,8 +10,6 @@ import java.util.Optional;
 
 /**
  * Converts Message to Mail
- *
- * @author Tomasz Urbas
  */
 class MessageConverter {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageConverter.class);

@@ -10,11 +10,6 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author Jakub Licznerski
- *         Created on 30.08.2016.
- */
-
 @RestController
 public class HolidayController {
 

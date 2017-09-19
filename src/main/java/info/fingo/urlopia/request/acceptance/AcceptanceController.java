@@ -17,9 +17,9 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/api")
 public class AcceptanceController {
 
-    private final AcceptanceServiceX acceptanceService;
+    private final AcceptanceService acceptanceService;
 
-    public AcceptanceController(AcceptanceServiceX acceptanceService) {
+    public AcceptanceController(AcceptanceService acceptanceService) {
         this.acceptanceService = acceptanceService;
     }
 

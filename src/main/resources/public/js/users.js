@@ -291,6 +291,13 @@ app.controller('EmployeesCtrl', function ($scope, API, $filter, $translate, noti
         $scope.contractFilter = item;
     };
 
+    $scope.searchName = "";
+    $scope.nameSearch = function (item) {
+      var searchTerm = $scope.searchName.toLowerCase();
+      var userName = item.name.toLowerCase();
+      return userName.indexOf(searchTerm) !== -1;
+    };
+
     $scope.contractSearch = function (item) {
         if (!item.mail) { //dont show records without email
             return false;
@@ -298,7 +305,7 @@ app.controller('EmployeesCtrl', function ($scope, API, $filter, $translate, noti
         if ($scope.contractFilter === "") {
             return true;
         }
-        if ((item.b2B || item.urlopiaTeam) && $scope.contractFilter === 'others') {
+        if (!item.ec && $scope.contractFilter === 'others') {
             $scope.selectedContract = $filter('translate')('employees_view.others');
             return true;
         } else if (item.ec && $scope.contractFilter === 'ec') {
@@ -632,7 +639,7 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
 
 //TODO authentication before accessing resource
     $scope.report = function () {
-        var url = '/report?mail=' + $scope.user.principalName;
+        var url = '/report?id=' + $scope.user.id;
         window.location.assign(url);
     };
 })

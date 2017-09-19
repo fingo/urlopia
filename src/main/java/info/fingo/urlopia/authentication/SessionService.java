@@ -2,7 +2,6 @@ package info.fingo.urlopia.authentication;
 
 import info.fingo.urlopia.team.Team;
 import info.fingo.urlopia.user.User;
-import info.fingo.urlopia.user.UserDTO;
 import info.fingo.urlopia.user.UserRepository;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,12 +54,12 @@ public class SessionService {
 
     private List<String> pickRoles(User user) {
         List<String> roles = new ArrayList<>();
-        roles.add(UserDTO.Role.WORKER.toString());
+        roles.add(User.Role.WORKER.toString());
         if (user.getLeader()) {
-            roles.add(UserDTO.Role.LEADER.toString());
+            roles.add(User.Role.LEADER.toString());
         }
         if (user.getAdmin()) {
-            roles.add(UserDTO.Role.ADMIN.toString());
+            roles.add(User.Role.ADMIN.toString());
         }
         return roles;
     }

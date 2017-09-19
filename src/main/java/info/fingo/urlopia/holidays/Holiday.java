@@ -3,10 +3,6 @@ package info.fingo.urlopia.holidays;
 import javax.persistence.*;
 import java.time.LocalDate;
 
-/**
- * @author Jakub Licznerski
- *         Created on 30.08.2016.
- */
 @Entity
 @Table(name = "Holidays")
 public class Holiday {

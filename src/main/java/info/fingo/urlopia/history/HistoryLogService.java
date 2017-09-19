@@ -34,23 +34,23 @@ public class HistoryLogService {
     public void create(HistoryLogInput historyLog, Long targetUserId, Long deciderId) {
         User targetUser = userRepository.findOne(targetUserId);
         User decider = userRepository.findOne(deciderId);
-        History prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByCreatedDesc(targetUserId);
+        HistoryLog prevHistoryLogLog = historyLogRepository.findFirstByUserIdOrderByCreatedDesc(targetUserId);
         Float hoursChange = historyLog.getHours();
         String comment = Optional.ofNullable(historyLog.getComment()).orElse("");
-        History history = new History(targetUser, decider, hoursChange, comment, prevHistoryLog);
+        HistoryLog history = new HistoryLog(targetUser, decider, hoursChange, comment, prevHistoryLogLog);
         historyLogRepository.save(history);
     }
 
     public void create(Request request, Float hours, String comment, Long targetUserId, Long deciderId) {
         User targetUser = userRepository.findOne(targetUserId);
         User decider = userRepository.findOne(deciderId);
-        History prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByCreatedDesc(targetUserId);
-        History history = new History(request, targetUser, decider, hours, comment, prevHistoryLog);
-        historyLogRepository.save(history);
+        HistoryLog prevHistoryLogLog = historyLogRepository.findFirstByUserIdOrderByCreatedDesc(targetUserId);
+        HistoryLog historyLog = new HistoryLog(request, targetUser, decider, hours, comment, prevHistoryLogLog);
+        historyLogRepository.save(historyLog);
     }
 
     public void createReverse(Request request, String comment, Long deciderId) {
-        History reversible = historyLogRepository.findFirstByRequestId(request.getId());
+        HistoryLog reversible = historyLogRepository.findFirstByRequestId(request.getId());
         Float hours = -reversible.getHours();
         Long targetUserId = reversible.getUser().getId();
         this.create(request, hours, comment, targetUserId, deciderId);
@@ -73,9 +73,9 @@ public class HistoryLogService {
     }
 
     public Integer getEmploymentYear(Long userId) {
-        History firstLog = historyLogRepository.findFirstByUserIdOrderByCreated(userId);
+        HistoryLog firstLog = historyLogRepository.findFirstByUserIdOrderByCreated(userId);
         LocalDateTime firstDate = Optional.ofNullable(firstLog)
-                .map(History::getCreated).orElse(LocalDateTime.now());
+                .map(HistoryLog::getCreated).orElse(LocalDateTime.now());
         return firstDate.getYear();
     }
 

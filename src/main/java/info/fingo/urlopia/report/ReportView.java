@@ -1,12 +1,12 @@
 package info.fingo.urlopia.report;
 
-import info.fingo.urlopia.history.DurationCalculator;
-import info.fingo.urlopia.history.HistoryService;
+import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.HolidayService;
-import info.fingo.urlopia.request.RequestDTO;
-import info.fingo.urlopia.request.acceptance.AcceptanceDTO;
-import info.fingo.urlopia.request.acceptance.AcceptanceService;
-import info.fingo.urlopia.user.UserDTO;
+import info.fingo.urlopia.holidays.WorkingDaysCalculator;
+import info.fingo.urlopia.request.Request;
+import info.fingo.urlopia.request.RequestService;
+import info.fingo.urlopia.user.User;
+import info.fingo.urlopia.user.UserService;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -24,8 +24,6 @@ import java.util.Map;
 
 /**
  * Builds .xlsx report file from employee data.
- *
- * @author Mateusz Wiśniewski
  */
 
 @Component
@@ -39,8 +37,13 @@ public class ReportView extends AbstractXlsxView {
             "nieob. inne płatne", "nieob. inne niepłatne", "nieob. nieusprawiedliwione", "dyżury"
     };
 
-    @Autowired
-    private HolidayService holidayService;
+    private final UserService userService;
+
+    private final RequestService requestService;
+
+    private final HolidayService holidayService;
+
+    private final HistoryLogService historyLogService;
 
     @Value("${report.company.name}")
     private String companyName;
@@ -48,17 +51,22 @@ public class ReportView extends AbstractXlsxView {
     @Value("${report.company.address}")
     private String companyAddress;
 
+    @Autowired
+    public ReportView(UserService userService, RequestService requestService, HolidayService holidayService, HistoryLogService historyLogService, WorkingDaysCalculator workingDaysCalculator) {
+        this.userService = userService;
+        this.requestService = requestService;
+        this.holidayService = holidayService;
+        this.historyLogService = historyLogService;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        // user data
-        UserDTO user = (UserDTO) model.get("userDTO");
-        List<RequestDTO> requests = (List<RequestDTO>) model.get("requestDTO");
-        HolidayService holidayService = (HolidayService) model.get("holidayService");
-        HistoryService historyService = (HistoryService) model.get("historyService");
-        AcceptanceService acceptanceService = (AcceptanceService) model.get("acceptanceService");
-        int currentYear = (int) model.get("currentYear");
+        Long userId = (Long) model.get("userId");
+        int year = (int) model.get("currentYear");
+        User user = userService.get(userId);
+        List<Request> requests = requestService.get(userId, year);
         float worktime = user.getWorkTime();
 
         // build doc
@@ -180,13 +188,13 @@ public class ReportView extends AbstractXlsxView {
             monthNumberCell.setCellValue(romanNumerals[i]);
 
             // start filling day in month cells
-            int monthLength = LocalDate.of(currentYear, i + 1, 1).lengthOfMonth();
+            int monthLength = LocalDate.of(year, i + 1, 1).lengthOfMonth();
             for (int j = 1; j <= monthLength; ++j) {
                 XSSFCell dayCell = monthRow.createCell(j);
                 dayCell.setCellStyle(defaultCenterStyle);
 
-                LocalDate currentDay = LocalDate.of(currentYear, i + 1, j);
-                if (DurationCalculator.isWeekend(currentDay) || DurationCalculator.isHoliday(currentDay, holidayService)) {
+                LocalDate currentDay = LocalDate.of(year, i + 1, j);
+                if (!holidayService.isWorkingDay(currentDay)) {
                     dayCell.setCellValue("-");
                 } else {
                     dayCell.setCellValue(worktime);
@@ -223,17 +231,12 @@ public class ReportView extends AbstractXlsxView {
 
         // for every user holidays request
         if (requests != null) {
-            for (RequestDTO r : requests) {
-                long requestId = r.getId();
-                boolean isAccepted = true;
-                for (AcceptanceDTO a : acceptanceService.getAcceptancesFromRequest(requestId)) {
-                    if (!(Boolean.TRUE.equals(a.getDecision())))
-                        isAccepted = false;
-                }
+            for (Request r : requests) {
+                boolean isAccepted = r.getStatus() == Request.Status.ACCEPTED;
 
                 if (isAccepted) {
                     for (LocalDate k = r.getStartDate(); !k.isAfter(r.getEndDate()); k = k.plusDays(1)) {
-                        if (k.getMonthValue() <= previousMonth && !DurationCalculator.isFreeDay(k, holidayService)) {
+                        if (k.getMonthValue() <= previousMonth && holidayService.isWorkingDay(k)) {
                             XSSFCell uwCell = sheet.getRow(7 + k.getMonthValue()).getCell(k.getDayOfMonth());
                             uwCell.setCellValue("uw");
                         }
@@ -280,7 +283,7 @@ public class ReportView extends AbstractXlsxView {
         sheet.addMergedRegion(new CellRangeAddress(20, 20, 22, 23));
         XSSFCell leftTimeValueCell = summaryRow.createCell(22);
         leftTimeValueCell.setCellStyle(defaultCenterStyle);
-        double leftTimeValueNumber = historyService.getHolidaysPool(user.getId(), null);
+        double leftTimeValueNumber = historyLogService.countRemainingHours(user.getId());
         leftTimeValueNumber = (Math.abs(8f - worktime) < 0.1) ? leftTimeValueNumber / 8 : leftTimeValueNumber;
         leftTimeValueCell.setCellValue(leftTimeValueNumber);
 

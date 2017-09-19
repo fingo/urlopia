@@ -14,9 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/api")
 public class RequestController {
 
-    private final RequestServiceX requestService;
+    private final RequestService requestService;
 
-    public RequestController(RequestServiceX requestService) {
+    public RequestController(RequestService requestService) {
         this.requestService = requestService;
     }
 
@@ -57,9 +57,8 @@ public class RequestController {
     @RolesAllowed("ROLES_ADMIN")
     @RequestMapping(path = "/requests/{requestId}/reject", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> reject(@PathVariable Long requestId, HttpServletRequest httpRequest) {
-        Long authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
-        requestService.reject(requestId, authenticatedId);
+    public ResponseEntity<Void> reject(@PathVariable Long requestId) {
+        requestService.reject(requestId);
         return ResponseEntity.ok().build();
     }
 

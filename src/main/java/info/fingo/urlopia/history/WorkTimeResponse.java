@@ -1,8 +1,5 @@
 package info.fingo.urlopia.history;
 
-/**
- * @author Tomasz Pilarczyk
- */
 public class WorkTimeResponse {
 
     private float a;

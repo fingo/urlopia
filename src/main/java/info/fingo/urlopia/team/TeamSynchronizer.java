@@ -1,7 +1,7 @@
 package info.fingo.urlopia.team;
 
+import info.fingo.urlopia.ad.ActiveDirectory;
 import info.fingo.urlopia.ad.ActiveDirectoryUtils;
-import info.fingo.urlopia.ad.ActiveDirectoryX;
 import info.fingo.urlopia.ad.Attribute;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
@@ -34,7 +34,7 @@ public class TeamSynchronizer {
 
     private final UserRepository userRepository;
 
-    private final ActiveDirectoryX activeDirectory;
+    private final ActiveDirectory activeDirectory;
 
     private final ActiveDirectoryTeamMapper teamMapper;
 
@@ -42,7 +42,7 @@ public class TeamSynchronizer {
 
     @Autowired
     public TeamSynchronizer(TeamRepository teamRepository, UserRepository userRepository,
-                            ActiveDirectoryX activeDirectory, ActiveDirectoryTeamMapper teamMapper) {
+                            ActiveDirectory activeDirectory, ActiveDirectoryTeamMapper teamMapper) {
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
         this.activeDirectory = activeDirectory;
@@ -126,7 +126,7 @@ public class TeamSynchronizer {
 
     private List<SearchResult> pickTeamsFromActiveDirectory() {
         return activeDirectory.newSearch()
-                .objectClass(ActiveDirectoryX.ObjectClass.Group)
+                .objectClass(ActiveDirectory.ObjectClass.Group)
                 .name(String.format("*%s", teamIdentifier))
                 .search();
     }

@@ -18,8 +18,6 @@ import java.util.regex.Pattern;
 /**
  * Parsing e-mails
  * Sending requests to the database
- *
- * @author Józef Grodzicki
  */
 @Service
 public class MailParser {

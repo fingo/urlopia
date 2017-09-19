@@ -1,7 +1,7 @@
 package info.fingo.urlopia.user;
 
+import info.fingo.urlopia.ad.ActiveDirectory;
 import info.fingo.urlopia.ad.ActiveDirectoryUtils;
-import info.fingo.urlopia.ad.ActiveDirectoryX;
 import info.fingo.urlopia.ad.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,14 +24,14 @@ public class UserSynchronizer {
 
     private final UserRepository userRepository;
 
-    private final ActiveDirectoryX activeDirectory;
+    private final ActiveDirectory activeDirectory;
 
     private final ActiveDirectoryUserMapper userMapper;
 
     private LocalDateTime lastModificationsCheck;
 
     @Autowired
-    public UserSynchronizer(UserRepository userRepository, ActiveDirectoryX activeDirectory, ActiveDirectoryUserMapper userMapper) {
+    public UserSynchronizer(UserRepository userRepository, ActiveDirectory activeDirectory, ActiveDirectoryUserMapper userMapper) {
         this.userRepository = userRepository;
         this.activeDirectory = activeDirectory;
         this.userMapper = userMapper;
@@ -91,7 +91,7 @@ public class UserSynchronizer {
 
     private List<SearchResult> pickUsersFromActiveDirectory() {
         return activeDirectory.newSearch()
-                .objectClass(ActiveDirectoryX.ObjectClass.Person)
+                .objectClass(ActiveDirectory.ObjectClass.Person)
                 .memberOf(usersGroup)
                 .search();
     }

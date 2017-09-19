@@ -1,90 +1,89 @@
 package info.fingo.urlopia.mail;
 
-import info.fingo.urlopia.ad.ActiveDirectory;
-import info.fingo.urlopia.ad.LocalUser;
-import info.fingo.urlopia.events.MailParsingProblemEvent;
-import info.fingo.urlopia.events.RequestFailedEvent;
-import info.fingo.urlopia.request.NotEnoughDaysException;
-import info.fingo.urlopia.request.RequestOverlappingException;
-import info.fingo.urlopia.request.RequestService;
+import info.fingo.urlopia.request.*;
 import info.fingo.urlopia.request.acceptance.AcceptanceService;
-import info.fingo.urlopia.user.UserDTO;
+import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.util.Optional;
-
-/**
- * @author Tomasz Urbas
- */
-
 @Component
 public class MailDecider {
 
-    @Autowired
-    UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private RequestService requestService;
+    private final RequestService requestService;
 
-    @Autowired
-    AcceptanceService acceptanceService;
+    private final AcceptanceService acceptanceService;
 
-    @Autowired
-    MailParser mailParser;
-
-    @Autowired
-    ActiveDirectory activeDirectory;
+    private final MailParser mailParser;
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
+    @Autowired
+    public MailDecider(UserService userService, RequestService requestService, AcceptanceService acceptanceService, MailParser mailParser) {
+        this.userService = userService;
+        this.requestService = requestService;
+        this.acceptanceService = acceptanceService;
+        this.mailParser = mailParser;
+    }
 
-    private void addRequest(UserDTO requester) {
-        LocalDate startDate = mailParser.getStartDate();
-        LocalDate endDate = mailParser.getEndDate();
+    public void resolve(Mail mail) {
+        String senderMail = mail.getSenderAddress();
+        User sender = userService.get(senderMail);
 
-        try {
-            requestService.insertNormal(requester, startDate, endDate);
-        } catch (NotEnoughDaysException | RequestOverlappingException e) {
-            eventPublisher.publishEvent(new RequestFailedEvent(this, requester));
+        if (sender == null) {
+            this.userNotFound(senderMail);
+            return;
+        }
+
+        mailParser.clear();
+        mailParser.parseSubject(mail);
+
+        if (mailParser.isReply()) {
+            mailParser.parseReply(mail);
+            updateAcceptance();
+        } else if (mailParser.parseContent(mail)) {
+            createNewRequest(sender);
+        } else {
+            parsingProblem(sender);
         }
     }
 
-    private void updateAcceptance(UserDTO decider) {
+    private void updateAcceptance() {
         long acceptanceId = mailParser.getId();
         String decision = mailParser.getReply().toLowerCase();
 
         if (mailParser.isAcceptedByMail(decision)) {
-            acceptanceService.accept(acceptanceId, decider.getId());
+            acceptanceService.accept(acceptanceId);
         } else {
-            acceptanceService.reject(acceptanceId, decider.getId());
+            acceptanceService.reject(acceptanceId);
         }
     }
 
-    private void resolvingProblem(UserDTO sender) {
-        eventPublisher.publishEvent(new MailParsingProblemEvent(this, sender));
+    private void createNewRequest(User requester) {
+        Long userId = requester.getId();
+        RequestInput requestInput = new RequestInput();
+        requestInput.setStartDate(mailParser.getStartDate());
+        requestInput.setEndDate(mailParser.getEndDate());
+        requestInput.setType(Request.Type.NORMAL);
+
+        try {
+            requestService.create(userId, requestInput);
+        } catch (NotEnoughDaysException | RequestOverlappingException e) {
+            // send email to user - RequestFailedEvent
+        } catch (Exception e) {
+            // send email to user
+        }
     }
 
-    public void resolve(Mail mail) {
-        Optional<LocalUser> senderAd = activeDirectory.getUser(mail.getSenderAddress());
-        UserDTO sender = (senderAd.isPresent()) ? userService.getUser(senderAd.get().getPrincipalName()) : null;
+    private void userNotFound(String mail) {
+        // send email to user
+    }
 
-        if (sender != null) {
-            mailParser.clear();
-            mailParser.parseSubject(mail);
-
-            if (mailParser.isReply()) {
-                mailParser.parseReply(mail);
-                updateAcceptance(sender);
-            } else if (mailParser.parseContent(mail)) {
-                addRequest(sender);
-            } else {
-                resolvingProblem(sender);
-            }
-        }
+    private void parsingProblem(User sender) {
+        // send email to user - MailParsingProblemEvent
     }
 }

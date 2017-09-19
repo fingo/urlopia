@@ -19,10 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author Jakub Licznerski
- *         Created on 01.08.2016.
- */
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
 
