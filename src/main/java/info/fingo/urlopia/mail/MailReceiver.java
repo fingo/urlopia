@@ -5,7 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import javax.mail.*;
@@ -20,13 +21,11 @@ import java.util.concurrent.TimeUnit;
  * Checks for new mails in inbox
  */
 @Component
-@Scope("prototype")
 public class MailReceiver extends Thread {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MailReceiver.class);
 
-    @Autowired
-    private MailDecider mailDecider;
+    private final MailDecider mailDecider;
 
     @Value("${mail.receiver.host}")
     private String host;
@@ -47,7 +46,10 @@ public class MailReceiver extends Thread {
     private IMAPFolder inbox;
     private int currentMessageCount;
 
-    public MailReceiver() {}
+    @Autowired
+    public MailReceiver(MailDecider mailDecider) {
+        this.mailDecider = mailDecider;
+    }
 
     /**
      * Connecting to the mail box
@@ -190,5 +192,10 @@ public class MailReceiver extends Thread {
                 LOGGER.error("MessagingException when trying update currentMessageCount during messageRemoved", e);
             }
         }
+    }
+
+    @Bean
+    public CommandLineRunner startup() {
+        return args -> this.start();
     }
 }

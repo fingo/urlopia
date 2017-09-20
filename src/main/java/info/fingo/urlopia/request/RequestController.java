@@ -1,6 +1,7 @@
 package info.fingo.urlopia.request;
 
 import info.fingo.urlopia.authentication.AuthInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -16,13 +17,14 @@ public class RequestController {
 
     private final RequestService requestService;
 
+    @Autowired
     public RequestController(RequestService requestService) {
         this.requestService = requestService;
     }
 
     @RolesAllowed("ROLES_ADMIN")
     @RequestMapping(path = "/requests", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAll(Pageable pageable) {
+    public ResponseEntity<Page> getAll(Pageable pageable) {
         Page<RequestExcerptProjection> requests = requestService.get(pageable);
         return ResponseEntity.ok(requests);
     }

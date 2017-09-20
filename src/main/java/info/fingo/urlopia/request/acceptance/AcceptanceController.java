@@ -1,6 +1,7 @@
 package info.fingo.urlopia.request.acceptance;
 
 import info.fingo.urlopia.authentication.AuthInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -19,6 +20,7 @@ public class AcceptanceController {
 
     private final AcceptanceService acceptanceService;
 
+    @Autowired
     public AcceptanceController(AcceptanceService acceptanceService) {
         this.acceptanceService = acceptanceService;
     }

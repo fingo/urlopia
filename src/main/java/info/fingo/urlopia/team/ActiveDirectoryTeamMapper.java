@@ -34,7 +34,7 @@ public class ActiveDirectoryTeamMapper {
     }
 
     private String normalizeName(String adName) {
-        int end = adName.length() - teamIdentifier.length(); // remove " Team"
+        int end = adName.length() - teamIdentifier.length();
         return adName.substring(0, end);
     }
 }

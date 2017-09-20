@@ -1,5 +1,6 @@
 package info.fingo.urlopia.holidays;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -9,6 +10,7 @@ public class WorkingDaysCalculator {
 
     private final HolidayService holidayService;
 
+    @Autowired
     public WorkingDaysCalculator(HolidayService holidayService) {
         this.holidayService = holidayService;
     }

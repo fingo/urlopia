@@ -41,6 +41,7 @@ public class RequestService {
     @Value("${mails.master-leader}")
     private String masterLeaderMail;
 
+    @Autowired
     public RequestService(RequestRepository requestRepository, AcceptanceRepository acceptanceRepository,
                           UserRepository userRepository, HistoryLogService historyLogService,
                           WorkingDaysCalculator workingDaysCalculator) {
@@ -68,14 +69,9 @@ public class RequestService {
 
     public void create(Long userId, RequestInput requestInput) {
         User user = userRepository.findOne(userId);
-        if (requestInput.getEndDate().isBefore(requestInput.getStartDate())) {
-            throw new RuntimeException("End date is before start date");
-        }
         Request request = (requestInput.getType() == Request.Type.NORMAL)
                 ? this.createNormal(user, requestInput) : this.createOccasional(user, requestInput);
-        if (isOverlapping(request)) {
-            throw new RequestOverlappingException();
-        }
+        this.validateRequest(request);
         requestRepository.save(request);
         if (request.getType() == Request.Type.OCCASIONAL) {
             historyLogService.create(request,0f, request.getTypeInfo().getInfo(), userId, userId);
@@ -90,18 +86,31 @@ public class RequestService {
         }
     }
 
-    private Request createNormal(User user, RequestInput requestInput) { // thing about factory
-        float hoursRemaining = historyLogService.countRemainingHours(user.getId());
-        float hoursNeeded = workingDaysCalculator.calculate(requestInput.getStartDate(), requestInput.getEndDate()) * user.getWorkTime();
-        if (hoursRemaining < hoursNeeded) {
-            throw new NotEnoughDaysException();
+    private void validateRequest(Request request) {
+        if (request.getEndDate().isBefore(request.getStartDate())) {
+            throw new RuntimeException("End date is before start date");
         }
+        if (isOverlapping(request)) {
+            throw new RequestOverlappingException();
+        }
+    }
+
+    private Request createNormal(User user, RequestInput requestInput) { // TODO: Think about separate request's types logic
+        float hoursNeeded = workingDaysCalculator.calculate(requestInput.getStartDate(), requestInput.getEndDate()) * user.getWorkTime();
+        validateUserPreconditions(user, hoursNeeded);
         Float workingDays = hoursNeeded / user.getWorkTime();
         return new Request(user, requestInput.getStartDate(), requestInput.getEndDate(), workingDays.intValue(),
                 Request.Type.NORMAL, null, Request.Status.PENDING);
     }
 
-    private Request createOccasional(User user, RequestInput requestInput) { // thing about factory
+    private void validateUserPreconditions(User user, float hoursNeeded) {
+        float hoursRemaining = historyLogService.countRemainingHours(user.getId());
+        if (hoursRemaining < hoursNeeded) {
+            throw new NotEnoughDaysException();
+        }
+    }
+
+    private Request createOccasional(User user, RequestInput requestInput) { // TODO: Think about separate request's types logic
         float hoursNeeded = workingDaysCalculator.calculate(requestInput.getStartDate(), requestInput.getEndDate()) * user.getWorkTime();
         Float workingDays = hoursNeeded / user.getWorkTime();
         return new Request(user, requestInput.getStartDate(), requestInput.getEndDate(), workingDays.intValue(),
@@ -113,19 +122,15 @@ public class RequestService {
         List<Request> requests = requestRepository.findByRequesterId(userId);
 
         return requests.stream()
-                .filter(request -> request.getStatus() == Request.Status.ACCEPTED
-                        || request.getStatus() == Request.Status.PENDING)
-                .filter(request -> !(request.getEndDate().isBefore(newRequest.getStartDate()))
-                        && !(newRequest.getEndDate().isBefore(request.getStartDate())))
-                .count() > 0;
+                .filter(Request::isAffecting)
+                .anyMatch(request -> request.isOverlapping(newRequest));
     }
 
     // *** ACTIONS ***
 
     public void accept(Long requestId, Long deciderId) {
         Request request = requestRepository.findOne(requestId);
-        Request.Status[] supportedStatuses = {Request.Status.PENDING};
-        this.validateStatus(request.getStatus(), supportedStatuses);
+        this.validateStatus(request.getStatus(), Request.Status.PENDING);
         request = this.changeStatus(request, Request.Status.ACCEPTED);
         Float hours = request.getWorkingDays() * request.getRequester().getWorkTime();
         historyLogService.create(request, -hours, "", request.getRequester().getId(), deciderId);
@@ -133,8 +138,7 @@ public class RequestService {
 
     public void reject(Long requestId) {
         Request request = requestRepository.findOne(requestId);
-        Request.Status[] supportedStatuses = {Request.Status.PENDING};
-        this.validateStatus(request.getStatus(), supportedStatuses);
+        this.validateStatus(request.getStatus(), Request.Status.PENDING);
         this.changeStatus(request, Request.Status.REJECTED);
     }
 
@@ -148,7 +152,7 @@ public class RequestService {
         this.changeStatus(request, Request.Status.CANCELED);
     }
 
-    private void validateStatus(Request.Status status, Request.Status[] supportedStatuses) {
+    private void validateStatus(Request.Status status, Request.Status... supportedStatuses) {
         List<Request.Status> supported = Arrays.asList(supportedStatuses);
         if (!supported.contains(status)) {
             throw new RuntimeException("Status unsupported");

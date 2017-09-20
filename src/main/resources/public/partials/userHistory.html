@@ -76,7 +76,7 @@
                 </span>
                 <span ng-if="historyLog.userWorkTime !== 8"
                       translate="employees_view.shift"
-                      translate-values="{workTime_a: historyLog.workTimeNominator,workTime_b: historyLog.workTimeDenominator}">
+                      translate-values="{workTime_a: historyLog.workTimeNumerator,workTime_b: historyLog.workTimeDenominator}">
                 </span>
                 <span ng-if="historyLog.userWorkTime === 8">
                     {{ 'employees_view.full_time' | translate }}

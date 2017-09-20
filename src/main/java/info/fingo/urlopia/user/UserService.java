@@ -11,9 +11,11 @@ import java.util.List;
 @Transactional
 public class UserService {
 
-    @Autowired
+    private Float FULL_TIME_IN_HOURS = 8f; // TODO: Think about moving it somewhere
+
     private final UserRepository userRepository;
 
+    @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -32,19 +34,19 @@ public class UserService {
 
     // *** ACTIONS ***
 
-    public void setLanguage(Long userId, String language) {
+    void setLanguage(Long userId, String language) {
         User user = userRepository.findOne(userId);
         user.setLang(language);
         userRepository.save(user);
     }
 
-    public boolean isEC(Long userId) {
+    boolean isEC(Long userId) {
         User user = userRepository.findOne(userId);
         return user.getEc();
     }
 
-    public void setWorkTime(Long userId, String workTimeString) {
-        Float workTime = 8f * Arrays.stream(workTimeString.split("/")) // 8 hours lasts full-time
+    void setWorkTime(Long userId, String workTimeString) {
+        Float workTime = FULL_TIME_IN_HOURS * Arrays.stream(workTimeString.split("/"))
                 .map(Float::parseFloat)
                 .reduce((a, b) -> a / b)
                 .orElse(1f);    // TODO: thing about throwing runtime exception

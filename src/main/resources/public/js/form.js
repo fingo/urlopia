@@ -17,7 +17,7 @@ app.controller('formCtrl', function ($scope, $resource, $uibModalInstance, $tran
     $scope.requesterMail = Session.data.mail;
     $scope.teams = Session.data.teams;
     $scope.leadersNames = $scope.teams.map(function (team) {
-        return team.leader.name + ' ' + team.leader.surname;
+        return team.leader;
     }).filter(uniqueFilter);
     $scope.startDate = new Date($scope.today.getTime());
     $scope.endDate = new Date($scope.today.getTime());
@@ -116,7 +116,7 @@ app.controller('formCtrl', function ($scope, $resource, $uibModalInstance, $tran
           type: ($scope.isOccasional) ? "OCCASIONAL" : "NORMAL",
           occasionalType: type
         }).$promise.then(function(response) {
-            if(response.$status < 400) {
+            if(response.$status >= 200 && response.$status < 300) {
               notifyService.displaySuccess($translate.instant('notify.form.success'));
             } else {
               notifyService.displayDanger($translate.instant('notify.form.fail'));

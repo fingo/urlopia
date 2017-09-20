@@ -38,8 +38,7 @@ public class AcceptanceService {
 
     public void accept(Long acceptanceId) {
         Acceptance acceptance = acceptanceRepository.findOne(acceptanceId);
-        Acceptance.Status[] supportedStatuses = {Acceptance.Status.PENDING};
-        this.validateStatus(acceptance.getStatus(), supportedStatuses);
+        this.validateStatus(acceptance.getStatus(), Acceptance.Status.PENDING);
         acceptance = this.changeStatus(acceptance, Acceptance.Status.ACCEPTED);
 
         Long requestId = acceptance.getRequest().getId();
@@ -54,13 +53,12 @@ public class AcceptanceService {
 
     public void reject(Long acceptanceId) {
         Acceptance acceptance = acceptanceRepository.findOne(acceptanceId);
-        Acceptance.Status[] supportedStatuses = {Acceptance.Status.PENDING};
-        this.validateStatus(acceptance.getStatus(), supportedStatuses);
+        this.validateStatus(acceptance.getStatus(), Acceptance.Status.PENDING);
         acceptance = this.changeStatus(acceptance, Acceptance.Status.REJECTED);
         requestService.reject(acceptance.getRequest().getId());
     }
 
-    private void validateStatus(Acceptance.Status status, Acceptance.Status[] supportedStatuses) {
+    private void validateStatus(Acceptance.Status status, Acceptance.Status... supportedStatuses) {
         List<Acceptance.Status> supported = Arrays.asList(supportedStatuses);
         if (!supported.contains(status)) {
             throw new RuntimeException("Status unsupported");

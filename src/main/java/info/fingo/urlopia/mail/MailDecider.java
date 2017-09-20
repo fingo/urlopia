@@ -19,15 +19,15 @@ public class MailDecider {
 
     private final MailParser mailParser;
 
-    @Autowired
-    private ApplicationEventPublisher eventPublisher;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public MailDecider(UserService userService, RequestService requestService, AcceptanceService acceptanceService, MailParser mailParser) {
+    public MailDecider(UserService userService, RequestService requestService, AcceptanceService acceptanceService, MailParser mailParser, ApplicationEventPublisher eventPublisher) {
         this.userService = userService;
         this.requestService = requestService;
         this.acceptanceService = acceptanceService;
         this.mailParser = mailParser;
+        this.eventPublisher = eventPublisher;
     }
 
     public void resolve(Mail mail) {
@@ -73,17 +73,17 @@ public class MailDecider {
         try {
             requestService.create(userId, requestInput);
         } catch (NotEnoughDaysException | RequestOverlappingException e) {
-            // send email to user - RequestFailedEvent
+            // TODO: send email to user - RequestFailedEvent
         } catch (Exception e) {
-            // send email to user
+            // TODO: send email to user
         }
     }
 
     private void userNotFound(String mail) {
-        // send email to user
+        // TODO: send email to user
     }
 
     private void parsingProblem(User sender) {
-        // send email to user - MailParsingProblemEvent
+        // TODO: send email to user - MailParsingProblemEvent
     }
 }

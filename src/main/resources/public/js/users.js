@@ -39,7 +39,7 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
     $scope.worker.cancelRequest = function (request) {
       API.setUrl('/api/requests/' + request.id + '/cancel').save().$promise
         .then(function(response) {
-          if(response.$status < 400) {
+          if(response.$status >= 200 && response.$status < 300) {
             notifyService.displayInfo($translate.instant('notify.request.cancel'));
             request.status = 'CANCELED';
           } else {
@@ -87,7 +87,7 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
         $scope.leader.accept = function(acceptance) {
             API.setUrl('/api/acceptances/' + acceptance.id + '/accept').save().$promise
               .then(function(response) {
-                if(response.$status < 400) {
+                if(response.$status >= 200 && response.$status < 300) {
                   notifyService.displaySuccess($translate.instant('notify.request.accept'));
                   acceptance.status = 'ACCEPTED';
                 } else {
@@ -100,7 +100,7 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
         $scope.leader.reject = function(acceptance) {
           API.setUrl('/api/acceptances/' + acceptance.id + '/reject').save().$promise
             .then(function(response) {
-              if(response.$status < 400) {
+              if(response.$status >= 200 && response.$status < 300) {
                 notifyService.displaySuccess($translate.instant('notify.request.deny'));
                 acceptance.status = 'REJECTED';
               } else {
@@ -150,7 +150,7 @@ app.controller('RequestsCtrl', function ($scope, $translate, updater, API, Sessi
     $scope.accept = function (request) {
         API.setUrl('/api/requests/' + request.id + '/accept').save().$promise
           .then(function(response) {
-            if(response.$status < 400) {
+            if(response.$status >= 200 && response.$status < 300) {
               notifyService.displayInfo($translate.instant('notify.request.accept'));
               request.status = 'ACCEPTED'
             } else {
@@ -164,7 +164,7 @@ app.controller('RequestsCtrl', function ($scope, $translate, updater, API, Sessi
     $scope.reject = function (request) {
       API.setUrl('/api/requests/' + request.id + '/reject').save().$promise
         .then(function(response) {
-          if(response.$status < 400) {
+          if(response.$status >= 200 && response.$status < 300) {
             notifyService.displayInfo($translate.instant('notify.request.deny'));
             request.status = 'REJECTED'
           } else {
@@ -178,7 +178,7 @@ app.controller('RequestsCtrl', function ($scope, $translate, updater, API, Sessi
     $scope.cancel = function (request) {
       API.setUrl('/api/requests/' + request.id + '/cancel').save().$promise
         .then(function(response) {
-          if(response.$status < 400) {
+          if(response.$status >= 200 && response.$status < 300) {
             notifyService.displayInfo($translate.instant('notify.request.cancel'));
             request.status = 'CANCELED'
           } else {

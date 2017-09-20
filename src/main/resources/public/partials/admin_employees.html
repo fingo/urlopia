@@ -104,16 +104,16 @@
         <tr class="hvr-grow-shadow"
             ng-repeat-start="user in users | filter : teamSearch | orderBy : propertyName : reverse | filter : nameSearch | filter : leaderSearch | filter : contractSearch"
             ng-click="isCollapsed=!isCollapsed">
-            <td ng-if="user.leader"><b>{{ user.name }} {{ user.surname }}</b></td>
-            <td ng-if="!user.leader">{{ user.name }} {{ user.surname }}</td>
+            <td ng-if="user.leader"><b>{{ user.name }}</b></td>
+            <td ng-if="!user.leader">{{ user.name }}</td>
             <td>{{ user.mail }}</td>
             <td>
                 <span ng-repeat="team in user.teams">
-                    <span style="font-weight: 700;" ng-if="team.leader === user.mail">
+                    <span style="font-weight: 700;" ng-if="team.leaderId === user.id">
                         <span ng-if="user.teams.length == 1 || $last">{{ team.name }}</span>
                         <span ng-if="user.teams.length > 1 && !$last">{{ team.name + ',' }}</span>
                     </span>
-                    <span ng-if="team.leader !== user.mail">
+                    <span ng-if="team.leaderId !== user.id">
                         <span ng-if="user.teams.length == 1 || $last">{{ team.name }}</span>
                         <span ng-if="user.teams.length > 1 && !$last">{{ team.name + ',' }}</span>
                     </span>
@@ -186,7 +186,7 @@
                             </div>
                         </div>
 
-                        <!--User historyLog-->
+                        <!--User history-->
                         <div class="col-md-6">
                             <b>{{ 'employees_view.last_operations' | translate}}</b><br>
                             <table class="table table-striped">
@@ -212,7 +212,7 @@
                                             </span>
                                             <span ng-if="historyLog.userWorkTime !== 8"
                                                   translate="employees_view.shift"
-                                                  translate-values="{workTime_a: historyLog.workTimeNominator,workTime_b: historyLog.workTimeDenominator}">
+                                                  translate-values="{workTime_a: historyLog.workTimeNumerator,workTime_b: historyLog.workTimeDenominator}">
                                             </span>
                                             <span ng-if="historyLog.userWorkTime === 8">
                                                 {{ 'employees_view.full_time' | translate }}
