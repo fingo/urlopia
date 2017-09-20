@@ -24,6 +24,10 @@ public class ActiveDirectoryUtils {
                 .orElse("");
     }
 
+    public static String[] split(String stringGroup) {
+        return stringGroup.split(", (?=CN=)");
+    }
+
     public static LocalDateTime convertToLocalDateTime(String time) {
         time = time.substring(0, time.indexOf("."));
         return LocalDateTime.parse(time, dateTimeFormatter);

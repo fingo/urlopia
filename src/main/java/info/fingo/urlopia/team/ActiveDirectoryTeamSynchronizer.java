@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-public class TeamSynchronizer {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TeamSynchronizer.class);
+public class ActiveDirectoryTeamSynchronizer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActiveDirectoryTeamSynchronizer.class);
 
     @Value("${ad.groups.users}")
     private String usersGroup;
@@ -41,8 +41,8 @@ public class TeamSynchronizer {
     private LocalDateTime lastModificationsCheck;
 
     @Autowired
-    public TeamSynchronizer(TeamRepository teamRepository, UserRepository userRepository,
-                            ActiveDirectory activeDirectory, ActiveDirectoryTeamMapper teamMapper) {
+    public ActiveDirectoryTeamSynchronizer(TeamRepository teamRepository, UserRepository userRepository,
+                                           ActiveDirectory activeDirectory, ActiveDirectoryTeamMapper teamMapper) {
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
         this.activeDirectory = activeDirectory;
@@ -50,10 +50,8 @@ public class TeamSynchronizer {
         this.lastModificationsCheck = LocalDateTime.now();
     }
 
-    public void findNewTeams() {
-        List<String> dbTeams = this.pickTeamsFromDatabase().stream()
-                .map(Team::getAdName)
-                .collect(Collectors.toList());
+    public void addNewTeams() {
+        List<String> dbTeams = teamRepository.findAllAdNames();
         this.pickTeamsFromActiveDirectory().stream()
                 .filter(team -> !ActiveDirectoryUtils.pickAttribute(team, Attribute.DISTINGUISHED_NAME).equals(usersGroup))
                 .filter(team -> !dbTeams.contains(ActiveDirectoryUtils.pickAttribute(team, Attribute.DISTINGUISHED_NAME)))
@@ -66,13 +64,13 @@ public class TeamSynchronizer {
         List<String> adTeams = this.pickTeamsFromActiveDirectory().stream()
                 .map(team -> ActiveDirectoryUtils.pickAttribute(team, Attribute.DISTINGUISHED_NAME))
                 .collect(Collectors.toList());
-        this.pickTeamsFromDatabase().stream()
+        teamRepository.findAll().stream()
                 .filter(teams -> !adTeams.contains(teams.getAdName()))
                 .forEach(teamRepository::delete);
         LOGGER.info("Synchronisation succeed: remove deleted teams");
     }
 
-    public void checkModifications() {
+    public void synchronizeIncremental() {
         LocalDateTime checkTime = LocalDateTime.now();
         Stream<SearchResult> teamsToSynchronize = this.pickTeamsFromActiveDirectory().stream()
                 .filter(team -> {
@@ -85,7 +83,7 @@ public class TeamSynchronizer {
         LOGGER.info("Synchronisation succeed: last modified teams");
     }
 
-    public void fullSynchronize() {
+    public void synchronizeFull() {
         Stream<SearchResult> usersToSynchronize = this.pickTeamsFromActiveDirectory().stream();
         this.synchronize(usersToSynchronize);
         LOGGER.info("Synchronisation succeed: all teams");
@@ -117,7 +115,7 @@ public class TeamSynchronizer {
     }
 
     private Set<User> splitMembers(String members) {
-        String[] groups = members.split(", (?=CN=)");
+        String[] groups = ActiveDirectoryUtils.split(members);
         return Arrays.stream(groups)
                 .map(userRepository::findFirstByAdName)
                 .filter(Objects::nonNull)
@@ -129,9 +127,5 @@ public class TeamSynchronizer {
                 .objectClass(ActiveDirectory.ObjectClass.Group)
                 .name(String.format("*%s", teamIdentifier))
                 .search();
-    }
-
-    private List<Team> pickTeamsFromDatabase() {
-        return teamRepository.findAll();
     }
 }

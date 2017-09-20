@@ -1,8 +1,8 @@
 CREATE TABLE users (
   id              SERIAL        PRIMARY KEY,
-  principal_name  VARCHAR(63)   NOT NULL UNIQUE ,
-  ad_name         VARCHAR(100)  NOT NULL UNIQUE ,
-  mail            VARCHAR(63)   NOT NULL,
+  principal_name  VARCHAR(63)   NOT NULL UNIQUE,
+  ad_name         VARCHAR(100)  NOT NULL UNIQUE,
+  mail            VARCHAR(63)   NOT NULL UNIQUE,
   first_name      VARCHAR(30),
   last_name       VARCHAR(30),
   admin           BOOLEAN       NOT NULL DEFAULT FALSE,

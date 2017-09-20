@@ -158,12 +158,23 @@ public class Request {
         return acceptances;
     }
 
+    @Transient
     public Set<String> getDeciders() {
-        Set<String> users = this.acceptances.stream()
+        return this.acceptances.stream()
                 .map(Acceptance::getLeader)
                 .map(user -> String.format("%s %s", user.getFirstName(), user.getLastName()))
                 .collect(Collectors.toSet());
-        return users;
+    }
+
+    @Transient
+    public boolean isAffecting() {
+        return this.status == Status.ACCEPTED || this.status == Status.PENDING;
+    }
+
+    @Transient
+    public boolean isOverlapping(Request request) {
+        return !this.startDate.isAfter(request.endDate)
+                && !this.endDate.isBefore(request.startDate);
     }
 
     public enum Type {

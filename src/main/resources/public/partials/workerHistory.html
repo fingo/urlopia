@@ -48,7 +48,7 @@
                 </span>
             </td>
             <td class="text-center">
-                <span ng-if="historyLog.userWorkTime === 8" class="text-center">
+                <span class="text-center">
                     {{ Math.floor(historyLog.hoursRemaining / historyLog.userWorkTime) }}d {{ historyLog.hoursRemaining - (Math.floor(historyLog.hoursRemaining / historyLog.userWorkTime) * historyLog.userWorkTime) }}h
                 </span>
             </td>
@@ -64,7 +64,7 @@
                 </span>
                 <span ng-if="historyLog.userWorkTime !== 8"
                       translate="employees_view.shift"
-                      translate-values="{workTime_a: historyLog.workTimeNominator,workTime_b: historyLog.workTimeDenominator}">
+                      translate-values="{workTime_a: historyLog.workTimeNumerator,workTime_b: historyLog.workTimeDenominator}">
                 </span>
                 <span ng-if="historyLog.userWorkTime === 8">
                     {{ 'employees_view.full_time' | translate }}

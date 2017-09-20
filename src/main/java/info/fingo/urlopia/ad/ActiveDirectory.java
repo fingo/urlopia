@@ -19,7 +19,6 @@ import java.util.List;
 public class ActiveDirectory {
     private static final Logger LOGGER = LoggerFactory.getLogger(ActiveDirectory.class);
 
-    @Autowired
     private final LDAPConnectionService ldapConnectionService;
 
     @Value("${ad.containers.main}")
@@ -34,7 +33,7 @@ public class ActiveDirectory {
         return new Searcher();
     }
 
-    public class Searcher {
+    public class Searcher { // TODO: think about move this class to another file
         private StringBuilder filter = new StringBuilder("(&");
 
         private Searcher() {

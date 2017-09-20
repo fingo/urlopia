@@ -1,9 +1,10 @@
 package info.fingo.urlopia;
 
-import info.fingo.urlopia.team.TeamSynchronizer;
-import info.fingo.urlopia.user.UserSynchronizer;
+import info.fingo.urlopia.team.ActiveDirectoryTeamSynchronizer;
+import info.fingo.urlopia.user.ActiveDirectoryUserSynchronizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,11 +14,12 @@ import org.springframework.stereotype.Component;
 public class ActiveDirectorySynchronizationScheduler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ActiveDirectorySynchronizationScheduler.class);
 
-    private final UserSynchronizer userSynchronizer;
+    private final ActiveDirectoryUserSynchronizer userSynchronizer;
 
-    private final TeamSynchronizer teamSynchronizer;
+    private final ActiveDirectoryTeamSynchronizer teamSynchronizer;
 
-    public ActiveDirectorySynchronizationScheduler(UserSynchronizer userSynchronizer, TeamSynchronizer teamSynchronizer) {
+    @Autowired
+    public ActiveDirectorySynchronizationScheduler(ActiveDirectoryUserSynchronizer userSynchronizer, ActiveDirectoryTeamSynchronizer teamSynchronizer) {
         this.userSynchronizer = userSynchronizer;
         this.teamSynchronizer = teamSynchronizer;
     }
@@ -25,11 +27,11 @@ public class ActiveDirectorySynchronizationScheduler {
     @Scheduled(cron = "0 00 01 * * *")
     public void dailySynchronization() {
         LOGGER.info("*** DAILY SYNCHRONIZATION BEGIN ***");
-        userSynchronizer.findNewUsers();
+        userSynchronizer.addNewUsers();
         userSynchronizer.deactivateDeletedUsers();
-        userSynchronizer.fullSynchronize();
-        teamSynchronizer.findNewTeams();
-        teamSynchronizer.fullSynchronize();
+        userSynchronizer.synchronizeFull();
+        teamSynchronizer.addNewTeams();
+        teamSynchronizer.synchronizeFull();
         teamSynchronizer.assignUsersToTeams();
         teamSynchronizer.removeDeletedTeams();
         LOGGER.info("*** DAILY SYNCHRONIZATION END ***");
@@ -38,10 +40,10 @@ public class ActiveDirectorySynchronizationScheduler {
     @Scheduled(cron = "0 0-59/5 * * * *")
     public void continuousSynchronization() {
         LOGGER.info("*** CONTINUOUS SYNCHRONIZATION BEGIN ***");
-        userSynchronizer.findNewUsers();
-        userSynchronizer.checkModifications();
-        teamSynchronizer.findNewTeams();
-        teamSynchronizer.checkModifications();
+        userSynchronizer.addNewUsers();
+        userSynchronizer.synchronizeIncremental();
+        teamSynchronizer.addNewTeams();
+        teamSynchronizer.synchronizeIncremental();
         LOGGER.info("*** CONTINUOUS SYNCHRONIZATION END ***");
     }
 
@@ -49,8 +51,8 @@ public class ActiveDirectorySynchronizationScheduler {
     public CommandLineRunner startupSynchronization() {
         return args -> {
             LOGGER.info("*** STARTUP SYNCHRONIZATION BEGIN ***");
-            userSynchronizer.findNewUsers();
-            teamSynchronizer.findNewTeams();
+            userSynchronizer.addNewUsers();
+            teamSynchronizer.addNewTeams();
             teamSynchronizer.assignUsersToTeams();
             LOGGER.info("*** STARTUP SYNCHRONIZATION END ***");
         };

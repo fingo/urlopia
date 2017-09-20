@@ -46,7 +46,7 @@ Urlopia contains following functions:
     - Automatic actions for managing employees remaining vacation
     - Team member vacation application consideration via email or web GUI
 - **Employees**
-    - Vacation historyLog with 
+    - Vacation history log with 
     - Remaining vacation pool preview
     - Applying for vacation via e-mail or web GUI (Apply form)
     - Occasional vacation

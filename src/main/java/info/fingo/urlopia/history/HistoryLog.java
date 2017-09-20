@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "history_logs")
-public class HistoryLog {
+public class HistoryLog {   // TODO: Think about removing all relations from log entity
 
     @Id
     @SequenceGenerator(name = "history_id_seq", sequenceName = "history_id_seq", allocationSize = 1)
@@ -24,7 +24,7 @@ public class HistoryLog {
     private User user;
 
     @ManyToOne
-    private User decider;       // change to list of deciders
+    private User decider;       // TODO: change to list of deciders
 
     @ManyToOne
     private Request request;
@@ -44,81 +44,53 @@ public class HistoryLog {
     @JoinColumn(unique = true)
     private HistoryLog prevHistoryLog;
 
-    protected HistoryLog() {
+    private HistoryLog() {
         this.created = LocalDateTime.now();
     }
 
-    public HistoryLog(Request request, float hours) {
-        this();
-        this.user = request.getRequester();
-        this.request = request;
-        this.hours = hours;
-        this.hoursRemaining = Optional.ofNullable(prevHistoryLog).map(HistoryLog::getHours).orElse(0f);
-        this.userWorkTime = request.getRequester().getWorkTime();
-        this.comment = "";
-    }
-
-    public HistoryLog(Request request, float hours, String comment) {
-        this(request, hours);
-        this.comment = comment;
-    }
-
-    public HistoryLog(Request request, float hours, String comment, User decider) {
-        this(request, hours);
-        this.comment = comment;
-        this.decider = decider;
-    }
-
-    public HistoryLog(User user, User decider, float hours, String comment) {
-        this();
-        this.user = user;
-        this.decider = decider;
-        this.hours = hours;
-        this.userWorkTime = user.getWorkTime();
-        this.comment = comment;
-    }
-
-    public HistoryLog(User user, User decider, float hours, String comment, HistoryLog prevHistoryLog) {
+    HistoryLog(User user, User decider, float hours, String comment, HistoryLog prevHistoryLog) {
         this();
         this.user = user;
         this.decider = decider;
         this.hours = hours;
         this.hoursRemaining = Optional.ofNullable(prevHistoryLog)
-                .map(historyLog -> historyLog.getHoursRemaining() + hours).orElse(hours);
+                .map(historyLog -> historyLog.hoursRemaining + hours).orElse(hours);
         this.userWorkTime = user.getWorkTime();
         this.comment = comment;
         this.prevHistoryLog = prevHistoryLog;
     }
 
-    public HistoryLog(Request request, User user, User decider, float hours, String comment, HistoryLog prevHistoryLog) {
+    HistoryLog(Request request, User user, User decider, float hours, String comment, HistoryLog prevHistoryLog) {
         this(user, decider, hours, comment, prevHistoryLog);
         this.request = request;
     }
 
-    public float getWorkTimeNominator() {
+    @Transient
+    public float getWorkTimeNumerator() {       // TODO: Think how to remove these methods (maybe store more informations in database)
         float value = this.userWorkTime / 8;
 
         float denominator = 0;
-        float nominator;
+        float numerator;
 
         do {
             denominator++;
-            nominator = value * denominator;
-        } while (Math.floor(nominator) != nominator);
+            numerator = value * denominator;
+        } while (Math.floor(numerator) != numerator);
 
-        return nominator;
+        return numerator;
     }
 
+    @Transient
     public float getWorkTimeDenominator() {
         float value = this.userWorkTime / 8;
 
         float denominator = 0;
-        float nominator;
+        float numerator;
 
         do {
             denominator++;
-            nominator = value * denominator;
-        } while (Math.floor(nominator) != nominator);
+            numerator = value * denominator;
+        } while (Math.floor(numerator) != numerator);
 
         return denominator;
     }

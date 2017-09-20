@@ -15,10 +15,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "users_id_seq")
     private long id;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String principalName;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String adName;
 
     @Column(nullable = false, unique = true)

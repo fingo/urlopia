@@ -23,7 +23,7 @@ public interface HistoryLogExcerptProjection {
 
     String getComment();
 
-    Integer getWorkTimeNominator();
+    Integer getWorkTimeNumerator();
 
     Integer getWorkTimeDenominator();
 

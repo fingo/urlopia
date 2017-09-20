@@ -3,6 +3,7 @@ package info.fingo.urlopia.history;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ public class HistoryLogService {
     private final HistoryLogRepository historyLogRepository;
     private final UserRepository userRepository;
 
+    @Autowired
     public HistoryLogService(HistoryLogRepository historyLogRepository, UserRepository userRepository) {
         this.historyLogRepository = historyLogRepository;
         this.userRepository = userRepository;
@@ -41,19 +43,19 @@ public class HistoryLogService {
         historyLogRepository.save(history);
     }
 
+    public void createReverse(Request request, String comment, Long deciderId) {
+        HistoryLog reversible = historyLogRepository.findFirstByRequestId(request.getId());
+        Float hours = -reversible.getHours();
+        Long targetUserId = reversible.getUser().getId();
+        this.create(request, hours, comment, targetUserId, deciderId);
+    }
+
     public void create(Request request, Float hours, String comment, Long targetUserId, Long deciderId) {
         User targetUser = userRepository.findOne(targetUserId);
         User decider = userRepository.findOne(deciderId);
         HistoryLog prevHistoryLogLog = historyLogRepository.findFirstByUserIdOrderByCreatedDesc(targetUserId);
         HistoryLog historyLog = new HistoryLog(request, targetUser, decider, hours, comment, prevHistoryLogLog);
         historyLogRepository.save(historyLog);
-    }
-
-    public void createReverse(Request request, String comment, Long deciderId) {
-        HistoryLog reversible = historyLogRepository.findFirstByRequestId(request.getId());
-        Float hours = -reversible.getHours();
-        Long targetUserId = reversible.getUser().getId();
-        this.create(request, hours, comment, targetUserId, deciderId);
     }
 
     // *** ACTIONS ***

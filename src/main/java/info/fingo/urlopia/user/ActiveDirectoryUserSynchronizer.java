@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-public class UserSynchronizer {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserSynchronizer.class);
+public class ActiveDirectoryUserSynchronizer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActiveDirectoryUserSynchronizer.class);
 
     @Value("${ad.groups.users}")
     private String usersGroup;
@@ -31,17 +31,15 @@ public class UserSynchronizer {
     private LocalDateTime lastModificationsCheck;
 
     @Autowired
-    public UserSynchronizer(UserRepository userRepository, ActiveDirectory activeDirectory, ActiveDirectoryUserMapper userMapper) {
+    public ActiveDirectoryUserSynchronizer(UserRepository userRepository, ActiveDirectory activeDirectory, ActiveDirectoryUserMapper userMapper) {
         this.userRepository = userRepository;
         this.activeDirectory = activeDirectory;
         this.userMapper = userMapper;
         this.lastModificationsCheck = LocalDateTime.now();
     }
 
-    public void findNewUsers() {
-        List<String> dbUsers = this.pickUsersFromDatabase().stream()
-                .map(User::getPrincipalName)
-                .collect(Collectors.toList());
+    public void addNewUsers() {
+        List<String> dbUsers = userRepository.findAllPrincipalNames();
         this.pickUsersFromActiveDirectory().stream()
                 .filter(user -> !dbUsers.contains(ActiveDirectoryUtils.pickAttribute(user, Attribute.PRINCIPAL_NAME)))
                 .map(userMapper::mapToUser)
@@ -53,13 +51,16 @@ public class UserSynchronizer {
         List<String> adUsers = this.pickUsersFromActiveDirectory().stream()
                 .map(user -> ActiveDirectoryUtils.pickAttribute(user, Attribute.PRINCIPAL_NAME))
                 .collect(Collectors.toList());
-        this.pickUsersFromDatabase().stream()
+        userRepository.findAll().stream()
                 .filter(user -> !adUsers.contains(user.getPrincipalName()))
-                .forEach(User::deactivate);
+                .forEach(user -> {
+                    user.deactivate();
+                    userRepository.save(user);
+                });
         LOGGER.info("Synchronisation succeed: deactivate deleted users");
     }
 
-    public void checkModifications() {
+    public void synchronizeIncremental() {
         LocalDateTime checkTime = LocalDateTime.now();
         Stream<SearchResult> usersToSynchronize = this.pickUsersFromActiveDirectory().stream()
                 .filter(user -> {
@@ -72,7 +73,7 @@ public class UserSynchronizer {
         LOGGER.info("Synchronisation succeed: last modified users");
     }
 
-    public void fullSynchronize() {
+    public void synchronizeFull() {
         Stream<SearchResult> usersToSynchronize = this.pickUsersFromActiveDirectory().stream();
         this.synchronize(usersToSynchronize);
         LOGGER.info("Synchronisation succeed: all users");
@@ -94,10 +95,6 @@ public class UserSynchronizer {
                 .objectClass(ActiveDirectory.ObjectClass.Person)
                 .memberOf(usersGroup)
                 .search();
-    }
-
-    private List<User> pickUsersFromDatabase() {
-        return userRepository.findAll();
     }
 
 }
