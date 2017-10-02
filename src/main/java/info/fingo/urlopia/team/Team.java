@@ -15,7 +15,7 @@ public class Team {
     @Column(nullable = false)
     private String adName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private User leader;
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -23,6 +23,10 @@ public class Team {
             joinColumns = { @JoinColumn(name = "team_id") },
             inverseJoinColumns = { @JoinColumn(name = "user_id") })
     private Set<User> users;
+
+    public Team() {
+        // no-args constructor is needed by *hibernate*
+    }
 
     public String getName() {
         return name;

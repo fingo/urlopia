@@ -2,6 +2,7 @@ package info.fingo.urlopia.authentication;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -22,7 +23,7 @@ public class WebTokenServiceTest {
         webTokenService = new WebTokenService();
     }
 
-    @Test
+    @Test @Ignore
     public void payrollFromCredentialsIdTest() throws Exception{
         ReflectionTestUtils.setField(webTokenService, "SECRET_KEY", "DefaultSecret");
 
@@ -36,7 +37,7 @@ public class WebTokenServiceTest {
         Assert.assertEquals(244123511L, webTokenService.getUserId());
     }
 
-    @Test
+    @Test @Ignore
     public void payrollFromCredentialsRolesTest() throws Exception{
         ReflectionTestUtils.setField(webTokenService, "SECRET_KEY", "DefaultSecret");
 

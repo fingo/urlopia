@@ -36,10 +36,10 @@ public class HistoryLogService {
     public void create(HistoryLogInput historyLog, Long targetUserId, Long deciderId) {
         User targetUser = userRepository.findOne(targetUserId);
         User decider = userRepository.findOne(deciderId);
-        HistoryLog prevHistoryLogLog = historyLogRepository.findFirstByUserIdOrderByCreatedDesc(targetUserId);
+        HistoryLog prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByCreatedDesc(targetUserId);
         Float hoursChange = historyLog.getHours();
         String comment = Optional.ofNullable(historyLog.getComment()).orElse("");
-        HistoryLog history = new HistoryLog(targetUser, decider, hoursChange, comment, prevHistoryLogLog);
+        HistoryLog history = new HistoryLog(targetUser, decider, hoursChange, comment, prevHistoryLog);
         historyLogRepository.save(history);
     }
 
@@ -53,8 +53,8 @@ public class HistoryLogService {
     public void create(Request request, Float hours, String comment, Long targetUserId, Long deciderId) {
         User targetUser = userRepository.findOne(targetUserId);
         User decider = userRepository.findOne(deciderId);
-        HistoryLog prevHistoryLogLog = historyLogRepository.findFirstByUserIdOrderByCreatedDesc(targetUserId);
-        HistoryLog historyLog = new HistoryLog(request, targetUser, decider, hours, comment, prevHistoryLogLog);
+        HistoryLog prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByCreatedDesc(targetUserId);
+        HistoryLog historyLog = new HistoryLog(request, targetUser, decider, hours, comment, prevHistoryLog);
         historyLogRepository.save(historyLog);
     }
 

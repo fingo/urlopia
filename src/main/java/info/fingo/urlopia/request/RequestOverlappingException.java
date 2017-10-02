@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class RequestOverlappingException extends RuntimeException {
     String code = "REQUEST_OVERLAPPING";
 
-    RequestOverlappingException() {
+    public RequestOverlappingException() {
     }
 
     public String getCode() {

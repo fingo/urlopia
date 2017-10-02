@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class NotEnoughDaysException extends RuntimeException {
     private String code = "NOT_ENOUGH_DAYS";
 
-    NotEnoughDaysException() {
+    public NotEnoughDaysException() {
     }
 
     public String getCode() {

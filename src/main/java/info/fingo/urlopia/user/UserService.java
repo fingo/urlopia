@@ -1,11 +1,15 @@
 package info.fingo.urlopia.user;
 
+import info.fingo.urlopia.team.Team;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -53,6 +57,18 @@ public class UserService {
         User user = userRepository.findOne(userId);
         user.setWorkTime(workTime);
         userRepository.save(user);
+    }
+
+    public Set<User> getAdmins() {
+        List<User> admins = userRepository.findAdmins();
+        return new HashSet<>(admins);
+    }
+
+    public Set<User> getLeaders(Long userId) {
+        User user = userRepository.findOne(userId);
+        return user.getTeams().stream()
+                .map(Team::getLeader)
+                .collect(Collectors.toSet());
     }
 
 }
