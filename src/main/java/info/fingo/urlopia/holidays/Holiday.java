@@ -18,10 +18,8 @@ public class Holiday {
     @Column(nullable = false)
     private LocalDate date;
 
-    /**
-     * Default constructor only exists for the sake of JPA
-     */
-    protected Holiday() {
+    public Holiday() {
+        // No-args constructor required by *Hibernate*
     }
 
     public Holiday(String name, LocalDate date) {

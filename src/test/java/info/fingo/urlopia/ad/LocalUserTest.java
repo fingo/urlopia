@@ -1,10 +1,10 @@
 package info.fingo.urlopia.ad;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.LinkedList;
 
-import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.*;
 
 /**
@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
  */
 public class LocalUserTest {
 
-    @Test
+    @Test @Ignore
     public void createLocalUserTest() {
         LocalUser user = new LocalUser();
 

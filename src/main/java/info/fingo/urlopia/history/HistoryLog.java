@@ -12,8 +12,8 @@ import java.util.Optional;
 public class HistoryLog {   // TODO: Think about removing all relations from log entity
 
     @Id
-    @SequenceGenerator(name = "history_id_seq", sequenceName = "history_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "history_id_seq")
+    @SequenceGenerator(name = "history_logs_id_seq", sequenceName = "history_logs_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "history_logs_id_seq")
     private long id;
 
     @Column(nullable = false)
@@ -44,7 +44,7 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
     @JoinColumn(unique = true)
     private HistoryLog prevHistoryLog;
 
-    private HistoryLog() {
+    public HistoryLog() {
         this.created = LocalDateTime.now();
     }
 

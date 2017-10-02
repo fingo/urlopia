@@ -1,0 +1,11 @@
+{{requester-name}} otrzymał urlop okolicznościowy
+----------------------------------------------
+Dzień dobry,
+
+{{requester-name}} otrzymał urlop okolicznościowy w dniach {{term}} z tytułu {{#ifeq type "D2_BIRTH" ~}} narodzin dziecka (2 dni) {{/ifeq ~}}
+                                                                             {{#ifeq type "D2_FUNERAL" ~}} zgonu/pogrzebu bliskiej osoby (2 dni) {{/ifeq ~}}
+                                                                             {{#ifeq type "D2_WEDDING" ~}} ślubu (2 dni) {{/ifeq ~}}
+                                                                             {{#ifeq type "D1_FUNERAL" ~}} zgonu/pogrzebu bliskiej osoby (1 dzień) {{/ifeq ~}}
+                                                                             {{#ifeq type "D1_WEDDING" ~}} ślubu (1 dzień) {{/ifeq ~}}.
+
+{{>footer_pl}}

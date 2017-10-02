@@ -18,4 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u.principalName FROM User u")
     List<String> findAllPrincipalNames();
 
+    @Query("SELECT u FROM User u WHERE u.admin = true")
+    List<User> findAdmins();
+
 }

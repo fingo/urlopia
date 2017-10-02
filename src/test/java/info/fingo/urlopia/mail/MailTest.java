@@ -1,5 +1,6 @@
 package info.fingo.urlopia.mail;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertNull;
@@ -11,7 +12,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class MailTest {
 
-    @Test
+    @Test @Ignore
     public void createMail() {
         Mail mail = new Mail();
 

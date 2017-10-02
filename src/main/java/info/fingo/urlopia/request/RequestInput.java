@@ -1,12 +1,14 @@
 package info.fingo.urlopia.request;
 
+import info.fingo.urlopia.request.occasional.OccasionalType;
+
 import java.time.LocalDate;
 
 public class RequestInput {
     private LocalDate startDate;
     private LocalDate endDate;
-    private Request.Type type;
-    private Request.OccasionalType occasionalType;
+    private RequestType type;
+    private OccasionalType occasionalType;  // TODO: remove OccasionalType from here
 
     public LocalDate getStartDate() {
         return startDate;
@@ -24,19 +26,19 @@ public class RequestInput {
         this.endDate = endDate;
     }
 
-    public Request.Type getType() {
+    public RequestType getType() {
         return type;
     }
 
-    public void setType(Request.Type type) {
+    public void setType(RequestType type) {
         this.type = type;
     }
 
-    public Request.OccasionalType getOccasionalType() {
+    public OccasionalType getOccasionalType() {
         return occasionalType;
     }
 
-    public void setOccasionalType(Request.OccasionalType occasionalType) {
+    public void setOccasionalType(OccasionalType occasionalType) {
         this.occasionalType = occasionalType;
     }
 }

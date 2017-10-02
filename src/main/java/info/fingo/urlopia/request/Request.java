@@ -1,6 +1,7 @@
 package info.fingo.urlopia.request;
 
-import info.fingo.urlopia.request.acceptance.Acceptance;
+import info.fingo.urlopia.acceptance.Acceptance;
+import info.fingo.urlopia.request.occasional.OccasionalType;
 import info.fingo.urlopia.user.User;
 
 import javax.persistence.*;
@@ -39,7 +40,7 @@ public class Request {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Type type;
+    private RequestType type;
 
     @Column
     private String typeInfo;
@@ -51,15 +52,13 @@ public class Request {
     @OneToMany(mappedBy = "request")
     private Set<Acceptance> acceptances;
 
-    /**
-     * Default constructor only exists for the sake of JPA
-     */
     public Request() {
         this.created = LocalDateTime.now();
         this.modified = LocalDateTime.now();
     }
 
-    public Request(User requester, LocalDate startDate, LocalDate endDate, Integer workingDays, Type type, TypeInfo typeInfo, Status status) {
+    public Request(User requester, LocalDate startDate, LocalDate endDate, Integer workingDays,
+                   RequestType type, TypeInfo typeInfo, Status status) {
         this();
         this.requester = requester;
         this.startDate = startDate;
@@ -70,7 +69,8 @@ public class Request {
         this.status = status;
     }
 
-    public Request(User requester, LocalDate startDate, LocalDate endDate, Type type, TypeInfo typeInfo, Status status) {
+    public Request(User requester, LocalDate startDate, LocalDate endDate,
+                   RequestType type, TypeInfo typeInfo, Status status) {
         this();
         this.requester = requester;
         this.startDate = startDate;
@@ -112,18 +112,18 @@ public class Request {
         return endDate;
     }
 
-    public Type getType() {
+    public RequestType getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(RequestType type) {
         this.type = type;
     }
 
     public TypeInfo getTypeInfo() {
         TypeInfo typeInfo = null;
 
-        TypeInfo typesInfo[] = OccasionalType.values();
+        TypeInfo typesInfo[] = OccasionalType.values(); // TODO: remove OccasionalType from here
         for(TypeInfo tempTypeInfo : typesInfo) {
             if(tempTypeInfo.getName().equals(this.typeInfo)) {
                 typeInfo = tempTypeInfo;
@@ -177,45 +177,9 @@ public class Request {
                 && !this.endDate.isBefore(request.startDate);
     }
 
-    public enum Type {
-        NORMAL,
-        OCCASIONAL
-    }
-
-    public interface TypeInfo {
+    public interface TypeInfo { // TODO: separate TypeInfo interface
         String getInfo();
         String getName();
-    }
-
-    public enum OccasionalType implements TypeInfo {
-        // TODO: Localize it!
-        // TODO: Check days before write in database
-        WRONG ("Niepoprawny typ okazjonalny", 0),
-        D2_BIRTH ("Narodziny dziecka", 2),
-        D2_FUNERAL ("Zgon/pogrzeb osoby z najbliższej rodziny", 2),
-        D2_WEDDING ("Ślub", 2),
-        D1_FUNERAL ("Zgon/pogrzeb osoby bliskiej", 1),
-        D1_WEDDING ("Ślub dziecka", 1);
-
-        private String info;
-        private int durationDays;
-
-        OccasionalType(String info, int durationDays) {
-            this.info = info;
-            this.durationDays = durationDays;
-        }
-
-        public String getName() {
-            return this.name();
-        }
-
-        public String getInfo() {
-            return info;
-        }
-
-        public int getDurationDays() {
-            return durationDays;
-        }
     }
 
     public enum Status {

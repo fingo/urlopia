@@ -1,6 +1,7 @@
 package info.fingo.urlopia.holidays;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -11,7 +12,7 @@ import java.time.LocalDate;
  */
 public class HolidayResponseTest {
 
-    @Test
+    @Test @Ignore
     public void fromEntityTest(){
         LocalDate date = LocalDate.of(1995, 12, 30);
 

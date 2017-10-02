@@ -1,7 +1,7 @@
 package info.fingo.urlopia.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import info.fingo.urlopia.request.acceptance.AcceptanceExcerptProjection;
+import info.fingo.urlopia.acceptance.AcceptanceExcerptProjection;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
@@ -24,7 +24,7 @@ public interface RequestExcerptProjection {
     @Value("#{target.requester.firstName} #{target.requester.lastName}")
     String getRequesterName();
 
-    Request.Type getType();
+    RequestType getType();
 
     Set<AcceptanceExcerptProjection> getAcceptances();
 
