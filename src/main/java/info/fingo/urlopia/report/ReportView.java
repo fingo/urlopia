@@ -5,6 +5,7 @@ import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.RequestService;
+import info.fingo.urlopia.request.RequestType;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -237,8 +238,13 @@ public class ReportView extends AbstractXlsxView {
                 if (isAccepted) {
                     for (LocalDate k = r.getStartDate(); !k.isAfter(r.getEndDate()); k = k.plusDays(1)) {
                         if (k.getMonthValue() <= previousMonth && holidayService.isWorkingDay(k)) {
-                            XSSFCell uwCell = sheet.getRow(7 + k.getMonthValue()).getCell(k.getDayOfMonth());
-                            uwCell.setCellValue("uw");
+                            XSSFCell cell = sheet.getRow(7 + k.getMonthValue()).getCell(k.getDayOfMonth());
+                            if (r.getType() == RequestType.NORMAL) {
+                                cell.setCellValue("uw");
+                            } else if (r.getType() == RequestType.OCCASIONAL) {
+                                cell.setCellValue("uo");
+                            }
+
                         }
                     }
                 }
@@ -319,7 +325,8 @@ public class ReportView extends AbstractXlsxView {
         // calculate used holidays time
         for (int i = 0; i < previousMonth; ++i) {
             float time = (Math.abs(8f - worktime) < 0.1) ? user.getWorkTime() / 8 : user.getWorkTime();
-            float sum = 0;
+            float uwSum = 0;
+            float uoSum = 0;
             XSSFRow sumRow = sheet.getRow(8 + i);
             for (int j = 1; j <= 31; ++j) {
                 XSSFCell valueCell = sumRow.getCell(j);
@@ -327,29 +334,44 @@ public class ReportView extends AbstractXlsxView {
                 try {
                     cellValue = valueCell.getStringCellValue();
                     if ("uw".equals(cellValue)) {
-                        sum += time;
+                        uwSum += time;
+                    } else if ("uo".equals(cellValue)) {
+                        uoSum += time;
                     }
                 } catch (Exception e) {
                 }
             }
-            XSSFCell sumCell = sumRow.getCell(41);
-            sumCell.setCellValue(sum);
+            XSSFCell uwCell = sumRow.getCell(41);
+            uwCell.setCellValue(uwSum);
+            XSSFCell uoCell = sumRow.getCell(42);
+            uoCell.setCellValue(uoSum);
         }
 
         // total used holidays time
         XSSFRow totalUsedRow = sheet.getRow(20);
-        XSSFCell totalUsedCell = totalUsedRow.getCell(41);
-        float totalUsedSum = 0;
+        float totalUsedUwSum = 0;
+        float totalUsedUoSum = 0;
         for (int i = 0; i < previousMonth; ++i) {
             XSSFRow sumRow = sheet.getRow(8 + i);
+
             XSSFCell valueCell = sumRow.getCell(41);
             double cellValue;
             try {
                 cellValue = valueCell.getNumericCellValue();
-                totalUsedSum += cellValue;
+                totalUsedUwSum += cellValue;
+            } catch (Exception e) {
+            }
+
+            valueCell = sumRow.getCell(42);
+            try {
+                cellValue = valueCell.getNumericCellValue();
+                totalUsedUoSum += cellValue;
             } catch (Exception e) {
             }
         }
-        totalUsedCell.setCellValue(totalUsedSum);
+        XSSFCell totalUsedUwCell = totalUsedRow.getCell(41);
+        totalUsedUwCell.setCellValue(totalUsedUwSum);
+        XSSFCell totalUsedUoCell = totalUsedRow.getCell(42);
+        totalUsedUoCell.setCellValue(totalUsedUoSum);
     }
 }
