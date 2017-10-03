@@ -35,7 +35,7 @@ public class NormalRequestService implements RequestTypeService {
 
     private final AcceptanceService acceptanceService;
 
-    @Value("${mails.master-leader}")
+    @Value("${mails.master.leader}")
     private String masterLeaderMail;
 
     @Autowired
