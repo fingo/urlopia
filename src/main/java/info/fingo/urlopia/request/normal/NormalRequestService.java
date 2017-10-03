@@ -33,20 +33,20 @@ public class NormalRequestService implements RequestTypeService {
 
     private final ApplicationEventPublisher publisher;
 
-    @Autowired
-    private AcceptanceService acceptanceService;
+    private final AcceptanceService acceptanceService;
 
     @Value("${mails.master-leader}")
     private String masterLeaderMail;
 
     @Autowired
     public NormalRequestService(RequestRepository requestRepository, UserRepository userRepository,
-                                HistoryLogService historyLogService, WorkingDaysCalculator workingDaysCalculator, ApplicationEventPublisher publisher) {
+                                HistoryLogService historyLogService, WorkingDaysCalculator workingDaysCalculator, ApplicationEventPublisher publisher, AcceptanceService acceptanceService) {
         this.requestRepository = requestRepository;
         this.userRepository = userRepository;
         this.historyLogService = historyLogService;
         this.workingDaysCalculator = workingDaysCalculator;
         this.publisher = publisher;
+        this.acceptanceService = acceptanceService;
     }
 
     @Override

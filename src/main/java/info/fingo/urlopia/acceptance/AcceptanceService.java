@@ -22,13 +22,14 @@ public class AcceptanceService {
 
     private final AcceptanceRepository acceptanceRepository;
 
-    @Autowired
-    private RequestService requestService;
+    private final RequestService requestService;
 
     private final ApplicationEventPublisher publisher;
 
-    public AcceptanceService(AcceptanceRepository acceptanceRepository, ApplicationEventPublisher publisher) {
+    @Autowired
+    public AcceptanceService(AcceptanceRepository acceptanceRepository, RequestService requestService, ApplicationEventPublisher publisher) {
         this.acceptanceRepository = acceptanceRepository;
+        this.requestService = requestService;
         this.publisher = publisher;
     }
 

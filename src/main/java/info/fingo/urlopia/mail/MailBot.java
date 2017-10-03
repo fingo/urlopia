@@ -6,41 +6,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Bot {
+public class MailBot {
 
     private final MailNotificator mailNotificator;
 
-    private final BotMailTemplates mailTemplates;
+    private final MailBotTemplates mailTemplates;
 
     @Autowired
-    public Bot(MailNotificator mailNotificator, BotMailTemplates mailTemplates) {
+    public MailBot(MailNotificator mailNotificator, MailBotTemplates mailTemplates) {
         this.mailNotificator = mailNotificator;
         this.mailTemplates = mailTemplates;
     }
 
-    public void parsingProblem(String emailAddres) {
+    public void parsingProblem(String emailAddress) {
         MailTemplate template = mailTemplates.parsingProblem();
-        mailNotificator.notify(template, emailAddres);
+        mailNotificator.notify(template, emailAddress);
     }
 
-    public void requestCreateFailedNoDays(String emailAddres) {
+    public void requestCreateFailedNoDays(String emailAddress) {
         MailTemplate template = mailTemplates.requestCreateFailedNoDays();
-        mailNotificator.notify(template, emailAddres);
+        mailNotificator.notify(template, emailAddress);
     }
 
-    public void requestCreateFailedOverlapping(String emailAddres) {
+    public void requestCreateFailedOverlapping(String emailAddress) {
         MailTemplate template = mailTemplates.requestCreateFailedOverlapping();
-        mailNotificator.notify(template, emailAddres);
+        mailNotificator.notify(template, emailAddress);
     }
 
-    public void requestCreateFailed(String emailAddres) {
+    public void requestCreateFailed(String emailAddress) {
         MailTemplate template = mailTemplates.requestCreateFailed();
-        mailNotificator.notify(template, emailAddres);
+        mailNotificator.notify(template, emailAddress);
     }
 
-    public void userNotFound(String emailAddres) {
+    public void userNotFound(String emailAddress) {
         MailTemplate template = mailTemplates.userNotFound();
-        mailNotificator.notify(template, emailAddres);
+        mailNotificator.notify(template, emailAddress);
     }
 
 }

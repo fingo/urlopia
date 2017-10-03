@@ -6,16 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BotMailTemplates {
+public class MailBotTemplates {
 
     private final MailTemplateLoader templateLoader;
 
-    private final String directory = "bot";
+    private final String directory = "error";
 
     private final String languageCode = "pl";
 
     @Autowired
-    public BotMailTemplates(MailTemplateLoader templateLoader) {
+    public MailBotTemplates(MailTemplateLoader templateLoader) {
         this.templateLoader = templateLoader;
     }
 

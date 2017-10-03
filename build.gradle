@@ -1,18 +1,8 @@
-buildscript {
-    ext {
-        springBootVersion = '1.5.7.RELEASE'
-    }
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
-}
-
 plugins {
-    id "org.sonarqube" version "2.0.1"
+    id "java"
+    id "jacoco"
+    id "org.springframework.boot" version "1.5.7.RELEASE"
+    id "org.sonarqube" version "2.5"
     id "com.gorylenko.gradle-git-properties" version "1.4.17"
 }
 
@@ -20,11 +10,7 @@ configurations {
     driver
 }
 
-apply plugin: 'java'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'jacoco'
-
-version = "0.4.18"
+version = "1.0.0"
 
 jacoco {
     toolVersion = "0.7.1.201405082137"
@@ -48,7 +34,7 @@ sonarqube {
 
 jar {
     baseName = 'urlopia'
-    version = '0.1.0'
+    version = '1.0.0'
     manifest {
         attributes "Main-Class": "info.fingo.urlopia.UrlopiaApplication"
     }

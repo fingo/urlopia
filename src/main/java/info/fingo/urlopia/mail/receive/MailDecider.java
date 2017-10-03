@@ -1,8 +1,8 @@
 package info.fingo.urlopia.mail.receive;
 
 import info.fingo.urlopia.acceptance.AcceptanceService;
-import info.fingo.urlopia.mail.Bot;
 import info.fingo.urlopia.mail.Mail;
+import info.fingo.urlopia.mail.MailBot;
 import info.fingo.urlopia.request.*;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
@@ -20,16 +20,16 @@ public class MailDecider {
 
     private final MailParser mailParser;
 
-    private final Bot bot;
+    private final MailBot mailBot;
 
     @Autowired
     public MailDecider(UserService userService, RequestService requestService, AcceptanceService acceptanceService,
-                       MailParser mailParser, Bot bot) {
+                       MailParser mailParser, MailBot mailBot) {
         this.userService = userService;
         this.requestService = requestService;
         this.acceptanceService = acceptanceService;
         this.mailParser = mailParser;
-        this.bot = bot;
+        this.mailBot = mailBot;
     }
 
     public void resolve(Mail mail) {
@@ -76,19 +76,19 @@ public class MailDecider {
         try {
             requestService.create(userId, requestInput);
         } catch (NotEnoughDaysException e) {
-            bot.requestCreateFailedNoDays(userEmail);
+            mailBot.requestCreateFailedNoDays(userEmail);
         } catch (RequestOverlappingException e) {
-            bot.requestCreateFailedOverlapping(userEmail);
+            mailBot.requestCreateFailedOverlapping(userEmail);
         } catch (Exception e) {
-            bot.requestCreateFailed(userEmail);
+            mailBot.requestCreateFailed(userEmail);
         }
     }
 
     private void userNotFound(String senderMail) {
-        bot.userNotFound(senderMail);
+        mailBot.userNotFound(senderMail);
     }
 
     private void parsingProblem(String senderMail) {
-        bot.parsingProblem(senderMail);
+        mailBot.parsingProblem(senderMail);
     }
 }
