@@ -40,16 +40,13 @@
                 </span>
             </td>
             <td>
-                <span ng-if="historyLog.hours >= 0" class="text-center text-success">
-                    {{ Math.floor(historyLog.hours / historyLog.userWorkTime) }}d {{ historyLog.hours - (Math.floor(historyLog.hours / historyLog.userWorkTime) * historyLog.userWorkTime) }}h
-                </span>
-                <span ng-if="historyLog.hours < 0" class="text-center text-danger">
-                    {{ Math.floor(historyLog.hours / historyLog.userWorkTime) }}d {{ historyLog.hours - (Math.floor(historyLog.hours / historyLog.userWorkTime) * historyLog.userWorkTime) }}h
+                <span class="text-center {{historyLog.hours < 0 ? 'text-danger' : 'text-success'}}">
+                    {{getTimeOffsetByWorkTimeText(historyLog.hours, historyLog.userWorkTime)}}
                 </span>
             </td>
             <td class="text-center">
-                <span class="text-center">
-                    {{ Math.floor(historyLog.hoursRemaining / historyLog.userWorkTime) }}d {{ historyLog.hoursRemaining - (Math.floor(historyLog.hoursRemaining / historyLog.userWorkTime) * historyLog.userWorkTime) }}h
+                <span>
+                    {{getTimeOffsetByWorkTimeText(historyLog.hoursRemaining, historyLog.userWorkTime)}}
                 </span>
             </td>
             <td>{{ historyLog.comment }} </td>

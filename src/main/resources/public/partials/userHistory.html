@@ -38,29 +38,19 @@
                     <span ng-if="historyLog.deciders.length > 1 && !$last">{{ decider + "," }}</span>
                 </span>
             </td>
-            <td>
-                <span ng-if="historyLog.hours >= 0">
-                    <span ng-if="historyLog.userWorkTime === 8" class="text-center text-success">
-                        {{ Math.floor(historyLog.hours / 8) }}d {{ historyLog.hours - (Math.floor(historyLog.hours / 8) * 8) }}h
-                    </span>
-                    <span ng-if="historyLog.userWorkTime !== 8" class="text-center text-success">
-                        {{ historyLog.hours }}h
-                    </span>
+            <td class="text-center">
+                <span ng-if="historyLog.userWorkTime === 8" class="{{historyLog.hours < 0 ? 'text-danger' : 'text-success'}}">
+                    {{getTimeOffsetByWorkTimeText(historyLog.hours, 8)}}
                 </span>
-                <span ng-if="historyLog.hours < 0">
-                    <span ng-if="historyLog.userWorkTime === 8" class="text-center text-danger">
-                        {{ Math.floor(historyLog.hours / 8) }}d {{ historyLog.hours - (Math.floor(historyLog.hours / 8) * 8) }}h
-                    </span>
-                    <span ng-if="historyLog.userWorkTime !== 8" class="text-center text-danger">
+                <span ng-if="historyLog.userWorkTime !== 8" class="{{historyLog.hours < 0 ? 'text-danger' : 'text-success'}}">
                         {{ historyLog.hours }}h
-                    </span>
                 </span>
             </td>
             <td class="text-center">
-                <span ng-if="historyLog.userWorkTime === 8" class="text-center">
-                    {{ Math.floor(historyLog.hoursRemaining / 8) }}d {{ historyLog.hoursRemaining - (Math.floor(historyLog.hoursRemaining / 8) * 8) }}h
+                <span ng-if="historyLog.userWorkTime === 8">
+                    {{getTimeOffsetByWorkTimeText(historyLog.hoursRemaining, 8)}}
                 </span>
-                <span ng-if="historyLog.userWorkTime !== 8" class="text-center">
+                <span ng-if="historyLog.userWorkTime !== 8">
                     {{ historyLog.hoursRemaining }}h
                 </span>
             </td>

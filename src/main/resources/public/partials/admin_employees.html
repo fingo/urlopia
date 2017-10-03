@@ -194,11 +194,15 @@
                                     <tr ng-repeat-start="historyLog in userHistory">
                                         <td>{{historyLog.created}}
                                         </td>
-                                        <td ng-if="historyLog.userWorkTime === 8" class="text-center">
-                                            {{ Math.floor(historyLog.hours / 8) }}d {{ historyLog.hours - (Math.floor(historyLog.hours / 8) * 8) }}h
-                                        </td>
-                                        <td ng-if="historyLog.userWorkTime !== 8" class="text-center">
-                                            {{ historyLog.hours }}h
+                                        <td class="text-center">
+                                            <span ng-if="historyLog.userWorkTime === 8"
+                                                  class="{{historyLog.hours < 0 ? 'text-danger' : 'text-success'}}">
+                                                {{getTimeOffsetByWorkTimeText(historyLog.hours, 8)}}
+                                            </span>
+                                            <span ng-if="historyLog.userWorkTime !== 8"
+                                                  class="{{historyLog.hours < 0 ? 'text-danger' : 'text-success'}}">
+                                                {{ historyLog.hours }}h
+                                            </span>
                                         </td>
                                         <td>{{ historyLog.comment }}</td>
                                     </tr>

@@ -1,3 +1,12 @@
+function getTimeOffsetByWorkTimeText (hours, workTime) {
+  if(hours < 0) {
+    return '-' + getTimeOffsetByWorkTimeText(-hours, workTime);
+  }
+  const days = Math.floor(hours / workTime);
+  const hour = hours - days * workTime;
+  return days + "d " + hour + 'h'
+}
+
 app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session, notifyService) {
     var isLeader = Session.data.userRoles.indexOf("ROLES_LEADER") !== -1;
 
@@ -212,6 +221,10 @@ app.controller('WorkerHistoryCtrl', function ($scope, API, Session) {
         $scope.selectedItem = selectedYear;
         $scope.histories = API.setUrl('/api/users/' + Session.data.userId + '/days').query({year: selectedYear});
     }
+
+    $scope.getTimeOffsetByWorkTimeText = function (hours, workTime) {
+        return getTimeOffsetByWorkTimeText(hours, workTime);
+    }
 });
 
 app.controller('UserHistoryCtrl', function ($scope, $routeParams, API, Session) {
@@ -233,6 +246,10 @@ app.controller('UserHistoryCtrl', function ($scope, $routeParams, API, Session) 
     $scope.dropBoxItemSelected = function (selectedYear) {
         $scope.selectedItem = selectedYear;
         $scope.histories = API.setUrl('/api/users/' + $scope.userId + '/days').query({year: selectedYear});
+    }
+
+    $scope.getTimeOffsetByWorkTimeText = function (hours, workTime) {
+        return getTimeOffsetByWorkTimeText(hours, workTime);
     }
 });
 
@@ -636,6 +653,10 @@ app.controller('UserDetailsCtrl', function ($scope, $route, $uibModal, $translat
             return $translate.instant('employees_view.work_time', {time: time});
         }
     };
+
+    $scope.getTimeOffsetByWorkTimeText = function (hours, workTime) {
+      return getTimeOffsetByWorkTimeText(hours, workTime);
+    }
 
 //TODO authentication before accessing resource
     $scope.report = function () {
