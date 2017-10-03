@@ -1,6 +1,7 @@
 package info.fingo.urlopia.request.occasional;
 
 import info.fingo.urlopia.mail.send.MailNotificator;
+import info.fingo.urlopia.mail.send.MailStorage;
 import info.fingo.urlopia.mail.send.MailTemplate;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.occasional.events.OccasionalRequestCreated;
@@ -19,18 +20,28 @@ class MailSenderListener {
 
     private final MailNotificator mailNotificator;
 
+    private final MailStorage mailStorage;
+
     private final MailTemplates mailTemplates;
 
     private final UserService userService;
 
     @Autowired
-    public MailSenderListener(MailNotificator mailNotificator, MailTemplates mailTemplates, UserService userService) {
+    public MailSenderListener(MailNotificator mailNotificator, MailStorage mailStorage, MailTemplates mailTemplates, UserService userService) {
         this.mailNotificator = mailNotificator;
+        this.mailStorage = mailStorage;
         this.mailTemplates = mailTemplates;
         this.userService = userService;
     }
 
-    @EventListener
+    @EventListener(condition = "#occasionalRequestCreated.request.requester.ec")
+    public void requestAccepted_storage(OccasionalRequestCreated occasionalRequestCreated) {
+        Request request = occasionalRequestCreated.getRequest();
+        MailTemplate template = mailTemplates.requestCreatedLeaderAdmin(request);
+        mailStorage.store(template);
+    }
+
+    @EventListener(condition = "!#occasionalRequestCreated.request.requester.ec")
     public void requestAccepted_admins(OccasionalRequestCreated occasionalRequestCreated) {
         Request request = occasionalRequestCreated.getRequest();
         MailTemplate template = mailTemplates.requestCreatedLeaderAdmin(request);

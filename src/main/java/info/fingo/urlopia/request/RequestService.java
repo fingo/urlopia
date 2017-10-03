@@ -19,7 +19,7 @@ public class RequestService {
 
     private final HistoryLogService historyLogService;
 
-    @Value("${mails.master-leader}")
+    @Value("${mails.master.leader}")
     private String masterLeaderMail;
 
     @Autowired
