@@ -336,7 +336,7 @@ public class ReportView extends AbstractXlsxView {
                     if ("uw".equals(cellValue)) {
                         uwSum += time;
                     } else if ("uo".equals(cellValue)) {
-                        uoSum += time;
+                        uoSum += 1;
                     }
                 } catch (Exception e) {
                 }
