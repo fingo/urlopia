@@ -36,7 +36,7 @@ public class HistoryLogService {
     public void create(HistoryLogInput historyLog, Long targetUserId, Long deciderId) {
         User targetUser = userRepository.findOne(targetUserId);
         User decider = userRepository.findOne(deciderId);
-        HistoryLog prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByCreatedDesc(targetUserId);
+        HistoryLog prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByIdDesc(targetUserId);
         Float hoursChange = historyLog.getHours();
         String comment = Optional.ofNullable(historyLog.getComment()).orElse("");
         HistoryLog history = new HistoryLog(targetUser, decider, hoursChange, comment, prevHistoryLog);
@@ -53,7 +53,7 @@ public class HistoryLogService {
     public void create(Request request, Float hours, String comment, Long targetUserId, Long deciderId) {
         User targetUser = userRepository.findOne(targetUserId);
         User decider = userRepository.findOne(deciderId);
-        HistoryLog prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByCreatedDesc(targetUserId);
+        HistoryLog prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByIdDesc(targetUserId);
         HistoryLog historyLog = new HistoryLog(request, targetUser, decider, hours, comment, prevHistoryLog);
         historyLogRepository.save(historyLog);
     }
@@ -75,7 +75,7 @@ public class HistoryLogService {
     }
 
     public Integer getEmploymentYear(Long userId) {
-        HistoryLog firstLog = historyLogRepository.findFirstByUserIdOrderByCreated(userId);
+        HistoryLog firstLog = historyLogRepository.findFirstByUserIdOrderById(userId);
         LocalDateTime firstDate = Optional.ofNullable(firstLog)
                 .map(HistoryLog::getCreated).orElse(LocalDateTime.now());
         return firstDate.getYear();

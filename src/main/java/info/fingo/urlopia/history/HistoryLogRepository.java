@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface HistoryLogRepository extends JpaRepository<HistoryLog, Long> {
 
-    HistoryLog findFirstByUserIdOrderByCreated(Long userId);
+    HistoryLog findFirstByUserIdOrderById(Long userId);
 
-    HistoryLog findFirstByUserIdOrderByCreatedDesc(Long userId);
+    HistoryLog findFirstByUserIdOrderByIdDesc(Long userId);
 
     HistoryLog findFirstByRequestId(Long requestId);
 

@@ -115,7 +115,7 @@ public class NormalRequestService implements RequestTypeService {
     public void accept(Request request) {
         this.validateStatus(request.getStatus(), Request.Status.PENDING);
         request = this.changeStatus(request, Request.Status.ACCEPTED);
-        publisher.publishEvent(new NormalRequestAccepted(request));
+        publisher.publishEvent(new NormalRequestAccepted(request)); //TODO: Create general Event RequestAccepted instead of Normal/OccasionalRequestAccepted
     }
 
     @Override

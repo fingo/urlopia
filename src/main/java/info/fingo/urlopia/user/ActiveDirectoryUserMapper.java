@@ -16,6 +16,9 @@ class ActiveDirectoryUserMapper {
     @Value("${ad.groups.ec}")
     private String ecGroup;
 
+    @Value("${mails.master.leader}")
+    private String masterLeaderMail;
+
     User mapToUser(SearchResult searchResult) {
         User newUser = new User();
         return this.mapToUser(searchResult, newUser);
@@ -27,21 +30,25 @@ class ActiveDirectoryUserMapper {
         user.setMail(ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.MAIL));
         user.setFirstName(ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.FIRST_NAME));
         user.setLastName(ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.LAST_NAME));
-        user.setLeader(this.isLeader(ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.MANAGED_OBJECTS)));
-        user.setB2b(this.isB2B(ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.MEMBER_OF)));
-        user.setEc(this.isEC(ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.MEMBER_OF)));
+        user.setLeader(this.isLeader(searchResult));
+        user.setB2b(this.isB2B(searchResult));
+        user.setEc(this.isEC(searchResult));
         return user;
     }
 
-    private boolean isLeader(String leaderOf) {
-        return !leaderOf.isEmpty();
+    private boolean isLeader(SearchResult searchResult) {
+        String leaderOf = ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.MANAGED_OBJECTS);
+        String mail = ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.MAIL);
+        return !leaderOf.isEmpty() || masterLeaderMail.equals(mail);
     }
 
-    private boolean isB2B(String memberOf) {
+    private boolean isB2B(SearchResult searchResult) {
+        String memberOf = ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.MEMBER_OF);
         return memberOf.contains(b2bGroup);
     }
 
-    private boolean isEC(String memberOf) {
+    private boolean isEC(SearchResult searchResult) {
+        String memberOf = ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.MEMBER_OF);
         return memberOf.contains(ecGroup);
     }
 }

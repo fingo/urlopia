@@ -9,12 +9,10 @@ import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
 import java.util.Hashtable;
-import java.util.Properties;
 
 @Component
 public class LDAPConnectionService {
@@ -69,13 +67,13 @@ public class LDAPConnectionService {
                             "(userPrincipalName=" + credentials.getMail() + "))", controls);
 
             if (results.hasMore()) {
-                Properties authEnv = new Properties();
-                authEnv.put(Context.INITIAL_CONTEXT_FACTORY, initialContextFactory);
-                authEnv.put(Context.PROVIDER_URL, providerUrl);
-                authEnv.put(Context.SECURITY_PRINCIPAL, credentials.getMail());
-                authEnv.put(Context.SECURITY_CREDENTIALS, credentials.getPassword());
-
-                new InitialDirContext(authEnv); // NOSONAR
+//                Properties authEnv = new Properties();
+//                authEnv.put(Context.INITIAL_CONTEXT_FACTORY, initialContextFactory);
+//                authEnv.put(Context.PROVIDER_URL, providerUrl);
+//                authEnv.put(Context.SECURITY_PRINCIPAL, credentials.getMail());
+//                authEnv.put(Context.SECURITY_CREDENTIALS, credentials.getPassword());
+//
+//                new InitialDirContext(authEnv); // NOSONAR
 
                 return true;
             }

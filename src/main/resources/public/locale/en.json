@@ -262,7 +262,7 @@
     "EXPIRED": "Expired"
   },
   "type": {
-    "NORMAL": "Normal",
-    "OCCASIONAL": "Occasional"
+    "NORMAL": "Vacation",
+    "OCCASIONAL": "Special"
   }
 }
