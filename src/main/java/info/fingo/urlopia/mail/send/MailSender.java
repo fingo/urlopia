@@ -15,7 +15,7 @@ public class MailSender {
 
     protected void send(Mail mail) {
         MimeMessage mimeMessage = new MailConverter(mail).toMimeMessage();
-        mailSender.send(mimeMessage);
+//        mailSender.send(mimeMessage);
     }
 
 }

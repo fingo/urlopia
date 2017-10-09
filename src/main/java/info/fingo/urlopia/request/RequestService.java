@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -56,7 +57,10 @@ public class RequestService {
         service.accept(request);
 
         Float workingHours = request.getWorkingDays() * request.getRequester().getWorkTime();
-        historyLogService.create(request, -workingHours, "", request.getRequester().getId(), deciderId);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String term = String.format("%s - %s",
+                request.getStartDate().format(formatter), request.getEndDate().format(formatter));
+        historyLogService.create(request, -workingHours, term, request.getRequester().getId(), deciderId);
     }
 
     public void reject(Long requestId) {
