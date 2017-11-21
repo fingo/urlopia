@@ -21,7 +21,7 @@ public class HistoryLogController {
         this.historyService = historyService;
     }
 
-    @RolesAllowed({"ROLES_LEADER", "ROLES_LEADER", "ROLES_WORKER"})
+    @RolesAllowed({"ROLES_WORKER", "ROLES_LEADER", "ROLES_ADMIN"})
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List> getFromUser(@PathVariable Long userId,
                                             @RequestParam(required = false) Integer year) {
@@ -29,7 +29,7 @@ public class HistoryLogController {
         return ResponseEntity.ok(historyLogs);
     }
 
-    @RolesAllowed({"ROLES_LEADER", "ROLES_LEADER", "ROLES_WORKER"})
+    @RolesAllowed({"ROLES_WORKER", "ROLES_LEADER", "ROLES_ADMIN"})
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> add(@PathVariable Long userId, @RequestBody HistoryLogInput historyLog,
                                               HttpServletRequest httpRequest) {
@@ -40,7 +40,7 @@ public class HistoryLogController {
 
     // *** ACTIONS ***
 
-    @RolesAllowed({"ROLES_LEADER", "ROLES_WORKER"})
+    @RolesAllowed({"ROLES_WORKER", "ROLES_LEADER"})
     @RequestMapping(value = "/remaining", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WorkTimeResponse> getRemainingDays(@PathVariable Long userId) {
         WorkTimeResponse response = historyService.countRemainingDays(userId);
@@ -54,7 +54,7 @@ public class HistoryLogController {
         return ResponseEntity.ok(histories);
     }
 
-    @RolesAllowed({"ROLES_ADMIN", "ROLES_LEADER", "ROLES_WORKER"})
+    @RolesAllowed({"ROLES_WORKER", "ROLES_LEADER", "ROLES_ADMIN"})
     @RequestMapping(value = "/employment-year", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Integer> getEmploymentYear(@PathVariable Long userId) {
         Integer employmentYear = historyService.getEmploymentYear(userId);

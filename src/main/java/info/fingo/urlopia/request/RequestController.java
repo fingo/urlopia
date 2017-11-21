@@ -64,7 +64,7 @@ public class RequestController {
         return ResponseEntity.ok().build();
     }
 
-    @RolesAllowed("ROLES_ADMIN")
+    @RolesAllowed({"ROLES_WORKER", "ROLES_ADMIN"})
     @RequestMapping(path = "/requests/{requestId}/cancel", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> cancel(@PathVariable Long requestId, HttpServletRequest httpRequest) {
