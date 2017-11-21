@@ -12,6 +12,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
+
 @Service("occasionalRequestService")
 @Transactional
 public class OccasionalRequestService implements RequestTypeService {
@@ -43,9 +45,14 @@ public class OccasionalRequestService implements RequestTypeService {
 
         Request request = this.createRequestObject(user, requestInput, workingDays);
         this.validateRequest(request);
-
         requestRepository.save(request);
-        historyLogService.create(request,0f, request.getTypeInfo().getInfo(), userId, userId);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String message = String.format("%s - %s (%s)",
+                request.getStartDate().format(formatter),
+                request.getEndDate().format(formatter),
+                request.getTypeInfo().getInfo());
+        historyLogService.create(request,0f, message, userId, userId);
 
         publisher.publishEvent(new OccasionalRequestCreated(request));
     }
