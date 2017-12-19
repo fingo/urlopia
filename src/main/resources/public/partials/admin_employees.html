@@ -230,7 +230,20 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <button style="margin-top: -10px" class="btn btn-danger" ng-click="report()">Raport</button>
+                            <div class="btn-group" role="group" style="margin-top: -10px">
+                                <button class="btn btn-primary" ng-click="report()">Generuj raport</button>
+                                <div class="btn-group dropup" role="group">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                            aria-haspopup="true" aria-expanded="false">
+                                        {{ repotYear }} <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li ng-repeat="year in availableYears">
+                                            <a ng-click="changeReportYear(year)">{{ year }}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -1,12 +1,15 @@
 package info.fingo.urlopia.history;
 
+import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.Request;
+import info.fingo.urlopia.request.RequestType;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -17,11 +20,13 @@ public class HistoryLogService {
 
     private final HistoryLogRepository historyLogRepository;
     private final UserRepository userRepository;
+    private final WorkingDaysCalculator workingDaysCalculator;
 
     @Autowired
-    public HistoryLogService(HistoryLogRepository historyLogRepository, UserRepository userRepository) {
+    public HistoryLogService(HistoryLogRepository historyLogRepository, UserRepository userRepository, WorkingDaysCalculator workingDaysCalculator) {
         this.historyLogRepository = historyLogRepository;
         this.userRepository = userRepository;
+        this.workingDaysCalculator = workingDaysCalculator;
     }
 
     public List<HistoryLogExcerptProjection> get(Long userId, Integer year) {
@@ -31,6 +36,12 @@ public class HistoryLogService {
         LocalDateTime yearStart = LocalDateTime.of(year, 1, 1, 0, 0);
         LocalDateTime nextYearStart = LocalDateTime.of(year + 1, 1, 1, 0, 0);
         return historyLogRepository.findByUserIdAndCreatedBetween(userId, yearStart, nextYearStart);
+    }
+
+    public List<HistoryLog> getFromYear(Long userId, Integer year) {
+        LocalDateTime yearStart = LocalDateTime.of(year, 1, 1, 0, 0);
+        LocalDateTime nextYearStart = LocalDateTime.of(year + 1, 1, 1, 0, 0);
+        return historyLogRepository.findLogsByUserIdAndCreatedBetween(userId, yearStart, nextYearStart);
     }
 
     public void create(HistoryLogInput historyLog, Long targetUserId, Long deciderId) {
@@ -68,6 +79,30 @@ public class HistoryLogService {
 
     public Float countRemainingHours(Long userId) {
         return historyLogRepository.sumHours(userId);
+    }
+
+    public Float countRemainingHoursForYear(Long userId, Integer year) {
+        Float hours = 0f;
+        List<HistoryLog> logs = historyLogRepository.findLogsByUserId(userId);
+        for (HistoryLog log : logs) {
+            Request request = log.getRequest();
+            if (request == null) {
+                if (log.getCreated().getYear() <= year) {
+                    hours += log.getHours();
+                }
+            } else if (request.getType() == RequestType.NORMAL) {
+                LocalDate startDate = request.getStartDate();
+                LocalDate endDate = request.getEndDate();
+                if (startDate.getYear() <= year && endDate.getYear() <= year) {
+                    hours += log.getHours();
+                } else if (startDate.getYear() <= year && endDate.getYear() > year) {
+                    LocalDate lastDateOfYear = LocalDate.of(year, 12, 31);
+                    int workingDays = workingDaysCalculator.calculate(startDate, lastDateOfYear);
+                    hours += workingDays * log.getUserWorkTime();
+                }
+            }
+        }
+        return hours;
     }
 
     public List<HistoryLogExcerptProjection> getRecent(Long userId) {

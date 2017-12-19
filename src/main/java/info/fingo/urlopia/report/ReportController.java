@@ -29,16 +29,17 @@ public class ReportController {
     }
 
     @RolesAllowed("ROLES_ADMIN")
-    @RequestMapping(path = "/report", method = RequestMethod.GET)
-    public ModelAndView getExcelReport(HttpServletResponse httpResponse, @RequestParam Long id) {
+    @RequestMapping(path = "/reports", method = RequestMethod.GET)
+    public ModelAndView getExcelReport(HttpServletResponse httpResponse, @RequestParam Long userId,
+                                       @RequestParam(required = false) Integer year) {
 
-        Integer year = LocalDate.now().getYear();
-        User user = userService.get(id);
+        year = (year != null) ? year : LocalDate.now().getYear();
+        User user = userService.get(userId);
 
         // model data
         Map<String, Object> model = new HashMap<>();
-        model.put("currentYear", year);
-        model.put("userId", id);
+        model.put("year", year);
+        model.put("userId", userId);
 
         // set the file name
         String fileName = "ewidencja_czasu_pracy_" + year + "_" + user.getFirstName() + user.getLastName();

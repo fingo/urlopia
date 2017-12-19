@@ -1,5 +1,6 @@
 package info.fingo.urlopia.report;
 
+import info.fingo.urlopia.history.HistoryLog;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
@@ -62,12 +63,13 @@ public class ReportView extends AbstractXlsxView {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
 
         Long userId = (Long) model.get("userId");
-        int year = (int) model.get("currentYear");
+        int reportYear = (int) model.get("year");
+        LocalDate currentDate = LocalDate.now();
         User user = userService.get(userId);
-        List<Request> requests = requestService.get(userId, year);
+        List<Request> requests = requestService.get(userId, reportYear);
         float worktime = user.getWorkTime();
 
         // build doc
@@ -126,7 +128,7 @@ public class ReportView extends AbstractXlsxView {
         XSSFCell fullNameYearCell = workTimeRow.createCell(0);
         fullNameYearCell.setCellStyle(fullNameYearStyle);
         String fullNameYearCellValue = "nazwisko i imię: " + user.getFirstName() + " " + user.getLastName()
-                + " rok: " + LocalDate.now().getYear();
+                + " rok: " + reportYear;
         fullNameYearCell.setCellValue(fullNameYearCellValue);
 
         // labels
@@ -181,7 +183,7 @@ public class ReportView extends AbstractXlsxView {
         }
 
         // for every month row till today
-        int previousMonth = LocalDate.now().getMonthValue() - 1;
+        int previousMonth = (reportYear == currentDate.getYear() ? currentDate.getMonthValue() - 1 : 12);
         for (int i = 0; i < previousMonth; ++i) {
             XSSFRow monthRow = sheet.createRow(8 + i);
             XSSFCell monthNumberCell = monthRow.createCell(0);
@@ -189,12 +191,12 @@ public class ReportView extends AbstractXlsxView {
             monthNumberCell.setCellValue(romanNumerals[i]);
 
             // start filling day in month cells
-            int monthLength = LocalDate.of(year, i + 1, 1).lengthOfMonth();
+            int monthLength = LocalDate.of(reportYear, i + 1, 1).lengthOfMonth();
             for (int j = 1; j <= monthLength; ++j) {
                 XSSFCell dayCell = monthRow.createCell(j);
                 dayCell.setCellStyle(defaultCenterStyle);
 
-                LocalDate currentDay = LocalDate.of(year, i + 1, j);
+                LocalDate currentDay = LocalDate.of(reportYear, i + 1, j);
                 if (!holidayService.isWorkingDay(currentDay)) {
                     dayCell.setCellValue("-");
                 } else {
@@ -265,18 +267,15 @@ public class ReportView extends AbstractXlsxView {
         sheet.addMergedRegion(new CellRangeAddress(20, 20, 6, 7));
         XSSFCell entitledTimeValueCell = summaryRow.createCell(6);
         entitledTimeValueCell.setCellStyle(defaultCenterStyle);
-
-        // used days/hours pool
-        sheet.addMergedRegion(new CellRangeAddress(20, 20, 8, 13));
-        XSSFCell usedTimeCell = summaryRow.createCell(8);
-        usedTimeCell.setCellStyle(defaultCenterStyle);
-        String usedTimeString = (Math.abs(8f - worktime) < 0.1) ?
-                "wykorzystano dni" : "wykorzystano godz.";
-        usedTimeCell.setCellValue(usedTimeString);
-
-        sheet.addMergedRegion(new CellRangeAddress(20, 20, 14, 15));
-        XSSFCell usedTimeValueCell = summaryRow.createCell(14);
-        usedTimeValueCell.setCellStyle(defaultCenterStyle);
+        double entitledTimeValuePrevYear = historyLogService.countRemainingHoursForYear(user.getId(), reportYear - 1);
+        double entitledTimeValueCurrYear = historyLogService.getFromYear(user.getId(), reportYear).stream()
+                .map(HistoryLog::getHours)
+                .filter(hours -> hours > 0)
+                .reduce((a, b) -> a + b)
+                .orElse(0f);
+        double entitledTimeValueNumber = entitledTimeValuePrevYear + entitledTimeValueCurrYear;
+        entitledTimeValueNumber = (Math.abs(8f - worktime) < 0.1) ? entitledTimeValueNumber / 8 : entitledTimeValueNumber;
+        entitledTimeValueCell.setCellValue(entitledTimeValueNumber);
 
         // days/hours left
         sheet.addMergedRegion(new CellRangeAddress(20, 20, 16, 21));
@@ -289,9 +288,22 @@ public class ReportView extends AbstractXlsxView {
         sheet.addMergedRegion(new CellRangeAddress(20, 20, 22, 23));
         XSSFCell leftTimeValueCell = summaryRow.createCell(22);
         leftTimeValueCell.setCellStyle(defaultCenterStyle);
-        double leftTimeValueNumber = historyLogService.countRemainingHours(user.getId());
+        double leftTimeValueNumber = historyLogService.countRemainingHoursForYear(user.getId(), reportYear);
         leftTimeValueNumber = (Math.abs(8f - worktime) < 0.1) ? leftTimeValueNumber / 8 : leftTimeValueNumber;
         leftTimeValueCell.setCellValue(leftTimeValueNumber);
+
+        // used days/hours pool
+        sheet.addMergedRegion(new CellRangeAddress(20, 20, 8, 13));
+        XSSFCell usedTimeCell = summaryRow.createCell(8);
+        usedTimeCell.setCellStyle(defaultCenterStyle);
+        String usedTimeString = (Math.abs(8f - worktime) < 0.1) ?
+                "wykorzystano dni" : "wykorzystano godz.";
+        usedTimeCell.setCellValue(usedTimeString);
+
+        sheet.addMergedRegion(new CellRangeAddress(20, 20, 14, 15));
+        XSSFCell usedTimeValueCell = summaryRow.createCell(14);
+        usedTimeValueCell.setCellStyle(defaultCenterStyle);
+        usedTimeValueCell.setCellValue(entitledTimeValueNumber - leftTimeValueNumber);
 
         // total label
         sheet.addMergedRegion(new CellRangeAddress(20, 20, 24, 31));
