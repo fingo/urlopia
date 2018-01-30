@@ -18,7 +18,7 @@ public class Team {
     @ManyToOne
     private User leader;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "Users_Teams",
             joinColumns = { @JoinColumn(name = "team_id") },
             inverseJoinColumns = { @JoinColumn(name = "user_id") })
