@@ -33,6 +33,7 @@ class ActiveDirectoryUserMapper {
         user.setLeader(this.isLeader(searchResult));
         user.setB2b(this.isB2B(searchResult));
         user.setEc(this.isEC(searchResult));
+        user.activate();
         return user;
     }
 

@@ -157,7 +157,13 @@
     "hourly_tooltip": "Zmień tryb wprowadzania",
     "modify_workTime": "Zmień etat",
     "workTime_changed": "Zmiana etatu",
-    "workTime": "Etat"
+    "workTime": "Etat",
+    "filters": {
+      "active": "Wszyscy pracownicy",
+      "inactive": "Nieaktywni użytkownicy",
+      "ec": "Pracownicy na etacie",
+      "non_ec": "Pozostali pracownicy"
+    }
   },
   "workers_view": {
     "days_left": "Pozostało {{days}} dni {{hours}} godzin urlopu.",

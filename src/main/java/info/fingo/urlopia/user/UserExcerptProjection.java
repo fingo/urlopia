@@ -24,6 +24,8 @@ public interface UserExcerptProjection {
 
     Boolean getEc();
 
+    Boolean getActive();
+
     Float getWorkTime();
 
     Set<TeamExcerptProjection> getTeams();

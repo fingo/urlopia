@@ -41,24 +41,48 @@
                 </ul>
             </div>
         </div>
+        <!--<div class="col-sm-3">-->
+            <!--<div class="btn-group" uib-dropdown is-open="false">-->
+                <!--<button id="group-button" type="button" class="btn btn-primary" uib-dropdown-toggle-->
+                        <!--ng-disabled="disabled">-->
+                    <!--{{ selectedContract }} <span class="caret"></span>-->
+                <!--</button>-->
+                <!--<ul class="dropdown-menu" uib-dropdown-menu role="menu">-->
+                    <!--<li>-->
+                        <!--<a class="dropdown_button" ng-click="allContracts() ">{{ 'employees_view.all_employees' |-->
+                            <!--translate }}</a>-->
+                    <!--</li>-->
+                    <!--<li class="divider"></li>-->
+                    <!--<li>-->
+                        <!--<a class="dropdown_button" ng-click="dropDownContracts('ec')">-->
+                            <!--{{'employees_view.EC_employees' | translate }}-->
+                        <!--</a>-->
+                        <!--<a class="dropdown_button" ng-click="dropDownContracts('others')">-->
+                            <!--{{'employees_view.others' | translate }}-->
+                        <!--</a>-->
+                    <!--</li>-->
+                <!--</ul>-->
+            <!--</div>-->
+        <!--</div>-->
         <div class="col-sm-3">
             <div class="btn-group" uib-dropdown is-open="false">
-                <button id="group-button" type="button" class="btn btn-primary" uib-dropdown-toggle
-                        ng-disabled="disabled">
-                    {{ selectedContract }} <span class="caret"></span>
+                <button id="group-button" type="button" class="btn btn-primary"
+                        uib-dropdown-toggle ng-disabled="disabled">
+                    {{ 'employees_view.filters.' + detailsFilter | translate }} <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" uib-dropdown-menu role="menu">
                     <li>
-                        <a class="dropdown_button" ng-click="allContracts() ">{{ 'employees_view.all_employees' |
-                            translate }}</a>
-                    </li>
-                    <li class="divider"></li>
-                    <li>
-                        <a class="dropdown_button" ng-click="dropDownContracts('ec')">
-                            {{'employees_view.EC_employees' | translate }}
+                        <a class="dropdown_button" ng-click="changeDetailsFilter('active') ">
+                            {{ 'employees_view.filters.active' | translate }}
                         </a>
-                        <a class="dropdown_button" ng-click="dropDownContracts('others')">
-                            {{'employees_view.others' | translate }}
+                        <a class="dropdown_button" ng-click="dropDownContracts('ec')">
+                            {{'employees_view.filters.ec' | translate }}
+                        </a>
+                        <a class="dropdown_button" ng-click="dropDownContracts('non_ec')">
+                            {{'employees_view.filters.non_ec' | translate }}
+                        </a>
+                        <a class="dropdown_button" ng-click="changeDetailsFilter('inactive') ">
+                            {{ 'employees_view.filters.inactive' | translate }}
                         </a>
                     </li>
                 </ul>
@@ -104,7 +128,7 @@
 
         <!--User header-->
         <tr class="hvr-grow-shadow"
-            ng-repeat-start="user in users | filter : teamSearch | orderBy : propertyName : reverse | filter : nameSearch | filter : leaderSearch | filter : contractSearch"
+            ng-repeat-start="user in users | filter : teamSearch | orderBy : propertyName : reverse | filter : nameSearch | filter : leaderSearch | filter : detailsSearch"
             ng-click="isCollapsed=!isCollapsed">
             <td ng-if="user.leader"><b>{{ user.name }}</b></td>
             <td ng-if="!user.leader">{{ user.name }}</td>

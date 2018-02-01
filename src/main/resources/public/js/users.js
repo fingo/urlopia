@@ -317,6 +317,27 @@ app.controller('EmployeesCtrl', function ($scope, API, $filter, $translate, noti
         return false;
     };
 
+    $scope.detailsFilter = "active";
+
+    $scope.changeDetailsFilter = function (filter) {
+      $scope.detailsFilter = filter;
+    };
+
+    $scope.detailsSearch = function (user) {
+        switch($scope.detailsFilter) {
+          case 'active':
+              return user.active;
+          case 'ec':
+              return user.active && user.ec;
+          case 'non_ec':
+              return user.active && !user.ec;
+          case 'inactive':
+              return !user.active;
+          default:
+              return false;
+        }
+    };
+
     $scope.contractFilter = "";
     $scope.selectedContract = $filter('translate')('employees_view.all_employees');
 

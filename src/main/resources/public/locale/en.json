@@ -157,7 +157,13 @@
     "hourly_tooltip": "Change insert mode",
     "modify_workTime": "Modify work-time",
     "workTime_changed": "Work time changed",
-    "workTime": "Work time"
+    "workTime": "Work time",
+    "filters": {
+      "active": "All employees",
+      "inactive": "Inactive users",
+      "ec": "EC employees",
+      "non_ec": "Other employees"
+    }
   },
   "workers_view": {
     "days_left": "{{days}} days {{hours}} hours of vacation left.",
