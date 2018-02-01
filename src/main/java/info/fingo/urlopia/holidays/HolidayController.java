@@ -1,5 +1,6 @@
 package info.fingo.urlopia.holidays;
 
+import info.fingo.urlopia.config.persistance.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +22,10 @@ public class HolidayController {
 
     @RolesAllowed("ROLES_ADMIN")
     @RequestMapping(value = "/api/holiday", method = RequestMethod.GET)
-    public List<HolidayResponse> getAll(@RequestParam Integer year) {
-
-        return holidayService.getAllHolidaysInYear(year);
+    public List<HolidayResponse> getAll(@RequestParam Integer year,
+                                        @RequestParam(name = "filter", defaultValue = "") String[] filters) {
+        Filter filter = Filter.from(filters);
+        return holidayService.getAllHolidaysInYear(year, filter);
     }
 
     /**
@@ -34,8 +36,7 @@ public class HolidayController {
     public HttpStatus save(@RequestBody List<HolidayResponse> holidays) {
         int currentYear = Instant.ofEpochMilli(holidays.get(0).getDate()).atZone(ZoneId.systemDefault()).toLocalDate().getYear();
 
-        for (HolidayResponse h:
-             holidays) {
+        for (HolidayResponse h: holidays) {
             if(Instant.ofEpochMilli(h.getDate()).atZone(ZoneId.systemDefault()).toLocalDate().getYear() != currentYear)
                 return HttpStatus.EXPECTATION_FAILED;
         }

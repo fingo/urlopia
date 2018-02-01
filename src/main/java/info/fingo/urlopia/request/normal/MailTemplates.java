@@ -1,8 +1,8 @@
 package info.fingo.urlopia.request.normal;
 
 import info.fingo.urlopia.acceptance.Acceptance;
-import info.fingo.urlopia.mail.send.MailTemplate;
-import info.fingo.urlopia.mail.send.MailTemplateLoader;
+import info.fingo.urlopia.config.mail.send.MailTemplate;
+import info.fingo.urlopia.config.mail.send.MailTemplateLoader;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.user.User;
 import org.springframework.beans.factory.annotation.Autowired;

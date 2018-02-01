@@ -1,18 +1,14 @@
 package info.fingo.urlopia.acceptance;
 
-import info.fingo.urlopia.authentication.AuthInterceptor;
+import info.fingo.urlopia.config.persistance.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api")
@@ -26,10 +22,13 @@ public class AcceptanceController {
     }
 
     @RolesAllowed("ROLES_LEADER")
-    @RequestMapping(path = "/users/{userId}/acceptances", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page> getForLeader(HttpServletRequest httpRequest, Pageable pageable) {
-        Long userId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
-        Page<AcceptanceExcerptProjection> acceptances = acceptanceService.get(userId, pageable);
+    @RequestMapping(path = "/users/{userId}/acceptances", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page> getForLeader(@PathVariable Long userId,
+                                             @RequestParam(name = "filter", defaultValue = "") String[] filters,
+                                             Pageable pageable) {
+        Filter filter = Filter.from(filters);
+        Page<AcceptanceExcerptProjection> acceptances = acceptanceService.get(userId, filter, pageable);
         return ResponseEntity.ok(acceptances);
     }
 

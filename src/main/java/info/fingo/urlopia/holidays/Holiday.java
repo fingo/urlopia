@@ -10,7 +10,7 @@ public class Holiday {
     @Id
     @SequenceGenerator(name = "holidays_id_seq", sequenceName = "holidays_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "holidays_id_seq")
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private String name;
@@ -25,6 +25,10 @@ public class Holiday {
     public Holiday(String name, LocalDate date) {
         this.name = name;
         this.date = date;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {

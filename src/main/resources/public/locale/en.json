@@ -98,8 +98,7 @@
       "cancelRequest": "Cancel"
     },
     "search": {
-      "term": "Search for term...",
-      "requester": "Search for requester..."
+      "requester": "first name or last name of requester..."
     },
     "filter": {
       "all": "Show all"

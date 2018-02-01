@@ -1,8 +1,8 @@
 package info.fingo.urlopia.user;
 
-import info.fingo.urlopia.ad.ActiveDirectory;
-import info.fingo.urlopia.ad.ActiveDirectoryUtils;
-import info.fingo.urlopia.ad.Attribute;
+import info.fingo.urlopia.config.ad.ActiveDirectory;
+import info.fingo.urlopia.config.ad.ActiveDirectoryUtils;
+import info.fingo.urlopia.config.ad.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

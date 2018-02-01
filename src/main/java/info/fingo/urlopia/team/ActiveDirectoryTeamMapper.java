@@ -1,7 +1,7 @@
 package info.fingo.urlopia.team;
 
-import info.fingo.urlopia.ad.ActiveDirectoryUtils;
-import info.fingo.urlopia.ad.Attribute;
+import info.fingo.urlopia.config.ad.ActiveDirectoryUtils;
+import info.fingo.urlopia.config.ad.Attribute;
 import info.fingo.urlopia.user.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

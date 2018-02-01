@@ -1,5 +1,8 @@
 package info.fingo.urlopia.holidays;
 
+import info.fingo.urlopia.UrlopiaApplication;
+import info.fingo.urlopia.config.persistance.filter.Filter;
+import info.fingo.urlopia.config.persistance.filter.Operator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -9,6 +12,7 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
@@ -20,24 +24,19 @@ public class HolidayService {
     @Autowired
     private HolidayRepository holidayRepository;
 
-    public List<LocalDate> getAllHolidaysDates() {
-        List<Holiday> holidays = holidayRepository.findAll();
-        List<LocalDate> result = new ArrayList<>(holidays.size());
+    public List<HolidayResponse> getAllHolidaysInYear(int year, Filter filter) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_FORMAT);
+        String yearStart = LocalDate.of(year, 1, 1).format(formatter);
+        String yearEnd = LocalDate.of(year, 12, 31).format(formatter);
 
-        for (Holiday h :
-                holidays) {
-            result.add(h.getDate());
-        }
-
-        return result;
-    }
-
-    public List<HolidayResponse> getAllHolidaysInYear(int year) {
-        List<Holiday> holidays = holidayRepository.findByDateBetween(LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31));
+        Filter filterWithRestrictions = filter.toBuilder()
+                .and("date", Operator.GREATER_OR_EQUAL, yearStart)
+                .and("date", Operator.LESS_OR_EQUAL, yearEnd)
+                .build();
+        List<Holiday> holidays = holidayRepository.findAll(filterWithRestrictions);
         List<HolidayResponse> result = new ArrayList<>(holidays.size());
 
-        for (Holiday h :
-                holidays) {
+        for (Holiday h : holidays) {
             result.add(new HolidayResponse(h));
         }
 
@@ -49,14 +48,9 @@ public class HolidayService {
     }
 
     public void addHolidays(List<HolidayResponse> holidays) {
-        for (HolidayResponse h :
-                holidays) {
+        for (HolidayResponse h : holidays) {
             addHoliday(h);
         }
-    }
-
-    public void addAllHolidays(List<Holiday> holidays) {
-        holidayRepository.save(holidays);
     }
 
     protected Holiday entityFromResponse(HolidayResponse holiday) {

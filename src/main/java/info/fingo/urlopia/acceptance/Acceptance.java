@@ -12,7 +12,7 @@ public class Acceptance {
     @Id
     @SequenceGenerator(name = "acceptances_id_seq", sequenceName = "acceptances_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "acceptances_id_seq")
-    private long id;
+    private Long id;
 
     @OneToOne
     @JoinColumn(nullable = false)
@@ -37,12 +37,8 @@ public class Acceptance {
         this.status = Status.PENDING;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public Request getRequest() {

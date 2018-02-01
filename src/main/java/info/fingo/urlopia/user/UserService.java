@@ -1,7 +1,9 @@
 package info.fingo.urlopia.user;
 
+import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.team.Team;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +26,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<UserExcerptProjection> get() {
-        return userRepository.findAllByOrderByLastName();
+    public List<UserExcerptProjection> get(Filter filter, Sort sort) {
+        return userRepository.findAll(filter, sort, UserExcerptProjection.class);
     }
 
     public User get(Long userId) {

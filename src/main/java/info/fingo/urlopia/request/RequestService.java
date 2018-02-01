@@ -1,5 +1,7 @@
 package info.fingo.urlopia.request;
 
+import info.fingo.urlopia.config.persistance.filter.Filter;
+import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.history.HistoryLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,12 +31,15 @@ public class RequestService {
         this.historyLogService = historyLogService;
     }
 
-    public Page<RequestExcerptProjection> get(Pageable pageable) {
-        return requestRepository.findBy(pageable);
+    public Page<RequestExcerptProjection> getFromUser(Long userId, Filter filter, Pageable pageable) {
+        Filter filterWithRestrictions = filter.toBuilder()
+                .and("requester.id", Operator.EQUAL, userId.toString())
+                .build();
+        return this.get(filterWithRestrictions, pageable);
     }
 
-    public Page<RequestExcerptProjection> get(Long userId, Pageable pageable) {
-        return requestRepository.findByRequesterId(userId, pageable);
+    public Page<RequestExcerptProjection> get(Filter filter, Pageable pageable) {
+        return requestRepository.findAll(filter, pageable, RequestExcerptProjection.class);
     }
 
     public List<Request> get(Long userId, Integer year) {

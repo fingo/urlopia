@@ -1,8 +1,10 @@
 package info.fingo.urlopia.user;
 
 import info.fingo.urlopia.ActiveDirectorySynchronizationScheduler;
-import info.fingo.urlopia.authentication.AuthInterceptor;
+import info.fingo.urlopia.config.authentication.AuthInterceptor;
+import info.fingo.urlopia.config.persistance.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +29,10 @@ public class UserController {
 
     @RolesAllowed("ROLES_ADMIN")
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List> getAll() {
-        List<UserExcerptProjection> users = userService.get();
+    public ResponseEntity<List> getAll(@RequestParam(name = "filter", defaultValue = "") String[] filters,
+                                       Sort sort) {
+        Filter filter = Filter.from(filters);
+        List<UserExcerptProjection> users = userService.get(filter, sort);
         return ResponseEntity.ok(users);
     }
 
@@ -36,7 +40,8 @@ public class UserController {
 
     @RolesAllowed("ROLES_ADMIN")
     @RequestMapping(value ="{userId}/setWorkTime", method = RequestMethod.POST)
-    public ResponseEntity<Void> setWorkTime(@PathVariable Long userId, @RequestBody Map<String, Object> data) {
+    public ResponseEntity<Void> setWorkTime(@PathVariable Long userId,
+                                            @RequestBody Map<String, Object> data) {
         String workTime = (String)data.get("workTime");
         userService.setWorkTime(userId, workTime);
         return ResponseEntity.ok().build();

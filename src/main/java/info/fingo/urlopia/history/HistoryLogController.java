@@ -1,6 +1,7 @@
 package info.fingo.urlopia.history;
 
-import info.fingo.urlopia.authentication.AuthInterceptor;
+import info.fingo.urlopia.config.authentication.AuthInterceptor;
+import info.fingo.urlopia.config.persistance.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,15 +25,18 @@ public class HistoryLogController {
     @RolesAllowed({"ROLES_WORKER", "ROLES_LEADER", "ROLES_ADMIN"})
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List> getFromUser(@PathVariable Long userId,
-                                            @RequestParam(required = false) Integer year) {
-        List<HistoryLogExcerptProjection> historyLogs = historyService.get(userId, year);
+                                            @RequestParam(required = false) Integer year,
+                                            @RequestParam(name = "filter", defaultValue = "") String[] filters) {
+        Filter filter = Filter.from(filters);
+        List<HistoryLogExcerptProjection> historyLogs = historyService.get(userId, year, filter);
         return ResponseEntity.ok(historyLogs);
     }
 
     @RolesAllowed({"ROLES_WORKER", "ROLES_LEADER", "ROLES_ADMIN"})
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> add(@PathVariable Long userId, @RequestBody HistoryLogInput historyLog,
-                                              HttpServletRequest httpRequest) {
+    public ResponseEntity<Void> add(@PathVariable Long userId,
+                                    @RequestBody HistoryLogInput historyLog,
+                                    HttpServletRequest httpRequest) {
         Long authenticatedUserId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
         historyService.create(historyLog, userId, authenticatedUserId);
         return ResponseEntity.ok().build();

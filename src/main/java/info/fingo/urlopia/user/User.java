@@ -13,7 +13,7 @@ public class User {
     @Id
     @SequenceGenerator(name = "users_id_seq", sequenceName = "users_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "users_id_seq")
-    private long id;
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String principalName;
@@ -64,7 +64,7 @@ public class User {
         this.workTime = 8f;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

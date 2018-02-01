@@ -1,18 +1,13 @@
 package info.fingo.urlopia.request;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import info.fingo.urlopia.config.persistance.BaseRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface RequestRepository extends JpaRepository<Request, Long> {
-
-    Page<RequestExcerptProjection> findBy(Pageable pageable);
-
-    Page<RequestExcerptProjection> findByRequesterId(Long requesterId, Pageable pageable);
+public interface RequestRepository extends BaseRepository<Request>, JpaRepository<Request, Long> {
 
     List<Request> findByRequesterId(Long requesterId);
 

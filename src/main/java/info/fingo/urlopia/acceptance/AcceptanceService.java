@@ -3,6 +3,8 @@ package info.fingo.urlopia.acceptance;
 import info.fingo.urlopia.acceptance.events.AcceptanceAccepted;
 import info.fingo.urlopia.acceptance.events.AcceptanceCreated;
 import info.fingo.urlopia.acceptance.events.AcceptanceRejected;
+import info.fingo.urlopia.config.persistance.filter.Filter;
+import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.user.User;
@@ -33,8 +35,11 @@ public class AcceptanceService {
         this.publisher = publisher;
     }
 
-    public Page<AcceptanceExcerptProjection> get(Long userId, Pageable pageable) {
-        return acceptanceRepository.findByLeaderId(userId, pageable);
+    public Page<AcceptanceExcerptProjection> get(Long userId, Filter filter, Pageable pageable) {
+        Filter filterWithRestrictions = filter.toBuilder()
+                .and("leader.id", Operator.EQUAL, userId.toString())
+                .build();
+        return acceptanceRepository.findAll(filterWithRestrictions, pageable, AcceptanceExcerptProjection.class);
     }
 
     public void create(Request request, User leader) {

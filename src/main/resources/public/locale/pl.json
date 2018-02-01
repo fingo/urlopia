@@ -98,8 +98,7 @@
       "cancelRequest": "Anuluj"
     },
     "search": {
-      "term": "Szukaj terminu...",
-      "requester": "Szukaj wnioskodawcy..."
+      "requester": "imię lub nazwisko wnioskodawcy..."
     },
     "filter": {
       "all": "Pokaż wszystko"

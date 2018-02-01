@@ -17,7 +17,7 @@ public class Request {
     @Id
     @SequenceGenerator(name = "requests_id_seq", sequenceName = "requests_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "requests_id_seq")
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private LocalDateTime created;
@@ -80,7 +80,7 @@ public class Request {
         this.status = status;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

@@ -1,8 +1,8 @@
 package info.fingo.urlopia.team;
 
-import info.fingo.urlopia.ad.ActiveDirectory;
-import info.fingo.urlopia.ad.ActiveDirectoryUtils;
-import info.fingo.urlopia.ad.Attribute;
+import info.fingo.urlopia.config.ad.ActiveDirectory;
+import info.fingo.urlopia.config.ad.ActiveDirectoryUtils;
+import info.fingo.urlopia.config.ad.Attribute;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
 import org.slf4j.Logger;

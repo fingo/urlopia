@@ -124,3 +124,13 @@ app.controller('ApplicationController', function ($scope, $uibModal, $location, 
         notifyService.displayInfo($translate.instant('notify.auth.notAuthorized'));
     });
 });
+
+String.prototype.format = function() {
+  var text = this;
+  for (var i = 0; i < arguments.length; i++) {
+      var toReplace = "{" + i + "}";
+      var replacement = arguments[i];
+      text = text.split(toReplace).join(replacement);
+  }
+  return text;
+};

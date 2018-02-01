@@ -1,5 +1,8 @@
 package info.fingo.urlopia.history;
 
+import info.fingo.urlopia.UrlopiaApplication;
+import info.fingo.urlopia.config.persistance.filter.Filter;
+import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.RequestType;
@@ -11,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,13 +33,24 @@ public class HistoryLogService {
         this.workingDaysCalculator = workingDaysCalculator;
     }
 
-    public List<HistoryLogExcerptProjection> get(Long userId, Integer year) {
+    public List<HistoryLogExcerptProjection> get(Filter filter) {
+        return historyLogRepository.findAll(filter, HistoryLogExcerptProjection.class);
+    }
+
+    public List<HistoryLogExcerptProjection> get(Long userId, Integer year, Filter filter) {
         if (year == null) {
             return historyLogRepository.findByUserId(userId);
         }
-        LocalDateTime yearStart = LocalDateTime.of(year, 1, 1, 0, 0);
-        LocalDateTime nextYearStart = LocalDateTime.of(year + 1, 1, 1, 0, 0);
-        return historyLogRepository.findByUserIdAndCreatedBetween(userId, yearStart, nextYearStart);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_TIME_FORMAT);
+        String yearStart = LocalDateTime.of(year, 1, 1, 0, 0).format(formatter);
+        String yearEnd = LocalDateTime.of(year, 12, 31, 23, 59).format(formatter);
+
+        Filter filterWithRestrictions = filter.toBuilder()
+                .and("user.id", Operator.EQUAL, userId.toString())
+                .and("created", Operator.GREATER_OR_EQUAL, yearStart)
+                .and("created", Operator.LESS_OR_EQUAL, yearEnd)
+                .build();
+        return this.get(filterWithRestrictions);
     }
 
     public List<HistoryLog> getFromYear(Long userId, Integer year) {

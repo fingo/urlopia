@@ -134,16 +134,32 @@ app.controller('RequestsCtrl', function ($scope, $translate, updater, API, Sessi
         var pagination = tableState.pagination;
         var entriesPerPage = pagination.number || 10;
         var selectedPage = parseInt(pagination.start / entriesPerPage) || 0;
+        var pageUrlVars = 'page={0}&size={1}'.format(
+          selectedPage,
+          entriesPerPage
+        );
 
         // sorting
         var sort = tableState.sort;
         var sortColumn = sort.predicate || 'created';
         var sortDirection = (sort.reverse) ? 'DESC' : 'ASC';
+        var sortUrlVars = 'sort={0}&sort=id,ASC'.format(
+          sortColumn + ',' + sortDirection
+        );
 
-        var server = API.setUrl('/api/requests?page=:page&size=:size&sort=:sort&sort=id,ASC', {
-            page: selectedPage,
-            size: entriesPerPage,
-            sort: sortColumn + ',' + sortDirection
+        // filtering
+        var filter = tableState.search;
+        var filterText = (filter.predicateObject || {$: ''}).$ || '';
+        var filterUrlVars = ('filter=' +
+          'requester.firstName.:{0}|requester.lastName.:{0}|').format(
+            filterText
+          );
+
+
+        var server = API.setUrl('/api/requests?:page&:sort&:filter', {
+            page: pageUrlVars,
+            sort: sortUrlVars,
+            filter: filterUrlVars
         });
         currentRequest = server.get(function (response) {
             if (response.content === currentRequest.content) {

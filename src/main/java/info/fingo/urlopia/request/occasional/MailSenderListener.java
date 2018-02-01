@@ -1,8 +1,8 @@
 package info.fingo.urlopia.request.occasional;
 
-import info.fingo.urlopia.mail.send.MailNotificator;
-import info.fingo.urlopia.mail.send.MailStorage;
-import info.fingo.urlopia.mail.send.MailTemplate;
+import info.fingo.urlopia.config.mail.send.MailNotificator;
+import info.fingo.urlopia.config.mail.send.MailStorage;
+import info.fingo.urlopia.config.mail.send.MailTemplate;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.occasional.events.OccasionalRequestCreated;
 import info.fingo.urlopia.user.User;

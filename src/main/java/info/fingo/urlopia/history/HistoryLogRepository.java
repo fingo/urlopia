@@ -1,5 +1,6 @@
 package info.fingo.urlopia.history;
 
+import info.fingo.urlopia.config.persistance.BaseRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -7,15 +8,13 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface HistoryLogRepository extends JpaRepository<HistoryLog, Long> {
+public interface HistoryLogRepository extends BaseRepository<HistoryLog>, JpaRepository<HistoryLog, Long> {
 
     HistoryLog findFirstByUserIdOrderById(Long userId);
 
     HistoryLog findFirstByUserIdOrderByIdDesc(Long userId);
 
     HistoryLog findFirstByRequestId(Long requestId);
-
-    List<HistoryLogExcerptProjection> findByUserIdAndCreatedBetween(long userId, LocalDateTime startDate, LocalDateTime endDate);
 
     List<HistoryLogExcerptProjection> findByUserId(long userId);
 

@@ -14,7 +14,7 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
     @Id
     @SequenceGenerator(name = "history_logs_id_seq", sequenceName = "history_logs_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "history_logs_id_seq")
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private LocalDateTime created;
@@ -95,7 +95,7 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
         return denominator;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

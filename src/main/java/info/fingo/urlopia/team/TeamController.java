@@ -1,9 +1,12 @@
 package info.fingo.urlopia.team;
 
+import info.fingo.urlopia.config.persistance.filter.Filter;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.RolesAllowed;
@@ -21,8 +24,10 @@ public class TeamController {
 
     @RolesAllowed("ROLES_ADMIN")
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List> getAll() {
-        List<TeamExcerptProjection> teams = teamService.getAll();
+    public ResponseEntity<List> getAll(@RequestParam(name = "filter", defaultValue = "") String[] filters,
+                                       Sort sort) {
+        Filter filter = Filter.from(filters);
+        List<TeamExcerptProjection> teams = teamService.getAll(filter, sort);
         return ResponseEntity.ok(teams);
     }
 
