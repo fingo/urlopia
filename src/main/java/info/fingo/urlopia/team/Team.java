@@ -18,6 +18,9 @@ public class Team {
     @ManyToOne
     private User leader;
 
+    @ManyToOne
+    private User businessPartLeader;
+
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "Users_Teams",
             joinColumns = { @JoinColumn(name = "team_id") },
@@ -50,6 +53,14 @@ public class Team {
 
     public void setLeader(User leader) {
         this.leader = leader;
+    }
+
+    public User getBusinessPartLeader() {
+        return businessPartLeader;
+    }
+
+    public void setBusinessPartLeader(User businessPartLeader) {
+        this.businessPartLeader = businessPartLeader;
     }
 
     public Set<User> getUsers() {

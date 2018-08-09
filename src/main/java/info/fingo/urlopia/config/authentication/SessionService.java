@@ -65,13 +65,17 @@ public class SessionService {
     }
 
     private Set<Map> pickTeamsInfo(User user) {
-        Set<Map> teams = new HashSet();
+        Set<Map> teams = new HashSet<>();
         for (Team team : user.getTeams()) {
-            Map<String, String> teamInfo = new HashMap<>();
-            teamInfo.put("name", team.getName());
-            teamInfo.put("leader",
-                    String.format("%s %s", team.getLeader().getFirstName(), team.getLeader().getLastName()));
-            teams.add(teamInfo);
+            String teamName = team.getName();
+            User leader = user.equals(team.getLeader()) ? team.getBusinessPartLeader() : team.getLeader();
+
+            if (leader != null) {
+                Map<String, String> teamInfo = new HashMap<>();
+                teamInfo.put("name", teamName);
+                teamInfo.put("leader", leader.getFirstName() + " " + leader.getLastName());
+                teams.add(teamInfo);
+            }
         }
         return teams;
     }

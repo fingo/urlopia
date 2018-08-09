@@ -11,13 +11,13 @@ import info.fingo.urlopia.request.normal.events.NormalRequestRejected;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service("normalRequestService")
 @Transactional
@@ -34,9 +34,6 @@ public class NormalRequestService implements RequestTypeService {
     private final ApplicationEventPublisher publisher;
 
     private final AcceptanceService acceptanceService;
-
-    @Value("${mails.master.leader}")
-    private String masterLeaderMail;
 
     @Autowired
     public NormalRequestService(RequestRepository requestRepository, UserRepository userRepository,
@@ -102,13 +99,10 @@ public class NormalRequestService implements RequestTypeService {
 
     private void createAcceptances(User user, Request request) {
         user.getTeams().stream()
-                .map(team -> {
-                    Long teamLeaderId = team.getLeader().getId();
-                    return (teamLeaderId.equals(user.getId())) ?
-                            userRepository.findFirstByMail(masterLeaderMail) : team.getLeader();
-                })
+                .map(team -> user.equals(team.getLeader()) ? team.getBusinessPartLeader() : team.getLeader())
+                .filter(Objects::nonNull)
                 .distinct()
-                .forEach(leader -> acceptanceService.create(request, leader));
+                .forEach(leader -> this.acceptanceService.create(request, leader));
     }
 
     @Override

@@ -20,21 +20,23 @@ public class ActiveDirectoryTeamMapper {
         this.userRepository = userRepository;
     }
 
-    Team mapToTeam(SearchResult searchResult) {
+    Team mapToTeam(SearchResult adTeam, SearchResult businessPart) {
         Team newTeam = new Team();
-        return this.mapToTeam(searchResult, newTeam);
+        return this.mapToTeam(adTeam, newTeam, businessPart);
     }
 
-    Team mapToTeam(SearchResult searchResult, Team team) {
-        team.setAdName(ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.DISTINGUISHED_NAME));
-        team.setName(this.normalizeName(ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.NAME)));
+    Team mapToTeam(SearchResult adTeam, Team team, SearchResult adBusinessPart) {
+        team.setAdName(ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.DISTINGUISHED_NAME));
+        team.setName(this.normalizeName(ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.NAME)));
         team.setLeader(userRepository.findFirstByAdName(
-                ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.MANAGED_BY)));
+                ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.MANAGED_BY)));
+        team.setBusinessPartLeader(userRepository.findFirstByAdName(
+                ActiveDirectoryUtils.pickAttribute(adBusinessPart, Attribute.MANAGED_BY)));
         return team;
     }
 
     private String normalizeName(String adName) {
-        int end = adName.length() - teamIdentifier.length() - 1; // -1 for space between name and identifier
+        int end = adName.length() - this.teamIdentifier.length() - 1; // -1 for space between name and identifier
         return adName.substring(0, end);
     }
 }

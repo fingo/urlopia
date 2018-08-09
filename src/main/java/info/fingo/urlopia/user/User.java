@@ -4,6 +4,7 @@ import info.fingo.urlopia.UrlopiaApplication;
 import info.fingo.urlopia.team.Team;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -190,6 +191,19 @@ public class User {
 
     public Set<Team> getTeams() {
         return teams;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || super.getClass() != o.getClass()) return false;
+        User that = (User) o;
+        return Objects.equals(this.id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     public enum Role {

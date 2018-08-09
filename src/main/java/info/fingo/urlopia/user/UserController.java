@@ -65,7 +65,7 @@ public class UserController {
     @RolesAllowed({"ROLES_ADMIN"})
     @RequestMapping(value = "/synchronize", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> synchronize() {
-        synchronizer.dailySynchronization();
+        synchronizer.fullSynchronization();
         return ResponseEntity.ok().build();
     }
 }

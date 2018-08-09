@@ -16,9 +16,6 @@ class ActiveDirectoryUserMapper {
     @Value("${ad.groups.ec}")
     private String ecGroup;
 
-    @Value("${mails.master.leader}")
-    private String masterLeaderMail;
-
     User mapToUser(SearchResult searchResult) {
         User newUser = new User();
         return this.mapToUser(searchResult, newUser);
@@ -39,8 +36,7 @@ class ActiveDirectoryUserMapper {
 
     private boolean isLeader(SearchResult searchResult) {
         String leaderOf = ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.MANAGED_OBJECTS);
-        String mail = ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.MAIL);
-        return !leaderOf.isEmpty() || masterLeaderMail.equals(mail);
+        return !leaderOf.isEmpty();
     }
 
     private boolean isB2B(SearchResult searchResult) {

@@ -4,7 +4,6 @@ import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.history.HistoryLogService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,9 +20,6 @@ public class RequestService {
     private final RequestRepository requestRepository;
 
     private final HistoryLogService historyLogService;
-
-    @Value("${mails.master.leader}")
-    private String masterLeaderMail;
 
     @Autowired
     public RequestService(RequestRepository requestRepository, HistoryLogService historyLogService) {
