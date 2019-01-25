@@ -62,8 +62,8 @@ dependencies {
     compile('io.jsonwebtoken:jjwt:0.6.0')
     compile('postgresql:postgresql:9.1-901.jdbc4')
     compile('com.github.jknack:handlebars:4.0.6')
-    compile('org.apache.poi:poi:3.14')
-    compile('org.apache.poi:poi-ooxml:3.14')
+    compile('org.apache.poi:poi:4.0.1')
+    compile('org.apache.poi:poi-ooxml:4.0.1')
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.1')
 
