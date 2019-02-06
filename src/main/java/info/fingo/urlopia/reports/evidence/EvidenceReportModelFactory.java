@@ -3,6 +3,7 @@ package info.fingo.urlopia.reports.evidence;
 import info.fingo.urlopia.history.HistoryLog;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.HolidayService;
+import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.request.RequestType;
 import info.fingo.urlopia.user.User;
@@ -89,6 +90,7 @@ public class EvidenceReportModelFactory {
             LocalDate date = LocalDate.of(year, month, dayOfMonth);
             if (this.holidayService.isWorkingDay(date)) {
                 return this.requestService.getByUserAndDate(user.getId(), date)
+                        .filter(req -> req.getStatus() == Request.Status.ACCEPTED)
                         .map(req -> this.getRequestStatus(req.getType()))
                         .orElse(DECIMAL_FORMAT.format(user.getWorkTime()));
             }
