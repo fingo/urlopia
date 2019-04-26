@@ -4,15 +4,19 @@ import info.fingo.urlopia.UrlopiaApplication;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.history.HistoryLogService;
+import info.fingo.urlopia.user.User;
+import info.fingo.urlopia.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -22,10 +26,13 @@ public class RequestService {
 
     private final HistoryLogService historyLogService;
 
+    private final UserService userService;
+
     @Autowired
-    public RequestService(RequestRepository requestRepository, HistoryLogService historyLogService) {
+    public RequestService(RequestRepository requestRepository, HistoryLogService historyLogService, UserService userService) {
         this.requestRepository = requestRepository;
         this.historyLogService = historyLogService;
+        this.userService = userService;
     }
 
     public Page<RequestExcerptProjection> getFromUser(Long userId, Filter filter, Pageable pageable) {
@@ -60,6 +67,34 @@ public class RequestService {
     public void create(Long userId, RequestInput requestInput) {
         RequestTypeService service = requestInput.getType().getService();
         service.create(userId, requestInput);
+    }
+
+    public List<VacationDay> getTeammatesVacationsForNexTwoWeeks(Long userId) {
+        User user = this.userService.get(userId);
+        Set<User> teammates = user.getTeams().stream()
+                .flatMap(team -> team.getUsers().stream())
+                .collect(Collectors.toSet());
+
+        List<VacationDay> teammatesVocations = new ArrayList<>(14);
+        LocalDate currentDate = LocalDate.now();
+        LocalDate lastDate = currentDate.plusWeeks(2);
+        while (currentDate.isBefore(lastDate)) {
+            if (currentDate.getDayOfWeek() != DayOfWeek.SATURDAY && currentDate.getDayOfWeek() != DayOfWeek.SUNDAY) {
+                List<String> vocationTeammates = new ArrayList<>();
+                for (User teammate : teammates) {
+                    if (!this.isVacationing(teammate, currentDate)) continue;
+                    vocationTeammates.add(String.format("%s %s", teammate.getFirstName(), teammate.getLastName()));
+                }
+                teammatesVocations.add(new VacationDay(currentDate, vocationTeammates));
+            }
+            currentDate = currentDate.plusDays(1);
+        }
+        return teammatesVocations;
+    }
+
+    private boolean isVacationing(User user, LocalDate date) {
+        return this.getByUserAndDate(user.getId(), date).stream()
+                .anyMatch(request -> request.getStatus() == Request.Status.ACCEPTED);
     }
 
     // *** ACTIONS ***

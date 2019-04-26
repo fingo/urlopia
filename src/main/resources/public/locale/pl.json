@@ -80,6 +80,9 @@
   "leader_view": {
     "title": "Wnioski do rozpatrzenia"
   },
+  "teammates_vacations": {
+    "title": "Urlopy członków zespołu"
+  },
   "table": {
     "requester": "Wnioskodawca",
     "leader": "Rozpatrujący",

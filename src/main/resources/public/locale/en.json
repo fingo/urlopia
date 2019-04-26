@@ -80,6 +80,9 @@
   "leader_view": {
     "title": "Your team's requests"
   },
+  "teammates_vacations": {
+    "title": "Teammates vacations"
+  },
   "table": {
     "requester": "Requester",
     "leader": "Decider",

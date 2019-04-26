@@ -120,6 +120,11 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
             });
         };
     }
+
+    // TEAMMATES VOCATIONS
+    $scope.teammates = {};
+    $scope.teammates.vacation = API.setUrl('/api/users/' + Session.data.userId + '/teammates/vacation').query();
+
 });
 
 app.controller('RequestsCtrl', function ($scope, $translate, updater, API, Session, $filter, notifyService) {

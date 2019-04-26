@@ -123,4 +123,21 @@
             </div>
         </div>
     </div>
+
+    <div id="teammates_vacations" class="row">
+        <br><br>
+        <h2 class="view-title text-left">{{ 'teammates_vacations.title' | translate }}</h2>
+        <hr>
+        <div class="col-sm-12 col-md-12" style="white-space: nowrap; overflow: auto">
+            <div ng-repeat="vacationDay in teammates.vacation"
+                 class="thumbnail"
+                 style="display: inline-block; width: 200px; height: 200px; text-align: center; overflow: auto; margin: 5px">
+                <h4>{{vacationDay.date[0]}}-{{("0" + vacationDay.date[1]).slice(-2)}}-{{("0" + vacationDay.date[2]).slice(-2)}}</h4>
+                <hr>
+                <ul style="list-style: none">
+                    <li ng-repeat="userName in vacationDay.userNames">{{userName}}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>

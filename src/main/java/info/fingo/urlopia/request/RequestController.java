@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -50,6 +51,13 @@ public class RequestController {
                                        @RequestBody RequestInput input) {
         requestService.create(userId, input);
         return ResponseEntity.ok().build();
+    }
+
+    @RolesAllowed("ROLES_WORKER")
+    @RequestMapping(path = "/users/{userId}/teammates/vacation", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List> getTeammatesVacationsForNexTwoWeeks(@PathVariable Long userId) {
+        List<VacationDay> teammatesVocations = this.requestService.getTeammatesVacationsForNexTwoWeeks(userId);
+        return ResponseEntity.ok(teammatesVocations);
     }
 
     // *** ACTIONS ***
