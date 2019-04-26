@@ -62,7 +62,7 @@ public class EvidenceReportModelFactory {
         float remainingHoursAtYearStart = this.historyLogService.getFromYear(user.getId(), year).stream()
                 .map(HistoryLog::getHours)
                 .filter(hours -> hours > 0)
-                .reduce((a, b) -> a + b)
+                .reduce(Float::sum)
                 .orElse(0f) + this.historyLogService.countRemainingHoursForYear(user.getId(), year - 1);
         return Collections.singletonMap("remainingHoursAtYearStart", DECIMAL_FORMAT.format(remainingHoursAtYearStart));
     }
@@ -89,9 +89,10 @@ public class EvidenceReportModelFactory {
         try {
             LocalDate date = LocalDate.of(year, month, dayOfMonth);
             if (this.holidayService.isWorkingDay(date)) {
-                return this.requestService.getByUserAndDate(user.getId(), date)
+                return this.requestService.getByUserAndDate(user.getId(), date).stream()
                         .filter(req -> req.getStatus() == Request.Status.ACCEPTED)
                         .map(req -> this.getRequestStatus(req.getType()))
+                        .findFirst()
                         .orElse(DECIMAL_FORMAT.format(user.getWorkTime()));
             }
         } catch (DateTimeException ignore) {

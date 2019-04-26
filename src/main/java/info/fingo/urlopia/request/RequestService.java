@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -40,7 +39,7 @@ public class RequestService {
         return requestRepository.findAll(filter, pageable, RequestExcerptProjection.class);
     }
 
-    public Optional<Request> getByUserAndDate(Long userId, LocalDate date) {
+    public List<Request> getByUserAndDate(Long userId, LocalDate date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_FORMAT);
         String formattedDate = formatter.format(date);
         Filter filter = Filter.newBuilder()
@@ -48,8 +47,7 @@ public class RequestService {
                 .and("startDate", Operator.LESS_OR_EQUAL, formattedDate)
                 .and("endDate", Operator.GREATER_OR_EQUAL, formattedDate)
                 .build();
-        List<Request> allRequests = this.requestRepository.findAll(filter);
-        return allRequests.isEmpty() ? Optional.empty() : Optional.of(allRequests.get(0));
+        return this.requestRepository.findAll(filter);
     }
 
     public List<Request> get(Long userId, Integer year) {
