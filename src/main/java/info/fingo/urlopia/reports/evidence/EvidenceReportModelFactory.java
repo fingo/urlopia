@@ -59,11 +59,14 @@ public class EvidenceReportModelFactory {
     }
 
     private Map<String, String> vacationLeaveParams(User user, int year) {
-        float remainingHoursAtYearStart = this.historyLogService.getFromYear(user.getId(), year).stream()
+        float previousYearRemainingHours = this.historyLogService.countRemainingHoursForYear(user.getId(), year - 1);
+        float currentYearAddedHours = this.historyLogService.getFromYear(user.getId(), year).stream()
+                .filter(historyLog -> historyLog.getRequest() == null)
                 .map(HistoryLog::getHours)
                 .filter(hours -> hours > 0)
                 .reduce(Float::sum)
-                .orElse(0f) + this.historyLogService.countRemainingHoursForYear(user.getId(), year - 1);
+                .orElse(0f);
+        float remainingHoursAtYearStart = previousYearRemainingHours + currentYearAddedHours;
         return Collections.singletonMap("remainingHoursAtYearStart", DECIMAL_FORMAT.format(remainingHoursAtYearStart));
     }
 
