@@ -35,11 +35,11 @@ public class Filter {
 
     // STATIC CONTENT
 
-    public static String OR_OPERATOR = "|";
+    public static final String OR_OPERATOR = "|";
 
-    public static String SOFT_OR_OPERATOR = ",";
+    public static final String SOFT_OR_OPERATOR = ",";
 
-    private static Pattern operatorsPattern;
+    private static final Pattern OPERATORS_PATTERN;
 
     static {
         String operatorsPattern = Operator.signs().stream()
@@ -47,7 +47,7 @@ public class Filter {
                 .map(Pattern::quote)
                 .reduce((s1, s2) -> String.format("%s|%s", s1, s2))
                 .orElse("");
-        Filter.operatorsPattern = Pattern.compile("^([\\w._]+?)(" + operatorsPattern + ")([\\w-_,: ąćęłńóśżź]+?)$");
+        OPERATORS_PATTERN = Pattern.compile("^([\\w._]+?)(" + operatorsPattern + ")([\\w-_,: ąĄćĆęĘłŁńŃóÓśŚżŻźŹ]+?)$");
     }
 
     public static Builder newBuilder() {
@@ -73,7 +73,7 @@ public class Filter {
         List<FilterComponent> components = new LinkedList<>();
         String[] oneAttributeFilters = filter.split(Pattern.quote(OR_OPERATOR));
         for(String oneAttributeFilter : oneAttributeFilters) {
-            Matcher matcher = operatorsPattern.matcher(oneAttributeFilter);
+            Matcher matcher = OPERATORS_PATTERN.matcher(oneAttributeFilter);
             if (!matcher.find()) {
                 return Collections.emptyList();
             }
