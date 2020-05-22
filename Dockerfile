@@ -1,4 +1,4 @@
-FROM nimmis/java-centos:openjdk-8-jdk
+FROM openjdk:8-jre
 ENV TZ=Europe/Warsaw
-COPY build/libs/urlopia-0.1.0.jar /urlopia-0.1.0.jar
-CMD java -jar /urlopia-0.1.0.jar
+COPY build/libs/urlopia-*.jar /urlopia.jar
+CMD java -jar /urlopia.jar -Xmx1g
