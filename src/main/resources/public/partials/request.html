@@ -1,12 +1,11 @@
 <div class="modal-header">
-    <h3 class="modal-title">Urlopia</h3>
+    <div ng-controller="WorkerCtrl">
+        <div class="holidays_pool"><strong>{{ 'table.pool_left' | translate}}: {{ worker.holidaysPool.days }}</strong></div>
+        <div class="holidays_pool"><small>{{ 'table.requested_days' | translate}}: {{ worker.pendingRequestsTime.days }}</small></div>
+    </div>
 </div>
 <div class="container">
     <form role="form" name="modalForm">
-        <br>
-        <div ng-controller="WorkerCtrl">
-            <span class="holidays_pool"><b>{{ 'table.pool_left' | translate}}: {{ worker.holidaysPool.days }}</b></span>
-        </div>
         <br>
         <div class="form-group">
             <div class="row">

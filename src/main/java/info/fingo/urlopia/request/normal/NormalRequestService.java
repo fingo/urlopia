@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.DoubleStream;
 
 @Service("normalRequestService")
 @Transactional
@@ -52,7 +53,7 @@ public class NormalRequestService implements RequestTypeService {
         int workingDays = workingDaysCalculator.calculate(requestInput.getStartDate(), requestInput.getEndDate());
         float workingHours =  workingDays * user.getWorkTime();
 
-        this.validateUserPreconditions(user, workingHours);
+        this.ensureUserOwnRequiredHoursNumber(user, workingHours);
         Request request = this.createRequestObject(user, requestInput, workingDays);
         this.validateRequest(request);
 
@@ -62,11 +63,33 @@ public class NormalRequestService implements RequestTypeService {
         publisher.publishEvent(new NormalRequestCreated(request));
     }
 
-    private void validateUserPreconditions(User user, float hoursNeeded) {
-        float hoursRemaining = historyLogService.countRemainingHours(user.getId());
-        if (hoursRemaining < hoursNeeded) {
+    private void ensureUserOwnRequiredHoursNumber(User user, float requiredHours) {
+        double hoursRemaining = historyLogService.countRemainingHours(user.getId());
+        double pendingRequestsHours = countPendingRequestsHours(user);
+        boolean userOwnRequiredHoursNumber =
+                (hoursRemaining - pendingRequestsHours) >= requiredHours;
+        if (!userOwnRequiredHoursNumber) {
             throw new NotEnoughDaysException();
         }
+    }
+
+    private double countPendingRequestsHours(User user) {
+        Long requesterId = user.getId();
+        return requestRepository.findByRequesterId(requesterId).stream()
+                .filter(request -> request.getStatus() == Request.Status.PENDING)
+                .filter(request -> request.getType() == RequestType.NORMAL)
+                .map(request -> request.getWorkingDays() * request.getRequester().getWorkTime())
+                .flatMapToDouble(DoubleStream::of)
+                .sum();
+    }
+
+    public DayHourTime getPendingRequestsTime(Long userId) {
+        User user = userRepository.findOne(userId);
+        double pendingRequestsHours = countPendingRequestsHours(user);
+        float userWorkTime = user.getWorkTime();
+        int days = (int) Math.floor(pendingRequestsHours / userWorkTime);
+        double hours =  Math.round((pendingRequestsHours % userWorkTime) * 100.0) / 100.0;
+        return DayHourTime.of(days, hours);
     }
 
     private Request createRequestObject(User user, RequestInput requestInput, int workingDays) {
