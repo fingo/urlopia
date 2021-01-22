@@ -4,19 +4,29 @@
 
     <!-- WORKER VIEW -->
     <div id="worker_view" class="col-xs-12 col-sm-12 col-md-12">
-        <h3 class="text-center">
-            <b translate="workers_view.days_left" translate-values="{days: worker.holidaysPool.days,
-                             hours: worker.holidaysPool.hours}"></b>
-            <br><br>
-            <span ng-if="worker.ec">
-                <span ng-if=" worker.holidaysPool.workTimeB == 1">
-                {{'employees_view.full_time' | translate}}
+        <div class="text-center">
+            <h3 class="font-weight-bold"
+                translate="workers_view.days_left"
+                translate-values="{days: worker.holidaysPool.days,
+                             hours: worker.holidaysPool.hours}">
+            </h3>
+            <h4 class="text-center"
+                translate="workers_view.pending_request_time"
+                translate-values="{days: worker.pendingRequestsTime.days,
+                             hours: worker.pendingRequestsTime.hours}">
+            </h4>
+            <br>
+            <h3>
+                <span ng-if="worker.ec">
+                    <span ng-if=" worker.holidaysPool.workTimeB == 1">
+                    {{'employees_view.full_time' | translate}}
+                    </span>
+                    <span ng-if=" worker.holidaysPool.workTimeB != 1" translate="workers_view.work_hours"
+                          translate-values="{workTime_a: worker.holidaysPool.workTimeA, workTime_b: worker.holidaysPool.workTimeB}">
+                    </span>
                 </span>
-                <span ng-if=" worker.holidaysPool.workTimeB != 1" translate="workers_view.work_hours"
-                      translate-values="{workTime_a: worker.holidaysPool.workTimeA, workTime_b: worker.holidaysPool.workTimeB}">
-                </span>
-            </span>
-        </h3>
+            </h3>
+        </div>
         <div class="row" ng-controller="modalCtrl">
             <div class="col-xs-6 text-left">
                 <button type="button" class="btn btn-primary" ng-click="open()" ng-show="showRequestButton">

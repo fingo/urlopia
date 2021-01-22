@@ -8,12 +8,14 @@ function getTimeOffsetByWorkTimeText (hours, workTime) {
 }
 
 app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session, notifyService) {
+    var userId = Session.data.userId;
     var isLeader = Session.data.userRoles.indexOf("ROLES_LEADER") !== -1;
 
     // WORKER VIEW
     $scope.worker = {};
-    $scope.worker.ec = API.setUrl('/api/users/contract').get({userId: Session.data.userId});
-    $scope.worker.holidaysPool = API.setUrl('/api/users/' + Session.data.userId + '/days/remaining').get();
+    $scope.worker.ec = API.setUrl('/api/users/contract').get({userId: userId});
+    $scope.worker.holidaysPool = API.setUrl('/api/users/' + userId + '/days/remaining').get();
+    $scope.worker.pendingRequestsTime = API.setUrl(`/api/users/${userId}/requests/pendingTime`).get();
     $scope.worker.isLoading = false;
     $scope.worker.displayed = [];
     $scope.worker.currentRequest = null;
@@ -31,7 +33,7 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
         var sortColumn = sort.predicate || 'startDate';
         var sortDirection = (sort.reverse || !sort.predicate) ? 'DESC' : 'ASC';
 
-        var server = API.setUrl('/api/users/' + Session.data.userId + '/requests?page=:page&size=:size&sort=:sort&sort=id,ASC', {
+        var server = API.setUrl('/api/users/' + userId + '/requests?page=:page&size=:size&sort=:sort&sort=id,ASC', {
             page: selectedPage,
             size: entriesPerPage,
             sort: sortColumn + ',' + sortDirection
@@ -79,7 +81,7 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
             var sortColumn = sort.predicate || 'request.created';
             var sortDirection = (sort.reverse || !sort.predicate) ? 'DESC' : 'ASC';
 
-            var server = API.setUrl('/api/users/' + Session.data.userId + '/acceptances?page=:page&size=:size&sort=:sort&sort=id,ASC', {
+            var server = API.setUrl('/api/users/' + userId + '/acceptances?page=:page&size=:size&sort=:sort&sort=id,ASC', {
                 page: selectedPage,
                 size: entriesPerPage,
                 sort: sortColumn + ',' + sortDirection
@@ -123,7 +125,7 @@ app.controller('WorkerCtrl', function ($scope, $translate, updater, API, Session
 
     // TEAMMATES VOCATIONS
     $scope.teammates = {};
-    $scope.teammates.vacation = API.setUrl('/api/users/' + Session.data.userId + '/teammates/vacation').query();
+    $scope.teammates.vacation = API.setUrl('/api/users/' + userId + '/teammates/vacation').query();
 
 });
 

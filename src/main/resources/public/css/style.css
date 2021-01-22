@@ -18,6 +18,10 @@ body {
     width: 100%;
 }
 
+.font-weight-bold {
+    font-weight: bold;
+}
+
 .table > tbody > tr > td {
     vertical-align: middle;
     text-align: center;

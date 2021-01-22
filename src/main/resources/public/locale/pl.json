@@ -88,6 +88,7 @@
     "leader": "Rozpatrujący",
     "date": "Termin",
     "pool_left": "Pozostało dni",
+    "requested_days": "Rozpatrywane dni",
     "type": "Typ",
     "status": "Status",
     "reason": "Powód",
@@ -169,7 +170,8 @@
     }
   },
   "workers_view": {
-    "days_left": "Pozostało {{days}} dni {{hours}} godzin urlopu.",
+    "days_left": "Pozostały urlop: {{days}} d {{hours}} h",
+    "pending_request_time": "Złożone wnioski: {{days}} d {{hours}} h",
     "work_hours": "Wymiar etatu {{workTime_a}}/{{workTime_b}}"
   },
   "history_view": {

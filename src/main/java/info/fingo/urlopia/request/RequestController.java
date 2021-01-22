@@ -2,6 +2,8 @@ package info.fingo.urlopia.request;
 
 import info.fingo.urlopia.config.authentication.AuthInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
+import info.fingo.urlopia.request.normal.DayHourTime;
+import info.fingo.urlopia.request.normal.NormalRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,9 +21,13 @@ public class RequestController {
 
     private final RequestService requestService;
 
+    private final NormalRequestService normalRequestService;
+
     @Autowired
-    public RequestController(RequestService requestService) {
+    public RequestController(RequestService requestService,
+                             NormalRequestService normalRequestService) {
         this.requestService = requestService;
+        this.normalRequestService = normalRequestService;
     }
 
     @RolesAllowed("ROLES_WORKER")
@@ -42,6 +48,15 @@ public class RequestController {
         Filter filter = Filter.from(filters);
         Page<RequestExcerptProjection> requests = requestService.get(filter, pageable);
         return ResponseEntity.ok(requests);
+    }
+
+    @RolesAllowed("ROLES_ADMIN")
+    @RequestMapping(path = "/users/{userId}/requests/pendingTime",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DayHourTime> getPendingRequestsTime(@PathVariable Long userId) {
+        DayHourTime pendingRequestsTime = normalRequestService.getPendingRequestsTime(userId);
+        return ResponseEntity.ok(pendingRequestsTime);
     }
 
     @RolesAllowed("ROLES_WORKER")

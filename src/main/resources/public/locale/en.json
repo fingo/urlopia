@@ -88,6 +88,7 @@
     "leader": "Decider",
     "date": "Days off",
     "pool_left": "Days left",
+    "requested_days": "Days requested",
     "type": "Type",
     "status": "Status",
     "reason": "Reason",
@@ -169,7 +170,8 @@
     }
   },
   "workers_view": {
-    "days_left": "{{days}} days {{hours}} hours of vacation left.",
+    "days_left": "Remaining vacation: {{days}} d {{hours}} h",
+    "pending_request_time": "Requested: {{days}} d {{hours}} h",
     "work_hours": "Work hours {{workTime_a}}/{{workTime_b}}"
   },
   "history_view": {
