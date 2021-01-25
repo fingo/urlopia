@@ -76,7 +76,7 @@ public class NormalRequestService implements RequestTypeService {
     private double countPendingRequestsHours(User user) {
         Long requesterId = user.getId();
         return requestRepository.findByRequesterId(requesterId).stream()
-                .filter(request -> request.getStatus() == Request.Status.PENDING)
+                .filter(Request::isPending)
                 .filter(Request::isNormal)
                 .map(request -> request.getWorkingDays() * request.getRequester().getWorkTime())
                 .flatMapToDouble(DoubleStream::of)

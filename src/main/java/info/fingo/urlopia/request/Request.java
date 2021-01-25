@@ -177,8 +177,14 @@ public class Request {
                 && !this.endDate.isBefore(request.startDate);
     }
 
+    @Transient
     public boolean isNormal() {
         return this.type == RequestType.NORMAL;
+    }
+
+    @Transient
+    public boolean isPending() {
+        return this.status == Status.PENDING;
     }
 
     public interface TypeInfo { // TODO: separate TypeInfo interface
