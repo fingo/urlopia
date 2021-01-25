@@ -105,7 +105,7 @@ public class HistoryLogService {
                 if (log.getCreated().getYear() <= year) {
                     hours += log.getHours();
                 }
-            } else if (request.getType() == RequestType.NORMAL) {
+            } else if (request.isNormal()) {
                 LocalDate startDate = request.getStartDate();
                 LocalDate endDate = request.getEndDate();
                 if (startDate.getYear() <= year && endDate.getYear() <= year) {
