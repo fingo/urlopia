@@ -177,6 +177,10 @@ public class Request {
                 && !this.endDate.isBefore(request.startDate);
     }
 
+    public boolean isNormal() {
+        return this.type == RequestType.NORMAL;
+    }
+
     public interface TypeInfo { // TODO: separate TypeInfo interface
         String getInfo();
         String getName();

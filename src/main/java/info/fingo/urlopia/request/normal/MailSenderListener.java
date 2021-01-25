@@ -121,7 +121,7 @@ class MailSenderListener {
     }
 
     public static boolean validateRequest(Request request) {
-        return request.getType() == RequestType.NORMAL;
+        return request.isNormal();
     }
 
 }
