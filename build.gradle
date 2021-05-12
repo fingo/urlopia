@@ -6,11 +6,17 @@ plugins {
     id "com.gorylenko.gradle-git-properties" version "1.4.17"
 }
 
+ext {
+    mainViewModule = project(":view.angular")
+}
+
 configurations {
     driver
 }
 
-project.version = "1.1.1"
+allprojects {
+    project.version = "1.1.1"
+}
 
 jacoco {
     toolVersion = "0.7.1.201405082137"
@@ -37,7 +43,11 @@ jar {
     manifest {
         attributes "Main-Class": "info.fingo.urlopia.UrlopiaApplication"
     }
+    from("${mainViewModule.projectDir}/public") {
+        into "public"
+    }
 }
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -76,9 +86,12 @@ springBoot  {
     buildInfo()
 }
 
-bootRun {
-    jvmArgs = [
-            "-Dspring.devtools.restart.enabled=false",
-    ]
-    addResources = true
+import org.springframework.boot.gradle.run.BootRunTask
+task bootRunWithView(type: BootRunTask) {
+    group = "application"
+    main = "info.fingo.urlopia.UrlopiaApplication"
+
+    def defaultClasspath = sourceSets.main.runtimeClasspath
+    def viewFiles = files("${mainViewModule.projectDir}")
+    classpath = defaultClasspath + viewFiles
 }
