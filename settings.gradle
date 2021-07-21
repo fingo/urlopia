@@ -1,1 +1,2 @@
 include 'view.angular'
+include 'view.react'
