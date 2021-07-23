@@ -5,12 +5,5 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.PRECONDITION_FAILED, reason = "REQUEST_OVERLAPPING")
 public class RequestOverlappingException extends RuntimeException {
-    String code = "REQUEST_OVERLAPPING";
-
-    public RequestOverlappingException() {
-    }
-
-    public String getCode() {
-        return code;
-    }
+    public RequestOverlappingException() {}
 }
