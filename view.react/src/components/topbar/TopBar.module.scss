@@ -1,0 +1,37 @@
+@import "src/global-styles/color-variables";
+
+.topBar {
+  background-color: $BASE-COLOR;
+
+  img {
+    width: 100px;
+    height: 45.5px;
+  }
+}
+
+.mobileRightSide {
+  padding: 0.5rem;
+  display: flex;
+}
+
+.hamburger {
+  border: none;
+  outline: none;
+  box-shadow: none !important;
+}
+
+.button {
+  border: none;
+  background-color: inherit;
+  outline: none;
+}
+
+.icon {
+  color: white;
+  font-size: 1.5rem;
+  margin: 0 0.5rem;
+
+  &:hover {
+    color: $HOVER-COLOR;
+  }
+}
