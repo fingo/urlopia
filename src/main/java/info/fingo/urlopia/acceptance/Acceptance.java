@@ -14,7 +14,7 @@ public class Acceptance {
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "acceptances_id_seq")
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(nullable = false)
     private Request request;
 

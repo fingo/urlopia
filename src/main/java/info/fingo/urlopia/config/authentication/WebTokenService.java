@@ -19,10 +19,6 @@ public class WebTokenService {
         webToken = WebToken.fromRequest(request, SECRET_KEY);
     }
 
-    public void authorize(String token) throws Exception{
-        webToken = WebToken.fromWebToken(token, SECRET_KEY);
-    }
-
     public List<String> getRoles() {
         return webToken.getRoles();
     }

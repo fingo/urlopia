@@ -87,13 +87,13 @@ public class AuthInterceptor implements HandlerInterceptor {
                 final RolesAllowed rolesAllowedAnnotation = handlerMethod.getMethodAnnotation(RolesAllowed.class);
                 roles = Arrays.asList(rolesAllowedAnnotation.value());
 
-                if (roles == null)
-                    LOGGER.error("No roles defined for this resource " + handler.toString());
+                if (roles.isEmpty())
+                    LOGGER.error("No roles defined for this resource " + handler);
             } else {
-                LOGGER.error("No roles defined, deny acces " + handler.toString());
+                LOGGER.error("No roles defined, deny access " + handler);
             }
         } else {
-            LOGGER.error("Unknown handler mehod");
+            LOGGER.error("Unknown handler method");
         }
 
         // proceed with the HandlerMethod

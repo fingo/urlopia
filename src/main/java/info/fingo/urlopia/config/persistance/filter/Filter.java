@@ -109,13 +109,6 @@ public class Filter {
             this.and();
         }
 
-        public Builder and(Filter filter) {
-            List<List<FilterComponent>> components = filter.components;
-            andComponents.addAll(components);
-            return this.and();
-        }
-
-
         public Builder and(List<FilterComponent> components) {
             this.and();
             components.forEach(this::or);

@@ -182,14 +182,6 @@ public class MailParser {
         return endDate;
     }
 
-    public boolean isCorrect() {
-        return correct;
-    }
-
-    public String getEmailContent() {
-        return emailContent;
-    }
-
     public long getId() {
         return id;
     }

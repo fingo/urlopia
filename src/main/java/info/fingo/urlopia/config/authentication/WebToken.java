@@ -56,21 +56,7 @@ public class WebToken {
         return userId;
     }
 
-    Date getIssuedAt() {
-        return issuedAt;
-    }
-
-    Date getExpiration() {
-        return expiration;
-    }
-
     List<String> getRoles() {
         return roles;
-    }
-
-    private static class WebTokenGenerationException extends Exception {
-        WebTokenGenerationException(NamingException exception) {
-            super(exception);
-        }
     }
 }
