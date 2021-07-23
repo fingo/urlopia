@@ -1,22 +1,27 @@
 plugins {
     id "java"
     id "jacoco"
-    id "org.springframework.boot" version "1.5.7.RELEASE"
+    id "org.springframework.boot" version "2.5.2"
     id "org.sonarqube" version "2.5"
     id "com.gorylenko.gradle-git-properties" version "1.4.17"
 }
 
-ext {
-    mainViewModule = project(":view.angular")
-}
+project.ext.set("mainViewModule", project(":view.angular"))
+
 
 allprojects {
     project.version = "1.1.1"
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
+}
+
+
 jacoco {
     toolVersion = "0.7.1.201405082137"
-    reportsDir = file("$buildDir/customJacocoReportDir")
+    reportsDirectory.set(layout.buildDirectory.dir("$buildDir/customJacocoReportDir"))
 }
 
 sonarqube {
@@ -35,17 +40,12 @@ sonarqube {
 }
 
 jar {
-    baseName = 'urlopia'
-    manifest {
-        attributes "Main-Class": "info.fingo.urlopia.UrlopiaApplication"
-    }
+    archivesBaseName = 'urlopia'
+    manifest.attributes.put("Main-Class", "info.fingo.urlopia.UrlopiaApplication")
     from("${mainViewModule.projectDir}/public") {
         into "public"
     }
 }
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -53,37 +53,39 @@ repositories {
 }
 
 dependencies {
-    compile('javax.ejb:ejb-api:3.0')
-    compile('javax.jms:jms-api:1.1-rev-1')
-    compile('javax.resource:javax.resource-api:1.7')
-    compile('javax.servlet.jsp:jsp-api:2.2')
-    compile('javax.servlet.jsp.jstl:javax.servlet.jsp.jstl-api:1.2.1')
-    compile('javax.transaction:jta:1.1')
-    compile('org.hibernate:hibernate-java8:5.0.12.Final')
-    compile('org.springframework.boot:spring-boot-devtools')
-    compile('org.springframework.boot:spring-boot-starter-web')
-    compile('org.springframework.boot:spring-boot-starter-data-jpa')
-    compile('org.springframework.boot:spring-boot-starter-mail')
-    compile('io.jsonwebtoken:jjwt:0.6.0')
-    compile('postgresql:postgresql:9.1-901.jdbc4')
-    compile('com.github.jknack:handlebars:4.0.6')
-    compile('org.apache.poi:poi:4.0.1')
-    compile('org.apache.poi:poi-ooxml:4.0.1')
-    compile("org.springframework.boot:spring-boot-starter-actuator")
-    compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.1')
+    implementation platform("org.springframework.boot:spring-boot-dependencies:2.5.2")
+    implementation('javax.ejb:ejb-api:3.0')
+    implementation('javax.jms:jms-api:1.1-rev-1')
+    implementation('javax.resource:javax.resource-api:1.7')
+    implementation('javax.servlet.jsp:jsp-api:2.2')
+    implementation('javax.servlet.jsp.jstl:javax.servlet.jsp.jstl-api:1.2.1')
+    implementation('javax.transaction:jta:1.1')
+    implementation('org.hibernate:hibernate-java8:5.0.12.Final')
+    implementation('org.springframework.boot:spring-boot-devtools')
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    implementation('org.springframework.boot:spring-boot-starter-mail')
+    implementation('io.jsonwebtoken:jjwt:0.6.0')
+    implementation('com.github.jknack:handlebars:4.0.6')
+    implementation('org.apache.poi:poi:4.0.1')
+    implementation('org.apache.poi:poi-ooxml:4.0.1')
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.1')
+    runtimeOnly('postgresql:postgresql:9.1-901.jdbc4')
 
-    testCompile('org.springframework.boot:spring-boot-starter-test')
-    testCompile('org.mockito:mockito-core:1.+')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.mockito:mockito-core:1.+')
 }
 
 springBoot  {
     buildInfo()
 }
 
-import org.springframework.boot.gradle.run.BootRunTask
-task bootRunWithView(type: BootRunTask) {
+
+import org.springframework.boot.gradle.tasks.run.BootRun
+task bootRunWithView(type: BootRun) {
     group = "application"
-    main = "info.fingo.urlopia.UrlopiaApplication"
+    mainClass.set("info.fingo.urlopia.UrlopiaApplication")
 
     def defaultClasspath = sourceSets.main.runtimeClasspath
     def viewFiles = files("${mainViewModule.projectDir}")

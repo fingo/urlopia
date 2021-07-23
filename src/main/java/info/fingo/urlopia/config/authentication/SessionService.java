@@ -3,18 +3,23 @@ package info.fingo.urlopia.config.authentication;
 import info.fingo.urlopia.team.Team;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
 public class SessionService {
-    private static final Logger LOGGER = Logger.getLogger(SessionService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionService.class);
+
 
     private final LDAPConnectionService ldapConnectionService;
 
@@ -80,10 +85,14 @@ public class SessionService {
         return teams;
     }
 
+
     public String getAppVersion() {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        return buildProperties.getVersion() + "-" + gitProperties.getCommitId().substring(0,6)
-                + " (" + formatter.format(buildProperties.getTime()) + ")";
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+                .ofPattern("yyyy-MM-dd HH:mm")
+                .withZone(ZoneId.systemDefault());
+        Instant time = buildProperties.getTime();
+        return buildProperties.getVersion() + "-" + gitProperties.getCommitId().substring(0, 6)
+                + " (" + dateTimeFormatter.format(time) + ")";
     }
 
 }

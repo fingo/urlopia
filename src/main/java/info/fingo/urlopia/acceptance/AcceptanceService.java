@@ -51,7 +51,7 @@ public class AcceptanceService {
     // *** ACTIONS ***
 
     public void accept(Long acceptanceId) {
-        Acceptance acceptance = acceptanceRepository.findOne(acceptanceId);
+        Acceptance acceptance = acceptanceRepository.findById(acceptanceId).orElseThrow();
         this.validateStatus(acceptance.getStatus(), Acceptance.Status.PENDING);
         acceptance = this.changeStatus(acceptance, Acceptance.Status.ACCEPTED);
         publisher.publishEvent(new AcceptanceAccepted(acceptance));
@@ -67,7 +67,7 @@ public class AcceptanceService {
     }
 
     public void reject(Long acceptanceId) {
-        Acceptance acceptance = acceptanceRepository.findOne(acceptanceId);
+        Acceptance acceptance = acceptanceRepository.findById(acceptanceId).orElseThrow();
         this.validateStatus(acceptance.getStatus(), Acceptance.Status.PENDING);
         acceptance = this.changeStatus(acceptance, Acceptance.Status.REJECTED);
         publisher.publishEvent(new AcceptanceRejected(acceptance));
@@ -75,7 +75,7 @@ public class AcceptanceService {
     }
 
     public void expire(Long acceptanceId) {
-        Acceptance acceptance = acceptanceRepository.findOne(acceptanceId);
+        Acceptance acceptance = acceptanceRepository.findById(acceptanceId).orElseThrow();
         if (acceptance.getStatus() == Acceptance.Status.PENDING) {
             this.changeStatus(acceptance, Acceptance.Status.EXPIRED);
         }

@@ -1,7 +1,6 @@
 package info.fingo.urlopia.config.persistance.filter;
 
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.domain.Specifications;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -29,8 +28,8 @@ public class Filter {
                             String value = component.getValue();
                             return operator.<E>generateSpecification(key, value);
                         })
-                        .reduce(null, (spec1, spec2) -> Specifications.where(spec1).or(spec2)))
-                .reduce(null, (spec1, spec2) -> Specifications.where(spec1).and(spec2));
+                        .reduce(null, (spec1, spec2) -> Specification.where(spec1).or(spec2)))
+                .reduce(null, (spec1, spec2) -> Specification.where(spec1).and(spec2));
     }
 
     // STATIC CONTENT

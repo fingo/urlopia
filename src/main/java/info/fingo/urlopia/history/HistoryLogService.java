@@ -60,8 +60,8 @@ public class HistoryLogService {
     }
 
     public void create(HistoryLogInput historyLog, Long targetUserId, Long deciderId) {
-        User targetUser = userRepository.findOne(targetUserId);
-        User decider = userRepository.findOne(deciderId);
+        User targetUser = userRepository.findById(targetUserId).orElseThrow();
+        User decider = userRepository.findById(deciderId).orElseThrow();
         HistoryLog prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByIdDesc(targetUserId);
         Float hoursChange = historyLog.getHours();
         String comment = Optional.ofNullable(historyLog.getComment()).orElse("");
@@ -77,8 +77,8 @@ public class HistoryLogService {
     }
 
     public void create(Request request, Float hours, String comment, Long targetUserId, Long deciderId) {
-        User targetUser = userRepository.findOne(targetUserId);
-        User decider = userRepository.findOne(deciderId);
+        User targetUser = userRepository.findById(targetUserId).orElseThrow();
+        User decider = userRepository.findById(deciderId).orElseThrow();
         HistoryLog prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByIdDesc(targetUserId);
         HistoryLog historyLog = new HistoryLog(request, targetUser, decider, hours, comment, prevHistoryLog);
         historyLogRepository.save(historyLog);
@@ -88,7 +88,7 @@ public class HistoryLogService {
 
     public WorkTimeResponse countRemainingDays(Long userId) {
         Float hours = historyLogRepository.sumHours(userId);
-        Float workTime = userRepository.findOne(userId).getWorkTime();
+        Float workTime = userRepository.findById(userId).orElseThrow().getWorkTime();
         return new WorkTimeResponse(workTime, hours);
     }
 

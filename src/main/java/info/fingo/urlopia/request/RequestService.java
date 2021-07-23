@@ -100,7 +100,7 @@ public class RequestService {
     // *** ACTIONS ***
 
     public void accept(Long requestId, Long deciderId) {
-        Request request = requestRepository.findOne(requestId);
+        Request request = requestRepository.findById(requestId).orElseThrow();
         RequestTypeService service = request.getType().getService();
         service.accept(request);
 
@@ -112,13 +112,13 @@ public class RequestService {
     }
 
     public void reject(Long requestId) {
-        Request request = requestRepository.findOne(requestId);
+        Request request = requestRepository.findById(requestId).orElseThrow();
         RequestTypeService service = request.getType().getService();
         service.reject(request);
     }
 
     public void cancel(Long requestId, Long deciderId) {
-        Request request = requestRepository.findOne(requestId);
+        Request request = requestRepository.findById(requestId).orElseThrow();
         RequestTypeService service = request.getType().getService();
         Request.Status previousStatus = request.getStatus();
         service.cancel(request);

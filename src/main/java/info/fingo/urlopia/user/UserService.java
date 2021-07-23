@@ -31,7 +31,7 @@ public class UserService {
     }
 
     public User get(Long userId) {
-        return userRepository.findOne(userId);
+        return userRepository.findById(userId).orElseThrow();
     }
 
     public User get(String userMail) {
@@ -41,13 +41,13 @@ public class UserService {
     // *** ACTIONS ***
 
     void setLanguage(Long userId, String language) {
-        User user = userRepository.findOne(userId);
+        User user = userRepository.findById(userId).orElseThrow();
         user.setLang(language);
         userRepository.save(user);
     }
 
     boolean isEC(Long userId) {
-        User user = userRepository.findOne(userId);
+        User user = userRepository.findById(userId).orElseThrow();
         return user.getEc();
     }
 
@@ -56,7 +56,7 @@ public class UserService {
                 .map(Float::parseFloat)
                 .reduce((a, b) -> a / b)
                 .orElse(1f);    // TODO: thing about throwing runtime exception
-        User user = userRepository.findOne(userId);
+        User user = userRepository.findById(userId).orElseThrow();
         user.setWorkTime(workTime);
         userRepository.save(user);
     }
@@ -67,7 +67,7 @@ public class UserService {
     }
 
     public Set<User> getLeaders(Long userId) {
-        User user = userRepository.findOne(userId);
+        User user = userRepository.findById(userId).orElseThrow();
         return user.getTeams().stream()
                 .map(Team::getLeader)
                 .collect(Collectors.toSet());

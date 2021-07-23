@@ -61,12 +61,12 @@ public class HolidayService {
     @Scheduled(cron = "1 0 0 1 1 *")
     protected void synchronizeDatabase() {
         deleteYear(LocalDate.now().getYear() - 1);
-        holidayRepository.save(generateHolidaysList(LocalDate.now().getYear() + 1));
+        holidayRepository.saveAll(generateHolidaysList(LocalDate.now().getYear() + 1));
     }
 
     public void deleteYear(int year) {
         List<Holiday> toDelete = holidayRepository.findByDateBetween(LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31));
-        holidayRepository.delete(toDelete);
+        holidayRepository.deleteAll(toDelete);
     }
 
     //public for convenience of testing

@@ -1,6 +1,6 @@
 package info.fingo.urlopia.config;
 
-import org.springframework.boot.autoconfigure.web.ErrorController;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,9 +39,5 @@ public class WebConfig extends WebMvcConfigurerAdapter {
             return "forward:/index.html";
         }
 
-        @Override
-        public String getErrorPath() {
-            return PATH;
-        }
     }
 }

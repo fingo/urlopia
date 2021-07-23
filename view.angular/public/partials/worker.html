@@ -142,7 +142,7 @@
             <div ng-repeat="vacationDay in teammates.vacation"
                  class="thumbnail"
                  style="display: inline-block; width: 200px; height: 200px; text-align: center; overflow: auto; margin: 5px">
-                <h4>{{vacationDay.date[0]}}-{{("0" + vacationDay.date[1]).slice(-2)}}-{{("0" + vacationDay.date[2]).slice(-2)}}</h4>
+                <h4>{{vacationDay.date}}</h4>
                 <hr>
                 <ul style="list-style: none">
                     <li ng-repeat="userName in vacationDay.userNames">{{userName}}</li>

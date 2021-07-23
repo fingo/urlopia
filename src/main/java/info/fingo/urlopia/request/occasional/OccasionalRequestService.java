@@ -40,7 +40,7 @@ public class OccasionalRequestService implements RequestTypeService {
 
     @Override
     public void create(Long userId, RequestInput requestInput) {
-        User user = userRepository.findOne(userId);
+        User user = userRepository.findById(userId).orElseThrow();
         int workingDays = workingDaysCalculator.calculate(requestInput.getStartDate(), requestInput.getEndDate());
 
         Request request = this.createRequestObject(user, requestInput, workingDays);

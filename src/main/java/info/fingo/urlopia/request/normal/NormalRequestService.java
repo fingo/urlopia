@@ -49,7 +49,7 @@ public class NormalRequestService implements RequestTypeService {
 
     @Override
     public void create(Long userId, RequestInput requestInput) {
-        User user = userRepository.findOne(userId);
+        User user = userRepository.findById(userId).orElseThrow();
         int workingDays = workingDaysCalculator.calculate(requestInput.getStartDate(), requestInput.getEndDate());
         float workingHours =  workingDays * user.getWorkTime();
 
@@ -84,7 +84,7 @@ public class NormalRequestService implements RequestTypeService {
     }
 
     public DayHourTime getPendingRequestsTime(Long userId) {
-        User user = userRepository.findOne(userId);
+        User user = userRepository.findById(userId).orElseThrow();
         double pendingRequestsHours = countPendingRequestsHours(user);
         float userWorkTime = user.getWorkTime();
         int days = (int) Math.floor(pendingRequestsHours / userWorkTime);
