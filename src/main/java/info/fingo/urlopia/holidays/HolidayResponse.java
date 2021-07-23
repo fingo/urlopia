@@ -11,11 +11,6 @@ public class HolidayResponse {
 
     }
 
-    public HolidayResponse(String name, long date) {
-        this.name = name;
-        this.date = date;
-    }
-
     public HolidayResponse(Holiday holiday) {
         this.name = holiday.getName();
         this.date = holiday.getDate().atStartOfDay(ZoneId.systemDefault()).toEpochSecond() * 1000;
