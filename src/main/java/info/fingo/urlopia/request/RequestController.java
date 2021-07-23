@@ -50,7 +50,7 @@ public class RequestController {
         return ResponseEntity.ok(requests);
     }
 
-    @RolesAllowed("ROLES_ADMIN")
+    @RolesAllowed("ROLES_WORKER")
     @RequestMapping(path = "/users/{userId}/requests/pendingTime",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
