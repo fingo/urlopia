@@ -67,7 +67,7 @@ public class MailParser {
             return;
         }
 
-        isReply = subject.toLowerCase().matches(".*(re:|odp.:|odp:).*");
+        isReply = subject.toLowerCase().matches(".*(re:|odp.:|odp:|odpowiedź:|reply:|response:).*");
         if (isReply) {
             int b1 = subject.indexOf('[');
             int b2 = subject.indexOf(']');
