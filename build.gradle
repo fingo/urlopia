@@ -1,6 +1,7 @@
 plugins {
-    id "java"
+    id "groovy"
     id "jacoco"
+    id "java"
     id "org.springframework.boot" version "2.5.2"
     id "org.sonarqube" version "2.5"
     id "com.gorylenko.gradle-git-properties" version "1.4.17"
@@ -20,7 +21,7 @@ java {
 
 
 jacoco {
-    toolVersion = "0.7.1.201405082137"
+    toolVersion = "0.8.7"
     reportsDirectory.set(layout.buildDirectory.dir("$buildDir/customJacocoReportDir"))
 }
 
@@ -73,8 +74,12 @@ dependencies {
     implementation('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.1')
     runtimeOnly('postgresql:postgresql:9.1-901.jdbc4')
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test')
-    testImplementation('org.mockito:mockito-core:1.+')
+    testImplementation('org.spockframework:spock-core:2.0-groovy-3.0')
+    testImplementation('org.codehaus.groovy:groovy')
+}
+
+test {
+    useJUnitPlatform()
 }
 
 springBoot  {
