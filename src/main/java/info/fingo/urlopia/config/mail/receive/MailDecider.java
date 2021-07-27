@@ -7,6 +7,7 @@ import info.fingo.urlopia.request.*;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,18 +23,28 @@ public class MailDecider {
 
     private final MailBot mailBot;
 
+    private final String mailBotAddress;
+
     @Autowired
-    public MailDecider(UserService userService, RequestService requestService, AcceptanceService acceptanceService,
-                       MailParser mailParser, MailBot mailBot) {
+    public MailDecider(UserService userService,
+                       RequestService requestService,
+                       AcceptanceService acceptanceService,
+                       MailParser mailParser,
+                       MailBot mailBot,
+                       @Value("${mails.bot}") String mailBotAddress) {
         this.userService = userService;
         this.requestService = requestService;
         this.acceptanceService = acceptanceService;
         this.mailParser = mailParser;
         this.mailBot = mailBot;
+        this.mailBotAddress = mailBotAddress;
     }
 
     public void resolve(Mail mail) {
         String senderMail = mail.getSenderAddress();
+        if (senderMail.equals(this.mailBotAddress)){
+            return;
+        }
         User sender = userService.get(senderMail);
 
         if (sender == null) {
