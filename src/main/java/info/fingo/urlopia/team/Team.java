@@ -64,7 +64,7 @@ public class Team {
     }
 
     public Set<User> getUsers() {
-        return users;
+        return Set.copyOf(users);
     }
 
     public void setUsers(Set<User> users) {
