@@ -19,11 +19,13 @@ public enum OccasionalType implements Request.TypeInfo {
         this.info = info;
         this.durationDays = durationDays;
     }
-
+    
+    @Override
     public String getName() {
         return this.name();
     }
 
+    @Override
     public String getInfo() {
         return info;
     }

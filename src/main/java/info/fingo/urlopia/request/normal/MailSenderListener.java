@@ -6,8 +6,6 @@ import info.fingo.urlopia.acceptance.events.AcceptanceRejected;
 import info.fingo.urlopia.config.mail.send.MailNotificator;
 import info.fingo.urlopia.config.mail.send.MailStorage;
 import info.fingo.urlopia.config.mail.send.MailTemplate;
-import info.fingo.urlopia.request.Request;
-import info.fingo.urlopia.request.RequestType;
 import info.fingo.urlopia.request.normal.events.NormalRequestAccepted;
 import info.fingo.urlopia.request.normal.events.NormalRequestCanceled;
 import info.fingo.urlopia.user.User;
@@ -16,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-
-import java.util.Set;
 
 @Async
 @Component("normalMailSenderListener")
@@ -32,8 +28,10 @@ class MailSenderListener {
     private final UserService userService;
 
     @Autowired
-    public MailSenderListener(MailNotificator mailNotificator, MailStorage mailStorage,
-                              MailTemplates mailTemplates, UserService userService) {
+    public MailSenderListener(MailNotificator mailNotificator,
+                              MailStorage mailStorage,
+                              MailTemplates mailTemplates,
+                              UserService userService) {
         this.mailNotificator = mailNotificator;
         this.mailStorage = mailStorage;
         this.mailTemplates = mailTemplates;
@@ -42,86 +40,64 @@ class MailSenderListener {
 
     @EventListener(condition = "#normalRequestAccepted.request.requester.ec")
     public void requestAccepted_storage(NormalRequestAccepted normalRequestAccepted) {
-        Request request = normalRequestAccepted.getRequest();
-        MailTemplate template = mailTemplates.requestAcceptedAdmin(request);
-        mailStorage.store(template);
+        var request = normalRequestAccepted.request();
+        var mailTemplate = mailTemplates.requestAcceptedAdmin(request);
+        mailStorage.store(mailTemplate);
     }
 
     @EventListener(condition = "!#normalRequestAccepted.request.requester.ec")
     public void requestAccepted_admins(NormalRequestAccepted normalRequestAccepted) {
-        Request request = normalRequestAccepted.getRequest();
-        MailTemplate template = mailTemplates.requestAcceptedAdmin(request);
-
-        Set<User> admins = userService.getAdmins();
-        admins.forEach(admin -> {
-            String recipientName = admin.getFirstName() + " " + admin.getLastName();
-            String recipientAddress = admin.getMail();
-            mailNotificator.notify(template, recipientAddress, recipientName);
-        });
+        var request = normalRequestAccepted.request();
+        var mailTemplate = mailTemplates.requestAcceptedAdmin(request);
+        userService.getAdmins().forEach(admin -> notify(mailTemplate, admin));
     }
 
     @EventListener
     public void requestAccepted_requester(NormalRequestAccepted normalRequestAccepted) {
-        Request request = normalRequestAccepted.getRequest();
-        User requester = request.getRequester();
-        MailTemplate template = mailTemplates.requestAcceptedRequester(request);
-
-        String recipientName = requester.getFirstName() + " " + requester.getLastName();
-        String recipientAddress = requester.getMail();
-        mailNotificator.notify(template, recipientAddress, recipientName);
+        var request = normalRequestAccepted.request();
+        var requester = request.getRequester();
+        var mailTemplate = mailTemplates.requestAcceptedRequester(request);
+        notify(mailTemplate, requester);
     }
 
     @EventListener
     public void requestCanceled_leader(NormalRequestCanceled normalRequestCanceled) {
-        Request request = normalRequestCanceled.getRequest();
-        MailTemplate template = mailTemplates.requestCanceledLeader(request);
-
+        var request = normalRequestCanceled.request();
+        var mailTemplate = mailTemplates.requestCanceledLeader(request);
         request.getAcceptances().stream()
                 .map(Acceptance::getLeader)
-                .forEach(leader -> {
-                    String recipientName = leader.getFirstName() + " " + leader.getLastName();
-                    String recipientAddress = leader.getMail();
-                    mailNotificator.notify(template, recipientAddress, recipientName);
-                });
+                .forEach(leader -> notify(mailTemplate, leader));
     }
 
     @EventListener
     public void requestCanceled_requester(NormalRequestCanceled normalRequestCanceled) {
-        Request request = normalRequestCanceled.getRequest();
-        User requester = request.getRequester();
-        MailTemplate template = mailTemplates.requestCanceledRequester(request);
-
-        String recipientName = requester.getFirstName() + " " + requester.getLastName();
-        String recipientAddress = requester.getMail();
-        mailNotificator.notify(template, recipientAddress, recipientName);
+        var request = normalRequestCanceled.request();
+        var requester = request.getRequester();
+        var mailTemplate = mailTemplates.requestCanceledRequester(request);
+        notify(mailTemplate, requester);
     }
 
     // *** ACCEPTANCE EVENTS HANDLING ***
 
-    @EventListener(condition = "@normalMailSenderListener.validateRequest(#acceptanceCreated.acceptance.request)")
+    @EventListener(condition = "#acceptanceCreated.acceptance.request.normal")
     public void acceptanceCreated_leader(AcceptanceCreated acceptanceCreated) {
-        Acceptance acceptance = acceptanceCreated.getAcceptance();
-        User leader = acceptance.getLeader();
-        MailTemplate template = mailTemplates.acceptanceCreatedLeader(acceptance.getId(), acceptance.getRequest());
-
-        String recipientName = leader.getFirstName() + " " + leader.getLastName();
-        String recipientAddress = leader.getMail();
-        mailNotificator.notify(template, recipientAddress, recipientName);
+        var acceptance = acceptanceCreated.getAcceptance();
+        var leader = acceptance.getLeader();
+        var mailTemplate = mailTemplates.acceptanceCreatedLeader(acceptance.getId(), acceptance.getRequest());
+        notify(mailTemplate, leader);
     }
 
-    @EventListener(condition = "@normalMailSenderListener.validateRequest(#acceptanceRejected.acceptance.request)")
+    @EventListener(condition = "#acceptanceRejected.acceptance.request.normal")
     public void acceptanceRejected_requester(AcceptanceRejected acceptanceRejected) {
         Acceptance acceptance = acceptanceRejected.getAcceptance();
         User requester = acceptance.getRequest().getRequester();
-        MailTemplate template = mailTemplates.acceptanceRejectedRequester(acceptance);
-
-        String recipientName = requester.getFirstName() + " " + requester.getLastName();
-        String recipientAddress = requester.getMail();
-        mailNotificator.notify(template, recipientAddress, recipientName);
+        var mailTemplate = mailTemplates.acceptanceRejectedRequester(acceptance);
+        notify(mailTemplate, requester);
     }
 
-    public static boolean validateRequest(Request request) {
-        return request.isNormal();
+    private void notify(MailTemplate template, User recipient) {
+        var recipientEmail = recipient.getMail();
+        var recipientName =  recipient.getFullName();
+        mailNotificator.notify(template, recipientEmail, recipientName);
     }
-
 }

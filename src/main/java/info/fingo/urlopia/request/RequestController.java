@@ -31,76 +31,69 @@ public class RequestController {
     }
 
     @RolesAllowed("ROLES_WORKER")
-    @RequestMapping(path = "/users/{userId}/requests", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page> getAllFromUser(@PathVariable Long userId,
-                                               @RequestParam(name = "filter", defaultValue = "") String[] filters,
-                                               Pageable pageable) {
-        Filter filter = Filter.from(filters);
-        Page<RequestExcerptProjection> requests = requestService.getFromUser(userId, filter, pageable);
-        return ResponseEntity.ok(requests);
+    @GetMapping(path = "/users/{userId}/requests", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<RequestExcerptProjection>> getAllFromUser(@PathVariable Long userId,
+                                                                         @RequestParam(name = "filter", defaultValue = "") String[] filters,
+                                                                         Pageable pageable) {
+        var filter = Filter.from(filters);
+        var requestsPage = requestService.getFromUser(userId, filter, pageable);
+        return ResponseEntity.ok(requestsPage);
     }
 
     @RolesAllowed("ROLES_ADMIN")
-    @RequestMapping(path = "/requests", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page> getAll(@RequestParam(name = "filter", defaultValue = "") String[] filters,
-                                       Pageable pageable) {
-        Filter filter = Filter.from(filters);
-        Page<RequestExcerptProjection> requests = requestService.get(filter, pageable);
-        return ResponseEntity.ok(requests);
+    @GetMapping(path = "/requests", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<RequestExcerptProjection>> getAll(@RequestParam(name = "filter", defaultValue = "") String[] filters,
+                                                                 Pageable pageable) {
+        var filter = Filter.from(filters);
+        var requestsPage = requestService.get(filter, pageable);
+        return ResponseEntity.ok(requestsPage);
     }
 
     @RolesAllowed("ROLES_WORKER")
-    @RequestMapping(path = "/users/{userId}/requests/pendingTime",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/users/{userId}/requests/pendingTime", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DayHourTime> getPendingRequestsTime(@PathVariable Long userId) {
-        DayHourTime pendingRequestsTime = normalRequestService.getPendingRequestsTime(userId);
+        var pendingRequestsTime = normalRequestService.getPendingRequestsTime(userId);
         return ResponseEntity.ok(pendingRequestsTime);
     }
 
     @RolesAllowed("ROLES_WORKER")
-    @RequestMapping(value = "/users/{userId}/requests", method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> create(@PathVariable Long userId,
+    @PostMapping(value = "/users/{userId}/requests", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> create(@PathVariable Long userId, 
                                        @RequestBody RequestInput input) {
         requestService.create(userId, input);
         return ResponseEntity.ok().build();
     }
 
     @RolesAllowed("ROLES_WORKER")
-    @RequestMapping(path = "/users/{userId}/teammates/vacation", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List> getTeammatesVacationsForNexTwoWeeks(@PathVariable Long userId) {
-        List<VacationDay> teammatesVocations = this.requestService.getTeammatesVacationsForNexTwoWeeks(userId);
-        return ResponseEntity.ok(teammatesVocations);
+    @GetMapping(path = "/users/{userId}/teammates/vacation", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<VacationDay>> getTeammatesVacationsForNexTwoWeeks(@PathVariable Long userId) {
+        var teammatesVacations = requestService.getTeammatesVacationsForNextTwoWeeks(userId);
+        return ResponseEntity.ok(teammatesVacations);
     }
 
     // *** ACTIONS ***
 
     @RolesAllowed("ROLES_ADMIN")
-    @RequestMapping(path = "/requests/{requestId}/accept", method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> accept(@PathVariable Long requestId,
+    @PostMapping(path = "/requests/{requestId}/accept", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> accept(@PathVariable Long requestId, 
                                        HttpServletRequest httpRequest) {
-        Long authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
         requestService.accept(requestId, authenticatedId);
         return ResponseEntity.ok().build();
     }
 
     @RolesAllowed("ROLES_ADMIN")
-    @RequestMapping(path = "/requests/{requestId}/reject", method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/requests/{requestId}/reject", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> reject(@PathVariable Long requestId) {
         requestService.reject(requestId);
         return ResponseEntity.ok().build();
     }
 
     @RolesAllowed({"ROLES_WORKER", "ROLES_ADMIN"})
-    @RequestMapping(path = "/requests/{requestId}/cancel", method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> cancel(@PathVariable Long requestId,
+    @PostMapping(path = "/requests/{requestId}/cancel", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> cancel(@PathVariable Long requestId, 
                                        HttpServletRequest httpRequest) {
-        Long authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
         requestService.cancel(requestId, authenticatedId);
         return ResponseEntity.ok().build();
     }

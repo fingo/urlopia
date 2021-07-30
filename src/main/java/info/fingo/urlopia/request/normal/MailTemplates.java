@@ -4,7 +4,6 @@ import info.fingo.urlopia.acceptance.Acceptance;
 import info.fingo.urlopia.config.mail.send.MailTemplate;
 import info.fingo.urlopia.config.mail.send.MailTemplateLoader;
 import info.fingo.urlopia.request.Request;
-import info.fingo.urlopia.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -27,61 +26,46 @@ class MailTemplates {
     }
 
     public MailTemplate requestAcceptedAdmin(Request request) {
-        User requester = request.getRequester();
-        String requesterName = requester.getFirstName() + " " + requester.getLastName();
-        String term = request.getStartDate() + " - " + request.getEndDate();
-
+        var requester = request.getRequester();
         return templateLoader.load(directory, "request_accepted_admin", languageCode)
-                .addProperty("requester-name", requesterName)
-                .addProperty("term", term);
+                .addProperty("requester-name", requester.getFullName())
+                .addProperty("term", request.getTerm());
     }
 
     public MailTemplate requestAcceptedRequester(Request request) {
-        String term = request.getStartDate() + " - " + request.getEndDate();
         return templateLoader.load(directory, "request_accepted_requester", languageCode)
-                .addProperty("term", term);
+                .addProperty("term", request.getTerm());
     }
 
     public MailTemplate requestCanceledLeader(Request request) {
-        User requester = request.getRequester();
-        String requesterName = requester.getFirstName() + " " + requester.getLastName();
-        String term = request.getStartDate() + " - " + request.getEndDate();
-
+        var requester = request.getRequester();
         return templateLoader.load(directory, "request_canceled_leader", languageCode)
-                .addProperty("requester-name", requesterName)
-                .addProperty("term", term)
+                .addProperty("requester-name", requester.getFullName())
+                .addProperty("term", request.getTerm())
                 .addProperty("app-url", appUrl);
     }
 
     public MailTemplate requestCanceledRequester(Request request) {
-        String term = request.getStartDate() + " - " + request.getEndDate();
-
         return templateLoader.load(directory, "request_canceled_requester", languageCode)
-                .addProperty("term", term)
+                .addProperty("term", request.getTerm())
                 .addProperty("app-url", appUrl);
     }
 
-    public MailTemplate acceptanceCreatedLeader(Long acceptanceId, Request request) {
-        User requester = request.getRequester();
-        String requesterName = requester.getFirstName() + " " + requester.getLastName();
-        String term = request.getStartDate() + " - " + request.getEndDate();
-
+    public MailTemplate acceptanceCreatedLeader(Long acceptanceId,
+                                                Request request) {
+        var requester = request.getRequester();
         return templateLoader.load(directory, "acceptance_created_leader", languageCode)
-                .addProperty("requester-name", requesterName)
-                .addProperty("term", term)
+                .addProperty("requester-name", requester.getFullName())
+                .addProperty("term", request.getTerm())
                 .addProperty("acceptance-id", acceptanceId)
                 .addProperty("app-url", appUrl);
     }
 
     public MailTemplate acceptanceRejectedRequester(Acceptance acceptance) {
-        User leader = acceptance.getLeader();
-        Request request = acceptance.getRequest();
-        String leaderName = leader.getFirstName() + " " + leader.getLastName();
-        String term = request.getStartDate() + " - " + request.getEndDate();
-
+        var leader = acceptance.getLeader();
+        var request = acceptance.getRequest();
         return templateLoader.load(directory, "acceptance_rejected_requester", languageCode)
-                .addProperty("leader-name", leaderName)
-                .addProperty("term", term);
+                .addProperty("leader-name", leader.getFullName())
+                .addProperty("term", request.getTerm());
     }
-
 }

@@ -206,6 +206,11 @@ public class User {
         return Objects.hash(id);
     }
 
+    @Transient
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+
     public enum Role {
         WORKER("ROLES_WORKER"),
         LEADER("ROLES_LEADER"),

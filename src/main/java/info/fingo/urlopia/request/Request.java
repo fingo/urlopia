@@ -3,10 +3,13 @@ package info.fingo.urlopia.request;
 import info.fingo.urlopia.acceptance.Acceptance;
 import info.fingo.urlopia.request.occasional.OccasionalType;
 import info.fingo.urlopia.user.User;
+import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,8 +60,13 @@ public class Request {
         this.modified = LocalDateTime.now();
     }
 
-    public Request(User requester, LocalDate startDate, LocalDate endDate, Integer workingDays,
-                   RequestType type, TypeInfo typeInfo, Status status) {
+    public Request(User requester,
+                   LocalDate startDate,
+                   LocalDate endDate,
+                   Integer workingDays,
+                   RequestType type,
+                   TypeInfo typeInfo,
+                   Status status) {
         this();
         this.requester = requester;
         this.startDate = startDate;
@@ -69,8 +77,12 @@ public class Request {
         this.status = status;
     }
 
-    public Request(User requester, LocalDate startDate, LocalDate endDate,
-                   RequestType type, TypeInfo typeInfo, Status status) {
+    public Request(User requester,
+                   LocalDate startDate,
+                   LocalDate endDate,
+                   RequestType type,
+                   TypeInfo typeInfo,
+                   Status status) {
         this();
         this.requester = requester;
         this.startDate = startDate;
@@ -121,17 +133,10 @@ public class Request {
     }
 
     public TypeInfo getTypeInfo() {
-        TypeInfo typeInfo = null;
-
-        TypeInfo typesInfo[] = OccasionalType.values(); // TODO: remove OccasionalType from here
-        for(TypeInfo tempTypeInfo : typesInfo) {
-            if(tempTypeInfo.getName().equals(this.typeInfo)) {
-                typeInfo = tempTypeInfo;
-                break;
-            }
-        }
-
-        return typeInfo;
+        return Arrays.stream(OccasionalType.values()) // TODO: remove OccasionalType from here
+                .filter(typeInfo -> typeInfo.getName().equals(this.typeInfo))
+                .findFirst()
+                .orElse(null);
     }
 
     public void setTypeInfo(TypeInfo typeInfo) {
@@ -162,7 +167,7 @@ public class Request {
     public Set<String> getDeciders() {
         return this.acceptances.stream()
                 .map(Acceptance::getLeader)
-                .map(user -> String.format("%s %s", user.getFirstName(), user.getLastName()))
+                .map(User::getFullName)
                 .collect(Collectors.toSet());
     }
 
@@ -185,6 +190,13 @@ public class Request {
     @Transient
     public boolean isPending() {
         return this.status == Status.PENDING;
+    }
+
+    @Transient
+    public String getTerm() {
+        var start = startDate == null ? "" : startDate.toString();
+        var end = endDate == null ? "" : endDate.toString();
+        return start + " - " + end;
     }
 
     public interface TypeInfo { // TODO: separate TypeInfo interface

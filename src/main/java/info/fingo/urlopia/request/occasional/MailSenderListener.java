@@ -3,7 +3,6 @@ package info.fingo.urlopia.request.occasional;
 import info.fingo.urlopia.config.mail.send.MailNotificator;
 import info.fingo.urlopia.config.mail.send.MailStorage;
 import info.fingo.urlopia.config.mail.send.MailTemplate;
-import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.occasional.events.OccasionalRequestCreated;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
@@ -11,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-
-import java.util.Set;
 
 @Async
 @Component("occasionalMailSenderListener")
@@ -36,46 +33,38 @@ class MailSenderListener {
 
     @EventListener(condition = "#occasionalRequestCreated.request.requester.ec")
     public void requestAccepted_storage(OccasionalRequestCreated occasionalRequestCreated) {
-        Request request = occasionalRequestCreated.getRequest();
-        MailTemplate template = mailTemplates.requestCreatedLeaderAdmin(request);
-        mailStorage.store(template);
+        var request = occasionalRequestCreated.request();
+        var mailTemplate = mailTemplates.requestCreatedLeaderAdmin(request);
+        mailStorage.store(mailTemplate);
     }
 
     @EventListener(condition = "!#occasionalRequestCreated.request.requester.ec")
     public void requestAccepted_admins(OccasionalRequestCreated occasionalRequestCreated) {
-        Request request = occasionalRequestCreated.getRequest();
-        MailTemplate template = mailTemplates.requestCreatedLeaderAdmin(request);
-
-        Set<User> admins = userService.getAdmins();
-        admins.forEach(admin -> {
-            String recipientName = admin.getFirstName() + " " + admin.getLastName();
-            String recipientAddress = admin.getMail();
-            mailNotificator.notify(template, recipientAddress, recipientName);
-        });
+        var request = occasionalRequestCreated.request();
+        var mailTemplate = mailTemplates.requestCreatedLeaderAdmin(request);
+        userService.getAdmins().forEach(admin -> notify(mailTemplate, admin));
     }
 
     @EventListener
     public void requestCanceled_leader(OccasionalRequestCreated occasionalRequestCreated) {
-        Request request = occasionalRequestCreated.getRequest();
-        User requester = request.getRequester();
-        MailTemplate template = mailTemplates.requestCreatedLeaderAdmin(request);
-
-        Set<User> leaders = userService.getLeaders(requester.getId());
-        leaders.forEach(leader -> {
-            String recipientName = leader.getFirstName() + " " + leader.getLastName();
-            String recipientAddress = leader.getMail();
-            mailNotificator.notify(template, recipientAddress, recipientName);
-        });
+        var request = occasionalRequestCreated.request();
+        var requester = request.getRequester();
+        var mailTemplate = mailTemplates.requestCreatedLeaderAdmin(request);
+        userService.getLeaders(requester.getId()).forEach(leader -> notify(mailTemplate, leader));
     }
 
     @EventListener
     public void requestAccepted_requester(OccasionalRequestCreated occasionalRequestCreated) {
-        Request request = occasionalRequestCreated.getRequest();
-        User requester = request.getRequester();
-        MailTemplate template = mailTemplates.requestCreatedRequester();
+        var request = occasionalRequestCreated.request();
+        var requester = request.getRequester();
+        var mailTemplate = mailTemplates.requestCreatedRequester();
+        notify(mailTemplate, requester);
+    }
 
-        String recipientName = requester.getFirstName() + " " + requester.getLastName();
-        String recipientAddress = requester.getMail();
-        mailNotificator.notify(template, recipientAddress, recipientName);
+    private void notify(MailTemplate template, 
+                        User recipient) {
+        var recipientEmail = recipient.getMail();
+        var recipientName =  recipient.getFullName();
+        mailNotificator.notify(template, recipientEmail, recipientName);
     }
 }

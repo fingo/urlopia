@@ -47,11 +47,9 @@ public class OccasionalRequestService implements RequestTypeService {
         this.validateRequest(request);
         requestRepository.save(request);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String message = String.format("%s - %s (%s)",
-                request.getStartDate().format(formatter),
-                request.getEndDate().format(formatter),
-                request.getTypeInfo().getInfo());
+        var term = request.getTerm();
+        var typeInfo = request.getTypeInfo().getInfo();
+        var message = String.format("%s (%s)", term, typeInfo);
         historyLogService.create(request,0f, message, userId, userId);
 
         publisher.publishEvent(new OccasionalRequestCreated(request));

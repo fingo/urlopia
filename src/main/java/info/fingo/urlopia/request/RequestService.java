@@ -69,58 +69,77 @@ public class RequestService {
         service.create(userId, requestInput);
     }
 
-    public List<VacationDay> getTeammatesVacationsForNexTwoWeeks(Long userId) {
-        User user = this.userService.get(userId);
-        Set<User> teammates = user.getTeams().stream()
-                .flatMap(team -> team.getUsers().stream())
-                .collect(Collectors.toSet());
-
-        List<VacationDay> teammatesVocations = new ArrayList<>(14);
-        LocalDate currentDate = LocalDate.now();
-        LocalDate lastDate = currentDate.plusWeeks(2);
-        while (currentDate.isBefore(lastDate)) {
-            if (currentDate.getDayOfWeek() != DayOfWeek.SATURDAY && currentDate.getDayOfWeek() != DayOfWeek.SUNDAY) {
-                List<String> vocationTeammates = new ArrayList<>();
-                for (User teammate : teammates) {
-                    if (!this.isVacationing(teammate, currentDate)) continue;
-                    vocationTeammates.add(String.format("%s %s", teammate.getFirstName(), teammate.getLastName()));
-                }
-                teammatesVocations.add(new VacationDay(currentDate, vocationTeammates));
-            }
-            currentDate = currentDate.plusDays(1);
-        }
-        return teammatesVocations;
+    public List<VacationDay> getTeammatesVacationsForNextTwoWeeks(Long userId) {
+        var startDate = LocalDate.now();
+        var endDate = startDate.plusWeeks(2);
+        return getTeammatesVacations(userId, startDate, endDate);
     }
 
-    private boolean isVacationing(User user, LocalDate date) {
+    public List<VacationDay> getTeammatesVacations(Long userId, 
+                                                   LocalDate startDate, 
+                                                   LocalDate endDate) {
+        var user = userService.get(userId);
+        var teammates = teammatesOf(user);
+        return startDate.datesUntil(endDate)
+                .filter(date -> !isWeekend(date))
+                .map(date -> createVacationDay(teammates, date))
+                .collect(Collectors.toList());
+    }
+
+    private VacationDay createVacationDay(List<User> users, 
+                                          LocalDate date) {
+        var namesOfVacationingUsers = users.stream()
+                .filter(user -> isVacationing(user, date))
+                .map(user -> user.getFirstName() + " " + user.getLastName())
+                .collect(Collectors.toList());
+        return new VacationDay(date, namesOfVacationingUsers);
+    }
+
+    private List<User> teammatesOf(User user) {
+        return user.getTeams().stream()
+                .flatMap(team -> team.getUsers().stream())
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private boolean isWeekend(LocalDate date) {
+        var dayOfWeek = date.getDayOfWeek();
+        return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
+    }
+
+    private boolean isVacationing(User user, 
+                                  LocalDate date) {
         return this.getByUserAndDate(user.getId(), date).stream()
                 .anyMatch(request -> request.getStatus() == Request.Status.ACCEPTED);
     }
 
     // *** ACTIONS ***
 
-    public void accept(Long requestId, Long deciderId) {
-        Request request = requestRepository.findById(requestId).orElseThrow();
-        RequestTypeService service = request.getType().getService();
+    public void accept(Long requestId, 
+                       Long deciderId) {
+        var request = requestRepository.findById(requestId).orElseThrow();
+        var service = request.getType().getService();
         service.accept(request);
 
-        Float workingHours = request.getWorkingDays() * request.getRequester().getWorkTime();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String term = String.format("%s - %s",
-                request.getStartDate().format(formatter), request.getEndDate().format(formatter));
+        float workingHours = request.getWorkingDays() * request.getRequester().getWorkTime();
+        var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        var term = String.format("%s - %s",
+                request.getStartDate().format(formatter),
+                request.getEndDate().format(formatter));
         historyLogService.create(request, -workingHours, term, request.getRequester().getId(), deciderId);
     }
 
     public void reject(Long requestId) {
-        Request request = requestRepository.findById(requestId).orElseThrow();
-        RequestTypeService service = request.getType().getService();
+        var request = requestRepository.findById(requestId).orElseThrow();
+        var service = request.getType().getService();
         service.reject(request);
     }
 
-    public void cancel(Long requestId, Long deciderId) {
-        Request request = requestRepository.findById(requestId).orElseThrow();
-        RequestTypeService service = request.getType().getService();
-        Request.Status previousStatus = request.getStatus();
+    public void cancel(Long requestId, 
+                       Long deciderId) {
+       var request = requestRepository.findById(requestId).orElseThrow();
+        var service = request.getType().getService();
+        var previousStatus = request.getStatus();
         service.cancel(request);
 
         if (previousStatus == Request.Status.ACCEPTED) {

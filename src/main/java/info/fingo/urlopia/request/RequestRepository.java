@@ -11,9 +11,11 @@ public interface RequestRepository extends BaseRepository<Request>, JpaRepositor
 
     List<Request> findByRequesterId(Long requesterId);
 
-    @Query("SELECT r FROM Request r " +
-            "WHERE r.requester.id = :requesterId " +
-                "AND (YEAR(r.startDate) = :year OR YEAR(r.endDate) = :year)")
+    @Query("""
+            SELECT r FROM Request r
+            WHERE r.requester.id = :requesterId
+            AND (YEAR(r.startDate) = :year OR YEAR(r.endDate) = :year)
+            """)
     List<Request> findByRequesterIdAndYear(@Param("requesterId") Long requesterId, @Param("year") Integer year);
 
 }
