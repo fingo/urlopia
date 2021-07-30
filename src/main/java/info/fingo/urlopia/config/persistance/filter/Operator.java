@@ -16,43 +16,47 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public enum Operator {
-
     EQUAL(":") {
         @Override
-        public <T extends Comparable<? super T>> Predicate generatePredicate(
-                CriteriaBuilder cb, Path<T> parameter, T value) {
+        public <T extends Comparable<? super T>> Predicate generatePredicate(CriteriaBuilder cb,
+                                                                             Path<T> parameter,
+                                                                             T value) {
             return cb.equal(parameter, value);
         }
     },
 
     LIKE(".:") {
         @Override
-        public <T extends Comparable<? super T>> Predicate generatePredicate(
-                CriteriaBuilder cb, Path<T> parameter, T value) {
+        @SuppressWarnings("unchecked")
+        public <T extends Comparable<? super T>> Predicate generatePredicate(CriteriaBuilder cb,
+                                                                             Path<T> parameter,
+                                                                             T value) {
             if (!(value instanceof String)) {
-                throw new UnsupportedOperationException(String.format(
-                        "Type `%s` for `LIKE` operation is not supported.", value.getClass().getCanonicalName()));
+                String format = "Type `%s` for `LIKE` operation is not supported.";
+                String valueClassName = value.getClass().getCanonicalName();
+                String exceptionMessage = String.format(format, valueClassName);
+                throw new UnsupportedOperationException(exceptionMessage);
             }
-            String valuePattern = String.format("%%%s%%", value);
-            return cb.like(
-                    cb.lower((Path<String>) parameter),
-                    valuePattern.toLowerCase()
-            );
+
+            String valuePattern = String.format("%%%s%%", value).toLowerCase();
+            return cb.like(cb.lower((Path<String>) parameter), valuePattern);
         }
     },
 
     GREATER_OR_EQUAL(">:") {
         @Override
-        public <T extends Comparable<? super T>> Predicate generatePredicate(
-                CriteriaBuilder cb, Path<T> parameter, T value) {
+        public <T extends Comparable<? super T>> Predicate generatePredicate(CriteriaBuilder cb,
+                                                                             Path<T> parameter,
+                                                                             T value) {
             return cb.greaterThanOrEqualTo(parameter, value);
         }
     },
 
     LESS_OR_EQUAL("<:") {
         @Override
-        public <T extends Comparable<? super T>> Predicate generatePredicate(
-                CriteriaBuilder cb, Path<T> parameter, T value) {
+        public <T extends Comparable<? super T>> Predicate generatePredicate(CriteriaBuilder cb,
+                                                                             Path<T> parameter,
+                                                                             T value) {
             return cb.lessThanOrEqualTo(parameter, value);
         }
     };
@@ -67,39 +71,41 @@ public enum Operator {
         return sign;
     }
 
-    abstract public <T extends Comparable<? super T>> Predicate generatePredicate(
-            CriteriaBuilder cb, Path<T> parameter,T value);
+    abstract public <T extends Comparable<? super T>> Predicate generatePredicate(CriteriaBuilder cb,
+                                                                                  Path<T> parameter,
+                                                                                  T value);
 
+    @SuppressWarnings("unchecked")
     public <E> Specification<E> generateSpecification(String key, String value) {
         return (root, query, cb) -> {
             Path<?> parameter = this.getParameterPath(root, key);
+            Class<?> type = parameter.getJavaType();
 
-            Object type = parameter.getJavaType();
             if (type == String.class) {
-                Path<String> stringParameter = (Path<String>) parameter;
+                var stringParameter = (Path<String>) parameter;
                 return this.generatePredicate(cb, stringParameter, value);
             } else if (type == LocalDate.class) {
-                Path<LocalDate> dateParameter =  (Path<LocalDate>) parameter;
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_FORMAT);
-                LocalDate dateValue = LocalDate.parse(value, formatter);
+                var dateParameter =  (Path<LocalDate>) parameter;
+                var formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_FORMAT);
+                var dateValue = LocalDate.parse(value, formatter);
                 return this.generatePredicate(cb, dateParameter, dateValue);
             } else if (type == LocalDateTime.class) {
-                Path<LocalDateTime> dateTimeParameter =  (Path<LocalDateTime>) parameter;
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_TIME_FORMAT);
-                LocalDateTime dateTimeValue = LocalDateTime.parse(value, formatter);
+                var dateTimeParameter =  (Path<LocalDateTime>) parameter;
+                var formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_TIME_FORMAT);
+                var dateTimeValue = LocalDateTime.parse(value, formatter);
                 return this.generatePredicate(cb, dateTimeParameter, dateTimeValue);
             } else if (type == Boolean.class) {
-                Path<Boolean> booleanParameter = (Path<Boolean>) parameter;
-                Boolean booleanValue = Boolean.valueOf(value);
+                var booleanParameter = (Path<Boolean>) parameter;
+                var booleanValue = Boolean.valueOf(value);
                 return this.generatePredicate(cb, booleanParameter, booleanValue);
             } else if (type == Long.class) {
-                Path<Long> longParameter = (Path<Long>) parameter;
-                Long longValue = Long.valueOf(value);
+                var longParameter = (Path<Long>) parameter;
+                var longValue = Long.valueOf(value);
                 return this.generatePredicate(cb, longParameter, longValue);
             }
 
-            throw new UnsupportedOperationException(String.format("Type `%s` is not supported",
-                    ((Class) type).getCanonicalName()));
+            String exceptionMessage = String.format("Type `%s` is not supported", type.getCanonicalName());
+            throw new UnsupportedOperationException(exceptionMessage);
         };
     }
 
@@ -112,19 +118,21 @@ public enum Operator {
         return path;
     }
 
-    // STATIC CONTENT
+    private static final List<String> signs;
 
-    private static final List<String> signs = Arrays.stream(Operator.values())
-            .map(Operator::getSign)
-            .collect(Collectors.toList());
+    static {
+        signs = Arrays.stream(Operator.values())
+                .map(Operator::getSign)
+                .collect(Collectors.toList());
+    }
+
+    public static List<String> signs() {
+        return signs;
+    }
 
     public static Optional<Operator> fromSign(String sign) {
         return Arrays.stream(Operator.values())
                 .filter(operation -> operation.getSign().equals(sign))
                 .findFirst();
-    }
-
-    public static List<String> signs() {
-        return signs;
     }
 }

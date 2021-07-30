@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
@@ -16,10 +15,10 @@ import java.util.List;
  */
 public class WebToken {
 
-    private long userId;
-    private Date issuedAt;
-    private Date expiration;
-    private List<String> roles;
+    private final long userId;
+    private final Date issuedAt;
+    private final Date expiration;
+    private final List<String> roles;
 
     private WebToken(long userId, List<String> roles) {
         this.userId = userId;
@@ -28,17 +27,22 @@ public class WebToken {
         this.roles = roles;
     }
 
-
     static WebToken fromCredentials(long userId, List<String> roles) {
         return new WebToken(userId, roles);
     }
 
+    @SuppressWarnings("unchecked")
     static WebToken fromWebToken(String token, String secretKey) {
-        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-        return new WebToken(Long.valueOf(claims.getSubject()), claims.get("role", List.class));
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
+        var userId = Long.parseLong(claims.getSubject());
+        var roles = (List<String>) claims.get("role", List.class);
+        return new WebToken(userId, roles);
     }
 
-    static WebToken fromRequest(HttpServletRequest request, String secretKey) throws Exception {
+    static WebToken fromRequest(HttpServletRequest request, String secretKey) {
         return fromWebToken(request.getHeader("authorization"), secretKey);
     }
 

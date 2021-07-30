@@ -1,6 +1,7 @@
 package info.fingo.urlopia.team;
 
 import info.fingo.urlopia.config.ad.ActiveDirectory;
+import info.fingo.urlopia.config.ad.ActiveDirectoryObjectClass;
 import info.fingo.urlopia.config.ad.ActiveDirectoryUtils;
 import info.fingo.urlopia.config.ad.Attribute;
 import info.fingo.urlopia.user.User;
@@ -108,7 +109,7 @@ public class ActiveDirectoryTeamSynchronizer {
 
     private List<SearchResult> pickTeamsFromAD() {
         return activeDirectory.newSearch()
-                .objectClass(ActiveDirectory.ObjectClass.Group)
+                .objectClass(ActiveDirectoryObjectClass.Group)
                 .name(String.format("*%s", teamIdentifier))
                 .search();
     }
@@ -116,7 +117,7 @@ public class ActiveDirectoryTeamSynchronizer {
     private List<SearchResult> pickTeamsFromAD(SearchResult adBusinessPart) {
         var businessPartAdName = ActiveDirectoryUtils.pickAttribute(adBusinessPart, Attribute.DISTINGUISHED_NAME);
         return activeDirectory.newSearch()
-                .objectClass(ActiveDirectory.ObjectClass.Group)
+                .objectClass(ActiveDirectoryObjectClass.Group)
                 .name("*" + this.teamIdentifier)
                 .memberOf(businessPartAdName)
                 .search();
@@ -124,7 +125,7 @@ public class ActiveDirectoryTeamSynchronizer {
 
     private List<SearchResult> pickBusinessPartsFromAD() {
         return activeDirectory.newSearch()
-                .objectClass(ActiveDirectory.ObjectClass.Group)
+                .objectClass(ActiveDirectoryObjectClass.Group)
                 .name("*" + this.businessPartIdentifier)
                 .search();
     }

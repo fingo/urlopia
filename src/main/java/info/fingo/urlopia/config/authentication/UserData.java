@@ -6,16 +6,17 @@ import java.util.Set;
 
 public class UserData {
 
-    private long userId;
+    private final long userId;
     protected List<String> userRoles;
     private String name;
     private String surname;
     private String mail;
     private String language;
     private String token;
-    private Set<Map> teams;
+    private Set<Map<String, String>> teams;
 
-    UserData(long userId, List<String> userRoles) {
+    UserData(long userId, 
+             List<String> userRoles) {
         this.userId = userId;
         this.userRoles = userRoles;
     }
@@ -60,11 +61,11 @@ public class UserData {
         this.mail = mail;
     }
 
-    public Set<Map> getTeams() {
+    public Set<Map<String, String>> getTeams() {
         return teams;
     }
 
-    public void setTeams(Set<Map> teams) {
+    public void setTeams(Set<Map<String, String>> teams) {
         this.teams = teams;
     }
 

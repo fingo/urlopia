@@ -26,7 +26,7 @@ public class MailTemplateLoader {
 
     @PostConstruct
     private void setUpHandlebars() {
-        TemplateLoader templateLoader = new ClassPathTemplateLoader();
+        var templateLoader = new ClassPathTemplateLoader();
         templateLoader.setPrefix(prefix);
         templateLoader.setSuffix(suffix);
 
@@ -34,19 +34,10 @@ public class MailTemplateLoader {
         handlebars.registerHelpers(new HandlebarsHelper());
     }
 
-    public MailTemplate load(String name) {
-        String defaultLanguage = "pl";
-        return this.load(name, defaultLanguage);
-    }
-
-    public MailTemplate load(String name, String languageCode) {
-        String defaultDirectory = "";
-        return this.load(defaultDirectory, name, languageCode);
-    }
-
     public MailTemplate load(String directory, String name, String languageCode) {
         try {
-            Template template = handlebars.compile(String.format("%s/%s_%s", directory, name, languageCode));
+            String templateLocation = String.format("%s/%s_%s", directory, name, languageCode);
+            Template template = handlebars.compile(templateLocation);
             return new MailTemplate(template);
         } catch (IOException e) {
             LOGGER.error("IOException when trying to load a template", e);

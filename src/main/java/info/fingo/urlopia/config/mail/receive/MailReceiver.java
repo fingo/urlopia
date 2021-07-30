@@ -17,6 +17,7 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 /**
  * Checks for new mails in inbox
@@ -56,9 +57,9 @@ public class MailReceiver extends Thread {
      * Connecting to the mail box
      */
     private void connect() {
-        String storeProtocol = "imaps";
+        var storeProtocol = "imaps";
 
-        Properties props = new Properties();
+        var props = new Properties();
         props.setProperty("mail.store.protocol", storeProtocol);
 
         try {
@@ -143,9 +144,9 @@ public class MailReceiver extends Thread {
         performConfiguration();
 
         // Creating scheduler to keep alive the inbox
-        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-        Runnable keepAliveRunner = this::keepInboxAlive;
-        scheduledExecutorService.scheduleAtFixedRate(keepAliveRunner, keepAliveFreq, keepAliveFreq, TimeUnit.MILLISECONDS);
+        var scheduledExecutorService = Executors.newScheduledThreadPool(1);
+        var timeUnit = TimeUnit.MILLISECONDS;
+        scheduledExecutorService.scheduleAtFixedRate(this::keepInboxAlive, keepAliveFreq, keepAliveFreq, timeUnit);
 
         // Keeping the inbox idle
         keepInboxIdle();
@@ -172,10 +173,10 @@ public class MailReceiver extends Thread {
         @Override
         public void messagesAdded(MessageCountEvent ex) {
             try {
-                int newMessageCount = inbox.getMessageCount();
+                var newMessageCount = inbox.getMessageCount();
                 for (int messageId = currentMessageCount + 1; messageId <= newMessageCount; messageId++) {
-                    Message message = inbox.getMessage(messageId);
-                    Mail mail = new MessageConverter(message).toMail();
+                    var message = inbox.getMessage(messageId);
+                    var mail = new MessageConverter(message).toMail();
                     mailDecider.resolve(mail);
                 }
                 currentMessageCount = newMessageCount;

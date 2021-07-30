@@ -26,7 +26,6 @@ class MailConverter {
         this.mail = mail;
     }
 
-    // PRIVATE METHODS
     private InternetAddress pickSender() {
         InternetAddress sender = null;
 
@@ -52,11 +51,11 @@ class MailConverter {
     }
 
     private Multipart pickContent() {
-        Multipart content = new MimeMultipart();
+        var content = new MimeMultipart();
 
         try {
             // create the message part
-            MimeBodyPart mimeBodyPart = new MimeBodyPart();
+            var mimeBodyPart = new MimeBodyPart();
             // fill message
             mimeBodyPart.setText(mail.getContent());
 
@@ -67,8 +66,7 @@ class MailConverter {
 
         return content;
     }
-
-    // PUBLIC METHODS
+    
     MimeMessage toMimeMessage() {
         MimeMessage message = null;
 

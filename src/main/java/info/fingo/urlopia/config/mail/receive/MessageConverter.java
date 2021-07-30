@@ -17,20 +17,17 @@ class MessageConverter {
 
     private final Message message;
 
-    // CONSTRUCTORS
     MessageConverter(Message message) {
         this.message = message;
     }
 
-    // PRIVATE METHODS
-    // methods responsible for getting information about user
     private Optional<InternetAddress> getSenderField() {
         Optional<InternetAddress> senderField = Optional.empty();
         try {
             Address[] sender = message.getFrom();
             senderField = Optional.ofNullable((InternetAddress) sender[0]);
         } catch (MessagingException e) {
-            LOGGER.error("MessagingException during getFrom", e);
+            LOGGER.error("MessagingException during getting sender field", e);
         }
 
         return senderField;
@@ -42,23 +39,20 @@ class MessageConverter {
             Address[] recipient = message.getRecipients(Message.RecipientType.TO);
             recipientField = Optional.ofNullable((InternetAddress) recipient[0]);
         } catch (MessagingException e) {
-            LOGGER.error("MessagingException during getFrom", e);
+            LOGGER.error("MessagingException during getting recipient field", e);
         }
 
         return recipientField;
     }
 
-    // methods responsible for getting the content from the Message
-    private String getContent(Part part) throws MessagingException,
-            IOException {
-
+    private String getContent(Part part) throws MessagingException, IOException {
         String content = "";
         if (part.getContent() instanceof String) {
             content = (String) part.getContent();
         } else {
-            Multipart mp = (Multipart) part.getContent();
-            if (mp.getCount() > 0) {
-                Part bodyPart = mp.getBodyPart(0);
+            var multipart = (Multipart) part.getContent();
+            if (multipart.getCount() > 0) {
+                Part bodyPart = multipart.getBodyPart(0);
                 try {
                     content = dumpPart(bodyPart);
                 } catch (IOException e) {
@@ -72,8 +66,7 @@ class MessageConverter {
     }
 
     private String dumpPart(Part part) throws IOException, MessagingException {
-
-        InputStream inputStream = part.getInputStream();
+        var inputStream = part.getInputStream();
         // if "inputStream" is not already buffered, wrap a BufferedInputStream around it.
         if (!(inputStream instanceof BufferedInputStream)) {
             inputStream = new BufferedInputStream(inputStream);
@@ -82,10 +75,9 @@ class MessageConverter {
     }
 
     private String getStringFromInputStream(InputStream inputStream) {
-
-        StringBuilder stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder();
         String line;
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+        try (var bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
             while ((line = bufferedReader.readLine()) != null) {
                 stringBuilder.append(line);
                 stringBuilder.append("\n");
@@ -98,27 +90,19 @@ class MessageConverter {
 
     // methods responsible for getting the Message fields
     private String pickSenderAddress() {
-        return getSenderField()
-                .map(InternetAddress::getAddress)
-                .orElse("");
+        return getSenderField().map(InternetAddress::getAddress).orElse("");
     }
 
     private String pickSenderName() {
-        return getSenderField()
-                .map(InternetAddress::getPersonal)
-                .orElse("");
+        return getSenderField().map(InternetAddress::getPersonal).orElse("");
     }
 
     private String pickRecipientAddress() {
-        return getRecipientField()
-                .map(InternetAddress::getAddress)
-                .orElse("");
+        return getRecipientField().map(InternetAddress::getAddress).orElse("");
     }
 
     private String pickRecipientName() {
-        return getRecipientField()
-                .map(InternetAddress::getPersonal)
-                .orElse("");
+        return getRecipientField().map(InternetAddress::getPersonal).orElse("");
     }
 
     private String pickSubject() {
@@ -141,7 +125,7 @@ class MessageConverter {
             if (msg instanceof String) {
                 content = (String) msg;
             } else {
-                Multipart multipart = (Multipart) message.getContent();
+                var multipart = (Multipart) message.getContent();
                 Part bodyPart = multipart.getBodyPart(0);
                 content = getContent(bodyPart);
             }
@@ -154,7 +138,6 @@ class MessageConverter {
         return content;
     }
 
-    // PUBLIC METHODS
     Mail toMail() {
         return Mail.newBuilder()
                 .setSenderAddress(this.pickSenderAddress())

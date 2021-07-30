@@ -62,13 +62,12 @@ public class LDAPConnectionService {
         DirContext ctx = getContext();
 
         try {
-            SearchControls controls = new SearchControls();
+            var controls = new SearchControls();
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            NamingEnumeration<SearchResult> results = ctx.search(mainContainer,
-                    "(&(memberOf=" + usersGroup + ")" +
-                            "(userPrincipalName=" + credentials.getMail() + "))", controls);
+            var filter = "(&(memberOf=" + usersGroup + ")" + "(userPrincipalName=" + credentials.getMail() + "))";
+            boolean userFound = ctx.search(mainContainer, filter, controls).hasMore();
 
-            if (results.hasMore()) {
+            if (userFound) {
                 Properties authEnv = new Properties();
                 authEnv.put(Context.INITIAL_CONTEXT_FACTORY, initialContextFactory);
                 authEnv.put(Context.PROVIDER_URL, providerUrl);

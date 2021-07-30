@@ -15,7 +15,7 @@ public class WebTokenService {
     @Value("${webtoken.secret}")
     private String SECRET_KEY;
 
-    public void authorize(HttpServletRequest request) throws Exception{
+    public void authorize(HttpServletRequest request) {
         webToken = WebToken.fromRequest(request, SECRET_KEY);
     }
 

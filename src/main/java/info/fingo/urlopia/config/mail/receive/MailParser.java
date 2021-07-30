@@ -9,10 +9,7 @@ import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,11 +34,12 @@ public class MailParser {
 
     public boolean parseContent(Mail mail) {
         String[] emailLines = splitByLines(mail.getContent());
-        emailContent = "";
 
+        var stringBuilder = new StringBuilder();
         for (String line : emailLines) {
-            emailContent += line;
+            stringBuilder.append(line);
         }
+        emailContent = stringBuilder.toString();
 
         correct = true;
         findDate();
@@ -61,22 +59,25 @@ public class MailParser {
     }
 
     public void parseSubject(Mail mail) {
-        String subject = mail.getSubject();
+        var subject = mail.getSubject();
 
         if (subject == null) {
             return;
         }
 
-        isReply = subject.toLowerCase().matches(".*(re:|odp.:|odp:|odpowiedź:|reply:|response:).*");
+        var pattern = Pattern.compile(".*(re:|odp.:|odp:|odpowiedź:|reply:|response:).*", Pattern.CANON_EQ);
+        var matcher = pattern.matcher(subject.toLowerCase());
+        isReply = matcher.matches();
+
         if (isReply) {
-            int b1 = subject.indexOf('[');
-            int b2 = subject.indexOf(']');
+            var b1 = subject.indexOf('[');
+            var b2 = subject.indexOf(']');
             id = Long.parseLong(subject.substring(b1 + 1, b2));
         }
     }
 
     public void parseReply(Mail mail) {
-        String[] emailLines = splitByLines(mail.getContent());
+        var emailLines = splitByLines(mail.getContent());
         reply = emailLines[0];
     }
 
@@ -91,8 +92,8 @@ public class MailParser {
         formats.put("\\d{1,2}?/\\d{2}?/\\d{2}?", "d/MM/yy");
         formats.put("\\d{1,2}? \\w{3}? \\d{2}?", "d MMM yy");
 
-        for (Map.Entry<String, String> format : formats.entrySet()) {
-            Pattern pattern = Pattern.compile(format.getKey());
+        for (var format : formats.entrySet()) {
+            var pattern = Pattern.compile(format.getKey());
             if (pattern.matcher(startDateS).matches()) {
                 correct = convertSingleDate(format.getValue());
             }
@@ -104,15 +105,15 @@ public class MailParser {
     }
 
     private void findDate() {
-        String pattern = "(\\A|.*[\\D]+)(\\d{1,2}?[-./]\\d{2}?[-./](?:\\d{4}|\\d{2}))\\D+(\\d{1,2}?[-./]\\d{2}?[-./](?:\\d{4}|\\d{2})).*";
-        Pattern p = Pattern.compile(pattern);
-        Matcher m = p.matcher(emailContent);
+        var pattern = "(\\A|.*[\\D]+)(\\d{1,2}?[-./]\\d{2}?[-./](?:\\d{4}|\\d{2}))\\D+(\\d{1,2}?[-./]\\d{2}?[-./](?:\\d{4}|\\d{2})).*";
+        var p = Pattern.compile(pattern);
+        var m = p.matcher(emailContent);
         if (m.matches()) {
             startDateS = m.group(2);
             endDateS = m.group(3);
             return;
         }
-        String normalizedContent = Normalizer.normalize(emailContent, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+       var normalizedContent = Normalizer.normalize(emailContent, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
         pattern = "(\\A|.*[\\D]+)(\\d{1,2}?\\W)([\\wźśń]{3,}?)(\\W(?:\\d{4}|\\d{2})).*\\D+(\\d{1,2}?\\W)([\\wźśń]{3,}?)(\\W(?:\\d{4}|\\d{2})).*";
         p = Pattern.compile(pattern);
         m = p.matcher(normalizedContent);
@@ -121,7 +122,7 @@ public class MailParser {
 
         if (m.matches()) {
             month = m.group(3).substring(0, 3);
-            String tmpMonth = monthNameMap.get(month);
+            var tmpMonth = monthNameMap.get(month);
             if (tmpMonth != null)
                 month = tmpMonth;
             startDateS = m.group(2) + month + m.group(4);
@@ -156,7 +157,7 @@ public class MailParser {
 
     private boolean convertSingleDate(String format) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format, Locale.US);
+            var formatter = DateTimeFormatter.ofPattern(format, Locale.US);
             startDate = LocalDate.parse(startDateS, formatter);
             endDate = LocalDate.parse(endDateS, formatter);
             return true;

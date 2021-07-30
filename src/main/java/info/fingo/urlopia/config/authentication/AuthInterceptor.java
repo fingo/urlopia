@@ -4,9 +4,9 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.lang.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -23,15 +23,20 @@ import java.util.List;
 public class AuthInterceptor implements HandlerInterceptor {
 
     public static final String USER_ID_ATTRIBUTE = "userId";
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthInterceptor.class);
-    private List<String> currentRoles;
 
-    @Autowired
-    private WebTokenService webTokenService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthInterceptor.class);
+
+    private final WebTokenService webTokenService;
+
+    public AuthInterceptor(WebTokenService webTokenService) {
+        this.webTokenService = webTokenService;
+    }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        currentRoles = getRoles(handler);
+    public boolean preHandle(HttpServletRequest request,
+                             HttpServletResponse response,
+                             Object handler) {
+        var rolesAllowed = getRoles(handler);
 
         try {
             webTokenService.authorize(request);
@@ -50,7 +55,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         List<String> userRoles = webTokenService.getRoles();
-        if (!isAllowed(userRoles)) {
+        if (!Collections.containsAny(rolesAllowed, userRoles)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             LOGGER.info("User role is not allowed for this resource");
             return false;
@@ -62,47 +67,33 @@ public class AuthInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
+    public void postHandle(HttpServletRequest request,
+                           HttpServletResponse response,
+                           Object handler,
+                           ModelAndView modelAndView) {
         // Needs to be blank
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+    public void afterCompletion(HttpServletRequest request,
+                                HttpServletResponse response,
+                                Object handler,
+                                Exception ex) {
         // Needs to be blank
     }
 
-    private boolean hasRolesAllowed(final HandlerMethod handlerMethod) {
-        return handlerMethod.getMethodAnnotation(RolesAllowed.class) != null;
-    }
+    private List<String> getRoles(Object handler) {
+        List<String> roles = new ArrayList<>();
 
-    private List getRoles(Object handler) {
-        List<String> roles = null;
-        //Check if we intercepted a request to HandlerMethod
-        if (handler instanceof HandlerMethod) {
-            // This cast is save!
-            final HandlerMethod handlerMethod = (HandlerMethod) handler;
-            // Check if the method has an annotation for RolesAllowed.
-            if (hasRolesAllowed(handlerMethod)) {
-
-                final RolesAllowed rolesAllowedAnnotation = handlerMethod.getMethodAnnotation(RolesAllowed.class);
-                roles = Arrays.asList(rolesAllowedAnnotation.value());
-
+        if (handler instanceof HandlerMethod handlerMethod) {
+            RolesAllowed annotation = handlerMethod.getMethodAnnotation(RolesAllowed.class);
+            if (annotation != null) {
+                roles = Arrays.asList(annotation.value());
                 if (roles.isEmpty())
                     LOGGER.error("No roles defined for this resource " + handler);
-            } else {
-                LOGGER.error("No roles defined, deny access " + handler);
             }
-        } else {
-            LOGGER.error("Unknown handler method");
         }
 
-        // proceed with the HandlerMethod
         return roles;
-    }
-
-    private boolean isAllowed(List<String> userRoles) {
-        List<String> temp = new ArrayList<>(userRoles);
-        temp.retainAll(currentRoles);
-        return !temp.isEmpty();
     }
 }

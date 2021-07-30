@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class Filter {
 
-    private List<List<FilterComponent>> components;
+    private final List<List<FilterComponent>> components;
 
     private Filter(List<List<FilterComponent>> components) {
         this.components = components;
@@ -21,15 +21,16 @@ public class Filter {
 
     public <E> Specification<E> generateSpecification() {
         return this.components.stream()
-                .map(andComponents -> andComponents.stream()
-                        .map(component -> {
-                            Operator operator = component.getOperator();
-                            String key = component.getKey();
-                            String value = component.getValue();
-                            return operator.<E>generateSpecification(key, value);
-                        })
-                        .reduce(null, (spec1, spec2) -> Specification.where(spec1).or(spec2)))
-                .reduce(null, (spec1, spec2) -> Specification.where(spec1).and(spec2));
+                .flatMap(Collection::stream)
+                .map(this::<E>generateSpecificationFrom)
+                .reduce(null, (spec1, spec2) -> Specification.where(spec1).or(spec2));
+    }
+
+    private <E> Specification<E> generateSpecificationFrom(FilterComponent component) {
+        var operator = component.operator();
+        var key = component.key();
+        var value = component.value();
+        return operator.generateSpecification(key, value);
     }
 
     // STATIC CONTENT
@@ -41,7 +42,7 @@ public class Filter {
     private static final Pattern OPERATORS_PATTERN;
 
     static {
-        String operatorsPattern = Operator.signs().stream()
+        var operatorsPattern = Operator.signs().stream()
                 .sorted((s1, s2) -> Integer.compare(s2.length(), s1.length()))
                 .map(Pattern::quote)
                 .reduce((s1, s2) -> String.format("%s|%s", s1, s2))
@@ -62,7 +63,7 @@ public class Filter {
     }
 
     public static Filter from(String filter) {
-        Builder builder = Filter.newBuilder();
+        var builder = Filter.newBuilder();
         Filter.splitIntoComponents(filter)
                 .forEach(builder::or);
         return builder.build();
@@ -70,21 +71,22 @@ public class Filter {
 
     private static List<FilterComponent> splitIntoComponents(String filter) {
         List<FilterComponent> components = new LinkedList<>();
-        String[] oneAttributeFilters = filter.split(Pattern.quote(OR_OPERATOR));
-        for(String oneAttributeFilter : oneAttributeFilters) {
-            Matcher matcher = OPERATORS_PATTERN.matcher(oneAttributeFilter);
+        var oneAttributeFilters = filter.split(Pattern.quote(OR_OPERATOR));
+
+        for(var oneAttributeFilter : oneAttributeFilters) {
+            var matcher = OPERATORS_PATTERN.matcher(oneAttributeFilter);
             if (!matcher.find()) {
                 return Collections.emptyList();
             }
 
-            String key = matcher.group(1);
-            String operatorSign = matcher.group(2);
-            Optional<Operator> operator = Operator.fromSign(operatorSign);
-            if (!operator.isPresent()) {
+            var key = matcher.group(1);
+         var operatorSign = matcher.group(2);
+            var operator = Operator.fromSign(operatorSign);
+            if (operator.isEmpty()) {
                 return Collections.emptyList();
             }
 
-            String[] values = matcher.group(3).split(Pattern.quote(SOFT_OR_OPERATOR));
+            var values = matcher.group(3).split(Pattern.quote(SOFT_OR_OPERATOR));
 
             Arrays.stream(values)
                     .map(value -> new FilterComponent(key, operator.get(), value))
@@ -109,22 +111,22 @@ public class Filter {
             this.and();
         }
 
-        public Builder and(List<FilterComponent> components) {
+        public void and(List<FilterComponent> components) {
             this.and();
             components.forEach(this::or);
-            return this;
         }
 
-        public Builder and(String key, Operator operator, String value) {
+        public Builder and(String key, 
+                           Operator operator, 
+                           String value) {
             FilterComponent component = new FilterComponent(key, operator, value);
             this.and();
             return this.or(component);
         }
 
-        public Builder and() {
+        public void and() {
             this.orComponents = new LinkedList<>();
             this.andComponents.add(this.orComponents);
-            return this;
         }
 
         public Builder or(FilterComponent component) {

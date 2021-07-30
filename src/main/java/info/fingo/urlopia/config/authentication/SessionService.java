@@ -20,7 +20,6 @@ import java.util.*;
 public class SessionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(SessionService.class);
 
-
     private final LDAPConnectionService ldapConnectionService;
 
     private final UserRepository userRepository;
@@ -32,7 +31,11 @@ public class SessionService {
     private final GitProperties gitProperties;
 
     @Autowired
-    public SessionService(LDAPConnectionService ldapConnectionService, UserRepository userRepository, WebTokenService webTokenService, BuildProperties buildProperties, GitProperties gitProperties) {
+    public SessionService(LDAPConnectionService ldapConnectionService,
+                          UserRepository userRepository,
+                          WebTokenService webTokenService,
+                          BuildProperties buildProperties,
+                          GitProperties gitProperties) {
         this.ldapConnectionService = ldapConnectionService;
         this.userRepository = userRepository;
         this.webTokenService = webTokenService;
@@ -42,9 +45,9 @@ public class SessionService {
 
     public UserData authenticate(Credentials credentials) {
         if (ldapConnectionService.authenticate(credentials)) {
-            User user = userRepository.findFirstByMail(credentials.getMail());
-            List<String> roles = this.pickRoles(user);
-            UserData userData = new UserData(user.getId(), roles);
+            var user = userRepository.findFirstByMail(credentials.getMail());
+            var roles = this.pickRoles(user);
+            var userData = new UserData(user.getId(), roles);
             userData.setName(user.getFirstName());
             userData.setSurname(user.getLastName());
             userData.setMail(user.getMail());
@@ -69,11 +72,11 @@ public class SessionService {
         return roles;
     }
 
-    private Set<Map> pickTeamsInfo(User user) {
-        Set<Map> teams = new HashSet<>();
-        for (Team team : user.getTeams()) {
-            String teamName = team.getName();
-            User leader = user.equals(team.getLeader()) ? team.getBusinessPartLeader() : team.getLeader();
+    private Set<Map<String, String>> pickTeamsInfo(User user) {
+        Set<Map<String, String>> teams = new HashSet<>();
+        for (var team : user.getTeams()) {
+            var teamName = team.getName();
+            var leader = user.equals(team.getLeader()) ? team.getBusinessPartLeader() : team.getLeader();
 
             if (leader != null) {
                 Map<String, String> teamInfo = new HashMap<>();
@@ -87,12 +90,13 @@ public class SessionService {
 
 
     public String getAppVersion() {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+        var dateTimeFormatter = DateTimeFormatter
                 .ofPattern("yyyy-MM-dd HH:mm")
                 .withZone(ZoneId.systemDefault());
-        Instant time = buildProperties.getTime();
-        return buildProperties.getVersion() + "-" + gitProperties.getCommitId().substring(0, 6)
-                + " (" + dateTimeFormatter.format(time) + ")";
+        var version = buildProperties.getVersion();
+        var commitId = gitProperties.getCommitId().substring(0, 6);
+        var buildTime = dateTimeFormatter.format(buildProperties.getTime());
+        return version + "-" + commitId + " (" + buildTime + ")";
     }
 
 }

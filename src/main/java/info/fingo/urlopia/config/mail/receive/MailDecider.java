@@ -41,11 +41,11 @@ public class MailDecider {
     }
 
     public void resolve(Mail mail) {
-        String senderMail = mail.getSenderAddress();
+        var senderMail = mail.getSenderAddress();
         if (senderMail.equals(this.mailBotAddress)){
             return;
         }
-        User sender = userService.get(senderMail);
+        var sender = userService.get(senderMail);
 
         if (sender == null) {
             this.userNotFound(senderMail);
@@ -66,8 +66,8 @@ public class MailDecider {
     }
 
     private void updateAcceptance() {
-        long acceptanceId = mailParser.getId();
-        String decision = mailParser.getReply().toLowerCase();
+        var acceptanceId = mailParser.getId();
+        var decision = mailParser.getReply().toLowerCase();
 
         if (mailParser.isAcceptedByMail(decision)) {
             acceptanceService.accept(acceptanceId);
@@ -77,9 +77,9 @@ public class MailDecider {
     }
 
     private void createNewRequest(User requester) {
-        Long userId = requester.getId();
-        String userEmail = requester.getMail();
-        RequestInput requestInput = new RequestInput();
+        var userId = requester.getId();
+        var userEmail = requester.getMail();
+        var requestInput = new RequestInput();
         requestInput.setStartDate(mailParser.getStartDate());
         requestInput.setEndDate(mailParser.getEndDate());
         requestInput.setType(RequestType.NORMAL);

@@ -13,18 +13,18 @@ import java.util.Map;
 public class MailTemplate {
     private static final Logger LOGGER = LoggerFactory.getLogger(MailTemplateLoader.class);
 
-    private Template template;
-    private Map<String, Object> model = new HashMap<>();
+    private final Template template;
+    private final Map<String, Object> model = new HashMap<>();
 
     MailTemplate(Template template) {
         this.template = template;
     }
 
     private String getTemplateContent() {
-        String content = "";
+        var content = "";
 
         try {
-            Context context = Context.newBuilder(model)
+            var context = Context.newBuilder(model)
                     .resolver(MapValueResolver.INSTANCE)
                     .build();
             content = template.apply(context);
@@ -41,14 +41,14 @@ public class MailTemplate {
     }
 
     public String getSubject() {
-        String templateContent = getTemplateContent();
-        String[] lines = templateContent.split("\r\n|\r|\n", 2);
+        var templateContent = getTemplateContent();
+        var lines = templateContent.split("\r\n|\r|\n", 2);
         return lines[0];
     }
 
     public String getContent() {
-        String templateContent = getTemplateContent();
-        String[] lines = templateContent.split("\r\n|\r|\n", 3);
+        var templateContent = getTemplateContent();
+        var lines = templateContent.split("\r\n|\r|\n", 3);
         return lines[2];
     }
 }

@@ -1,6 +1,7 @@
 package info.fingo.urlopia.user;
 
 import info.fingo.urlopia.config.ad.ActiveDirectory;
+import info.fingo.urlopia.config.ad.ActiveDirectoryObjectClass;
 import info.fingo.urlopia.config.ad.ActiveDirectoryUtils;
 import info.fingo.urlopia.config.ad.Attribute;
 import org.slf4j.Logger;
@@ -92,7 +93,7 @@ public class ActiveDirectoryUserSynchronizer {
 
     private List<SearchResult> pickUsersFromActiveDirectory() {
         return activeDirectory.newSearch()
-                .objectClass(ActiveDirectory.ObjectClass.Person)
+                .objectClass(ActiveDirectoryObjectClass.Person)
                 .memberOf(usersGroup)
                 .search();
     }

@@ -6,9 +6,8 @@ import java.io.IOException;
 
 public class HandlebarsHelper {
     public String ifeq(Object val, String val2, Options options) throws IOException {
-        if (val.equals(val2)) {
-            return options.fn().toString().trim();
-        }
-        return "";
+        return val.equals(val2) 
+                ? options.fn().toString().trim() 
+                : "";
     }
 }
