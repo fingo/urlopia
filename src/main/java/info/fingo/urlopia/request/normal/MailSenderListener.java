@@ -81,7 +81,7 @@ class MailSenderListener {
 
     @EventListener(condition = "#acceptanceCreated.acceptance.request.normal")
     public void acceptanceCreated_leader(AcceptanceCreated acceptanceCreated) {
-        var acceptance = acceptanceCreated.getAcceptance();
+        var acceptance = acceptanceCreated.acceptance();
         var leader = acceptance.getLeader();
         var mailTemplate = mailTemplates.acceptanceCreatedLeader(acceptance.getId(), acceptance.getRequest());
         notify(mailTemplate, leader);
@@ -89,7 +89,7 @@ class MailSenderListener {
 
     @EventListener(condition = "#acceptanceRejected.acceptance.request.normal")
     public void acceptanceRejected_requester(AcceptanceRejected acceptanceRejected) {
-        Acceptance acceptance = acceptanceRejected.getAcceptance();
+        Acceptance acceptance = acceptanceRejected.acceptance();
         User requester = acceptance.getRequest().getRequester();
         var mailTemplate = mailTemplates.acceptanceRejectedRequester(acceptance);
         notify(mailTemplate, requester);
