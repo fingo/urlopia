@@ -20,6 +20,8 @@ import java.util.Map;
 public class EvidenceReportModelFactory {
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(); // uses default JVM locale
+    private static final int NUMBER_OF_MONTHS = 12;
+    private static final int NUMBER_OF_DAYS = 31;
 
     private final RequestService requestService;
     private final HolidayService holidayService;
@@ -42,7 +44,9 @@ public class EvidenceReportModelFactory {
         return new EvidenceReportModel(model);
     }
 
-    private void putAllWithPrefix(Map<String, String> from, Map<String, String> to, String prefix) {
+    private void putAllWithPrefix(Map<String, String> from,
+                                  Map<String, String> to,
+                                  String prefix) {
         from.forEach((key, value) -> to.put(prefix + "." + key, value));
     }
 
@@ -51,48 +55,54 @@ public class EvidenceReportModelFactory {
     }
 
     private Map<String, String> userMetadataParams(User user) {
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("firstName", user.getFirstName());
-        parameters.put("lastName", user.getLastName());
-        parameters.put("workTime", DECIMAL_FORMAT.format(user.getWorkTime()));
-        return Collections.unmodifiableMap(parameters);
+        return Map.of("firstName", user.getFirstName(),
+                "lastName", user.getLastName(),
+                "workTime", DECIMAL_FORMAT.format(user.getWorkTime()));
     }
 
-    private Map<String, String> vacationLeaveParams(User user, int year) {
-        float previousYearRemainingHours = this.historyLogService.countRemainingHoursForYear(user.getId(), year - 1);
-        float currentYearAddedHours = this.historyLogService.getFromYear(user.getId(), year).stream()
+    private Map<String, String> vacationLeaveParams(User user,
+                                                    int year) {
+        var previousYearRemainingHours = this.historyLogService
+                .countRemainingHoursForYear(user.getId(), year - 1);
+        var currentYearAddedHours = this.historyLogService
+                .getFromYear(user.getId(), year).stream()
                 .filter(historyLog -> historyLog.getRequest() == null)
                 .map(HistoryLog::getHours)
                 .filter(hours -> hours > 0)
                 .reduce(Float::sum)
                 .orElse(0f);
-        float remainingHoursAtYearStart = previousYearRemainingHours + currentYearAddedHours;
+        var remainingHoursAtYearStart = previousYearRemainingHours + currentYearAddedHours;
         return Collections.singletonMap("remainingHoursAtYearStart", DECIMAL_FORMAT.format(remainingHoursAtYearStart));
     }
 
-    private Map<String, String> dayStatusesParams(User user, int year) {
+    private Map<String, String> dayStatusesParams(User user,
+                                                  int year) {
         Map<String, String> parameters = new HashMap<>();
-        for (int month = 1; month <= 12; month++) {
-            for (int dayOfMonth = 1; dayOfMonth <= 31; dayOfMonth++) {
-                String dayStatus = this.getDayStatus(user, year, month, dayOfMonth);
-                String paramName = String.format("%02d_%02d", month, dayOfMonth);
+        for (int month = 1; month <= NUMBER_OF_MONTHS; month++) {
+            for (int dayOfMonth = 1; dayOfMonth <= NUMBER_OF_DAYS; dayOfMonth++) {
+                var dayStatus = this.getDayStatus(user, year, month, dayOfMonth);
+                var paramName = String.format("%02d_%02d", month, dayOfMonth);
                 parameters.put(paramName, dayStatus);
             }
         }
         return parameters;
     }
 
-    private String getDayStatus(User user, int year, int month, int dayOfMonth) {
-        LocalDate currentDate = LocalDate.now();
+    private String getDayStatus(User user,
+                                int year,
+                                int month,
+                                int dayOfMonth) {
+        var currentDate = LocalDate.now();
         if (year > currentDate.getYear()
                 || (year == currentDate.getYear() && month >= currentDate.getMonthValue())) {
             return "";
         }
 
         try {
-            LocalDate date = LocalDate.of(year, month, dayOfMonth);
+            var date = LocalDate.of(year, month, dayOfMonth);
             if (this.holidayService.isWorkingDay(date)) {
-                return this.requestService.getByUserAndDate(user.getId(), date).stream()
+                return this.requestService
+                        .getByUserAndDate(user.getId(), date).stream()
                         .filter(req -> req.getStatus() == Request.Status.ACCEPTED)
                         .map(req -> this.getRequestStatus(req.getType()))
                         .findFirst()
@@ -105,14 +115,10 @@ public class EvidenceReportModelFactory {
     }
 
     private String getRequestStatus(RequestType requestType) {
-        switch (requestType) {
-            case NORMAL:
-                return "uw";
-            case OCCASIONAL:
-                return "uo";
-            default:
-                return "undefined";
-        }
+        return switch (requestType) {
+            case NORMAL -> "uw";
+            case OCCASIONAL -> "uo";
+        };
     }
 
 }
