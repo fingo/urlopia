@@ -2,6 +2,7 @@ package info.fingo.urlopia.team;
 
 import info.fingo.urlopia.config.ad.ActiveDirectoryUtils;
 import info.fingo.urlopia.config.ad.Attribute;
+import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -32,15 +33,21 @@ public class ActiveDirectoryTeamMapper {
                 ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.DISTINGUISHED_NAME));
         team.setName(
                 normalizeName(ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.NAME)));
-        team.setLeader(userRepository.findFirstByAdName(
-                ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.MANAGED_BY)));
-        team.setBusinessPartLeader(userRepository.findFirstByAdName(
-                ActiveDirectoryUtils.pickAttribute(adBusinessPart, Attribute.MANAGED_BY)));
+        team.setLeader(
+                findUser(ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.MANAGED_BY)));
+        team.setBusinessPartLeader(
+                findUser(ActiveDirectoryUtils.pickAttribute(adBusinessPart, Attribute.MANAGED_BY)));
         return team;
     }
 
+    private User findUser(String adName) {
+        return userRepository
+                .findFirstByAdName(adName)
+                .orElse(null);
+    }
+
     private String normalizeName(String adName) {
-        var end = adName.length() - this.teamIdentifier.length() - 1; // -1 for space between name and identifier
+        var end = adName.length() - teamIdentifier.length() - 1; // -1 for space between name and identifier
         return adName.substring(0, end);
     }
 }

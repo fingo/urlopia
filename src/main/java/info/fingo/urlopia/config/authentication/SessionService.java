@@ -1,6 +1,7 @@
 package info.fingo.urlopia.config.authentication;
 
 import info.fingo.urlopia.team.Team;
+import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
 import org.slf4j.Logger;
@@ -10,7 +11,6 @@ import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -45,8 +45,11 @@ public class SessionService {
 
     public UserData authenticate(Credentials credentials) {
         if (ldapConnectionService.authenticate(credentials)) {
-            var user = userRepository.findFirstByMail(credentials.getMail());
-            var roles = this.pickRoles(user);
+            var user = userRepository
+                    .findFirstByMail(credentials.getMail())
+                    .orElseThrow(NoSuchUserException::invalidCredentials);
+            var roles = pickRoles(user);
+
             var userData = new UserData(user.getId(), roles);
             userData.setName(user.getFirstName());
             userData.setSurname(user.getLastName());
@@ -56,8 +59,9 @@ public class SessionService {
             userData.setToken(webTokenService.generateWebToken(user.getId(), roles));
             return userData;
         }
-        LOGGER.info("Authentication failed for user " + credentials.getMail());
-        throw new RuntimeException("authentication failed");
+        var loggerInfo = "Authentication failed for user %s".formatted(credentials.getMail());
+        LOGGER.info(loggerInfo);
+        throw NoSuchUserException.invalidCredentials();
     }
 
     private List<String> pickRoles(User user) {

@@ -5,14 +5,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRepository extends BaseRepository<User>, JpaRepository<User, Long> {
 
-    User findFirstByMail(String mail);
+    Optional<User> findFirstByMail(String mail);
 
-    User findFirstByPrincipalName(String principalName);
+    Optional<User> findFirstByPrincipalName(String principalName);
 
-    User findFirstByAdName(String adName);
+    Optional<User> findFirstByAdName(String adName);
 
     @Query("SELECT u.principalName FROM User u")
     List<String> findAllPrincipalNames();

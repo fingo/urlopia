@@ -190,7 +190,7 @@ public class User {
     }
 
     public Set<Team> getTeams() {
-        return teams;
+        return Set.copyOf(teams);
     }
 
     @Override

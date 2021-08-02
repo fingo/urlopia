@@ -6,7 +6,6 @@ import info.fingo.urlopia.config.ad.ActiveDirectoryUtils;
 import info.fingo.urlopia.config.ad.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -24,15 +23,13 @@ public class ActiveDirectoryUserSynchronizer {
     private String usersGroup;
 
     private final UserRepository userRepository;
-
     private final ActiveDirectory activeDirectory;
-
     private final ActiveDirectoryUserMapper userMapper;
-
     private LocalDateTime lastModificationsCheck;
 
-    @Autowired
-    public ActiveDirectoryUserSynchronizer(UserRepository userRepository, ActiveDirectory activeDirectory, ActiveDirectoryUserMapper userMapper) {
+    public ActiveDirectoryUserSynchronizer(UserRepository userRepository,
+                                           ActiveDirectory activeDirectory,
+                                           ActiveDirectoryUserMapper userMapper) {
         this.userRepository = userRepository;
         this.activeDirectory = activeDirectory;
         this.userMapper = userMapper;
@@ -40,18 +37,20 @@ public class ActiveDirectoryUserSynchronizer {
     }
 
     public void addNewUsers() {
-        List<String> dbUsers = userRepository.findAllPrincipalNames();
-        this.pickUsersFromActiveDirectory().stream()
-                .filter(user -> !dbUsers.contains(ActiveDirectoryUtils.pickAttribute(user, Attribute.PRINCIPAL_NAME)))
+        var dbUsers = userRepository.findAllPrincipalNames();
+        pickUsersFromActiveDirectory().stream()
+                .filter(user ->
+                        !dbUsers.contains(ActiveDirectoryUtils.pickAttribute(user, Attribute.PRINCIPAL_NAME)))
                 .map(userMapper::mapToUser)
                 .forEach(userRepository::save);
         LOGGER.info("Synchronisation succeed: find new users");
     }
 
     public void deactivateDeletedUsers() {
-        List<String> adUsers = this.pickUsersFromActiveDirectory().stream()
+        var adUsers = pickUsersFromActiveDirectory().stream()
                 .map(user -> ActiveDirectoryUtils.pickAttribute(user, Attribute.PRINCIPAL_NAME))
                 .collect(Collectors.toList());
+
         userRepository.findAll().stream()
                 .filter(user -> !adUsers.contains(user.getPrincipalName()))
                 .forEach(user -> {
@@ -62,32 +61,30 @@ public class ActiveDirectoryUserSynchronizer {
     }
 
     public void synchronizeIncremental() {
-        LocalDateTime checkTime = LocalDateTime.now();
-        Stream<SearchResult> usersToSynchronize = this.pickUsersFromActiveDirectory().stream()
+        var usersToSynchronize = pickUsersFromActiveDirectory().stream()
                 .filter(user -> {
-                    String changed = ActiveDirectoryUtils.pickAttribute(user, Attribute.CHANGED_TIME);
-                    LocalDateTime changedTime = ActiveDirectoryUtils.convertToLocalDateTime(changed);
-                    return changedTime.isAfter(this.lastModificationsCheck);
+                    var changed = ActiveDirectoryUtils.pickAttribute(user, Attribute.CHANGED_TIME);
+                    var changedTime = ActiveDirectoryUtils.convertToLocalDateTime(changed);
+                    return changedTime.isAfter(lastModificationsCheck);
                 });
-        this.synchronize(usersToSynchronize);
-        this.lastModificationsCheck = checkTime;
+        synchronize(usersToSynchronize);
+        lastModificationsCheck = LocalDateTime.now();
         LOGGER.info("Synchronisation succeed: last modified users");
     }
 
     public void synchronizeFull() {
-        Stream<SearchResult> usersToSynchronize = this.pickUsersFromActiveDirectory().stream();
-        this.synchronize(usersToSynchronize);
+        var usersToSynchronize = pickUsersFromActiveDirectory().stream();
+        synchronize(usersToSynchronize);
         LOGGER.info("Synchronisation succeed: all users");
     }
 
     private void synchronize(Stream<SearchResult> adUsers) {
         adUsers.forEach(adUser -> {
-            String principalName = ActiveDirectoryUtils.pickAttribute(adUser, Attribute.PRINCIPAL_NAME);
-            User user = userRepository.findFirstByPrincipalName(principalName);
-            if (user != null) {
-                user = userMapper.mapToUser(adUser, user);
-                userRepository.save(user);
-            }
+            var principalName = ActiveDirectoryUtils.pickAttribute(adUser, Attribute.PRINCIPAL_NAME);
+            userRepository
+                    .findFirstByPrincipalName(principalName)
+                    .map(user -> userMapper.mapToUser(adUser, user))
+                    .ifPresent(userRepository::save);
         });
     }
 

@@ -90,8 +90,8 @@ public class ActiveDirectoryTeamSynchronizer {
             var adName = ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.DISTINGUISHED_NAME);
             var optionalTeam = teamRepository.findFirstByAdName(adName);
             optionalTeam.ifPresent(team -> {
-               String membersAsString = ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.MEMBER);
-               Set<User> members = splitMembers(membersAsString);
+               var membersAsString = ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.MEMBER);
+               var members = splitMembers(membersAsString);
                team.setUsers(members);
                teamRepository.save(team);
             });
@@ -100,11 +100,12 @@ public class ActiveDirectoryTeamSynchronizer {
     }
 
     private Set<User> splitMembers(String members) {
-        String[] groups = ActiveDirectoryUtils.split(members);
+        var groups = ActiveDirectoryUtils.split(members);
         return Arrays.stream(groups)
                 .map(userRepository::findFirstByAdName)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     private List<SearchResult> pickTeamsFromAD() {
