@@ -1,4 +1,4 @@
-package info.fingo.urlopia.apiv2;
+package info.fingo.urlopia.api.v2;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
