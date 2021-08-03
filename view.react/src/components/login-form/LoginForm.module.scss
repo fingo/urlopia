@@ -1,0 +1,55 @@
+@import "src/global-styles/color-variables";
+
+.loginForm {
+  border-radius: 50px;
+  background-color: white;
+  margin: 0 5% 5%;
+  width: 350px;
+  height: 450px;
+}
+
+.formContainer {
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.inputContainer {
+  width: 80%;
+}
+
+.title {
+  text-align: center;
+  font-size: 2.2rem;
+}
+
+.input {
+  border: 3px solid $PURPLE_COLOR;
+  border-radius: 60px;
+  margin-top: 20px;
+}
+
+.input:focus {
+  border: 4px solid $BASE-COLOR;
+}
+
+.button {
+  width: 40%;
+  background-color: $PURPLE_COLOR;
+  border-radius: 30px;
+  border: 0;
+  margin-bottom: 30px;
+}
+
+.button:hover,
+.button:focus {
+  background-color: $BASE-COLOR;
+}
+
+.alertContainer {
+  text-align: center;
+  font-size: 1.3rem;
+  color: red;
+}
