@@ -21,10 +21,10 @@ public class HolidayController {
     HolidayRepository holidayRepository;
 
     @RolesAllowed("ROLES_ADMIN")
-    @RequestMapping(value = "/api/holiday", method = RequestMethod.GET)
+    @GetMapping(value = "/api/holiday")
     public List<HolidayResponse> getAll(@RequestParam Integer year,
                                         @RequestParam(name = "filter", defaultValue = "") String[] filters) {
-        Filter filter = Filter.from(filters);
+        var filter = Filter.from(filters);
         return holidayService.getAllHolidaysInYear(year, filter);
     }
 
@@ -32,9 +32,12 @@ public class HolidayController {
      * It is allowed to save only holidays within one year at method call
      */
     @RolesAllowed("ROLES_ADMIN")
-    @RequestMapping(value = "/api/holiday/save", method = RequestMethod.POST)
+    @PostMapping(value = "/api/holiday/save")
     public HttpStatus save(@RequestBody List<HolidayResponse> holidays) {
-        int currentYear = Instant.ofEpochMilli(holidays.get(0).getDate()).atZone(ZoneId.systemDefault()).toLocalDate().getYear();
+        var currentYear = Instant.ofEpochMilli(holidays.get(0).getDate())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+                .getYear();
 
         for (HolidayResponse h: holidays) {
             if(Instant.ofEpochMilli(h.getDate()).atZone(ZoneId.systemDefault()).toLocalDate().getYear() != currentYear)
@@ -48,9 +51,10 @@ public class HolidayController {
     }
 
     @RolesAllowed("ROLES_ADMIN")
-    @RequestMapping(value = "/api/holiday/default", method = RequestMethod.GET)
+    @GetMapping(value = "/api/holiday/default")
     public List<HolidayResponse> generate(@RequestParam Integer year) {
-        List<HolidayResponse> holidays = holidayService.generateHolidaysList(year).stream().map(HolidayResponse::new).collect(Collectors.toList());
-        return holidays;
+        return holidayService.generateHolidaysList(year).stream()
+                .map(HolidayResponse::new)
+                .collect(Collectors.toList());
     }
 }

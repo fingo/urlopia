@@ -22,7 +22,8 @@ public class Holiday {
         // No-args constructor required by *Hibernate*
     }
 
-    public Holiday(String name, LocalDate date) {
+    public Holiday(String name,
+                   LocalDate date) {
         this.name = name;
         this.date = date;
     }

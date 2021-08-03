@@ -25,18 +25,18 @@ public class HolidayService {
     private HolidayRepository holidayRepository;
 
     public List<HolidayResponse> getAllHolidaysInYear(int year, Filter filter) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_FORMAT);
-        String yearStart = LocalDate.of(year, 1, 1).format(formatter);
-        String yearEnd = LocalDate.of(year, 12, 31).format(formatter);
+        var formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_FORMAT);
+        var yearStart = LocalDate.of(year, 1, 1).format(formatter);
+        var yearEnd = LocalDate.of(year, 12, 31).format(formatter);
 
-        Filter filterWithRestrictions = filter.toBuilder()
+        var filterWithRestrictions = filter.toBuilder()
                 .and("date", Operator.GREATER_OR_EQUAL, yearStart)
                 .and("date", Operator.LESS_OR_EQUAL, yearEnd)
                 .build();
-        List<Holiday> holidays = holidayRepository.findAll(filterWithRestrictions);
+        var holidays = holidayRepository.findAll(filterWithRestrictions);
         List<HolidayResponse> result = new ArrayList<>(holidays.size());
 
-        for (Holiday h : holidays) {
+        for (var h : holidays) {
             result.add(new HolidayResponse(h));
         }
 
@@ -48,14 +48,17 @@ public class HolidayService {
     }
 
     public void addHolidays(List<HolidayResponse> holidays) {
-        for (HolidayResponse h : holidays) {
+        for (var h : holidays) {
             addHoliday(h);
         }
     }
 
     protected Holiday entityFromResponse(HolidayResponse holiday) {
-        return new Holiday(holiday.getName(), LocalDateTime.ofInstant(Instant.ofEpochSecond(holiday.getDate() / 1000), TimeZone
-                .getDefault().toZoneId()).toLocalDate());
+        var holidayDateTimestamp = holiday.getDate() / 1000;
+        var zoneId = TimeZone.getDefault().toZoneId();
+        var date = LocalDateTime.ofInstant(Instant.ofEpochSecond(holidayDateTimestamp), zoneId);
+
+        return new Holiday(holiday.getName(), date.toLocalDate());
     }
 
     @Scheduled(cron = "1 0 0 1 1 *")
@@ -65,8 +68,10 @@ public class HolidayService {
     }
 
     public void deleteYear(int year) {
-        List<Holiday> toDelete = holidayRepository.findByDateBetween(LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31));
-        holidayRepository.deleteAll(toDelete);
+        var yearStartDate = LocalDate.of(year, 1, 1);
+        var yearEndDate = LocalDate.of(year, 12, 31);
+        var holidaysToDelete = holidayRepository.findByDateBetween(yearStartDate, yearEndDate);
+        holidayRepository.deleteAll(holidaysToDelete);
     }
 
     //public for convenience of testing
@@ -93,33 +98,31 @@ public class HolidayService {
         return holidays;
     }
 
+// https://stackoverflow.com/questions/26022233/calculate-the-date-of-easter-sunday
     private LocalDate getEaster(int year) {
-        // Easter
-        int a = year % 19;
-        int b = year / 100;
-        int c = year % 100;
-        int d = b / 4;
-        int e = b % 4;
-        int f = (b + 8) / 25;
-        int g = (b - f + 1) / 3;
-        int h = (19 * a + b - d - g + 15) % 30;
-        int i = c / 4;
-        int k = c % 4;
-        int l = (32 + 2 * e + 2 * i - h - k) % 7;
-        int m = (a + 11 * h + 22 * l) / 451;
-        int p = (h + l - 7 * m + 114) % 31;
-        int easterDay = p + 1;
-        int easterMonth = (h + l - 7 * m + 114) / 31;
+        var a = year % 19;
+        var b = year / 100;
+        var c = year % 100;
+        var d = b / 4;
+        var e = b % 4;
+        var g = (8 * b + 13) / 25;
+        var h = (19 * a + b - d - g + 15) % 30;
+        var j = c / 4;
+        var k = c % 4;
+        var m = (a + 11 * h) / 319;
+        var r = (2 * e + 2 * j - k - h + m + 32) % 7;
+        var n = (h - m + r + 90) / 25;
+        var p = (h - m + r + n + 19) % 32;
 
-        return LocalDate.of(year, easterMonth, easterDay);
+        return LocalDate.of(year, n, p);
     }
 
     public boolean isWorkingDay(LocalDate date) {
-        return !this.isWeekend(date) & !this.isHoliday(date);
+        return !this.isWeekend(date) && !this.isHoliday(date);
     }
 
     public boolean isWeekend(LocalDate date) {
-        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        var dayOfWeek = date.getDayOfWeek();
         return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
     }
 
