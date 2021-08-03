@@ -3,7 +3,6 @@ package info.fingo.urlopia.config.persistance.filter;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -21,17 +20,22 @@ public class Filter {
 
     public <E> Specification<E> generateSpecification() {
         return this.components.stream()
-                .flatMap(Collection::stream)
                 .map(this::<E>generateSpecificationFrom)
-                .reduce(null, (spec1, spec2) -> Specification.where(spec1).or(spec2));
-    }
+                .reduce(null, (spec1, spec2) -> Specification.where(spec1).and(spec2));
 
-    private <E> Specification<E> generateSpecificationFrom(FilterComponent component) {
-        var operator = component.operator();
-        var key = component.key();
-        var value = component.value();
-        return operator.generateSpecification(key, value);
-    }
+   }
+
+   private <E> Specification<E>generateSpecificationFrom(List<FilterComponent> components){
+        return components.stream()
+                .map(component -> {
+                    var operator = component.operator();
+                    var key = component.key();
+                    var value = component.value();
+                    return operator.<E>generateSpecification(key, value);
+                })
+                .reduce(null, (spec1, spec2) -> Specification.where(spec1).or(spec2));
+   }
+
 
     // STATIC CONTENT
 
@@ -80,7 +84,7 @@ public class Filter {
             }
 
             var key = matcher.group(1);
-         var operatorSign = matcher.group(2);
+            var operatorSign = matcher.group(2);
             var operator = Operator.fromSign(operatorSign);
             if (operator.isEmpty()) {
                 return Collections.emptyList();
@@ -116,8 +120,8 @@ public class Filter {
             components.forEach(this::or);
         }
 
-        public Builder and(String key, 
-                           Operator operator, 
+        public Builder and(String key,
+                           Operator operator,
                            String value) {
             FilterComponent component = new FilterComponent(key, operator, value);
             this.and();
