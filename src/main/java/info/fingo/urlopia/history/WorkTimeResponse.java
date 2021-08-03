@@ -11,7 +11,8 @@ public class WorkTimeResponse {
     private int workTimeA;
     private int workTimeB;
 
-    public WorkTimeResponse(float workTime, float pool) {
+    public WorkTimeResponse(float workTime,
+                            float pool) {
         this.workTime = workTime;
         this.pool = pool;
         this.days = (int) Math.floor(pool / workTime);
@@ -22,9 +23,8 @@ public class WorkTimeResponse {
     }
 
     public void countWorkTime() {
-        float i = workTime / 8;
+        var i = workTime / 8;
         a = 0;
-        res = i;
         do {
             a++;
             res = i * a;
@@ -76,7 +76,7 @@ public class WorkTimeResponse {
         return workTimeB;
     }
 
-    public void setWorktimeB(int workTimeB) {
+    public void setWorkTimeB(int workTimeB) {
         this.workTimeB = workTimeB;
     }
 }

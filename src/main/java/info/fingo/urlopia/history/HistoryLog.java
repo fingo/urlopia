@@ -48,7 +48,11 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
         this.created = LocalDateTime.now();
     }
 
-    HistoryLog(User user, User decider, float hours, String comment, HistoryLog prevHistoryLog) {
+    HistoryLog(User user,
+               User decider,
+               float hours,
+               String comment,
+               HistoryLog prevHistoryLog) {
         this();
         this.user = user;
         this.decider = decider;
@@ -60,39 +64,24 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
         this.prevHistoryLog = prevHistoryLog;
     }
 
-    HistoryLog(Request request, User user, User decider, float hours, String comment, HistoryLog prevHistoryLog) {
+    HistoryLog(Request request,
+               User user,
+               User decider,
+               float hours,
+               String comment,
+               HistoryLog prevHistoryLog) {
         this(user, decider, hours, comment, prevHistoryLog);
         this.request = request;
     }
 
     @Transient
     public float getWorkTimeNumerator() {       // TODO: Think how to remove these methods (maybe store more informations in database)
-        float value = this.userWorkTime / 8;
-
-        float denominator = 0;
-        float numerator;
-
-        do {
-            denominator++;
-            numerator = value * denominator;
-        } while (Math.floor(numerator) != numerator);
-
-        return numerator;
+        return countWorkTimeFraction().numerator();
     }
 
     @Transient
     public float getWorkTimeDenominator() {
-        float value = this.userWorkTime / 8;
-
-        float denominator = 0;
-        float numerator;
-
-        do {
-            denominator++;
-            numerator = value * denominator;
-        } while (Math.floor(numerator) != numerator);
-
-        return denominator;
+        return countWorkTimeFraction().denominator();
     }
 
     public Long getId() {
@@ -138,4 +127,24 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
     public HistoryLog getPrevHistoryLog() {
         return prevHistoryLog;
     }
+
+    private Fraction countWorkTimeFraction(){
+        float value = this.userWorkTime / 8;
+
+        float denominator = 0;
+        float numerator;
+
+        do {
+            denominator++;
+            numerator = value * denominator;
+        } while (Math.floor(numerator) != numerator);
+
+        return new Fraction(numerator, denominator);
+    }
+
+    record Fraction(float numerator,
+                    float denominator) {
+    }
+
+
 }

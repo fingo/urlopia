@@ -23,21 +23,21 @@ public class HistoryLogController {
     }
 
     @RolesAllowed({"ROLES_WORKER", "ROLES_LEADER", "ROLES_ADMIN"})
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List> getFromUser(@PathVariable Long userId,
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<HistoryLogExcerptProjection>> getFromUser(@PathVariable Long userId,
                                             @RequestParam(required = false) Integer year,
                                             @RequestParam(name = "filter", defaultValue = "") String[] filters) {
-        Filter filter = Filter.from(filters);
-        List<HistoryLogExcerptProjection> historyLogs = historyService.get(userId, year, filter);
+        var filter = Filter.from(filters);
+        var historyLogs = historyService.get(userId, year, filter);
         return ResponseEntity.ok(historyLogs);
     }
 
     @RolesAllowed({"ROLES_WORKER", "ROLES_LEADER", "ROLES_ADMIN"})
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> add(@PathVariable Long userId,
                                     @RequestBody HistoryLogInput historyLog,
                                     HttpServletRequest httpRequest) {
-        Long authenticatedUserId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedUserId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
         historyService.create(historyLog, userId, authenticatedUserId);
         return ResponseEntity.ok().build();
     }
@@ -45,23 +45,23 @@ public class HistoryLogController {
     // *** ACTIONS ***
 
     @RolesAllowed({"ROLES_WORKER", "ROLES_LEADER"})
-    @RequestMapping(value = "/remaining", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/remaining",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WorkTimeResponse> getRemainingDays(@PathVariable Long userId) {
-        WorkTimeResponse response = historyService.countRemainingDays(userId);
+        var response = historyService.countRemainingDays(userId);
         return ResponseEntity.ok(response);
     }
 
     @RolesAllowed({"ROLES_ADMIN"})
-    @RequestMapping(value = "/recent", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List> getRecentLogs(@PathVariable Long userId) {
-        List<HistoryLogExcerptProjection> histories = historyService.getRecent(userId);
+    @GetMapping(value = "/recent",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<HistoryLogExcerptProjection>> getRecentLogs(@PathVariable Long userId) {
+        var histories = historyService.getRecent(userId);
         return ResponseEntity.ok(histories);
     }
 
     @RolesAllowed({"ROLES_WORKER", "ROLES_LEADER", "ROLES_ADMIN"})
-    @RequestMapping(value = "/employment-year", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/employment-year",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Integer> getEmploymentYear(@PathVariable Long userId) {
-        Integer employmentYear = historyService.getEmploymentYear(userId);
+        var employmentYear = historyService.getEmploymentYear(userId);
         return ResponseEntity.ok(employmentYear);
     }
 

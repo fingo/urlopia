@@ -20,13 +20,17 @@ public interface HistoryLogRepository extends BaseRepository<HistoryLog>, JpaRep
 
     List<HistoryLogExcerptProjection> findFirst5ByUserIdOrderByCreatedDesc(Long userId);
 
-    List<HistoryLog> findLogsByUserIdAndCreatedBetween(long userId, LocalDateTime startDate, LocalDateTime endDate);
+    List<HistoryLog> findLogsByUserIdAndCreatedBetween(long userId,
+                                                       LocalDateTime startDate,
+                                                       LocalDateTime endDate);
 
     List<HistoryLog> findLogsByUserId(long userId);
 
-    @Query("SELECT COALESCE(SUM(h.hours), 0) " +
-            "FROM HistoryLog h " +
-            "WHERE h.user.id = :userId")
+    @Query("""
+            SELECT COALESCE(SUM(h.hours), 0)
+            FROM HistoryLog h
+            WHERE h.user.id = :userId
+            """)
     Float sumHours(@Param("userId") Long userId);
 
 }
