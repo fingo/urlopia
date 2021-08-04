@@ -48,11 +48,11 @@ export const LoginForm = () => {
                     <FormControl value={password} onChange={event => setPassword(event.target.value)}
                                  type="password" placeholder="Hasło" className={styles.input}/>
                 </div>
-                <Button className={styles.button} type="submit">
+                <Button className={styles.button} type="submit" data-testid="login-btn">
                     {isLoading ? LOADING_MESSAGE : LOGIN_MESSAGE}</Button>
             </div>
             <div className={styles.alertContainer}>
-                <strong>{showAlert && errorMessage}</strong>
+                <strong data-testid="error-msg">{showAlert && errorMessage}</strong>
             </div>
         </Form>
     );
