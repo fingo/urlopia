@@ -74,17 +74,16 @@ test {
     useJUnitPlatform()
 }
 
-springBoot  {
-    buildInfo()
-}
-
-
 bootJar {
+    archivesBaseName = 'urlopia'
     from("${mainViewModule.projectDir}/public") {
         into "public"
     }
 }
 
+springBoot  {
+    buildInfo()
+}
 
 import org.springframework.boot.gradle.tasks.run.BootRun
 task bootRunWithView(type: BootRun) {
