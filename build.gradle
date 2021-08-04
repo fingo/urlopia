@@ -40,14 +40,6 @@ sonarqube {
     }
 }
 
-jar {
-    archivesBaseName = 'urlopia'
-    manifest.attributes.put("Main-Class", "info.fingo.urlopia.UrlopiaApplication")
-    from("${mainViewModule.projectDir}/public") {
-        into "public"
-    }
-}
-
 repositories {
     mavenCentral()
     maven { url("https://repository.jboss.org/nexus/content/repositories/releases") }
@@ -84,6 +76,13 @@ test {
 
 springBoot  {
     buildInfo()
+}
+
+
+bootJar {
+    from("${mainViewModule.projectDir}/public") {
+        into "public"
+    }
 }
 
 
