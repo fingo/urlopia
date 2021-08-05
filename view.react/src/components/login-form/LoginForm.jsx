@@ -23,12 +23,12 @@ export const LoginForm = () => {
         setLoading(true);
         const credentials = {
             email,
-            password
+            password,
         }
         login(credentials).then(
             () => {
                 history.push("/");
-                window.location.reload();
+                history.go(0);
             },
             error => {
                 setErrorMessage(error.message)

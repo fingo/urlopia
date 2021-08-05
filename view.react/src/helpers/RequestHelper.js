@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-import {mapCodeToMessage} from "./ErrorCodeMapperHelper";
 import {USER_DATA_KEY} from "../constants/session.keystorage";
+import {mapCodeToMessage} from "./ErrorCodeMapperHelper";
 
 export const sendGetRequest = (url) => {
     return axios

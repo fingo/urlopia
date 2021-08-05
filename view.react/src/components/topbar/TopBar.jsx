@@ -2,7 +2,9 @@ import classNames from "classnames";
 import PropTypes from 'prop-types';
 import {Container, Navbar} from 'react-bootstrap';
 import {List as ListIcon, Power as PowerIcon} from "react-bootstrap-icons";
+import {useHistory} from "react-router-dom";
 
+import {logout} from "../../api/services/session.service";
 import logoImg from '../../assets/logo.png';
 import {TeamDropdown} from "./teamDropdown/TeamDropdown";
 import styles from './TopBar.module.scss';
@@ -12,8 +14,11 @@ export const TopBar = ({
        teams,
        onHamburgerClick,
 }) => {
-    const logout = () => {
-        console.log('logout!');
+    const history = useHistory();
+
+    const handleLogout = () => {
+        logout();
+        history.go(0);
     }
 
     const listBtnClass = classNames('d-lg-none', styles.button);
@@ -38,7 +43,7 @@ export const TopBar = ({
                 <div className={styles.mobileRightSide}>
                     <TeamDropdown userName={userName} teams={teams}/>
 
-                    <button type="button" className={styles.button} onClick={logout}>
+                    <button type="button" className={styles.button} onClick={handleLogout}>
                         <PowerIcon className={styles.icon} />
                     </button>
                 </div>
