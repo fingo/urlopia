@@ -6,4 +6,4 @@ out
 *.iml
 clone_guide
 /urlopia.log
-application.properties
+application-developer.properties
