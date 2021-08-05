@@ -1,4 +1,8 @@
 FROM openjdk:16-jdk
 ENV TZ=Europe/Warsaw
+
 COPY build/libs/urlopia-*.jar /urlopia.jar
-CMD java -jar /urlopia.jar -Xmx1g
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod u+rwx,g+rwx,o+rx /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
