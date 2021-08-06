@@ -1,0 +1,8 @@
+@import 'src/global-styles/color-variables';
+
+.main {
+  border: 0;
+  border-radius: 0;
+  border-bottom: 1px solid $DIVIDER-COLOR;
+  padding: 0.5rem 0;
+}

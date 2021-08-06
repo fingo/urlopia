@@ -1,0 +1,25 @@
+@import 'src/global-styles/color-variables';
+@import 'src/global-styles/bootstrap-breakpoints';
+
+.btn {
+  border: 0;
+  background-color: inherit;
+}
+
+.btnActive {
+  color: $BASE-COLOR;
+}
+
+.header {
+  padding: 0;
+  font-size: 1.25rem;
+  border: 0;
+  background-color: inherit;
+  text-align: left;
+}
+
+@include media-breakpoint-down(sm) {
+  .header {
+    font-size: 1rem;
+  }
+}

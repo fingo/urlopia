@@ -6,7 +6,7 @@ import {
 } from 'react-bootstrap';
 
 import {Link} from "./link/Link";
-import {LinkGroup} from "./linkGroup/LinkGroup";
+import {LinkGroup} from "./link-group/LinkGroup";
 import styles from './Sidebar.module.scss';
 
 export const Sidebar = ({onClickOutside}) => {

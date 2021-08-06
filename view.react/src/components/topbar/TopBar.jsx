@@ -6,7 +6,7 @@ import {useHistory} from "react-router-dom";
 
 import {logout} from "../../api/services/session.service";
 import logoImg from '../../assets/logo.png';
-import {TeamDropdown} from "./teamDropdown/TeamDropdown";
+import {TeamDropdown} from "./team-dropdown/TeamDropdown";
 import styles from './TopBar.module.scss';
 
 export const TopBar = ({
