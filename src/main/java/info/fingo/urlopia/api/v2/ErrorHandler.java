@@ -11,9 +11,15 @@ public class ErrorHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ExceptionRestResponse handleCustomException(Exception exception) {
-        return new ExceptionRestResponse(500, exception.getMessage());
+        var code = mapMessageToCode(exception.getMessage());
+        return new ExceptionRestResponse(code);
     }
 
-    public static record ExceptionRestResponse(int code, String message) {
+    public static record ExceptionRestResponse(String message) {
+    }
+
+    private String mapMessageToCode(String message) {
+        var code = message.toUpperCase();
+        return code.replaceAll("\\s", "_");
     }
 }

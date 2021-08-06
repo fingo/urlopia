@@ -13,7 +13,7 @@ export const LoginForm = () => {
     const [isLoading, setLoading] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const [email, setEmail] = useState("");
+    const [mail, setMail] = useState("");
     const [password, setPassword] = useState("");
     const history = useHistory();
 
@@ -22,7 +22,7 @@ export const LoginForm = () => {
         setShowAlert(false);
         setLoading(true);
         const credentials = {
-            email,
+            mail,
             password,
         }
         login(credentials).then(
@@ -43,7 +43,7 @@ export const LoginForm = () => {
             <div className={styles.formContainer}>
                 <h2 className={styles.title}>Urlopia</h2>
                 <div className={styles.inputContainer}>
-                    <FormControl value={email} onChange={event => setEmail(event.target.value)}
+                    <FormControl value={mail} onChange={event => setMail(event.target.value)}
                                  type="email" placeholder="Email" className={styles.input}/>
                     <FormControl value={password} onChange={event => setPassword(event.target.value)}
                                  type="password" placeholder="Hasło" className={styles.input}/>

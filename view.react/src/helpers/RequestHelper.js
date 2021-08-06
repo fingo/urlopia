@@ -35,15 +35,14 @@ const getAuthHeader = () => {
     }
 }
 
-const NO_RESPONSE_CODE = 700;
-const UNKNOWN_ERROR_CODE = 800;
-
+const NO_RESPONSE_CODE = 'NO_RESPONSE';
+const UNKNOWN_ERROR_CODE = 'UNKNOWN_ERROR'
 const handleError = (error) => {
     let errorMessage;
     if (error.response) {
-        let code = error.response.status;
-        if(error.response.data.code) {
-            code = error.response.data.code;
+        let code = error.response.message;
+        if(error.response.data.message) {
+            code = error.response.data.message;
         }
         errorMessage = mapCodeToMessage(code);
     } else if (error.request) {

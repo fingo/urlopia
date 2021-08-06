@@ -1,15 +1,16 @@
-const UNKNOWN_ERROR_MESSAGE = "Wystąpił nieoczekiwany błąd";
-
-const map = new Map(
-    [[500, 'Niepoprawne hasło lub email'],
-            [700, 'Brak odpowiedzi'],
-            [800, 'Wystąpił nieoczekiwany błąd']]);
-
 export const mapCodeToMessage = (code) => {
-    if (map.has(code)) {
-        return map.get(code);
+    switch(true) {
+        case code === "INCORRECT_PASSWORD_OR_EMAIL":
+            code = "Błędny email lub hasło";
+            break;
+        case code.toString().startsWith("THERE_IS_NO_USER_WITH"):
+            code = "Nie znaleziono użytkownika";
+            break;
+        case code === "NO_RESPONSE":
+            code = "Brak odpowiedzi";
+            break;
+        default:
+            code = "Wystąpił nieoczekiwany błąd";
     }
-    else {
-        return UNKNOWN_ERROR_MESSAGE;
-    }
+    return code;
 }
