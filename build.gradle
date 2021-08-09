@@ -48,6 +48,8 @@ repositories {
 
 dependencies {
     implementation platform("org.springframework.boot:spring-boot-dependencies:2.5.2")
+    developmentOnly('com.h2database:h2')
+    developmentOnly('org.springframework.boot:spring-boot-devtools')
     implementation('javax.ejb:ejb-api:3.0')
     implementation('javax.jms:jms-api:1.1-rev-1')
     implementation('javax.resource:javax.resource-api:1.7')
@@ -55,7 +57,6 @@ dependencies {
     implementation('javax.servlet.jsp.jstl:javax.servlet.jsp.jstl-api:1.2.1')
     implementation('javax.transaction:jta:1.1')
     implementation('org.hibernate:hibernate-java8:5.0.12.Final')
-    implementation('org.springframework.boot:spring-boot-devtools')
     implementation('org.springframework.boot:spring-boot-starter-web')
     implementation('org.springframework.boot:spring-boot-starter-data-jpa')
     implementation('org.springframework.boot:spring-boot-starter-mail')
