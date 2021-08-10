@@ -8,6 +8,7 @@ import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.user.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 
 @Service
 @Transactional
+@Slf4j
 public class AcceptanceService {
 
     private final AcceptanceRepository acceptanceRepository;
@@ -45,6 +47,9 @@ public class AcceptanceService {
                        User leader) {
         var acceptance = acceptanceRepository.save(new Acceptance(request, leader));
         publisher.publishEvent(new AcceptanceCreated(acceptance));
+        var loggerInfo = "New acceptance with id: %d has been created"
+                .formatted(acceptance.getId());
+        log.info(loggerInfo);
     }
 
     // *** ACTIONS ***
@@ -86,6 +91,9 @@ public class AcceptanceService {
 
         if (acceptance.getStatus() == Acceptance.Status.PENDING) {
             this.changeStatus(acceptance, Acceptance.Status.EXPIRED);
+            var loggerInfo = "Acceptance with id: %d has expired"
+                    .formatted(acceptanceId);
+            log.info(loggerInfo);
         }
     }
 
@@ -100,6 +108,11 @@ public class AcceptanceService {
     private Acceptance changeStatus(Acceptance acceptance,
                                     Acceptance.Status status) {
         acceptance.setStatus(status);
+        var loggerInfo = ("Status of acceptance with id: %d " +
+                "has been changed to: %s by leader with id: %d")
+                .formatted(acceptance.getId(), status.toString(),
+                        acceptance.getLeader().getId());
+        log.info(loggerInfo);
         return acceptanceRepository.save(acceptance);
     }
 

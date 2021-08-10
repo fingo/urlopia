@@ -6,11 +6,13 @@ import info.fingo.urlopia.config.mail.MailBot;
 import info.fingo.urlopia.request.*;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class MailDecider {
 
     private final UserService userService;
@@ -68,7 +70,9 @@ public class MailDecider {
     private void updateAcceptance() {
         var acceptanceId = mailParser.getId();
         var decision = mailParser.getReply().toLowerCase();
-
+        var loggerInfo = "Decision for acceptance with id: %d is: %s"
+                .formatted(acceptanceId, decision);
+        log.info(loggerInfo);
         if (mailParser.isAcceptedByMail(decision)) {
             acceptanceService.accept(acceptanceId);
         } else {
@@ -83,23 +87,37 @@ public class MailDecider {
         requestInput.setStartDate(mailParser.getStartDate());
         requestInput.setEndDate(mailParser.getEndDate());
         requestInput.setType(RequestType.NORMAL);
-
         try {
             requestService.create(userId, requestInput);
         } catch (NotEnoughDaysException e) {
+            var loggerInfo = "New request for user with id: %d could not be created. Reason: not enough days"
+                    .formatted(userId);
+            log.error(loggerInfo);
             mailBot.requestCreateFailedNoDays(userEmail);
         } catch (RequestOverlappingException e) {
+            var loggerInfo = "New request for user with id: %d could not be created. Reason: overlapping"
+                    .formatted(userId);
+            log.error(loggerInfo);
             mailBot.requestCreateFailedOverlapping(userEmail);
         } catch (Exception e) {
+            var loggerInfo = "New request for user with id: %d could not be created. Reason: unknown"
+                    .formatted(userId);
+            log.error(loggerInfo);
             mailBot.requestCreateFailed(userEmail);
         }
     }
 
     private void userNotFound(String senderMail) {
+        var loggerInfo = "Sender with mail: %s not found"
+                .formatted(senderMail);
+        log.warn(loggerInfo);
         mailBot.userNotFound(senderMail);
     }
 
     private void parsingProblem(String senderMail) {
+        var loggerInfo = "Could not parse email from user: %s"
+                .formatted(senderMail);
+        log.warn(loggerInfo);
         mailBot.parsingProblem(senderMail);
     }
 }

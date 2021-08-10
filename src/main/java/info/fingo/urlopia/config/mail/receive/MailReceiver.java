@@ -2,6 +2,7 @@ package info.fingo.urlopia.config.mail.receive;
 
 import com.sun.mail.imap.IMAPFolder;
 import info.fingo.urlopia.config.mail.Mail;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,9 @@ import java.util.stream.IntStream;
 /**
  * Checks for new mails in inbox
  */
+@Slf4j
 @Component
 public class MailReceiver extends Thread {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MailReceiver.class);
 
     private final MailDecider mailDecider;
 
@@ -66,8 +66,9 @@ public class MailReceiver extends Thread {
             Session session = Session.getInstance(props, null);
             store = session.getStore();
             store.connect(host, username, password);
+            log.info("Successfully configured IMAP server");
         } catch (Exception e) {
-            LOGGER.error("Exception when trying to configure IMAP server", e);
+            log.error("Exception while trying to configure IMAP server", e);
         }
     }
 
@@ -83,7 +84,7 @@ public class MailReceiver extends Thread {
             folder = store.getFolder(folderName);
             folder.open(Folder.READ_ONLY);
         } catch (MessagingException e) {
-            LOGGER.error("MessagingException when trying to open inbox folder", e);
+            log.error("MessagingException while trying to open inbox folder", e);
         }
 
         return folder;
@@ -101,7 +102,7 @@ public class MailReceiver extends Thread {
         try {
             currentMessageCount = inbox.getMessageCount();
         } catch (MessagingException e) {
-            LOGGER.error("MessagingException when trying get message count", e);
+            log.error("MessagingException while trying to get message count", e);
         }
 
         // Listening for new messages
@@ -121,7 +122,7 @@ public class MailReceiver extends Thread {
                 return null;
             });
         } catch (MessagingException e) {
-            LOGGER.error("MessagingException when sending NOOP command", e);
+            log.error("MessagingException while sending NOOP command", e);
         }
     }
 
@@ -154,14 +155,16 @@ public class MailReceiver extends Thread {
         // Closing connections
         try {
             inbox.close(false);
+            log.info("Inbox folder connection closed");
         } catch (MessagingException e) {
-            LOGGER.error("MessagingException during closing the inbox folder", e);
+            log.error("MessagingException during closing the inbox folder", e);
         }
 
         try {
             store.close();
+            log.info("Store connection closed");
         } catch (MessagingException e) {
-            LOGGER.error("MessagingException during closing the store", e);
+            log.error("MessagingException during closing the store", e);
         }
     }
 
@@ -177,11 +180,15 @@ public class MailReceiver extends Thread {
                 for (int messageId = currentMessageCount + 1; messageId <= newMessageCount; messageId++) {
                     var message = inbox.getMessage(messageId);
                     var mail = new MessageConverter(message).toMail();
+                    var loggerInfo = "New email sent by %s %n Subject: %s %n Content: %s"
+                            .formatted(mail.getSenderAddress(),
+                                    mail.getSubject(), mail.getContent());
+                    log.info(loggerInfo);
                     mailDecider.resolve(mail);
                 }
                 currentMessageCount = newMessageCount;
             } catch (MessagingException e) {
-                LOGGER.error("MessagingException when trying get last message", e);
+                log.error("MessagingException while trying to get last message", e);
             }
         }
 
@@ -191,7 +198,7 @@ public class MailReceiver extends Thread {
             try {
                 currentMessageCount = inbox.getMessageCount();
             } catch (MessagingException e) {
-                LOGGER.error("MessagingException when trying update currentMessageCount during messageRemoved", e);
+                log.error("MessagingException while trying to update currentMessageCount during messageRemoved", e);
             }
         }
     }

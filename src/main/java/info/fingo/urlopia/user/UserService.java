@@ -2,6 +2,7 @@ package info.fingo.urlopia.user;
 
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.team.Team;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -52,6 +54,8 @@ public class UserService {
                         () -> {
                             throw NoSuchUserException.invalidId(userId);
                         });
+        var loggerInfo = "Language of user with id: %d has been set to: %s".formatted(userId, language);
+        log.info(loggerInfo);
     }
 
     boolean isEC(Long userId) {
@@ -80,6 +84,8 @@ public class UserService {
                         () -> {
                             throw NoSuchUserException.invalidId(userId);
                         });
+        var loggerInfo = "Work time of user with id: %d has been set to: %f".formatted(userId, workTime);
+        log.info(loggerInfo);
     }
 
     public Set<User> getAdmins() {

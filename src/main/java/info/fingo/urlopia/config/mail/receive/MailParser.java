@@ -1,6 +1,7 @@
 package info.fingo.urlopia.config.mail.receive;
 
 import info.fingo.urlopia.config.mail.Mail;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,8 @@ import java.util.regex.Pattern;
  * Sending requests to the database
  */
 @Service
+@Slf4j
 public class MailParser {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MailParser.class);
 
     private LocalDate startDate;
     private LocalDate endDate;
@@ -48,6 +48,9 @@ public class MailParser {
         }
 
         if (correct && !checkDate(startDate, endDate)) {
+            var loggerInfo = "Could not parse content of mail sent from: %s. Content: %s"
+                    .formatted(mail.getSenderAddress(), mail.getContent());
+            log.warn(loggerInfo);
             return false;
         }
 
@@ -72,13 +75,19 @@ public class MailParser {
         if (isReply) {
             var b1 = subject.indexOf('[');
             var b2 = subject.indexOf(']');
-            id = Long.parseLong(subject.substring(b1 + 1, b2));
+            if (b1 != -1 && b2 != -1) {
+                id = Long.parseLong(subject.substring(b1 + 1, b2));
+            }
         }
     }
 
     public void parseReply(Mail mail) {
         var emailLines = splitByLines(mail.getContent());
         reply = emailLines[0];
+        var loggerInfo = "First line of mail sent from :%s to: %s is: %s"
+                .formatted(mail.getSenderAddress(),
+                        mail.getRecipientAddress(), reply);
+        log.info(loggerInfo);
     }
 
     private void convertDate() {
@@ -100,7 +109,7 @@ public class MailParser {
         }
 
         if (!correct) {
-            LOGGER.error("Date is inconvertible!");
+            log.error("Date is inconvertible!");
         }
     }
 
@@ -134,7 +143,7 @@ public class MailParser {
             endDateS = m.group(5) + month + m.group(7);
             return;
         }
-        LOGGER.error("Date not found!");
+        log.error("Date not found!");
         correct = false;
     }
 
@@ -162,7 +171,7 @@ public class MailParser {
             endDate = LocalDate.parse(endDateS, formatter);
             return true;
         } catch (DateTimeParseException e) {
-            LOGGER.info(e.getMessage(), e);
+            log.info(e.getMessage(), e);
             return false;
         }
     }

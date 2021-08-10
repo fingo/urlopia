@@ -6,6 +6,7 @@ import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.user.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@Slf4j
 public class HistoryLogService {
 
     private final HistoryLogRepository historyLogRepository;
@@ -72,6 +74,9 @@ public class HistoryLogService {
         var comment = Optional.ofNullable(historyLog.getComment()).orElse("");
         var history = new HistoryLog(targetUser, decider, hoursChange, comment, prevHistoryLog);
         historyLogRepository.save(history);
+        var loggerInfo = "A new history log with id: %d has been added for user with id: %d"
+                .formatted(history.getId(), targetUser.getId());
+        log.info(loggerInfo);
     }
 
     public void createReverse(Request request,
@@ -81,6 +86,9 @@ public class HistoryLogService {
         var hours = -reversible.getHours();
         var targetUserId = reversible.getUser().getId();
         this.create(request, hours, comment, targetUserId, deciderId);
+        var loggerInfo = "A history log with id: %d has been removed removed from user with id: %d"
+                .formatted(reversible.getId(), targetUserId);
+        log.info(loggerInfo);
     }
 
     public void create(Request request,
@@ -93,6 +101,9 @@ public class HistoryLogService {
         var prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByIdDesc(targetUserId);
         var historyLog = new HistoryLog(request, targetUser, decider, hours, comment, prevHistoryLog);
         historyLogRepository.save(historyLog);
+        var loggerInfo = "A new history log with id: %d has been added for user with id: %d"
+                .formatted(historyLog.getId(), targetUser.getId());
+        log.info(loggerInfo);
     }
 
     // *** ACTIONS ***

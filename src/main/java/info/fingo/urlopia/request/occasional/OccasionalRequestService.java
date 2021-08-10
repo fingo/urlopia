@@ -7,15 +7,16 @@ import info.fingo.urlopia.request.normal.events.NormalRequestCanceled;
 import info.fingo.urlopia.request.occasional.events.OccasionalRequestCreated;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.format.DateTimeFormatter;
 
 @Service("occasionalRequestService")
 @Transactional
+@Slf4j
 public class OccasionalRequestService implements RequestTypeService {
 
     private final RequestRepository requestRepository;
@@ -53,6 +54,9 @@ public class OccasionalRequestService implements RequestTypeService {
         historyLogService.create(request,0f, message, userId, userId);
 
         publisher.publishEvent(new OccasionalRequestCreated(request));
+        var loggerInfo = "New occasional request with id: %d has been created"
+                .formatted(request.getId());
+        log.info(loggerInfo);
     }
 
     private Request createRequestObject(User user, RequestInput requestInput, int workingDays) {
@@ -86,6 +90,9 @@ public class OccasionalRequestService implements RequestTypeService {
         request.setStatus(Request.Status.CANCELED);
         request = requestRepository.save(request);
         publisher.publishEvent(new NormalRequestCanceled(request));
+        var loggerInfo = "Request with id: %d has been cancelled"
+                .formatted(request.getId());
+        log.info(loggerInfo);
     }
 
 }

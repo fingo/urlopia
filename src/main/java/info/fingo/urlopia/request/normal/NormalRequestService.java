@@ -10,6 +10,7 @@ import info.fingo.urlopia.request.normal.events.NormalRequestCreated;
 import info.fingo.urlopia.request.normal.events.NormalRequestRejected;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.stream.DoubleStream;
 
 @Service("normalRequestService")
 @Transactional
+@Slf4j
 public class NormalRequestService implements RequestTypeService {
 
     private final RequestRepository requestRepository;
@@ -61,6 +63,9 @@ public class NormalRequestService implements RequestTypeService {
         this.createAcceptances(user, request);
 
         publisher.publishEvent(new NormalRequestCreated(request));
+        var loggerInfo = "New normal request with id: %d has been created"
+                .formatted(request.getId());
+        log.info(loggerInfo);
     }
 
     private void ensureUserOwnRequiredHoursNumber(User user, float requiredHours) {
@@ -133,6 +138,9 @@ public class NormalRequestService implements RequestTypeService {
         this.validateStatus(request.getStatus(), Request.Status.PENDING);
         request = this.changeStatus(request, Request.Status.ACCEPTED);
         publisher.publishEvent(new NormalRequestAccepted(request)); //TODO: Create general Event RequestAccepted instead of Normal/OccasionalRequestAccepted
+        var loggerInfo = "Request with id: %d has been accepted"
+                .formatted(request.getId());
+        log.info(loggerInfo);
     }
 
     @Override
@@ -140,6 +148,9 @@ public class NormalRequestService implements RequestTypeService {
         this.validateStatus(request.getStatus(), Request.Status.PENDING);
         request = this.changeStatus(request, Request.Status.REJECTED);
         publisher.publishEvent(new NormalRequestRejected(request));
+        var loggerInfo = "Request with id: %d has been rejected"
+                .formatted(request.getId());
+        log.info(loggerInfo);
     }
 
     @Override
@@ -148,6 +159,9 @@ public class NormalRequestService implements RequestTypeService {
         this.validateStatus(request.getStatus(), supportedStatuses);
         request = this.changeStatus(request, Request.Status.CANCELED);
         publisher.publishEvent(new NormalRequestCanceled(request));
+        var loggerInfo = "Request with id: %d has been canceled"
+                .formatted(request.getId());
+        log.info(loggerInfo);
     }
 
     private void validateStatus(Request.Status status, Request.Status... supportedStatuses) {

@@ -3,6 +3,7 @@ package info.fingo.urlopia.holidays;
 import info.fingo.urlopia.UrlopiaApplication;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.TimeZone;
 
 @Service
 @Transactional
+@Slf4j
 public class HolidayService {
 
     @Autowired
@@ -43,8 +45,12 @@ public class HolidayService {
         return result;
     }
 
-    public void addHoliday(HolidayResponse holiday) {
-        holidayRepository.save(entityFromResponse(holiday));
+    public void addHoliday(HolidayResponse holidayResponse) {
+        var holiday = entityFromResponse(holidayResponse);
+        holidayRepository.save(holiday);
+        var loggerInfo = "New holiday: %s has been added"
+                .formatted(holiday.getName());
+        log.info(loggerInfo);
     }
 
     public void addHolidays(List<HolidayResponse> holidays) {
@@ -65,6 +71,7 @@ public class HolidayService {
     protected void synchronizeDatabase() {
         deleteYear(LocalDate.now().getYear() - 1);
         holidayRepository.saveAll(generateHolidaysList(LocalDate.now().getYear() + 1));
+        log.info("The list of upcoming holidays has been updated");
     }
 
     public void deleteYear(int year) {
@@ -72,6 +79,7 @@ public class HolidayService {
         var yearEndDate = LocalDate.of(year, 12, 31);
         var holidaysToDelete = holidayRepository.findByDateBetween(yearStartDate, yearEndDate);
         holidayRepository.deleteAll(holidaysToDelete);
+        log.info("The list of past holidays has been deleted");
     }
 
     //public for convenience of testing

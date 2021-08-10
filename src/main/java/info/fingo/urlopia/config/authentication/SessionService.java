@@ -1,24 +1,21 @@
 package info.fingo.urlopia.config.authentication;
 
-import info.fingo.urlopia.team.Team;
 import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
+@Slf4j
 public class SessionService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SessionService.class);
 
     private final LDAPConnectionService ldapConnectionService;
 
@@ -57,10 +54,14 @@ public class SessionService {
             userData.setLanguage(user.getLang());
             userData.setTeams(this.pickTeamsInfo(user));
             userData.setToken(webTokenService.generateWebToken(user.getId(), roles));
+            var loggerInfo = "User: %s successfully authenticated"
+                    .formatted(credentials.getMail());
+            log.info(loggerInfo);
             return userData;
         }
-        var loggerInfo = "Authentication failed for user %s".formatted(credentials.getMail());
-        LOGGER.info(loggerInfo);
+        var loggerInfo = "Authentication failed for user: %s"
+                .formatted(credentials.getMail());
+        log.error(loggerInfo);
         throw NoSuchUserException.invalidCredentials();
     }
 
