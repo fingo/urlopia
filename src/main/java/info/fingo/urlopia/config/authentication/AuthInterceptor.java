@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +35,11 @@ public class AuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) {
+
+        if (request.getMethod().equals("OPTIONS")) {
+            return true;
+        }
+
         var rolesAllowed = getRoles(handler);
 
         try {
@@ -66,22 +70,6 @@ public class AuthInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    @Override
-    public void postHandle(HttpServletRequest request,
-                           HttpServletResponse response,
-                           Object handler,
-                           ModelAndView modelAndView) {
-        // Needs to be blank
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest request,
-                                HttpServletResponse response,
-                                Object handler,
-                                Exception ex) {
-        // Needs to be blank
-    }
-
     private List<String> getRoles(Object handler) {
         List<String> roles = new ArrayList<>();
 
@@ -96,4 +84,5 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         return roles;
     }
+
 }
