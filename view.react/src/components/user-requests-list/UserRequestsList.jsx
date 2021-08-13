@@ -4,6 +4,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, {textFilter} from 'react-bootstrap-table2-filter';
 
 import {PENDING} from "../../constants/statuses";
+import {statusMapper} from "../../helpers/react-bootstrap-table2/StatusMapperHelper";
 import styles from './UserRequestsList.module.scss';
 
 export const UserRequestsList = ({requests}) => {
@@ -14,21 +15,6 @@ export const UserRequestsList = ({requests}) => {
                     <XIcon/>
                 </button>
             );
-        }
-    }
-
-    const statusFormatter = (cell) => {
-        switch (cell) {
-            case 'ACCEPTED':
-                return 'Zatwierdzony';
-            case 'CANCELED':
-                return 'Anulowany';
-            case 'PENDING':
-                return 'Oczekujący';
-            case 'REJECTED':
-                return 'Odrzucony';
-            default:
-                return cell;
         }
     }
 
@@ -58,11 +44,12 @@ export const UserRequestsList = ({requests}) => {
             text: 'Status',
             headerAlign: 'center',
             align: 'center',
-            formatter: statusFormatter,
+            formatter: statusMapper,
             filter: textFilter({
                 placeholder: 'Filtruj...',
                 delay: 0,
             }),
+            filterValue: (cell) => statusMapper(cell),
         },
         {
             dataField: 'actions',
