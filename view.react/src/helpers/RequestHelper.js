@@ -5,8 +5,8 @@ import {mapCodeToMessage} from "./ErrorCodeMapperHelper";
 
 export const sendGetRequest = (url) => {
     return axios
-        .get(url,{
-            headers: getAuthHeader()
+        .get(url, {
+            headers: getAuthHeader(),
         })
         .then(response => {
             return response.data;
@@ -28,8 +28,8 @@ export const sendPostRequest = (url, body) => {
 
 const getAuthHeader = () => {
     const user = JSON.parse(sessionStorage.getItem(USER_DATA_KEY));
-    if (user && user.jwt) {
-        return { Authorization: 'Bearer ' + user.jwt };
+    if (user && user.token) {
+        return { 'authorization': user.token };
     } else {
         return {};
     }

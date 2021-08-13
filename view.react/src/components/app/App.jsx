@@ -10,6 +10,7 @@ import {LoginPage} from "../../pages/login-page/LoginPage";
 import {MainContentRouting} from "../../router/MainContentRouting";
 import {Sidebar} from "../sidebar/Sidebar";
 import {TopBar} from "../topbar/TopBar";
+import styles from './App.module.scss';
 
 export const App = () => {
     const sessionToken = getCurrentUser()?.token;
@@ -47,10 +48,10 @@ export const App = () => {
                         <TopBar userName={userName} teams={teams} onHamburgerClick={handleHamburgerClick}/>
                         <Container fluid>
                             <Row>
-                                <Col xs={3} className={sidebarColClass}>
+                                <Col xs={3} xl={2} className={sidebarColClass}>
                                     <Sidebar onClickOutside={handleClickOutsideSidebar}/>
                                 </Col>
-                                <Col xs={12} lg={9}>
+                                <Col xs={12} lg={9} xl={10} className={styles.mainContent}>
                                     <MainContentRouting/>
                                 </Col>
                             </Row>

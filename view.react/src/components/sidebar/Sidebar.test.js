@@ -1,10 +1,10 @@
 import {render, screen} from '@testing-library/react';
+import {BrowserRouter as Router} from "react-router-dom";
 
-import {App} from '../app/App';
 import {Sidebar} from "./Sidebar";
 
 test('on desktop show the sidebar', () => {
-    render(<App><Sidebar onClickOutside={() => null}/></App>);
+    render(<Router><Sidebar onClickOutside={() => null}/></Router>);
     const calendar = screen.getByText('Kalendarz');
     const requests = screen.getByText('Wnioski urlopowe');
     const history = screen.getByText('Historia nieobecności');
@@ -22,7 +22,7 @@ test('on desktop show the sidebar', () => {
 });
 
 test('check the correctness of the links', () => {
-    render(<App><Sidebar onClickOutside={() => null}/></App>);
+    render(<Router><Sidebar onClickOutside={() => null}/></Router>);
     const calendar = screen.getByText(/Kalendarz/);
     const requests = screen.getByText(/Wnioski urlopowe/);
     const history = screen.getByText(/Historia nieobecności/);

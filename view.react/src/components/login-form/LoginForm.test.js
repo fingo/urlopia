@@ -30,7 +30,7 @@ test('Password input should keep what the user enters', () => {
     expect(passwordInput).toHaveValue('password');
 });
 
-test('show "Brak odpowiedzi" after clicking "Zaloguj się" button' , async () => {
+test('show "Błędny email lub hasło" after clicking "Zaloguj się" button and enter invalid data' , async () => {
     render(<LoginForm />);
     const emailInput = screen.queryByPlaceholderText('Email');
     const passwordInput = screen.queryByPlaceholderText('Hasło');
@@ -42,7 +42,7 @@ test('show "Brak odpowiedzi" after clicking "Zaloguj się" button' , async () =>
 
     await act(async () => {
         await fireEvent.click(loginBtn);
-        await waitFor(() => expect(errorMsg.textContent).toBe("Brak odpowiedzi"));
+        await waitFor(() => expect(errorMsg.textContent).toBe("Błędny email lub hasło"));
     });
 });
 

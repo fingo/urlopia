@@ -1,6 +1,6 @@
 import {act, fireEvent, render, screen} from "@testing-library/react";
+import {BrowserRouter as Router} from "react-router-dom";
 
-import {App} from '../app/App';
 import {TopBar} from "./TopBar";
 
 const testUserName = 'Kacper Bartek';
@@ -10,7 +10,7 @@ const testTeams = [
 
 
 test('shows logo when render',() => {
-    render(<App><TopBar userName='' teams={[]} onHamburgerClick={() => null}/></App>);
+    render(<Router><TopBar userName='' teams={[]} onHamburgerClick={() => null}/></Router>);
     const displayedImage = document.querySelector("img");
     expect((displayedImage.src)).toContain('logo.png');
 });
