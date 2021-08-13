@@ -9,6 +9,9 @@ export const mapCodeToMessage = (code) => {
         case code === "NO_RESPONSE":
             code = "Brak odpowiedzi";
             break;
+        case code === "HOLIDAYS_ARE_NOT_IN_SPECIFIED_TIME_PERIOD":
+            code = "Nie możesz zapisać święta jeśli odbywa się ono poza podanym przez ciebie przedziałem czasowym"
+            break;
         default:
             code = "Wystąpił nieoczekiwany błąd";
     }

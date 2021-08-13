@@ -66,7 +66,7 @@ public class UserService {
     }
 
 
-    void setWorkTime(Long userId,
+    public void setWorkTime(Long userId,
                      String workTimeString) {
         var fullTimeInHours = 8f;
         var workTime = fullTimeInHours * Arrays.stream(workTimeString.split("/"))
@@ -87,6 +87,7 @@ public class UserService {
         var loggerInfo = "Work time of user with id: %d has been set to: %f".formatted(userId, workTime);
         log.info(loggerInfo);
     }
+
 
     public Set<User> getAdmins() {
         var admins = userRepository.findAdmins();

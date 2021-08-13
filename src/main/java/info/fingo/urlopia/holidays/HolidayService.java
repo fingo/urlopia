@@ -3,8 +3,8 @@ package info.fingo.urlopia.holidays;
 import info.fingo.urlopia.UrlopiaApplication;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,10 +21,10 @@ import java.util.TimeZone;
 @Service
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class HolidayService {
 
-    @Autowired
-    private HolidayRepository holidayRepository;
+    private final HolidayRepository holidayRepository;
 
     public List<HolidayResponse> getAllHolidaysInYear(int year, Filter filter) {
         var formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_FORMAT);
@@ -45,6 +45,16 @@ public class HolidayService {
         return result;
     }
 
+    public List<Holiday> getAll(Filter filter){
+        return holidayRepository.findAll(filter);
+    }
+
+    public List<Holiday> saveHolidays(List<Holiday> holidays){
+        return holidayRepository.saveAll(holidays);
+    }
+
+
+
     public void addHoliday(HolidayResponse holidayResponse) {
         var holiday = entityFromResponse(holidayResponse);
         holidayRepository.save(holiday);
@@ -58,6 +68,7 @@ public class HolidayService {
             addHoliday(h);
         }
     }
+
 
     protected Holiday entityFromResponse(HolidayResponse holiday) {
         var holidayDateTimestamp = holiday.getDate() / 1000;
@@ -80,6 +91,14 @@ public class HolidayService {
         var holidaysToDelete = holidayRepository.findByDateBetween(yearStartDate, yearEndDate);
         holidayRepository.deleteAll(holidaysToDelete);
         log.info("The list of past holidays has been deleted");
+    }
+
+    public void deleteBetweenDates(LocalDate startDate, LocalDate endDate){
+        var holidaysToDelete = holidayRepository.findByDateBetween(startDate,endDate);
+        holidayRepository.deleteAll(holidaysToDelete);
+        var loggerInfo = "Holidays between:  %s and %s has been deleted"
+                .formatted(startDate, endDate);
+        log.info(loggerInfo);
     }
 
     //public for convenience of testing
