@@ -1,9 +1,10 @@
 package info.fingo.urlopia.config.mail.receive;
 
-import info.fingo.urlopia.acceptance.AcceptanceService;
+import  info.fingo.urlopia.acceptance.AcceptanceService;
 import info.fingo.urlopia.config.mail.Mail;
 import info.fingo.urlopia.config.mail.MailBot;
 import info.fingo.urlopia.request.*;
+import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,44 +28,58 @@ public class MailDecider {
 
     private final String mailBotAddress;
 
+    private final EmailBounceDetector emailBounceDetector;
+
     @Autowired
     public MailDecider(UserService userService,
                        RequestService requestService,
                        AcceptanceService acceptanceService,
                        MailParser mailParser,
                        MailBot mailBot,
-                       @Value("${mails.bot}") String mailBotAddress) {
+                       @Value("${mails.bot}") String mailBotAddress,
+                       EmailBounceDetector emailBounceDetector) {
         this.userService = userService;
         this.requestService = requestService;
         this.acceptanceService = acceptanceService;
         this.mailParser = mailParser;
         this.mailBot = mailBot;
         this.mailBotAddress = mailBotAddress;
+        this.emailBounceDetector = emailBounceDetector;
     }
 
     public void resolve(Mail mail) {
         var senderMail = mail.getSenderAddress();
-        if (senderMail.equals(this.mailBotAddress)){
+        if (emailBounceDetector.isBounce(mail)
+                || senderMail.equals(this.mailBotAddress)) {
+            var loggerInfo = "An attempt to parse a message was blocked. Subject: %s, senderMailAddress: %s"
+                    .formatted(mail.getSubject(),senderMail);
+            log.warn(loggerInfo);
             return;
         }
-        var sender = userService.get(senderMail);
+        parse(mail);
+    }
 
-        if (sender == null) {
+
+    private void parse(Mail mail){
+        var senderMail = mail.getSenderAddress();
+        try{
+            var sender = userService.get(senderMail);
+            mailParser.clear();
+            mailParser.parseSubject(mail);
+
+            if (mailParser.isReply()) {
+                mailParser.parseReply(mail);
+                updateAcceptance(sender.getId());
+            } else if (mailParser.parseContent(mail)) {
+                createNewRequest(sender);
+            } else {
+                parsingProblem(senderMail);
+            }
+        }catch (NoSuchUserException noSuchUserException){
+            log.warn(noSuchUserException.getMessage());
             this.userNotFound(senderMail);
-            return;
         }
 
-        mailParser.clear();
-        mailParser.parseSubject(mail);
-
-        if (mailParser.isReply()) {
-            mailParser.parseReply(mail);
-            updateAcceptance(sender.getId());
-        } else if (mailParser.parseContent(mail)) {
-            createNewRequest(sender);
-        } else {
-            parsingProblem(senderMail);
-        }
     }
 
     private void updateAcceptance(Long deciderId) {
