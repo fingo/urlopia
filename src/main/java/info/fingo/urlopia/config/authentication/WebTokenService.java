@@ -1,5 +1,6 @@
 package info.fingo.urlopia.config.authentication;
 
+import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -33,5 +34,14 @@ public class WebTokenService {
 
     public String generateWebToken(Long userId, List<String> roles) {
         return WebToken.fromCredentials(userId, roles).toJsonWebToken(SECRET_KEY);
+    }
+
+    public void ensureAdmin() {
+        var roles = this.getRoles();
+        var isAdmin = roles.contains("ROLES_ADMIN");
+
+        if (!isAdmin) {
+            throw UnauthorizedException.unauthorized();
+        }
     }
 }

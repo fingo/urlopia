@@ -40,13 +40,13 @@ public class OccasionalRequestService implements RequestTypeService {
     }
 
     @Override
-    public void create(Long userId, RequestInput requestInput) {
+    public Request create(Long userId, RequestInput requestInput) {
         User user = userRepository.findById(userId).orElseThrow();
         int workingDays = workingDaysCalculator.calculate(requestInput.getStartDate(), requestInput.getEndDate());
 
         Request request = this.createRequestObject(user, requestInput, workingDays);
         this.validateRequest(request);
-        requestRepository.save(request);
+        request = requestRepository.save(request);
 
         var term = request.getTerm();
         var typeInfo = request.getTypeInfo().getInfo();
@@ -57,6 +57,8 @@ public class OccasionalRequestService implements RequestTypeService {
         var loggerInfo = "New occasional request with id: %d has been created"
                 .formatted(request.getId());
         log.info(loggerInfo);
+
+        return request;
     }
 
     private Request createRequestObject(User user, RequestInput requestInput, int workingDays) {

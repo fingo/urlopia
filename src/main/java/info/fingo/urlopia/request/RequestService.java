@@ -1,6 +1,8 @@
 package info.fingo.urlopia.request;
 
 import info.fingo.urlopia.UrlopiaApplication;
+import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
+import info.fingo.urlopia.config.authentication.WebTokenService;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.history.HistoryLogService;
@@ -28,11 +30,17 @@ public class RequestService {
 
     private final UserService userService;
 
+    private final WebTokenService webTokenService;
+
     @Autowired
-    public RequestService(RequestRepository requestRepository, HistoryLogService historyLogService, UserService userService) {
+    public RequestService(RequestRepository requestRepository,
+                          HistoryLogService historyLogService,
+                          UserService userService,
+                          WebTokenService webTokenService) {
         this.requestRepository = requestRepository;
         this.historyLogService = historyLogService;
         this.userService = userService;
+        this.webTokenService = webTokenService;
     }
 
     public Page<RequestExcerptProjection> getFromUser(Long userId, Filter filter, Pageable pageable) {
@@ -64,9 +72,13 @@ public class RequestService {
         return requestRepository.findByRequesterIdAndYear(userId, year);
     }
 
-    public void create(Long userId, RequestInput requestInput) {
+    public Request getById(Long requestId) {
+        return requestRepository.findById(requestId).orElseThrow();
+    }
+
+    public Request create(Long userId, RequestInput requestInput) {
         RequestTypeService service = requestInput.getType().getService();
-        service.create(userId, requestInput);
+        return service.create(userId, requestInput);
     }
 
     public List<VacationDay> getTeammatesVacationsForNextTwoWeeks(Long userId) {
@@ -115,7 +127,14 @@ public class RequestService {
 
     // *** ACTIONS ***
 
-    public void accept(Long requestId, 
+    public void validateAdminPermissionAndAccept(Long requestId,
+                                                 Long deciderId) {
+        webTokenService.ensureAdmin();
+
+        accept(requestId, deciderId);
+    }
+
+    public void accept(Long requestId,
                        Long deciderId) {
         var request = requestRepository.findById(requestId).orElseThrow();
         var service = request.getType().getService();
@@ -129,6 +148,12 @@ public class RequestService {
         historyLogService.create(request, -workingHours, term, request.getRequester().getId(), deciderId);
     }
 
+    public void validateAdminPermissionAndReject(Long requestId) {
+        webTokenService.ensureAdmin();
+
+        reject(requestId);
+    }
+
     public void reject(Long requestId) {
         var request = requestRepository.findById(requestId).orElseThrow();
         var service = request.getType().getService();
@@ -137,7 +162,19 @@ public class RequestService {
 
     public void cancel(Long requestId, 
                        Long deciderId) {
-       var request = requestRepository.findById(requestId).orElseThrow();
+        var request = requestRepository.findById(requestId).orElseThrow();
+        var isRequester = request.getRequester().getId()
+                .equals(deciderId);
+
+        try {
+            webTokenService.ensureAdmin();
+        } catch (UnauthorizedException exception) {
+            if (!isRequester) {
+                throw UnauthorizedException.unauthorized();
+            }
+        }
+
+
         var service = request.getType().getService();
         var previousStatus = request.getStatus();
         service.cancel(request);

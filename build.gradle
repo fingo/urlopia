@@ -66,6 +66,7 @@ dependencies {
     implementation('org.apache.poi:poi-ooxml:4.0.1')
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.1')
+    implementation('org.modelmapper:modelmapper:2.1.1')
     runtimeOnly('org.postgresql:postgresql')
 
     testImplementation('org.spockframework:spock-core:2.0-groovy-3.0')

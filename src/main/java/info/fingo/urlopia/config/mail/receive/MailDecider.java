@@ -59,7 +59,7 @@ public class MailDecider {
 
         if (mailParser.isReply()) {
             mailParser.parseReply(mail);
-            updateAcceptance();
+            updateAcceptance(sender.getId());
         } else if (mailParser.parseContent(mail)) {
             createNewRequest(sender);
         } else {
@@ -67,16 +67,16 @@ public class MailDecider {
         }
     }
 
-    private void updateAcceptance() {
+    private void updateAcceptance(Long deciderId) {
         var acceptanceId = mailParser.getId();
         var decision = mailParser.getReply().toLowerCase();
         var loggerInfo = "Decision for acceptance with id: %d is: %s"
                 .formatted(acceptanceId, decision);
         log.info(loggerInfo);
         if (mailParser.isAcceptedByMail(decision)) {
-            acceptanceService.accept(acceptanceId);
+            acceptanceService.accept(acceptanceId, deciderId);
         } else {
-            acceptanceService.reject(acceptanceId);
+            acceptanceService.reject(acceptanceId, deciderId);
         }
     }
 

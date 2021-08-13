@@ -1,5 +1,6 @@
 package info.fingo.urlopia.acceptance;
 
+import info.fingo.urlopia.config.authentication.AuthInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api")
@@ -33,15 +35,19 @@ public class AcceptanceController {
 
     @RolesAllowed("ROLES_LEADER")
     @PostMapping(path = "/acceptances/{acceptanceId}/accept", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> accept(@PathVariable Long acceptanceId) {
-        acceptanceService.accept(acceptanceId);
+    public ResponseEntity<Void> accept(@PathVariable Long acceptanceId,
+                                       HttpServletRequest httpRequest) {
+        var authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        acceptanceService.accept(acceptanceId, authenticatedId);
         return ResponseEntity.ok().build();
     }
 
     @RolesAllowed("ROLES_LEADER")
     @PostMapping(path = "/acceptances/{acceptanceId}/reject", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> reject(@PathVariable Long acceptanceId) {
-        acceptanceService.reject(acceptanceId);
+    public ResponseEntity<Void> reject(@PathVariable Long acceptanceId,
+                                       HttpServletRequest httpRequest) {
+        var authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        acceptanceService.reject(acceptanceId, authenticatedId);
         return ResponseEntity.ok().build();
     }
 

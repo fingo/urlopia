@@ -78,14 +78,14 @@ public class RequestController {
     public ResponseEntity<Void> accept(@PathVariable Long requestId, 
                                        HttpServletRequest httpRequest) {
         var authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
-        requestService.accept(requestId, authenticatedId);
+        requestService.validateAdminPermissionAndAccept(requestId, authenticatedId);
         return ResponseEntity.ok().build();
     }
 
     @RolesAllowed("ROLES_ADMIN")
     @PostMapping(path = "/requests/{requestId}/reject", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> reject(@PathVariable Long requestId) {
-        requestService.reject(requestId);
+        requestService.validateAdminPermissionAndReject(requestId);
         return ResponseEntity.ok().build();
     }
 

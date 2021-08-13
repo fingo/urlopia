@@ -50,7 +50,7 @@ public class NormalRequestService implements RequestTypeService {
     }
 
     @Override
-    public void create(Long userId, RequestInput requestInput) {
+    public Request create(Long userId, RequestInput requestInput) {
         User user = userRepository.findById(userId).orElseThrow();
         int workingDays = workingDaysCalculator.calculate(requestInput.getStartDate(), requestInput.getEndDate());
         float workingHours =  workingDays * user.getWorkTime();
@@ -63,9 +63,13 @@ public class NormalRequestService implements RequestTypeService {
         this.createAcceptances(user, request);
 
         publisher.publishEvent(new NormalRequestCreated(request));
+
         var loggerInfo = "New normal request with id: %d has been created"
                 .formatted(request.getId());
         log.info(loggerInfo);
+
+        return requestRepository.findById(request.getId())
+                .orElseThrow();
     }
 
     private void ensureUserOwnRequiredHoursNumber(User user, float requiredHours) {

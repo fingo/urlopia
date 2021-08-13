@@ -3,6 +3,7 @@ package info.fingo.urlopia.acceptance;
 import info.fingo.urlopia.acceptance.events.AcceptanceAccepted;
 import info.fingo.urlopia.acceptance.events.AcceptanceCreated;
 import info.fingo.urlopia.acceptance.events.AcceptanceRejected;
+import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.request.Request;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 @Transactional
@@ -52,15 +54,27 @@ public class AcceptanceService {
         log.info(loggerInfo);
     }
 
+    public List<Acceptance> getAcceptancesByRequestId(Long requestId) {
+        return acceptanceRepository.findByRequestId(requestId);
+    }
+
+
     // *** ACTIONS ***
-    private Acceptance getAcceptance(Long acceptanceId) {
+    public Acceptance getAcceptance(Long acceptanceId) {
         return acceptanceRepository
                 .findById(acceptanceId)
                 .orElseThrow(() -> NoSuchAcceptanceException.invalidId(acceptanceId));
     }
 
-    public void accept(Long acceptanceId) {
+    public void accept(Long acceptanceId, Long deciderId) {
         var acceptance = getAcceptance(acceptanceId);
+        var leaderId = acceptance.getLeader().getId();
+        var isCurrentUserAuthorizedToUpdateAcceptance = leaderId.equals(deciderId);
+
+        if (!isCurrentUserAuthorizedToUpdateAcceptance) {
+            throw UnauthorizedException.unauthorized();
+        }
+
         validateStatus(acceptance.getStatus(), Acceptance.Status.PENDING);
         acceptance = changeStatus(acceptance, Acceptance.Status.ACCEPTED);
         publisher.publishEvent(new AcceptanceAccepted(acceptance));
@@ -72,13 +86,19 @@ public class AcceptanceService {
                 .noneMatch(accept ->
                         accept.getStatus() != Acceptance.Status.ACCEPTED);
         if (isRequestAccepted) {
-            var deciderId = acceptance.getLeader().getId();
             requestService.accept(requestId, deciderId);
         }
     }
 
-    public void reject(Long acceptanceId) {
+    public void reject(Long acceptanceId, Long deciderId) {
         var acceptance = getAcceptance(acceptanceId);
+        var leaderId = acceptance.getLeader().getId();
+        var isCurrentUserAuthorizedToUpdateAcceptance = leaderId.equals(deciderId);
+
+        if (!isCurrentUserAuthorizedToUpdateAcceptance) {
+            throw UnauthorizedException.unauthorized();
+        }
+
         validateStatus(acceptance.getStatus(), Acceptance.Status.PENDING);
         acceptance = changeStatus(acceptance, Acceptance.Status.REJECTED);
         publisher.publishEvent(new AcceptanceRejected(acceptance));
