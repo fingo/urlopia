@@ -85,11 +85,11 @@ CREATE TABLE holidays (
 );
 
 CREATE TABLE presence_confirmations (
-    id         SERIAL    PRIMARY KEY,
-    date       DATE      NOT NULL,
-    start_time TIME      NOT NULL,
-    end_time   TIME      NOT NULL,
-    user_id    INT       REFERENCES users (id) NOT NULL
+    date        DATE,
+    user_id     INT   REFERENCES users (id),
+    start_time  TIME  NOT NULL,
+    end_time    TIME  NOT NULL,
+    PRIMARY KEY (date, user_id)
 );
 
 ALTER SEQUENCE users_id_seq RESTART;
@@ -101,5 +101,3 @@ ALTER SEQUENCE acceptances_id_seq RESTART;
 ALTER SEQUENCE history_logs_id_seq RESTART;
 
 ALTER SEQUENCE holidays_id_seq RESTART;
-
-ALTER SEQUENCE presence_confirmations_id_seq RESTART;
