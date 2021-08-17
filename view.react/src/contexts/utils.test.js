@@ -34,7 +34,7 @@ describe('createForwardingReducer', () => {
                     }
                 }
             }
-            fail("Unhandled action type")
+            throw new Error("Unhandled action type")
         }
 
         const mappings = {
@@ -64,7 +64,7 @@ describe('createForwardingReducer', () => {
                     d2: 999
                 }
             }
-            fail("Unhandled action type")
+            throw new Error("Unhandled action type")
         }
 
         const mappings = {
@@ -95,7 +95,7 @@ describe('createForwardingReducer', () => {
                     a1: 999
                 }
             }
-            fail("Unhandled action type")
+            throw new Error("Unhandled action type")
         }
 
         const mappings = {

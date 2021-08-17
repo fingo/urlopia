@@ -5,7 +5,7 @@ import {requestReducer} from "./requestReducer";
 const RequestContext = createContext();
 
 const initialState = {
-    userRequests: {
+    myRequests: {
         fetching: false,
         error: null,
         requests: []
@@ -19,7 +19,8 @@ const initialState = {
         fetching: false,
         error: null,
         requests: []
-    }
+    },
+    contextError: null
 }
 
 export const RequestProvider = ({children}) => {

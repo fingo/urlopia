@@ -1,7 +1,7 @@
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
 import {sendPostRequest} from "../../helpers/RequestHelper";
 
-const URL = "http://localhost:8080/api/v2/session";
+const URL = "/api/v2/session";
 
 export const login = (body) => {
     return sendPostRequest(URL, body)

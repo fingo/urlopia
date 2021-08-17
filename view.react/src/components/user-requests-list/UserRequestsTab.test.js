@@ -1,33 +1,42 @@
 import {fireEvent, render, screen} from "@testing-library/react";
 
-import {UserRequestsList} from "./UserRequestsList";
+import {UserRequestsTab} from "./UserRequestsTab";
 
-const testProducts = [
+const requests = [
     {
-        id: 1,
-        period: '2021-07-20 - 2021-07-27 (7 dni robocze)',
-        type: 'Wypoczynkowy',
-        status: 'Oczekujący',
-        actions: ''
+        "id": 1,
+        "type": "NORMAL",
+        "requesterName": "Jan Kowalski",
+        "status": "PENDING",
+        "endDate": "2021-07-27",
+        "startDate": "2021-07-20",
+        "workingDays": 8,
+        "acceptances": [],
     },
     {
-        id: 2,
-        period: '2021-07-30 - 2021-07-3 (1 dni robocze)',
-        type: 'Opieka nad dzieckiem',
-        status: 'Zatwierdzony',
-        actions: ''
+        "id": 2,
+        "type": "OCCASIONAL",
+        "requesterName": "Jan Kowalski",
+        "status": "ACCEPTED",
+        "endDate": "2021-07-31",
+        "startDate": "2021-07-30",
+        "workingDays": 2,
+        "acceptances": []
     },
     {
-        id: 3,
-        period: '2021-08-22 - 2021-08-2 (1 dni robocze)',
-        type: 'Ślub',
-        status: 'Anulowany',
-        actions: ''
+        "id": 3,
+        "type": "OCCASIONAL",
+        "requesterName": "Jan Kowalski",
+        "status": "CANCELED",
+        "endDate": "2021-08-22",
+        "startDate": "2021-08-22",
+        "workingDays": 1,
+        "acceptances": []
     }
-];
+]
 
 test('shows header of table', () => {
-    render(<UserRequestsList />);
+    render(<UserRequestsTab />);
     const periodHeader = screen.getByText('Termin');
     const typeHeader = screen.getByText('Rodzaj');
     const statusHeader = screen.getByText('Status');
@@ -39,7 +48,7 @@ test('shows header of table', () => {
 });
 
 test('shows cancel button when status is pending', () => {
-    render(<UserRequestsList requests={testProducts}/>);
+    render(<UserRequestsTab requests={requests}/>);
     const pendingRequest = screen.getByText('Oczekujący');
     const cancelBtn = screen.getByTitle('Anuluj wniosek');
     expect(pendingRequest).toBeInTheDocument();
@@ -47,13 +56,13 @@ test('shows cancel button when status is pending', () => {
 });
 
 test('shows filter inputs', () => {
-    render(<UserRequestsList />);
+    render(<UserRequestsTab />);
     const inputs = screen.queryAllByPlaceholderText('Filtruj...');
     expect(inputs.length).toBe(2);
 });
 
 test('filter inputs should keep what the user enters', async () => {
-    render(<UserRequestsList />);
+    render(<UserRequestsTab />);
     const [typeInput, statusInput] = screen.queryAllByPlaceholderText('Filtruj...');
     fireEvent.change(typeInput, {target: {value: 'Wypoczynkowy'}});
     fireEvent.change(statusInput, {target: {value: 'Zatwierdzony'}});

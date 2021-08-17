@@ -1,4 +1,4 @@
-import {act, fireEvent, render, screen, waitFor} from "@testing-library/react";
+import {act, fireEvent, render, screen} from "@testing-library/react";
 
 import {LoginForm} from "./LoginForm";
 
@@ -28,22 +28,6 @@ test('Password input should keep what the user enters', () => {
     const passwordInput = screen.queryByPlaceholderText('Hasło');
     fireEvent.change(passwordInput, {target: {value: 'password'}});
     expect(passwordInput).toHaveValue('password');
-});
-
-test('show "Błędny email lub hasło" after clicking "Zaloguj się" button and enter invalid data' , async () => {
-    render(<LoginForm />);
-    const emailInput = screen.queryByPlaceholderText('Email');
-    const passwordInput = screen.queryByPlaceholderText('Hasło');
-    const loginBtn = screen.queryByTestId('login-btn');
-    const errorMsg = screen.queryByTestId('error-msg');
-
-    fireEvent.change(emailInput, {target: {value: 'test@abc.pl'}});
-    fireEvent.change(passwordInput, {target: {value: 'password'}});
-
-    await act(async () => {
-        await fireEvent.click(loginBtn);
-        await waitFor(() => expect(errorMsg.textContent).toBe("Błędny email lub hasło"));
-    });
 });
 
 test('show "..." after clicking the "Zaloguj się" button' , async () => {

@@ -3,10 +3,12 @@ import axios from 'axios';
 import {USER_DATA_KEY} from "../constants/session.keystorage";
 import {mapCodeToMessage} from "./ErrorCodeMapperHelper";
 
+export const URL_PREFIX = process.env.NODE_ENV === 'development' ? "http://localhost:8080" : '';
+
 export const sendGetRequest = (url) => {
     return axios
-        .get(url, {
-            headers: getAuthHeader(),
+        .get(URL_PREFIX + url,{
+            headers: getAuthHeader()
         })
         .then(response => {
             return response.data;
@@ -16,7 +18,19 @@ export const sendGetRequest = (url) => {
 
 export const sendPostRequest = (url, body) => {
     return axios
-        .post(url,
+        .post(URL_PREFIX + url,
+            body, {
+                headers: getAuthHeader()
+            })
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => handleError(error))
+}
+
+export const sendPatchRequest = (url, body) => {
+    return axios
+        .patch(URL_PREFIX + url,
             body, {
                 headers: getAuthHeader()
             })

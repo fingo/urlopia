@@ -1,0 +1,8 @@
+const REQUESTS_ENDPOINT = "/api/v2/absence-requests"
+const REQUESTS_ACTION_PREFIX = "requests"
+
+export const FETCH_MY_REQUESTS_URL = `${REQUESTS_ENDPOINT}/requester/me`
+export const FETCH_MY_REQUESTS_ACTION_PREFIX = `${REQUESTS_ACTION_PREFIX}/fetch/my`
+
+export const CHANGE_REQUEST_STATUS_URL = `${REQUESTS_ENDPOINT}`
+export const CHANGE_REQUEST_STATUS_ACTION_PREFIX = `${REQUESTS_ACTION_PREFIX}/change-status`

@@ -1,6 +1,7 @@
 import {fireEvent, render, screen, waitFor} from "@testing-library/react";
 
-import {CompanyRequestsList} from "./CompanyRequestsList";
+import {CompanyRequestsTab} from "./CompanyRequestsTab";
+
 
 const testProducts = [
     {
@@ -28,8 +29,9 @@ const testProducts = [
         actions: ''
     }
 ];
+
 test('shows headers of table', () => {
-    render(<CompanyRequestsList/>);
+    render(<CompanyRequestsTab/>);
     const applicantHeader = screen.getByText('Wnioskodawca');
     const examinerHeader = screen.getByText('Rozpatrujący');
     const periodHeader = screen.getByText('Termin');
@@ -43,7 +45,7 @@ test('shows headers of table', () => {
 });
 
 test('shows cancel and accept button in the action column if data is present', () => {
-    render(<CompanyRequestsList requests={testProducts}/>);
+    render(<CompanyRequestsTab requests={testProducts}/>);
     const isAnyData = document.querySelectorAll("tbody").length === 2;
     if (!isAnyData) return;
     const cancelBtn = screen.getAllByTitle('Anuluj wniosek');
@@ -53,13 +55,13 @@ test('shows cancel and accept button in the action column if data is present', (
 });
 
 test('shows filter inputs', () => {
-    render(<CompanyRequestsList/>);
+    render(<CompanyRequestsTab/>);
     const inputs = screen.queryAllByPlaceholderText('Filtruj...');
     expect(inputs.length).toBe(4);
 });
 
 test('filter inputs should keep what the user enters', () => {
-    render(<CompanyRequestsList/>);
+    render(<CompanyRequestsTab/>);
     const [applicantInput, examinerInput, periodInput, typeInput] = screen.queryAllByPlaceholderText('Filtruj...');
     fireEvent.change(applicantInput, {target: {value: 'Jan'}});
     fireEvent.change(examinerInput, {target: {value: 'kowalski'}});
@@ -72,7 +74,7 @@ test('filter inputs should keep what the user enters', () => {
 });
 
 test('shows a table with no data after entering invalid input into the filter input', async () => {
-    render(<CompanyRequestsList requests={testProducts}/>);
+    render(<CompanyRequestsTab requests={testProducts}/>);
     const isAnyData = document.querySelectorAll("tbody").length === 2;
     if (!isAnyData) return;
     const [applicantInput] = screen.queryAllByPlaceholderText('Filtruj...');
