@@ -35,6 +35,7 @@ export const UserRequestsList = ({requests}) => {
             headerAlign: 'center',
             align: 'center',
             filter: textFilter({
+                id: 'typeUserRequestsListFilter',
                 placeholder: 'Filtruj...',
                 delay: 0,
             }),
@@ -46,6 +47,7 @@ export const UserRequestsList = ({requests}) => {
             align: 'center',
             formatter: statusMapper,
             filter: textFilter({
+                id: 'statusUserRequestsListFilter',
                 placeholder: 'Filtruj...',
                 delay: 0,
             }),
