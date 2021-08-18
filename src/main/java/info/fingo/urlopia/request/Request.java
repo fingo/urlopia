@@ -3,12 +3,10 @@ package info.fingo.urlopia.request;
 import info.fingo.urlopia.acceptance.Acceptance;
 import info.fingo.urlopia.request.occasional.OccasionalType;
 import info.fingo.urlopia.user.User;
-import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -92,6 +90,21 @@ public class Request {
         this.status = status;
     }
 
+    public Request(User requester,
+                   LocalDate startDate,
+                   LocalDate endDate,
+                   Integer workingDays,
+                   String typeInfo) {
+        this();
+        this.requester = requester;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.workingDays = workingDays;
+        this.typeInfo = typeInfo;
+        this.type = RequestType.SPECIAL;
+        this.status = Status.ACCEPTED;
+    }
+
     public Long getId() {
         return id;
     }
@@ -130,6 +143,14 @@ public class Request {
 
     public void setType(RequestType type) {
         this.type = type;
+    }
+
+    public String getRequestDescription() {
+        return "%s (%s)".formatted(getTerm(), typeInfo);
+    }
+
+    public String getSpecialTypeInfo() {
+        return typeInfo;
     }
 
     public TypeInfo getTypeInfo() {

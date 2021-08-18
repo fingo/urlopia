@@ -1,6 +1,7 @@
 package info.fingo.urlopia.request.normal;
 
 import info.fingo.urlopia.acceptance.AcceptanceService;
+import info.fingo.urlopia.request.absence.BaseRequestInput;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.*;
@@ -50,7 +51,7 @@ public class NormalRequestService implements RequestTypeService {
     }
 
     @Override
-    public Request create(Long userId, RequestInput requestInput) {
+    public Request create(Long userId, BaseRequestInput requestInput) {
         User user = userRepository.findById(userId).orElseThrow();
         int workingDays = workingDaysCalculator.calculate(requestInput.getStartDate(), requestInput.getEndDate());
         float workingHours =  workingDays * user.getWorkTime();
@@ -101,7 +102,7 @@ public class NormalRequestService implements RequestTypeService {
         return DayHourTime.of(days, hours);
     }
 
-    private Request createRequestObject(User user, RequestInput requestInput, int workingDays) {
+    private Request createRequestObject(User user, BaseRequestInput requestInput, int workingDays) {
         return new Request(user,
                 requestInput.getStartDate(),
                 requestInput.getEndDate(),

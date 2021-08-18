@@ -6,6 +6,8 @@ import info.fingo.urlopia.config.authentication.AuthInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.request.RequestInput;
 import info.fingo.urlopia.request.RequestService;
+import info.fingo.urlopia.request.absence.SpecialAbsence;
+import info.fingo.urlopia.request.absence.SpecialAbsenceRequestInput;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -25,6 +27,15 @@ public class AbsenceRequestControllerV2 {
                                       RequestService requestService) {
         this.acceptanceService = acceptanceService;
         this.requestService = requestService;
+    }
+
+    @RolesAllowed("ROLES_ADMIN")
+    @PostMapping(value = "/special-absence", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public RequestsOutput createSpecialAbsence(@RequestBody SpecialAbsence specialAbsence) {
+        var requesterId = specialAbsence.requesterId();
+        var requestInput = SpecialAbsenceRequestInput.fromSpecialAbsence(specialAbsence);
+        var request = requestService.create(requesterId, requestInput);
+        return RequestsOutput.fromRequest(request);
     }
 
     @RolesAllowed("ROLES_WORKER")

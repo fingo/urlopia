@@ -10,7 +10,8 @@ import java.util.EnumSet;
 public enum RequestType {
 
     NORMAL,
-    OCCASIONAL;
+    OCCASIONAL,
+    SPECIAL;
 
     private RequestTypeService service;
 

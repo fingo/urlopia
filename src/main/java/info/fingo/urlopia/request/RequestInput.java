@@ -1,15 +1,17 @@
 package info.fingo.urlopia.request;
 
+import info.fingo.urlopia.request.absence.BaseRequestInput;
 import info.fingo.urlopia.request.occasional.OccasionalType;
 
 import java.time.LocalDate;
 
-public class RequestInput {
+public class RequestInput implements BaseRequestInput{
     private LocalDate startDate;
     private LocalDate endDate;
     private RequestType type;
     private OccasionalType occasionalType;  // TODO: remove OccasionalType from here
 
+    @Override
     public LocalDate getStartDate() {
         return startDate;
     }
@@ -18,6 +20,7 @@ public class RequestInput {
         this.startDate = startDate;
     }
 
+    @Override
     public LocalDate getEndDate() {
         return endDate;
     }
@@ -26,6 +29,7 @@ public class RequestInput {
         this.endDate = endDate;
     }
 
+    @Override
     public RequestType getType() {
         return type;
     }

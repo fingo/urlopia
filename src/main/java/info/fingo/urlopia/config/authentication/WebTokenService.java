@@ -44,4 +44,9 @@ public class WebTokenService {
             throw UnauthorizedException.unauthorized();
         }
     }
+
+    public boolean isCurrentUserAnAdmin() {
+        var roles = this.getRoles();
+        return roles.contains("ROLES_ADMIN");
+    }
 }

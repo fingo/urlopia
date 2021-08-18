@@ -6,6 +6,8 @@ import info.fingo.urlopia.config.authentication.WebTokenService;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.history.HistoryLogService;
+import info.fingo.urlopia.request.absence.BaseRequestInput;
+import info.fingo.urlopia.request.absence.SpecialAbsenceRequestService;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +78,7 @@ public class RequestService {
         return requestRepository.findById(requestId).orElseThrow();
     }
 
-    public Request create(Long userId, RequestInput requestInput) {
+    public Request create(Long userId, BaseRequestInput requestInput) {
         RequestTypeService service = requestInput.getType().getService();
         return service.create(userId, requestInput);
     }
@@ -176,6 +178,11 @@ public class RequestService {
 
 
         var service = request.getType().getService();
+
+        if (service instanceof SpecialAbsenceRequestService) {
+            webTokenService.ensureAdmin();
+        }
+
         var previousStatus = request.getStatus();
         service.cancel(request);
 

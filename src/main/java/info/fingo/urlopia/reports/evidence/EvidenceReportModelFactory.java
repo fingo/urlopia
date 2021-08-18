@@ -118,6 +118,7 @@ public class EvidenceReportModelFactory {
         return switch (requestType) {
             case NORMAL -> "uw";
             case OCCASIONAL -> "uo";
+            case SPECIAL -> "ns";
         };
     }
 

@@ -19,6 +19,7 @@ public class RequestsOutput {
     private LocalDate endDate;
     private Integer workingDays;
     private RequestType type;
+    private String typeInfo;
     private Request.Status status;
     private List<AcceptanceInfoOutput> acceptances;
 
@@ -37,6 +38,7 @@ public class RequestsOutput {
         var requestsOutput = modelMapper.map(projection, RequestsOutput.class);
         var fullName = projection.getRequester().getFullName();
         requestsOutput.setRequesterName(fullName);
+        requestsOutput.setTypeInfo(projection.getSpecialTypeInfo());
 
         var acceptancesOutput = acceptances.stream()
                 .map(s -> {
@@ -50,5 +52,9 @@ public class RequestsOutput {
 
         requestsOutput.setAcceptances(acceptancesOutput);
         return requestsOutput;
+    }
+
+    public static RequestsOutput fromRequest(Request projection) {
+        return fromRequest(projection, List.of());
     }
 }

@@ -1,5 +1,6 @@
 package info.fingo.urlopia.request.occasional;
 
+import info.fingo.urlopia.request.absence.BaseRequestInput;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.*;
@@ -40,7 +41,7 @@ public class OccasionalRequestService implements RequestTypeService {
     }
 
     @Override
-    public Request create(Long userId, RequestInput requestInput) {
+    public Request create(Long userId, BaseRequestInput requestInput) {
         User user = userRepository.findById(userId).orElseThrow();
         int workingDays = workingDaysCalculator.calculate(requestInput.getStartDate(), requestInput.getEndDate());
 
@@ -61,13 +62,17 @@ public class OccasionalRequestService implements RequestTypeService {
         return request;
     }
 
-    private Request createRequestObject(User user, RequestInput requestInput, int workingDays) {
+    private Request createRequestObject(User user, BaseRequestInput requestInput, int workingDays) {
+        var typeInfo = OccasionalType.WRONG;
+        if(requestInput instanceof RequestInput input) {
+            typeInfo = input.getOccasionalType();
+        }
         return new Request(user,
                 requestInput.getStartDate(),
                 requestInput.getEndDate(),
                 workingDays,
                 RequestType.OCCASIONAL,
-                requestInput.getOccasionalType(),
+                typeInfo,
                 Request.Status.ACCEPTED);
     }
 
