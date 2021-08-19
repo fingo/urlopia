@@ -1,4 +1,4 @@
-package info.fingo.urlopia.api.v2;
+package info.fingo.urlopia.api.v2.session;
 
 import info.fingo.urlopia.config.authentication.Credentials;
 import info.fingo.urlopia.config.authentication.SessionService;

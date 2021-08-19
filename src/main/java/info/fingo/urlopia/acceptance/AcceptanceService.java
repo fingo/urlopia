@@ -63,7 +63,10 @@ public class AcceptanceService {
     public Acceptance getAcceptance(Long acceptanceId) {
         return acceptanceRepository
                 .findById(acceptanceId)
-                .orElseThrow(() -> NoSuchAcceptanceException.invalidId(acceptanceId));
+                .orElseThrow(() -> {
+                    log.error("There is no acceptance with id: {}", acceptanceId);
+                    return NoSuchAcceptanceException.invalidId();
+                });
     }
 
     public void accept(Long acceptanceId, Long deciderId) {

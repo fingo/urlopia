@@ -1,23 +1,26 @@
 package info.fingo.urlopia.user;
 
-public class NoSuchUserException extends RuntimeException{
+import info.fingo.urlopia.api.v2.BaseCustomException;
+import org.springframework.http.HttpStatus;
 
-    private static final String ERROR_MESSAGE = "There is no user with %s: %s";
+public class NoSuchUserException extends BaseCustomException {
+
+    private static final String ERROR_MESSAGE = "There is no user with given %s";
 
     private NoSuchUserException(String errorMessage) {
         super(errorMessage);
     }
 
-    public static NoSuchUserException invalidId(Long id) {
-        return new NoSuchUserException(ERROR_MESSAGE.formatted("id", id.toString()));
+    @Override
+    public HttpStatus getHttpStatus() {
+        return HttpStatus.NOT_FOUND;
     }
 
-    public static NoSuchUserException invalidEmail(String email) {
-        return new NoSuchUserException(ERROR_MESSAGE.formatted("email", email));
+    public static NoSuchUserException invalidId() {
+        return new NoSuchUserException(ERROR_MESSAGE.formatted("id"));
     }
 
-    public static NoSuchUserException invalidCredentials() {
-        return new NoSuchUserException("Incorrect password or email");
+    public static NoSuchUserException invalidEmail() {
+        return new NoSuchUserException(ERROR_MESSAGE.formatted("email"));
     }
-
 }

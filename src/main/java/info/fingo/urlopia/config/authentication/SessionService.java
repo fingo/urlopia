@@ -3,6 +3,7 @@ package info.fingo.urlopia.config.authentication;
 import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
+import info.fingo.urlopia.user.WrongCredentialsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.BuildProperties;
@@ -44,7 +45,7 @@ public class SessionService {
         if (ldapConnectionService.authenticate(credentials)) {
             var user = userRepository
                     .findFirstByMail(credentials.getMail())
-                    .orElseThrow(NoSuchUserException::invalidCredentials);
+                    .orElseThrow(WrongCredentialsException::invalidCredentials);
             var roles = pickRoles(user);
 
             var userData = new UserData(user.getId(), roles);
@@ -62,7 +63,7 @@ public class SessionService {
         var loggerInfo = "Authentication failed for user: %s"
                 .formatted(credentials.getMail());
         log.error(loggerInfo);
-        throw NoSuchUserException.invalidCredentials();
+        throw WrongCredentialsException.invalidCredentials();
     }
 
     private List<String> pickRoles(User user) {

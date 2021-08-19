@@ -31,13 +31,19 @@ public class UserService {
     public User get(Long userId) {
         return userRepository
                 .findById(userId)
-                .orElseThrow(() -> NoSuchUserException.invalidId(userId));
+                .orElseThrow(() ->{
+                    log.error("There is no user with id: {}", userId);
+                    return NoSuchUserException.invalidId();
+                });
     }
 
     public User get(String userMail) {
         return userRepository
                 .findFirstByMail(userMail)
-                .orElseThrow(() -> NoSuchUserException.invalidEmail(userMail));
+                .orElseThrow(() -> {
+                    log.error("There is no user with email: {}", userMail);
+                    return NoSuchUserException.invalidEmail();
+                });
     }
 
     // *** ACTIONS ***
@@ -52,7 +58,8 @@ public class UserService {
                             userRepository.save(user);
                         },
                         () -> {
-                            throw NoSuchUserException.invalidId(userId);
+                            log.error("There is no user with id: {}", userId);
+                            throw NoSuchUserException.invalidId();
                         });
         var loggerInfo = "Language of user with id: %d has been set to: %s".formatted(userId, language);
         log.info(loggerInfo);
@@ -62,7 +69,11 @@ public class UserService {
         return userRepository
                 .findById(userId)
                 .map(User::getEc)
-                .orElseThrow(() -> NoSuchUserException.invalidId(userId));
+                .orElseThrow(() ->
+                {
+                    log.error("There is no user with id: {}", userId);
+                    return NoSuchUserException.invalidId();
+                });
     }
 
 
@@ -82,7 +93,8 @@ public class UserService {
                             userRepository.save(user);
                         },
                         () -> {
-                            throw NoSuchUserException.invalidId(userId);
+                            log.error("There is no user with id: {}", userId);
+                            throw NoSuchUserException.invalidId();
                         });
         var loggerInfo = "Work time of user with id: %d has been set to: %f".formatted(userId, workTime);
         log.info(loggerInfo);
@@ -99,7 +111,10 @@ public class UserService {
                 .findById(userId)
                 .map(this::getLeaders)
                 .map(Set::copyOf)
-                .orElseThrow(() -> NoSuchUserException.invalidId(userId));
+                .orElseThrow(() -> {
+                    log.error("There is no user with id: {}", userId);
+                    return NoSuchUserException.invalidId();
+                });
     }
 
     private Set<User> getLeaders(User user) {
