@@ -77,9 +77,9 @@ public class UserControllerV2 {
 
    @RolesAllowed("ROLES_ADMIN")
    @PutMapping(value = "/{userId}/vacation-days", consumes = MediaType.APPLICATION_JSON_VALUE)
-   public VacationDaysOutput add(@PathVariable Long userId,
-                                   @RequestBody HistoryLogInput historyLog,
-                                   HttpServletRequest httpRequest) {
+   public VacationDaysOutput addVacationHours(@PathVariable Long userId,
+                                              @RequestBody HistoryLogInput historyLog,
+                                              HttpServletRequest httpRequest) {
       var authenticatedUserId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
       historyLogService.create(historyLog, userId, authenticatedUserId);
       return getVacationDays(userId);
