@@ -18,6 +18,8 @@ const changeRequestStatus = (dispatch, {requestId, newStatus}) => {
 }
 
 export const cancelRequest = (dispatch, {requestId}) => changeRequestStatus(dispatch, {requestId, newStatus: "CANCELED"})
+export const acceptRequest = (dispatch, {requestId}) => changeRequestStatus(dispatch, {requestId, newStatus: "ACCEPTED"})
+export const rejectRequest = (dispatch, {requestId}) => changeRequestStatus(dispatch, {requestId, newStatus: "REJECTED"})
 
 export const changeRequestStatusReducer = (state, action) => {
     switch (action.type) {
@@ -34,15 +36,15 @@ export const changeRequestStatusReducer = (state, action) => {
                 ...state,
                 myRequests: {
                     ...state.myRequests,
-                    requests: mapRequestsStatus(state.myRequests.requests, changedStatusRequestId, newStatus)
+                    requests: handleMyRequestsStatusChange(state.myRequests.requests, changedStatusRequestId, newStatus)
                 },
                 teamRequests: {
                     ...state.teamRequests,
-                    requests: mapRequestsStatus(state.teamRequests.requests, changedStatusRequestId, newStatus)
+                    requests: handleTeamRequestsStatusChange(state.teamRequests.requests, changedStatusRequestId, newStatus)
                 },
                 companyRequests: {
                     ...state.companyRequests,
-                    requests: mapRequestsStatus(state.companyRequests.requests, changedStatusRequestId, newStatus)
+                    requests: handleCompanyRequestsStatusChange(state.companyRequests.requests, changedStatusRequestId, newStatus)
                 }
             }
         }
@@ -58,6 +60,43 @@ export const changeRequestStatusReducer = (state, action) => {
     }
 }
 
-const mapRequestsStatus = (requests, requestId, newStatus) => {
+const handleMyRequestsStatusChange = (requests, requestId, newStatus) => {
+    switch (newStatus) {
+        case "CANCELED":
+        case "ACCEPTED":
+        case "REJECTED":
+            return updateRequestStatus(requests, requestId, newStatus)
+        default:
+            return requests
+    }
+}
+
+const handleTeamRequestsStatusChange = (requests, requestId, newStatus) => {
+    switch (newStatus) {
+        case "CANCELED":
+        case "ACCEPTED":
+        case "REJECTED":
+            return removeRequest(requests, requestId)
+        default:
+            return requests
+    }
+}
+
+const handleCompanyRequestsStatusChange = (requests, requestId, newStatus) => {
+    switch (newStatus) {
+        case "CANCELED":
+        case "ACCEPTED":
+        case "REJECTED":
+            return removeRequest(requests, requestId)
+        default:
+            return requests
+    }
+}
+
+const updateRequestStatus = (requests, requestId, newStatus) => {
     return requests.map(req => req.id === requestId ? {...req, status: newStatus} : req)
+}
+
+const removeRequest = (requests, requestId) => {
+    return requests.filter(req => req.id !== requestId)
 }

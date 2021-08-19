@@ -4,10 +4,11 @@ import {CheckLg as AcceptIcon, XLg as XIcon} from "react-bootstrap-icons";
 import BootstrapTable from "react-bootstrap-table-next";
 import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
 
+import {requestTypeMapper} from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
 import {textAsArrayFormatter} from "../../helpers/react-bootstrap-table2/TableHelper";
 import styles from "./CompanyRequestsList.module.scss";
 
-export const CompanyRequestsTab = ({requests, cancelRequest, acceptRequest}) => {
+export const CompanyRequestsTab = ({requests, rejectRequest, acceptRequest}) => {
     const actionFormatter = (cell, row) => {
         const cancelBtnClass = classNames(styles.btn, 'text-danger');
         const acceptBtnClass = classNames(styles.btn, 'text-success');
@@ -24,7 +25,7 @@ export const CompanyRequestsTab = ({requests, cancelRequest, acceptRequest}) => 
                 <button
                     title='Anuluj wniosek'
                     className={cancelBtnClass}
-                    onClick={() => cancelRequest(row.id)}
+                    onClick={() => rejectRequest(row.id)}
                 >
                     <XIcon/>
                 </button>
@@ -90,6 +91,8 @@ export const CompanyRequestsTab = ({requests, cancelRequest, acceptRequest}) => 
             }),
             sort: true,
             style: {verticalAlign: 'middle'},
+            formatter: requestTypeMapper,
+            filterValue: (cell) => requestTypeMapper(cell),
         },
         {
             dataField: 'actions',
@@ -103,31 +106,28 @@ export const CompanyRequestsTab = ({requests, cancelRequest, acceptRequest}) => 
     ];
 
     return (
-        <div className={styles.main}>
-            <BootstrapTable
-                bootstrap4
-                keyField='id'
-                data={requests}
-                wrapperClasses={`table-responsive ${styles.tableWrapper}`}
-                columns={columns}
-                filter={filterFactory()}
-                filterPosition='top'
-                bordered={false}
-                hover
-            />
-        </div>
-
+        <BootstrapTable
+            bootstrap4
+            keyField='id'
+            data={requests}
+            wrapperClasses={`table-responsive ${styles.tableWrapper}`}
+            columns={columns}
+            filter={filterFactory()}
+            filterPosition='top'
+            bordered={false}
+            hover
+        />
     );
 }
 
 CompanyRequestsTab.propTypes = {
     requests: PropTypes.array,
     acceptRequest: PropTypes.func,
-    cancelRequest: PropTypes.func
+    cancelRequest: PropTypes.func,
 }
 
 CompanyRequestsTab.defaultProps = {
     requests: [],
     acceptRequest: () => {},
-    cancelRequest: () => {}
+    rejectRequest: () => {},
 }

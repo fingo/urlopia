@@ -37,6 +37,7 @@ export const UserRequestsTab = ({requests, cancelRequest}) => {
             text: 'Termin',
             headerAlign: 'center',
             align: 'center',
+            style: {verticalAlign: 'middle'},
             formatter: textAsArrayFormatter
         },
         {
@@ -44,6 +45,7 @@ export const UserRequestsTab = ({requests, cancelRequest}) => {
             text: 'Rodzaj',
             headerAlign: 'center',
             align: 'center',
+            style: {verticalAlign: 'middle'},
             filter: textFilter({
                 placeholder: 'Filtruj...',
                 delay: 0,
@@ -56,6 +58,7 @@ export const UserRequestsTab = ({requests, cancelRequest}) => {
             text: 'Status',
             headerAlign: 'center',
             align: 'center',
+            style: {verticalAlign: 'middle'},
             formatter: requestStatusMapper,
             filter: textFilter({
                 placeholder: 'Filtruj...',
@@ -69,6 +72,7 @@ export const UserRequestsTab = ({requests, cancelRequest}) => {
             headerAlign: 'center',
             formatter: actionFormatter,
             align: 'center',
+            style: {verticalAlign: 'middle'},
         }
     ];
 
@@ -91,10 +95,10 @@ export const UserRequestsTab = ({requests, cancelRequest}) => {
 
 UserRequestsTab.propTypes = {
     requests: PropTypes.array,
-    cancelRequest: PropTypes.func
+    cancelRequest: PropTypes.func,
 }
 
 UserRequestsTab.defaultProps = {
     requests: [],
-    cancelRequest: () => {}
+    cancelRequest: () => {},
 }

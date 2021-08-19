@@ -67,7 +67,7 @@ describe('changeRequestStatusReducer', () => {
         return expect(newState).toEqual(expectedState)
     })
 
-    it('should change request status in each slice on success', () => {
+    it('should update requests in each slice on success when new status is CANCELED', () => {
         // given
         const action = {
             type: `${CHANGE_REQUEST_STATUS_ACTION_PREFIX}_success`,
@@ -98,10 +98,6 @@ describe('changeRequestStatusReducer', () => {
                 ...sampleState.teamRequests,
                 requests: [
                     {
-                        ...sampleRequests[0],
-                        status: "CANCELED"
-                    },
-                    {
                         ...sampleRequests[1],
                     }
                 ]
@@ -110,11 +106,109 @@ describe('changeRequestStatusReducer', () => {
                 ...sampleState.companyRequests,
                 requests: [
                     {
-                        ...sampleRequests[0],
-                        status: "CANCELED"
+                        ...sampleRequests[1],
+                    }
+                ]
+            }
+        }
+
+        const newState = changeRequestStatusReducer(sampleState, action)
+
+        // then
+        return expect(newState).toEqual(expectedState)
+    })
+
+    it('should update requests in each slice on success when new status is ACCEPTED', () => {
+        // given
+        const action = {
+            type: `${CHANGE_REQUEST_STATUS_ACTION_PREFIX}_success`,
+            response: {
+                status: "ACCEPTED"
+            },
+            payload: {
+                requestId: 2
+            }
+        }
+
+        // when
+        const expectedState = {
+            ...sampleState,
+            myRequests: {
+                ...sampleState.myRequests,
+                requests: [
+                    {
+                        ...sampleRequests[0]
                     },
                     {
                         ...sampleRequests[1],
+                        status: "ACCEPTED"
+                    }
+                ]
+            },
+            teamRequests: {
+                ...sampleState.teamRequests,
+                requests: [
+                    {
+                        ...sampleRequests[0],
+                    }
+                ]
+            },
+            companyRequests: {
+                ...sampleState.companyRequests,
+                requests: [
+                    {
+                        ...sampleRequests[0],
+                    }
+                ]
+            }
+        }
+
+        const newState = changeRequestStatusReducer(sampleState, action)
+
+        // then
+        return expect(newState).toEqual(expectedState)
+    })
+
+    it('should update requests in each slice on success when new status is REJECTED', () => {
+        // given
+        const action = {
+            type: `${CHANGE_REQUEST_STATUS_ACTION_PREFIX}_success`,
+            response: {
+                status: "REJECTED"
+            },
+            payload: {
+                requestId: 2
+            }
+        }
+
+        // when
+        const expectedState = {
+            ...sampleState,
+            myRequests: {
+                ...sampleState.myRequests,
+                requests: [
+                    {
+                        ...sampleRequests[0]
+                    },
+                    {
+                        ...sampleRequests[1],
+                        status: "REJECTED"
+                    }
+                ]
+            },
+            teamRequests: {
+                ...sampleState.teamRequests,
+                requests: [
+                    {
+                        ...sampleRequests[0],
+                    }
+                ]
+            },
+            companyRequests: {
+                ...sampleState.companyRequests,
+                requests: [
+                    {
+                        ...sampleRequests[0],
                     }
                 ]
             }
