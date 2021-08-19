@@ -3,10 +3,12 @@ package info.fingo.urlopia.config.authentication;
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.RequestScope;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+@RequestScope
 @Service
 public class WebTokenService {
 
