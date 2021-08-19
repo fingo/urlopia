@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor // Required for jackson
@@ -23,5 +24,11 @@ public class PresenceConfirmationInputOutput {
     public static PresenceConfirmationInputOutput from(PresenceConfirmation presenceConfirmation) {
         var modelMapper = new ModelMapper();
         return modelMapper.map(presenceConfirmation, PresenceConfirmationInputOutput.class);
+    }
+
+    public static List<PresenceConfirmationInputOutput> listFrom(List<PresenceConfirmation> presenceConfirmations) {
+        return presenceConfirmations.stream()
+                .map(PresenceConfirmationInputOutput::from)
+                .toList();
     }
 }

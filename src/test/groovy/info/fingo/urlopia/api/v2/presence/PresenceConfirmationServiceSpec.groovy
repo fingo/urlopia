@@ -1,5 +1,6 @@
 package info.fingo.urlopia.api.v2.presence
 
+import info.fingo.urlopia.config.persistance.filter.Filter
 import info.fingo.urlopia.holidays.HolidayService
 import info.fingo.urlopia.request.Request
 import info.fingo.urlopia.request.RequestService
@@ -12,7 +13,7 @@ import java.time.LocalTime
 
 class PresenceConfirmationServiceSpec extends Specification {
     def presenceConfirmationRepository = Mock(PresenceConfirmationRepository) {
-        save(_ as PresenceConfirmation) >> {PresenceConfirmation pc -> pc}
+        save(_ as PresenceConfirmation) >> { PresenceConfirmation pc -> pc }
     }
     def requestService = Mock(RequestService)
     def holidayService = Mock(HolidayService)
@@ -38,6 +39,63 @@ class PresenceConfirmationServiceSpec extends Specification {
         presenceConfirmation.getDate() == sampleDate
         presenceConfirmation.getStartTime() == sampleStartTime
         presenceConfirmation.getEndTime() == sampleEndTime
+    }
+
+    def samplePresenceConfirmation(userId, LocalDate date) {
+        def user = Mock(User) { getId() >> userId }
+        return new PresenceConfirmation(user, date, sampleStartTime, sampleEndTime)
+    }
+
+    def "getPresenceConfirmations() WHEN user is not admin SHOULD return only authenticated user confirmations"() {
+        given: "any filters"
+        def filters = [] as String[]
+
+        and: "a user service that returns authenticated user"
+        def authenticatedUser = Mock(User) {
+            isAdmin() >> false
+            getId() >> authenticatedUserId
+        }
+        userService.get(authenticatedUserId) >> authenticatedUser
+
+        and: "a presence confirmation repository that returns user confirmations"
+        def userPresenceConfirmations = [
+                samplePresenceConfirmation(authenticatedUserId, sampleDate.plusDays(1)),
+                samplePresenceConfirmation(authenticatedUserId, sampleDate.plusDays(2))
+        ]
+        1 * presenceConfirmationRepository.findAll(_ as Filter) >> userPresenceConfirmations
+
+        when: "user tries to get his confirmations"
+        def confirmations = presenceConfirmationService.getPresenceConfirmations(authenticatedUserId, filters)
+
+        then: "his confirmations are returned"
+        confirmations == userPresenceConfirmations
+    }
+
+    def "getPresenceConfirmations() WHEN user is admin SHOULD return confirmations of all users"() {
+        given: "any filters"
+        def filters = [] as String[]
+
+        and: "a user service that returns authenticated user"
+        def authenticatedUser = Mock(User) {
+            isAdmin() >> true
+            getId() >> authenticatedUserId
+        }
+        userService.get(authenticatedUserId) >> authenticatedUser
+
+        and: "a presence confirmation repository that returns all user confirmations"
+        def presenceConfirmationList = [
+                samplePresenceConfirmation(authenticatedUserId, sampleDate.plusDays(1)),
+                samplePresenceConfirmation(authenticatedUserId, sampleDate.plusDays(2)),
+                samplePresenceConfirmation(2L, sampleDate.plusDays(1)),
+                samplePresenceConfirmation(3L, sampleDate.plusDays(3))
+        ]
+        1 * presenceConfirmationRepository.findAll(_ as Filter) >> presenceConfirmationList
+
+        when: "user tries to get his confirmations"
+        def confirmations = presenceConfirmationService.getPresenceConfirmations(authenticatedUserId, filters)
+
+        then: "his confirmations are returned"
+        confirmations == presenceConfirmationList
     }
 
     def "confirmPresence() WHEN user is not admin and is confirming his own presence SHOULD add the presence"() {
