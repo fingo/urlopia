@@ -75,7 +75,7 @@ public enum Operator {
                                                                                   Path<T> parameter,
                                                                                   T value);
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public <E> Specification<E> generateSpecification(String key, String value) {
         return (root, query, cb) -> {
             Path<?> parameter = this.getParameterPath(root, key);
@@ -102,6 +102,14 @@ public enum Operator {
                 var longParameter = (Path<Long>) parameter;
                 var longValue = Long.valueOf(value);
                 return this.generatePredicate(cb, longParameter, longValue);
+            } else if (type.isEnum()) {
+                for (var enumConstant : type.getEnumConstants()) {
+                    if (enumConstant.toString().equalsIgnoreCase(value)) {
+                        var enumParameter = (Path<Enum>) parameter;
+                        var enumValue = Enum.valueOf((Class) type, value);
+                        return this.generatePredicate(cb, enumParameter, enumValue);
+                    }
+                }
             }
 
             String exceptionMessage = String.format("Type `%s` is not supported", type.getCanonicalName());
