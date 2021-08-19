@@ -1,9 +1,13 @@
 import {createForwardingReducer} from "../utils";
+import {changeAcceptanceStatusReducer} from "./actions/changeAcceptanceStatus";
 import {changeRequestStatusReducer} from "./actions/changeRequestStatus";
+import {fetchAcceptancesReducer} from "./actions/fetchAcceptances";
 import {fetchCompanyRequestsReducer} from "./actions/fetchCompanyRequests";
 import {fetchMyRequestsReducer} from "./actions/fetchMyRequests";
 import {
+    CHANGE_ACCEPTANCE_STATUS_ACTION_PREFIX,
     CHANGE_REQUEST_STATUS_ACTION_PREFIX,
+    FETCH_ACCEPTANCES_ACTION_PREFIX,
     FETCH_COMPANY_REQUESTS_ACTION_PREFIX,
     FETCH_MY_REQUESTS_ACTION_PREFIX,
 } from "./constants";
@@ -11,13 +15,19 @@ import {
 const requestReducersMappings = {
     [`${FETCH_MY_REQUESTS_ACTION_PREFIX}`]: {
         slicePath: "myRequests",
-        reducer: fetchMyRequestsReducer
+        reducer: fetchMyRequestsReducer,
     },
     [`${FETCH_COMPANY_REQUESTS_ACTION_PREFIX}`]: {
         slicePath: "companyRequests",
         reducer: fetchCompanyRequestsReducer
     },
-    [`${CHANGE_REQUEST_STATUS_ACTION_PREFIX}`]: changeRequestStatusReducer
+    [`${FETCH_ACCEPTANCES_ACTION_PREFIX}`]: {
+        slicePath: "teamRequests",
+        reducer: fetchAcceptancesReducer,
+    },
+    [`${CHANGE_REQUEST_STATUS_ACTION_PREFIX}`]: changeRequestStatusReducer,
+    [`${CHANGE_REQUEST_STATUS_ACTION_PREFIX}`]: changeRequestStatusReducer,
+    [`${CHANGE_ACCEPTANCE_STATUS_ACTION_PREFIX}`]: changeAcceptanceStatusReducer,
 }
 
 export const requestReducer = createForwardingReducer(requestReducersMappings)

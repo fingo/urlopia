@@ -8,19 +8,19 @@ const initialState = {
     myRequests: {
         fetching: false,
         error: null,
-        requests: []
+        requests: [],
     },
     teamRequests: {
         fetching: false,
         error: null,
-        requests: []
+        requests: [],
     },
     companyRequests: {
         fetching: false,
         error: null,
-        requests: []
+        requests: [],
     },
-    contextError: null
+    contextError: null,
 }
 
 export const RequestProvider = ({children}) => {
