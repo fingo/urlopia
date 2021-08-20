@@ -43,7 +43,7 @@ export const App = () => {
                         <Container fluid>
                             <Row>
                                 <Col xs={3} xl={2} className={sidebarColClass}>
-                                    <Sidebar onClickOutside={handleClickOutsideSidebar}/>
+                                    <Sidebar onClickLinkOrOutside={handleClickOutsideSidebar}/>
                                 </Col>
                                 <Col xs={12} lg={9} xl={10} className={styles.mainContent}>
                                     <MainContentRouting/>

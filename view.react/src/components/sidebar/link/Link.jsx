@@ -5,10 +5,11 @@ import styles from './Link.module.scss';
 
 export const Link = ({
     to,
+    onClick,
     children,
 }) => {
     return (
-        <NavLink to={to} activeClassName={styles.activeLink}>
+        <NavLink to={to} activeClassName={styles.activeLink} onClick={onClick}>
             {children}
         </NavLink>
     )
@@ -16,4 +17,9 @@ export const Link = ({
 
 Link.propTypes = {
     to: PropTypes.string.isRequired,
+    onClick: PropTypes.func,
+}
+
+Link.defaultProps = {
+    onClickLinkOrOutside: () => null,
 }
