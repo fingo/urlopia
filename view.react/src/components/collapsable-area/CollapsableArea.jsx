@@ -26,7 +26,7 @@ export const CollapsableArea = ({
                     {title}
                 </CollapsableAreaHeader>
                 <Accordion.Collapse eventKey="0">
-                    <Card.Body>{children}</Card.Body>
+                    <Card.Body className={styles.card}>{children}</Card.Body>
                 </Accordion.Collapse>
             </Card>
         </Accordion>

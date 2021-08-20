@@ -1,0 +1,79 @@
+@import '../../global-styles/color-variables';
+@import '../../global-styles/bootstrap-breakpoints';
+
+.container {
+  margin-top: 1rem;
+  padding: 0;
+}
+
+.formSelect {
+  font-size: 0.9rem;
+  margin: 1rem 0;
+}
+
+.labelAndInfo {
+  display: flex;
+  justify-content: space-between;
+}
+
+.additionalInfo {
+  color: $GREY-COLOR;
+  font-size: 0.7rem;
+}
+
+.calendarColumn {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 0 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.calendarOverlay {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+
+  h1 {
+    text-align: center;
+    margin-top: 15%;
+  }
+}
+
+.calendarWrapper {
+  display: flex;
+  overflow: auto;
+}
+
+.calendar {
+  max-width: fit-content;
+  margin: 1rem auto;
+  border: 1px solid $CALENDAR-BORDER-COLOR;
+}
+
+@include media-breakpoint-only(xl) {
+  .calendar {
+    max-width: 90%;
+  }
+}
+
+.blur {
+  filter: blur(5px);
+}
+
+.btn {
+  display: flex;
+  margin: 1rem auto;
+  border: none;
+  background-color: $BASE-COLOR;
+
+  &:hover {
+    background-color: $HOVER-COLOR;
+  }
+
+  &:disabled {
+    background-color: $GREY-COLOR;
+  }
+}
