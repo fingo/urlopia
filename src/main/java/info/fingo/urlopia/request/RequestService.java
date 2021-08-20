@@ -2,6 +2,7 @@ package info.fingo.urlopia.request;
 
 import info.fingo.urlopia.UrlopiaApplication;
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
+import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
 import info.fingo.urlopia.config.authentication.WebTokenService;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
@@ -11,6 +12,7 @@ import info.fingo.urlopia.request.absence.SpecialAbsenceRequestService;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,30 +21,29 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class RequestService {
-
     private final RequestRepository requestRepository;
-
     private final HistoryLogService historyLogService;
-
     private final UserService userService;
-
     private final WebTokenService webTokenService;
+    private final PresenceConfirmationService presenceConfirmationService;
 
     @Autowired
     public RequestService(RequestRepository requestRepository,
                           HistoryLogService historyLogService,
                           UserService userService,
-                          WebTokenService webTokenService) {
+                          WebTokenService webTokenService,
+                          @Lazy PresenceConfirmationService presenceConfirmationService) {
         this.requestRepository = requestRepository;
         this.historyLogService = historyLogService;
         this.userService = userService;
         this.webTokenService = webTokenService;
+        this.presenceConfirmationService = presenceConfirmationService;
     }
 
     public Page<RequestExcerptProjection> getFromUser(Long userId, Filter filter, Pageable pageable) {
@@ -142,11 +143,16 @@ public class RequestService {
         var service = request.getType().getService();
         service.accept(request);
 
+        var requesterId = request.getRequester().getId();
+        var startDate = request.getStartDate();
+        var endDate = request.getEndDate();
+        presenceConfirmationService.deletePresenceConfirmations(requesterId, startDate, endDate);
+
         float workingHours = request.getWorkingDays() * request.getRequester().getWorkTime();
         var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         var term = String.format("%s - %s",
-                request.getStartDate().format(formatter),
-                request.getEndDate().format(formatter));
+                                 startDate.format(formatter),
+                                 endDate.format(formatter));
         historyLogService.create(request, -workingHours, term, request.getRequester().getId(), deciderId);
     }
 

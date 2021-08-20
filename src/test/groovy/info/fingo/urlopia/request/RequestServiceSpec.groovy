@@ -1,16 +1,15 @@
 package info.fingo.urlopia.request
 
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException
+import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
 import info.fingo.urlopia.config.authentication.WebTokenService
 import info.fingo.urlopia.history.HistoryLogService
 import info.fingo.urlopia.request.normal.NormalRequestService
 import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserService
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties
 import spock.lang.Specification
 
 import java.time.LocalDate
-
 
 class RequestServiceSpec extends Specification {
     def requesterId = 1L
@@ -36,10 +35,12 @@ class RequestServiceSpec extends Specification {
     def historyLogService = Mock(HistoryLogService)
     def userService = Mock(UserService)
     def webTokenService = Mock(WebTokenService)
+    def presenceConfirmationService = Mock(PresenceConfirmationService)
     def requestService = new RequestService(requestRepository,
             historyLogService,
             userService,
-            webTokenService)
+            webTokenService,
+            presenceConfirmationService)
 
     def webTokenServiceThrowingException = Mock(WebTokenService) {
         ensureAdmin() >> {
@@ -50,7 +51,8 @@ class RequestServiceSpec extends Specification {
     def requestServiceWithModifiedWebTokenService = new RequestService(requestRepository,
             historyLogService,
             userService,
-            webTokenServiceThrowingException)
+            webTokenServiceThrowingException,
+            presenceConfirmationService)
 
     def "validateAdminPermissionAndAccept() when admin is accepting request should change request status to ACCEPTED"() {
         given:
@@ -148,5 +150,19 @@ class RequestServiceSpec extends Specification {
 
         then: "Exception is thrown"
         thrown(UnauthorizedException)
+    }
+
+    def "accept() WHEN request is accepted SHOULD delete presence confirmations in its date range"() {
+        given: "a normal request service that accepts given request"
+        def normalRequestService = Mock(NormalRequestService) {
+            accept(_ as Request) >> {Request req -> req.setStatus(Request.Status.ACCEPTED)}
+        }
+        type.setService(normalRequestService)
+
+        when: "a request is accepted"
+        requestService.accept(request.getId(), 999L)
+
+        then: "presence confirmation service is called"
+        1 * presenceConfirmationService.deletePresenceConfirmations(requesterId, request.getStartDate(), request.getEndDate())
     }
 }

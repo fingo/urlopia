@@ -1,6 +1,7 @@
 package info.fingo.urlopia.request.absence;
 
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
+import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
 import info.fingo.urlopia.config.authentication.WebTokenService;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
@@ -28,6 +29,7 @@ public class SpecialAbsenceRequestService implements RequestTypeService {
     private final RequestRepository requestRepository;
     private final ApplicationEventPublisher publisher;
     private final WebTokenService webTokenService;
+    private final PresenceConfirmationService presenceConfirmationService;
 
     @Override
     public Request create(Long userId,
@@ -37,6 +39,11 @@ public class SpecialAbsenceRequestService implements RequestTypeService {
         var adminId = (Long) webTokenService.getUserId();
         var workingDays = workingDaysCalculator.calculate(input.getStartDate(), input.getEndDate());
         var request = mapToRequest(user, input, workingDays);
+
+        var startDate = request.getStartDate();
+        var endDate = request.getEndDate();
+        presenceConfirmationService.deletePresenceConfirmations(userId, startDate, endDate);
+
         validateRequest(request);
         requestRepository.save(request);
         log.info("New request with id: {} has been saved", request.getId());

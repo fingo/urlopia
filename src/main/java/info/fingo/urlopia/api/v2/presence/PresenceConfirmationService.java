@@ -82,4 +82,14 @@ public class PresenceConfirmationService {
             throw PresenceConfirmationException.userOnVacation();
         }
     }
+
+    public void deletePresenceConfirmations(Long userId, LocalDate startDate, LocalDate endDate) {
+        var filter = Filter.newBuilder()
+                .and("presenceConfirmationId.userId", Operator.EQUAL, userId.toString())
+                .and("presenceConfirmationId.date", Operator.GREATER_OR_EQUAL, startDate.toString())
+                .and("presenceConfirmationId.date", Operator.LESS_OR_EQUAL, endDate.toString())
+                .build();
+        var presenceConfirmationsToDelete = presenceConfirmationRepository.findAll(filter);
+        presenceConfirmationRepository.deleteAll(presenceConfirmationsToDelete);
+    }
 }

@@ -1,5 +1,6 @@
 package info.fingo.urlopia.request.occasional;
 
+import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
 import info.fingo.urlopia.request.absence.BaseRequestInput;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
@@ -8,8 +9,8 @@ import info.fingo.urlopia.request.normal.events.NormalRequestCanceled;
 import info.fingo.urlopia.request.occasional.events.OccasionalRequestCreated;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,27 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("occasionalRequestService")
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class OccasionalRequestService implements RequestTypeService {
-
     private final RequestRepository requestRepository;
-
     private final UserRepository userRepository;
-
     private final HistoryLogService historyLogService;
-
     private final WorkingDaysCalculator workingDaysCalculator;
-
     private final ApplicationEventPublisher publisher;
-
-    @Autowired
-    public OccasionalRequestService(RequestRepository requestRepository, UserRepository userRepository,
-                                HistoryLogService historyLogService, WorkingDaysCalculator workingDaysCalculator, ApplicationEventPublisher publisher) {
-        this.requestRepository = requestRepository;
-        this.userRepository = userRepository;
-        this.historyLogService = historyLogService;
-        this.workingDaysCalculator = workingDaysCalculator;
-        this.publisher = publisher;
-    }
+    private final PresenceConfirmationService presenceConfirmationService;
 
     @Override
     public Request create(Long userId, BaseRequestInput requestInput) {
@@ -48,6 +36,10 @@ public class OccasionalRequestService implements RequestTypeService {
         Request request = this.createRequestObject(user, requestInput, workingDays);
         this.validateRequest(request);
         request = requestRepository.save(request);
+
+        var startDate = request.getStartDate();
+        var endDate = request.getEndDate();
+        presenceConfirmationService.deletePresenceConfirmations(userId, startDate, endDate);
 
         var term = request.getTerm();
         var typeInfo = request.getTypeInfo().getInfo();

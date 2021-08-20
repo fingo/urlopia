@@ -1,6 +1,7 @@
 package info.fingo.urlopia.request.absence
 
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException
+import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
 import info.fingo.urlopia.config.authentication.WebTokenService
 import info.fingo.urlopia.history.HistoryLogService
 import info.fingo.urlopia.holidays.WorkingDaysCalculator
@@ -8,6 +9,8 @@ import info.fingo.urlopia.request.Request
 import info.fingo.urlopia.request.RequestInput
 import info.fingo.urlopia.request.RequestOverlappingException
 import info.fingo.urlopia.request.RequestRepository
+import info.fingo.urlopia.request.RequestType
+import info.fingo.urlopia.request.occasional.OccasionalType
 import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserService
 import org.springframework.context.ApplicationEventPublisher
@@ -42,6 +45,7 @@ class SpecialAbsenceRequestServiceSpec extends Specification{
     def historyLogService = Mock(HistoryLogService)
     def userService = Mock(UserService)
     def webTokenService = Mock(WebTokenService)
+    def presenceConfirmationService = Mock(PresenceConfirmationService)
 
     def specialAbsenceRequestService = new SpecialAbsenceRequestService(
             userService,
@@ -49,7 +53,8 @@ class SpecialAbsenceRequestServiceSpec extends Specification{
             historyLogService,
             requestRepository,
             publisher,
-            webTokenService)
+            webTokenService,
+            presenceConfirmationService)
 
     def "create() WHEN called by non admin SHOULD throw UnauthorizedException"() {
         given:
@@ -114,6 +119,21 @@ class SpecialAbsenceRequestServiceSpec extends Specification{
 
         then:
         requestRepository.findById(request.getId()) >> request
+    }
+
+    def "create() WHEN request is created SHOULD delete presence confirmations in its date range"() {
+        given:
+        userService.get(requesterId) >> requester
+        webTokenService.isCurrentUserAnAdmin() >> true
+        webTokenService.getUserId() >> requesterId
+        workingDaysCalculator.calculate(startDate, endDate) >> 1
+        requestRepository.findByRequesterId(requesterId) >> List.of()
+
+        when: "request is created"
+        specialAbsenceRequestService.create(requesterId, specialAbsenceInput)
+
+        then: "presence confirmation service is called"
+        1 * presenceConfirmationService.deletePresenceConfirmations(requesterId, startDate, endDate)
     }
 
     def "cancel() WHEN called by admin SHOULD change request status to REJECTED"() {

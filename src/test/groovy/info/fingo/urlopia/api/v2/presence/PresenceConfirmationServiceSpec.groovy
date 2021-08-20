@@ -242,4 +242,23 @@ class PresenceConfirmationServiceSpec extends Specification {
         then: "an exception is thrown"
         thrown(PresenceConfirmationException)
     }
+
+    def "deletePresenceConfirmations() SHOULD delete presence confirmation in a given date range"() {
+        given: "sample arguments"
+        def startDate = LocalDate.of(2021, 3, 4)
+        def endDate = LocalDate.of(2021, 3, 5)
+
+        and: "presence confirmation repository that returns filtered confirmations"
+        def userPresenceConfirmations = [
+                samplePresenceConfirmation(authenticatedUserId, startDate),
+                samplePresenceConfirmation(authenticatedUserId, endDate)
+        ]
+        1 * presenceConfirmationRepository.findAll(_ as Filter) >> userPresenceConfirmations
+
+        when: "user tries to delete presence confirmations"
+        presenceConfirmationService.deletePresenceConfirmations(authenticatedUserId, startDate, endDate)
+
+        then: "the presence confirmation are deleted"
+        1 * presenceConfirmationRepository.deleteAll(userPresenceConfirmations)
+    }
 }
