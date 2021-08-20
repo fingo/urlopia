@@ -24,12 +24,6 @@ export const App = () => {
         setIsSidebarOpen(false);
     }
 
-    const userName = 'Jan Kowalski';
-    const teams = [
-        {name: 'DL', leader: 'Piotr Nowak'},
-        {name: 'TEAM_ABC', leader: 'Karol Kapitalończyk-Mikołajczyk'},
-    ];
-
     const sidebarColClass = classNames('m-0', 'p-0', {'d-none d-lg-block': !isSidebarOpen});
     return (
         <>
@@ -45,7 +39,7 @@ export const App = () => {
                     :
 
                     <>
-                        <TopBar userName={userName} teams={teams} onHamburgerClick={handleHamburgerClick}/>
+                        <TopBar onHamburgerClick={handleHamburgerClick}/>
                         <Container fluid>
                             <Row>
                                 <Col xs={3} xl={2} className={sidebarColClass}>

@@ -20,3 +20,12 @@ export const logout = () => {
 export const getCurrentUser = () => {
     return JSON.parse(sessionStorage.getItem(USER_DATA_KEY));
 }
+
+export const getFullUserName = () => {
+    const user = getCurrentUser();
+    return `${user.name} ${user.surname}`;
+}
+
+export const getUserTeams = () => {
+    return getCurrentUser().teams;
+}

@@ -22,16 +22,20 @@ export const TeamDropdown = ({
                 <Dropdown.Divider className="m-0 d-lg-none"/>
 
                 {
-                    teams.map(({name, leader}, i) =>
-                        <div key={i}
-                             className={i === teams.length - 1 ? styles.teamInfo : styles.teamInfoWithDivider}
-                        >
-                            <p className={styles.team}>{name}</p>
-                            <p className={styles.leader}>Lider: {leader}</p>
-                        </div>
-                    )
-                }
+                    teams.length ?
+                        teams.map(({name, leader}, i) =>
+                            <div key={i}
+                                 className={i === teams.length - 1 ? styles.teamInfo : styles.teamInfoWithDivider}
+                            >
+                                <p className={styles.team}>{name}</p>
+                                <p className={styles.leader}>Lider: {leader}</p>
+                            </div>
+                        )
 
+                        :
+
+                        <Dropdown.Header className="text-center">Brak zespołów</Dropdown.Header>
+                }
             </Dropdown.Menu>
         </Dropdown>
     );

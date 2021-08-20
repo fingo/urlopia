@@ -4,17 +4,16 @@ import {Container, Navbar} from 'react-bootstrap';
 import {List as ListIcon, Power as PowerIcon} from "react-bootstrap-icons";
 import {useHistory} from "react-router-dom";
 
-import {logout} from "../../api/services/session.service";
+import {getFullUserName, getUserTeams, logout} from "../../api/services/session.service";
 import logoImg from '../../assets/logo.png';
 import {TeamDropdown} from "./team-dropdown/TeamDropdown";
 import styles from './TopBar.module.scss';
 
-export const TopBar = ({
-       userName,
-       teams,
-       onHamburgerClick,
-}) => {
+export const TopBar = ({onHamburgerClick}) => {
     const history = useHistory();
+
+    const userName = getFullUserName();
+    const teams = getUserTeams();
 
     const handleLogout = () => {
         logout();
@@ -53,11 +52,5 @@ export const TopBar = ({
 }
 
 TopBar.propTypes = {
-    userName: PropTypes.string.isRequired,
-    teams: PropTypes.arrayOf(
-        PropTypes.shape({
-            name: PropTypes.string,
-            leader: PropTypes.string,
-        })).isRequired,
     onHamburgerClick: PropTypes.func.isRequired,
 }
