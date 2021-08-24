@@ -86,7 +86,7 @@ public class HistoryLogService {
         var hours = -reversible.getHours();
         var targetUserId = reversible.getUser().getId();
         this.create(request, hours, comment, targetUserId, deciderId);
-        var loggerInfo = "A history log with id: %d has been removed removed from user with id: %d"
+        var loggerInfo = "A history log with id: %d has been removed from user with id: %d"
                 .formatted(reversible.getId(), targetUserId);
         log.info(loggerInfo);
     }
