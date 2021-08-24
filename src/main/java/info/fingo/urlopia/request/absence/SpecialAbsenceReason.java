@@ -12,6 +12,8 @@ public enum SpecialAbsenceReason {
     SICK_LEAVE_EMPLOYEE,
     SICK_LEAVE_CHILD,
     UNEXCUSED,
+    CHILDCARE,
+    CHILDCARE_FOR_14_YEARS_OLD,
     WRONG,
     OTHER
 }

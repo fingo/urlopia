@@ -5,8 +5,8 @@ import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.RequestService;
-import info.fingo.urlopia.request.RequestType;
 import info.fingo.urlopia.user.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class EvidenceReportModelFactory {
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(); // uses default JVM locale
@@ -26,14 +27,8 @@ public class EvidenceReportModelFactory {
     private final RequestService requestService;
     private final HolidayService holidayService;
     private final HistoryLogService historyLogService;
+    private final EvidenceReportStatusFromRequestMapper statusFromRequestMapper;
 
-    public EvidenceReportModelFactory(RequestService requestService,
-                                      HolidayService holidayService,
-                                      HistoryLogService historyLogService) {
-        this.requestService = requestService;
-        this.holidayService = holidayService;
-        this.historyLogService = historyLogService;
-    }
 
     public EvidenceReportModel create(User user, int year) {
         Map<String, String> model = new HashMap<>();
@@ -104,7 +99,7 @@ public class EvidenceReportModelFactory {
                 return this.requestService
                         .getByUserAndDate(user.getId(), date).stream()
                         .filter(req -> req.getStatus() == Request.Status.ACCEPTED)
-                        .map(req -> this.getRequestStatus(req.getType()))
+                        .map(statusFromRequestMapper::getEvidenceReportStatusFromRequest)
                         .findFirst()
                         .orElse(DECIMAL_FORMAT.format(user.getWorkTime()));
             }
@@ -114,12 +109,5 @@ public class EvidenceReportModelFactory {
         return "-";
     }
 
-    private String getRequestStatus(RequestType requestType) {
-        return switch (requestType) {
-            case NORMAL -> "uw";
-            case OCCASIONAL -> "uo";
-            case SPECIAL -> "ns";
-        };
-    }
 
 }

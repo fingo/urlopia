@@ -26,6 +26,8 @@ public interface RequestExcerptProjection {
 
     RequestType getType();
 
+    String getSpecialTypeInfo();
+
     Set<AcceptanceExcerptProjection> getAcceptances();
 
 }
