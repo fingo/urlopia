@@ -68,11 +68,14 @@ public class PresenceConfirmationService {
         if (!isConfirmingOwnPresence && !authenticatedUser.isAdmin()) {
             var logMessage = "User: {} was forbidden to confirm presence of user with id: {}";
             log.info(logMessage, authenticatedUser.getPrincipalName(), confirmationUserId);
-            throw PresenceConfirmationException.forbiddenConfirmation();
+            throw ForbiddenConfirmationException.notConfirmingOwnPresence();
         }
     }
 
     private void checkIfConfirmationIsViable(User user, LocalDate date) {
+        if (date.isAfter(LocalDate.now())) {
+            throw PresenceConfirmationException.confirmationInFuture();
+        }
         if (!holidayService.isWorkingDay(date)) {
             throw PresenceConfirmationException.nonWorkingDay();
         }

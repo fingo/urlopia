@@ -138,7 +138,7 @@ class PresenceConfirmationServiceSpec extends Specification {
         presenceConfirmationService.confirmPresence(authenticatedUserId, dto)
 
         then: "an exception is thrown"
-        thrown(PresenceConfirmationException)
+        thrown(ForbiddenConfirmationException)
     }
 
     def "confirmPresence() WHEN user is admin and is confirming his own presence SHOULD add the presence"() {
@@ -235,6 +235,25 @@ class PresenceConfirmationServiceSpec extends Specification {
 
         and: "a request service that returns some requests"
         requestService.getByUserAndDate(authenticatedUserId, sampleDate) >> [new Request()]
+
+        when: "user tries to confirm his presence"
+        presenceConfirmationService.confirmPresence(authenticatedUserId, dto)
+
+        then: "an exception is thrown"
+        thrown(PresenceConfirmationException)
+    }
+
+    def "confirmPresence() WHEN date is in the future SHOULD throw an exception"() {
+        given: "an invalid dto"
+        def dto = samplePresenceConfirmationDTO(authenticatedUserId)
+        dto.setDate(LocalDate.now().plusDays(30))
+
+        and: "a user service that returns authenticated user"
+        def authenticatedUser = Mock(User) {
+            isAdmin() >> false
+            getId() >> authenticatedUserId
+        }
+        userService.get(authenticatedUserId) >> authenticatedUser
 
         when: "user tries to confirm his presence"
         presenceConfirmationService.confirmPresence(authenticatedUserId, dto)
