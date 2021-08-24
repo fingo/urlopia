@@ -39,6 +39,7 @@ class UserControllerV2Spec extends Specification{
         def firstId = 5L
         def firstMail = "mail@some_domain"
         def firstWorkTime = 7.0
+        def firstWorkTimeOutput = new WorkTimeOutput(7, 8)
         def firstUserExcerptProjection = Mock(UserExcerptProjection){
             getName() >> firstFullName
             getId() >> firstId
@@ -53,6 +54,7 @@ class UserControllerV2Spec extends Specification{
         def secondId = 6L
         def secondMail = "m@some_domain"
         def secondWorkTime = 6.0
+        def secondWorkTimeOutput = new WorkTimeOutput(3, 4)
         def secondUserExcerptProjection = Mock(UserExcerptProjection){
             getName() >> secondFullName
             getId() >> secondId
@@ -64,15 +66,17 @@ class UserControllerV2Spec extends Specification{
         usersData= List.of(firstUserExcerptProjection,secondUserExcerptProjection)
 
         def firstUserOutput = new UserOutput(firstFullName,
-                                            firstId,
-                                            firstMail,
-                                            List.of(team1Name),
-                                            firstWorkTime)
+                                             firstId,
+                                             firstMail,
+                                             List.of(team1Name),
+                                             firstWorkTime,
+                                             firstWorkTimeOutput)
         def secondUserOutput = new UserOutput(secondFullName,
-                secondId,
-                secondMail,
-                List.of(team1Name),
-                secondWorkTime)
+                                              secondId,
+                                              secondMail,
+                                              List.of(team1Name),
+                                              secondWorkTime,
+                                              secondWorkTimeOutput)
         userOutputs = List.of(firstUserOutput,secondUserOutput)
     }
 
