@@ -1,18 +1,20 @@
 package info.fingo.urlopia.request.normal;
 
 import info.fingo.urlopia.acceptance.AcceptanceService;
+import info.fingo.urlopia.acceptance.StatusNotSupportedException;
 import info.fingo.urlopia.request.absence.BaseRequestInput;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.*;
+import info.fingo.urlopia.request.absence.InvalidDatesOrderException;
 import info.fingo.urlopia.request.normal.events.NormalRequestAccepted;
 import info.fingo.urlopia.request.normal.events.NormalRequestCanceled;
 import info.fingo.urlopia.request.normal.events.NormalRequestCreated;
 import info.fingo.urlopia.request.normal.events.NormalRequestRejected;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ import java.util.stream.DoubleStream;
 @Service("normalRequestService")
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class NormalRequestService implements RequestTypeService {
 
     private final RequestRepository requestRepository;
@@ -39,16 +42,6 @@ public class NormalRequestService implements RequestTypeService {
 
     private final AcceptanceService acceptanceService;
 
-    @Autowired
-    public NormalRequestService(RequestRepository requestRepository, UserRepository userRepository,
-                                HistoryLogService historyLogService, WorkingDaysCalculator workingDaysCalculator, ApplicationEventPublisher publisher, AcceptanceService acceptanceService) {
-        this.requestRepository = requestRepository;
-        this.userRepository = userRepository;
-        this.historyLogService = historyLogService;
-        this.workingDaysCalculator = workingDaysCalculator;
-        this.publisher = publisher;
-        this.acceptanceService = acceptanceService;
-    }
 
     @Override
     public Request create(Long userId, BaseRequestInput requestInput) {
@@ -71,6 +64,7 @@ public class NormalRequestService implements RequestTypeService {
 
         return requestRepository.findById(request.getId())
                 .orElseThrow();
+
     }
 
     private void ensureUserOwnRequiredHoursNumber(User user, float requiredHours) {
@@ -114,7 +108,7 @@ public class NormalRequestService implements RequestTypeService {
 
     private void validateRequest(Request request) {
         if (request.getEndDate().isBefore(request.getStartDate())) {
-            throw new RuntimeException("End date is before start date");
+            throw InvalidDatesOrderException.invalidDatesOrder();
         }
         if (isOverlapping(request)) {
             throw new RequestOverlappingException();
@@ -124,7 +118,6 @@ public class NormalRequestService implements RequestTypeService {
     private boolean isOverlapping(Request newRequest) {
         Long userId = newRequest.getRequester().getId();
         List<Request> requests = requestRepository.findByRequesterId(userId);
-
         return requests.stream()
                 .filter(Request::isAffecting)
                 .anyMatch(request -> request.isOverlapping(newRequest));
@@ -172,7 +165,7 @@ public class NormalRequestService implements RequestTypeService {
     private void validateStatus(Request.Status status, Request.Status... supportedStatuses) {
         List<Request.Status> supported = Arrays.asList(supportedStatuses);
         if (!supported.contains(status)) {
-            throw new RuntimeException("Status not supported");
+            throw StatusNotSupportedException.invalidStatus(status.toString());
         }
     }
 

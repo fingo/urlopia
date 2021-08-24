@@ -165,4 +165,21 @@ class RequestServiceSpec extends Specification {
         then: "presence confirmation service is called"
         1 * presenceConfirmationService.deletePresenceConfirmations(requesterId, request.getStartDate(), request.getEndDate())
     }
+
+    def "getById() when requestId is valid should return request"() {
+        given:
+        def requestId = 1L
+        def request = Mock(Request) {
+            getId() >> requestId
+        }
+
+        requestRepository.findById(request.getId()) >> Optional.of(request)
+
+
+        when:
+        def returnedRequest = requestService.getById(request.getId())
+
+        then:
+        returnedRequest == request
+    }
 }

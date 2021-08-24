@@ -67,4 +67,26 @@ class AcceptanceServiceSpec extends Specification {
         then: "exception is thrown"
         thrown(UnauthorizedException)
     }
+
+    def "getAcceptancesByRequestId() when requestId is valid should return acceptances associated with request"() {
+        given:
+        def acceptance = Mock(Acceptance)
+        def requestId = 1L
+        def request = Mock(Request) {
+            getAcceptances() >> [acceptance]
+            getId() >> requestId
+        }
+
+        def acceptanceRepository = Mock(AcceptanceRepository) {
+            findByRequestId(request.getId()) >> [acceptance]
+        }
+
+        def acceptanceService = new AcceptanceService(acceptanceRepository, requestService, publisher)
+
+        when:
+        def acceptances = acceptanceService.getAcceptancesByRequestId(request.getId())
+
+        then:
+        acceptances == [acceptance]
+    }
 }

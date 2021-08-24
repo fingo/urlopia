@@ -1,10 +1,12 @@
 package info.fingo.urlopia.request.occasional;
 
-import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
 import info.fingo.urlopia.request.absence.BaseRequestInput;
+import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.*;
+import info.fingo.urlopia.request.absence.InvalidDatesOrderException;
+import info.fingo.urlopia.request.absence.OperationNotSupportedException;
 import info.fingo.urlopia.request.normal.events.NormalRequestCanceled;
 import info.fingo.urlopia.request.occasional.events.OccasionalRequestCreated;
 import info.fingo.urlopia.user.User;
@@ -70,18 +72,18 @@ public class OccasionalRequestService implements RequestTypeService {
 
     private void validateRequest(Request request) {
         if (request.getEndDate().isBefore(request.getStartDate())) {
-            throw new RuntimeException("End date is before start date");
+            throw InvalidDatesOrderException.invalidDatesOrder();
         }
     }
 
     @Override
     public void accept(Request request) {
-        throw new RuntimeException("Method not supported");
+        throw OperationNotSupportedException.operationNotSupported();
     }
 
     @Override
     public void reject(Request request) {
-        throw new RuntimeException("Method not supported");
+        throw OperationNotSupportedException.operationNotSupported();
     }
 
     @Override

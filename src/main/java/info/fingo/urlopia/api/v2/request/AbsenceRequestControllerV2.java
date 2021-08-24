@@ -8,6 +8,7 @@ import info.fingo.urlopia.request.RequestInput;
 import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.request.absence.SpecialAbsence;
 import info.fingo.urlopia.request.absence.SpecialAbsenceRequestInput;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -18,16 +19,12 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/v2/absence-requests")
+@RequiredArgsConstructor
 public class AbsenceRequestControllerV2 {
     private final AcceptanceService acceptanceService;
 
     private final RequestService requestService;
 
-    public AbsenceRequestControllerV2(AcceptanceService acceptanceService,
-                                      RequestService requestService) {
-        this.acceptanceService = acceptanceService;
-        this.requestService = requestService;
-    }
 
     @RolesAllowed("ROLES_ADMIN")
     @PostMapping(value = "/special-absence", consumes = MediaType.APPLICATION_JSON_VALUE)

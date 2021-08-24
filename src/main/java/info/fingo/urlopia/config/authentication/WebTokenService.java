@@ -12,11 +12,14 @@ import java.util.List;
 @Service
 public class WebTokenService {
 
-    final static long SESSION_DURATION = 24 * 60 * 60 * (long) 1000; // 1 day in milliseconds
+    static final long SESSION_DURATION = 24 * 60 * 60 * (long) 1000; // 1 day in milliseconds
     private WebToken webToken;
 
-    @Value("${webtoken.secret}")
     private String SECRET_KEY;
+
+    public WebTokenService(@Value("${webtoken.secret}") String secretKey){
+        SECRET_KEY = secretKey;
+    }
 
     public void authorize(HttpServletRequest request) {
         webToken = WebToken.fromRequest(request, SECRET_KEY);
