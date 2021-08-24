@@ -6,8 +6,10 @@ import {Col, Container, Row} from 'react-bootstrap';
 import {Redirect} from "react-router-dom";
 
 import {getCurrentUser} from "../../api/services/session.service";
+import {RequestProvider} from "../../contexts/request-context/requestContext";
 import {LoginPage} from "../../pages/login-page/LoginPage";
 import {MainContentRouting} from "../../router/MainContentRouting";
+import {AcceptanceLoader} from "../acceptance-loader/AcceptanceLoader";
 import {Sidebar} from "../sidebar/Sidebar";
 import {TopBar} from "../topbar/TopBar";
 import styles from './App.module.scss';
@@ -15,6 +17,7 @@ import styles from './App.module.scss';
 export const App = () => {
     const sessionToken = getCurrentUser()?.token;
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [newAcceptancesPresent, setNewAcceptancesPresent] = useState(false);
 
     const handleHamburgerClick = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -43,10 +46,19 @@ export const App = () => {
                         <Container fluid>
                             <Row>
                                 <Col xs={3} xl={2} className={sidebarColClass}>
-                                    <Sidebar onClickLinkOrOutside={handleClickOutsideSidebar}/>
+                                    <Sidebar
+                                        onClickLinkOrOutside={handleClickOutsideSidebar}
+                                        newAcceptancesPresent={newAcceptancesPresent}
+                                    />
                                 </Col>
                                 <Col xs={12} lg={9} xl={10} className={styles.mainContent}>
-                                    <MainContentRouting/>
+                                    <RequestProvider>
+                                        <AcceptanceLoader setNewAcceptancesPresent={setNewAcceptancesPresent}/>
+                                        <MainContentRouting
+                                            newAcceptancesPresent={newAcceptancesPresent}
+                                            setNewAcceptancesPresent={setNewAcceptancesPresent}
+                                        />
+                                    </RequestProvider>
                                 </Col>
                             </Row>
                         </Container>

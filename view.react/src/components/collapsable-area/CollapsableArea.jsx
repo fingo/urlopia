@@ -8,10 +8,14 @@ import styles from './CollapsableArea.module.scss';
 export const CollapsableArea = ({
     title,
     children,
+    onOpen
 }) => {
     const [isCollapsed, setIsCollapsed] = useState(true);
 
     const handleCollapse = () => {
+        if (isCollapsed) {
+            onOpen()
+        }
         setIsCollapsed(!isCollapsed);
     }
 
@@ -34,5 +38,10 @@ export const CollapsableArea = ({
 };
 
 CollapsableArea.propTypes = {
-    title: PropTypes.string.isRequired,
+    title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
+    onOpen: PropTypes.func,
+}
+
+CollapsableArea.defaultProps = {
+    onOpen: () => {},
 }

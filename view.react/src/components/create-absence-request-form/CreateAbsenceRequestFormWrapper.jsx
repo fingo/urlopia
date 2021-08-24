@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import {useEffect} from "react";
 
 import {fetchHolidays} from "../../contexts/holidays-context/actions/fetchHolidays";
@@ -6,14 +7,16 @@ import {createRequest} from "../../contexts/request-context/actions/createReques
 import {useRequests} from "../../contexts/request-context/requestContext";
 import {CreateAbsenceRequestForm} from "./CreateAbsenceRequestForm";
 
-export const CreateAbsenceRequestFormWrapper = () => {
+export const CreateAbsenceRequestFormWrapper = ({shouldFetchHolidays}) => {
     const [holidaysState, holidaysDispatch] = useHolidays();
     const [, requestsDispatch] = useRequests();
     const {holidays} = holidaysState;
 
     useEffect(() => {
-        fetchHolidays(holidaysDispatch);
-    }, [holidaysDispatch]);
+        if (shouldFetchHolidays) {
+            fetchHolidays(holidaysDispatch);
+        }
+    }, [holidaysDispatch, shouldFetchHolidays]);
 
     return (
         <CreateAbsenceRequestForm
@@ -22,3 +25,7 @@ export const CreateAbsenceRequestFormWrapper = () => {
         />
     )
 };
+
+CreateAbsenceRequestFormWrapper.propTypes = {
+    shouldFetchHolidays: PropTypes.bool.isRequired,
+}

@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import {useEffect} from "react";
 
 import {cancelRequest} from "../../contexts/request-context/actions/changeRequestStatus";
@@ -5,13 +6,15 @@ import {fetchMyRequests} from "../../contexts/request-context/actions/fetchMyReq
 import {useRequests} from "../../contexts/request-context/requestContext";
 import {UserRequestsTab} from "./UserRequestsTab";
 
-export const UserRequestsList = () => {
+export const UserRequestsList = ({shouldFetchUserRequests}) => {
     const [state, requestsDispatch] = useRequests()
     const {requests} = state.myRequests
 
     useEffect(() => {
-        fetchMyRequests(requestsDispatch)
-    }, [requestsDispatch])
+        if (shouldFetchUserRequests) {
+            fetchMyRequests(requestsDispatch)
+        }
+    }, [requestsDispatch, shouldFetchUserRequests])
 
     return (
         <UserRequestsTab
@@ -20,3 +23,7 @@ export const UserRequestsList = () => {
         />
     )
 };
+
+UserRequestsList.propTypes = {
+    shouldFetchUserRequests: PropTypes.bool.isRequired,
+}

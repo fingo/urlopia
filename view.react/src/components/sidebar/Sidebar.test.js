@@ -24,7 +24,7 @@ test('on desktop show the sidebar', () => {
 test('check the correctness of the links', () => {
     render(<Router><Sidebar onClickOutside={() => null}/></Router>);
     const calendar = screen.getByText(/Kalendarz/);
-    const requests = screen.getByText(/Wnioski urlopowe/);
+    const requests = screen.getByText(linkWithText("Wnioski urlopowe"))
     const history = screen.getByText(/Historia nieobecności/);
     const workers = screen.getByText(/Pracownicy/);
     const coworkers = screen.getByText(/Współpracownicy/);
@@ -39,3 +39,8 @@ test('check the correctness of the links', () => {
     expect(holidays.href).toMatch(/holidays/);
     expect(raports.href).toMatch(/reports/);
 });
+
+const linkWithText = (text) => (content, node) => {
+    const nodeWithText = Array.from(node.children).find(child => child.textContent === text)
+    return node.href && nodeWithText
+}

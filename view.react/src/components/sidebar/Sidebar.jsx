@@ -5,18 +5,25 @@ import {
     Nav
 } from 'react-bootstrap';
 
+import {AttentionIcon, TextWithIcon} from "../../helpers/icons/Icons";
 import {Link} from "./link/Link";
 import {LinkGroup} from "./link-group/LinkGroup";
 import styles from './Sidebar.module.scss';
 
-export const Sidebar = ({onClickLinkOrOutside}) => {
+export const Sidebar = ({onClickLinkOrOutside, newAcceptancesPresent}) => {
     const overlayClass = classNames(styles.overlay, 'd-lg-none');
     return (
         <>
             <Container fluid className={styles.main}>
                 <Nav className={styles.nav}>
                     <Link to="/calendar" onClick={onClickLinkOrOutside}>Kalendarz</Link>
-                    <Link to="/requests" onClick={onClickLinkOrOutside}>Wnioski urlopowe</Link>
+                    <Link to="/requests" onClick={onClickLinkOrOutside}>
+                        <TextWithIcon
+                            text={"Wnioski urlopowe"}
+                            icon={<AttentionIcon />}
+                            showIcon={newAcceptancesPresent}
+                        />
+                    </Link>
                     <Link to="/history" onClick={onClickLinkOrOutside}>Historia nieobecności</Link>
                     <LinkGroup name="Konfiguracja aplikacji">
                         <Link to="/workers" onClick={onClickLinkOrOutside}>Pracownicy</Link>
@@ -35,8 +42,10 @@ export const Sidebar = ({onClickLinkOrOutside}) => {
 
 Sidebar.propTypes = {
     onClickLinkOrOutside: PropTypes.func,
+    newAcceptancesPresent: PropTypes.bool
 }
 
 Sidebar.defaultProps = {
     onClickLinkOrOutside: () => null,
+    newAcceptancesPresent: false
 }

@@ -1,0 +1,20 @@
+.newEventDot {
+  margin-left: 10px;
+  margin-bottom: 4px;
+  color: #f57c23;
+  font-size: 0.75rem;
+  -webkit-animation: blink-1 5s ease-in-out 1s infinite both;
+  animation: blink-1 5s ease-in-out 1s infinite both;
+}
+
+@keyframes blink-1 {
+  0%,
+  50%,
+  100% {
+    opacity: 1;
+  }
+  25%,
+  75% {
+    opacity: 0;
+  }
+}

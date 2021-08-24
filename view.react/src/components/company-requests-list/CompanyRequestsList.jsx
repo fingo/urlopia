@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import {useEffect} from "react";
 
 import {acceptRequest, rejectRequest} from "../../contexts/request-context/actions/changeRequestStatus";
@@ -6,13 +7,15 @@ import {useRequests} from "../../contexts/request-context/requestContext";
 import {requestPeriodFormatter} from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
 import {CompanyRequestsTab} from "./CompanyRequestsTab";
 
-export const CompanyRequestsList = () => {
+export const CompanyRequestsList = ({shouldFetchCompanyRequests}) => {
     const [state, requestsDispatch] = useRequests()
     const {requests} = state.companyRequests
 
     useEffect(() => {
-        fetchCompanyRequests(requestsDispatch)
-    }, [requestsDispatch])
+        if (shouldFetchCompanyRequests) {
+            fetchCompanyRequests(requestsDispatch)
+        }
+    }, [requestsDispatch, shouldFetchCompanyRequests])
 
     const formattedRequests = requests.map(req => {
         return {
@@ -33,4 +36,6 @@ export const CompanyRequestsList = () => {
     )
 };
 
-
+CompanyRequestsList.propTypes = {
+    shouldFetchCompanyRequests: PropTypes.bool.isRequired,
+}

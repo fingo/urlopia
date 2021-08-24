@@ -1,15 +1,15 @@
 import {Redirect, Route, Switch} from "react-router-dom";
 
-import {AbsenceRequestsPage,URL as VacationRequestsURL} from '../pages/absence-requests-page/AbsenceRequestsPage';
+import {AbsenceRequestsPage, URL as VacationRequestsURL} from '../pages/absence-requests-page/AbsenceRequestsPage';
 import {AssociatesPage, URL as AssociatesURL} from '../pages/associates-page/AssociatesPage';
 import {CalendarPage, URL as CalendarURL} from '../pages/calendar-page/CalendarPage';
 import {HistoryPage, URL as HistoryURL} from '../pages/history-page/HistoryPage';
 import {HolidaysPage, URL as HolidaysURL} from '../pages/holidays-page/HolidaysPage';
 import {Page404} from '../pages/page-404/Page404';
 import {ReportsPage, URL as ReportsURL} from '../pages/reports-page/ReportsPage';
-import {URL as WorkersURL,WorkersPage} from '../pages/workers-page/WorkersPage';
+import {URL as WorkersURL, WorkersPage} from '../pages/workers-page/WorkersPage';
 
-export const MainContentRouting = () => {
+export const MainContentRouting = ({newAcceptancesPresent, setNewAcceptancesPresent}) => {
     return (
         <Switch>
             <Route path="/" exact>
@@ -21,7 +21,10 @@ export const MainContentRouting = () => {
             </Route>
 
             <Route path={VacationRequestsURL} exact>
-                <AbsenceRequestsPage/>
+                    <AbsenceRequestsPage
+                        newAcceptancesPresent={newAcceptancesPresent}
+                        setNewAcceptancesPresent={setNewAcceptancesPresent}
+                    />
             </Route>
 
             <Route path={HistoryURL} exact>
