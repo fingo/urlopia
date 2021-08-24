@@ -48,6 +48,8 @@ repositories {
 
 dependencies {
     implementation platform("org.springframework.boot:spring-boot-dependencies:2.5.2")
+    developmentOnly platform("org.springframework.boot:spring-boot-dependencies:2.5.2")
+
     developmentOnly('com.h2database:h2')
     developmentOnly('org.springframework.boot:spring-boot-devtools')
     implementation('javax.ejb:ejb-api:3.0')
