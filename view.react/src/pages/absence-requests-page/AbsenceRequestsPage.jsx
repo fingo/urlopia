@@ -1,5 +1,6 @@
 import {useState} from "react";
 
+import {getCurrentUser} from "../../api/services/session.service";
 import {CollapsableArea} from '../../components/collapsable-area/CollapsableArea';
 import {CompanyRequestsList} from "../../components/company-requests-list/CompanyRequestsList";
 import {CreateAbsenceRequestFormWrapper} from "../../components/create-absence-request-form/CreateAbsenceRequestFormWrapper";
@@ -12,6 +13,7 @@ import styles from './AbsenceRequestsPage.module.scss';
 export const URL = '/requests';
 
 export const AbsenceRequestsPage = ({newAcceptancesPresent, setNewAcceptancesPresent}) => {
+    const {isAdmin: isUserAnAdmin, isLeader: isUserALeader} = getCurrentUser()
     const [shouldFetchHolidays, setShouldFetchHolidays] = useState(false)
     const [shouldFetchUserRequests, setShouldFetchUserRequests] = useState(false)
     const [shouldFetchCompanyRequests, setShouldFetchCompanyRequests] = useState(false)
@@ -39,13 +41,17 @@ export const AbsenceRequestsPage = ({newAcceptancesPresent, setNewAcceptancesPre
                 <UserRequestsList shouldFetchUserRequests={shouldFetchUserRequests}/>
             </CollapsableArea>
 
-            <CollapsableArea title={teamRequestsListTitle} onOpen={handleTeamRequestsListOpen}>
-                <TeamRequestsList/>
-            </CollapsableArea>
+            {isUserALeader && (
+                <CollapsableArea title={teamRequestsListTitle} onOpen={handleTeamRequestsListOpen}>
+                    <TeamRequestsList/>
+                </CollapsableArea>
+            )}
 
-            <CollapsableArea title='Aktywne wnioski firmowe' onOpen={handleCompanyRequestsListOpen}>
-                <CompanyRequestsList shouldFetchCompanyRequests={shouldFetchCompanyRequests}/>
-            </CollapsableArea>
+            {isUserAnAdmin && (
+                <CollapsableArea title='Aktywne wnioski firmowe' onOpen={handleCompanyRequestsListOpen}>
+                    <CompanyRequestsList shouldFetchCompanyRequests={shouldFetchCompanyRequests}/>
+                </CollapsableArea>
+            )}
         </div>
     );
 };

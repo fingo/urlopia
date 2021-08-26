@@ -18,7 +18,12 @@ export const logout = () => {
 }
 
 export const getCurrentUser = () => {
-    return JSON.parse(sessionStorage.getItem(USER_DATA_KEY));
+    const user = JSON.parse(sessionStorage.getItem(USER_DATA_KEY)) || {userRoles: []}
+    return {
+        ...user,
+        isLeader: user.userRoles.includes("ROLES_LEADER"),
+        isAdmin: user.userRoles.includes("ROLES_ADMIN")
+    }
 }
 
 export const getFullUserName = () => {

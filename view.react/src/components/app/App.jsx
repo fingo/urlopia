@@ -15,7 +15,8 @@ import {TopBar} from "../topbar/TopBar";
 import styles from './App.module.scss';
 
 export const App = () => {
-    const sessionToken = getCurrentUser()?.token;
+    const user = getCurrentUser()
+    const {token: sessionToken, isLeader: isUserALeader} = user
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [newAcceptancesPresent, setNewAcceptancesPresent] = useState(false);
 
@@ -53,7 +54,7 @@ export const App = () => {
                                 </Col>
                                 <Col xs={12} lg={9} xl={10} className={styles.mainContent}>
                                     <RequestProvider>
-                                        <AcceptanceLoader setNewAcceptancesPresent={setNewAcceptancesPresent}/>
+                                        {isUserALeader && <AcceptanceLoader setNewAcceptancesPresent={setNewAcceptancesPresent}/>}
                                         <MainContentRouting
                                             newAcceptancesPresent={newAcceptancesPresent}
                                             setNewAcceptancesPresent={setNewAcceptancesPresent}

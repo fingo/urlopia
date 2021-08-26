@@ -5,12 +5,14 @@ import {
     Nav
 } from 'react-bootstrap';
 
+import {getCurrentUser} from "../../api/services/session.service";
 import {AttentionIcon, TextWithIcon} from "../../helpers/icons/Icons";
 import {Link} from "./link/Link";
 import {LinkGroup} from "./link-group/LinkGroup";
 import styles from './Sidebar.module.scss';
 
 export const Sidebar = ({onClickLinkOrOutside, newAcceptancesPresent}) => {
+    const {isAdmin: isUserAnAdmin} = getCurrentUser()
     const overlayClass = classNames(styles.overlay, 'd-lg-none');
     return (
         <>
@@ -25,12 +27,16 @@ export const Sidebar = ({onClickLinkOrOutside, newAcceptancesPresent}) => {
                         />
                     </Link>
                     <Link to="/history" onClick={onClickLinkOrOutside}>Historia nieobecności</Link>
-                    <LinkGroup name="Konfiguracja aplikacji">
-                        <Link to="/workers" onClick={onClickLinkOrOutside}>Pracownicy</Link>
-                        <Link to="/associates" onClick={onClickLinkOrOutside}>Współpracownicy</Link>
-                        <Link to="/holidays" onClick={onClickLinkOrOutside}>Dni świąteczne</Link>
-                    </LinkGroup>
-                    <Link to="/reports" onClick={onClickLinkOrOutside}>Raporty</Link>
+                    {isUserAnAdmin && (
+                        <>
+                            <LinkGroup name="Konfiguracja aplikacji">
+                                <Link to="/workers" onClick={onClickLinkOrOutside}>Pracownicy</Link>
+                                <Link to="/associates" onClick={onClickLinkOrOutside}>Współpracownicy</Link>
+                                <Link to="/holidays" onClick={onClickLinkOrOutside}>Dni świąteczne</Link>
+                            </LinkGroup>
+                            <Link to="/reports" onClick={onClickLinkOrOutside}>Raporty</Link>
+                        </>
+                    )}
                 </Nav>
             </Container>
 

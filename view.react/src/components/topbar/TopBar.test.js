@@ -1,45 +1,59 @@
 import {act, fireEvent, render, screen} from "@testing-library/react";
 import {BrowserRouter as Router} from "react-router-dom";
 
+import {USER_DATA_KEY} from "../../constants/session.keystorage";
+import {mockSessionStorage} from "../../helpers/TestHelper";
 import {TopBar} from "./TopBar";
 
-const testUserName = 'Kacper Bartek';
-const testTeams = [
-    {name: 'ABC', leader: 'Piotr Nowak'},
-];
+describe("TopBar", () => {
+    const sessionStorageMock = mockSessionStorage()
+    const sampleFullName = 'Kacper Bartek'
+    const sampleTeams = [
+        {name: 'ABC', leader: 'Piotr Nowak'},
+    ]
 
+    beforeAll(() => {
+        sessionStorageMock.clear()
+        sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
+            name: 'Kacper',
+            surname: 'Bartek',
+            teams: sampleTeams,
+            userRoles: ["ROLES_WORKER"]
+        }))
+    })
 
-test('shows logo when render',() => {
-    render(<Router><TopBar userName='' teams={[]} onHamburgerClick={() => null}/></Router>);
-    const displayedImage = document.querySelector("img");
-    expect((displayedImage.src)).toContain('logo.png');
-});
-
-test('shows correct user name from props', () => {
-    render(<TopBar userName='Piotr Nowak' teams={[]} onHamburgerClick={() => null}/>);
-    const userName = screen.getByText('Piotr Nowak');
-    expect(userName).toBeInTheDocument();
-});
-
-test('shows teams dropdown after clicking on user name', async () => {
-    render(<TopBar userName={testUserName} teams={testTeams} onHamburgerClick={() => null}/>);
-
-    const userNameLabel = screen.getByText(testUserName);
-    expect(userNameLabel).toBeInTheDocument();
-
-    await act(async () => {
-        await fireEvent.click(userNameLabel);
+    it('should show logo',() => {
+        render(<Router><TopBar onHamburgerClick={() => null}/></Router>);
+        const displayedImage = document.querySelector("img");
+        expect((displayedImage.src)).toContain('logo.png');
     });
 
-    const teamName = screen.getByText(testTeams[0].name);
-    const teamLeader = screen.getByText(`Lider: ${testTeams[0].leader}`);
+    it('should show correct user name', () => {
+        render(<TopBar onHamburgerClick={() => null}/>);
+        const userName = screen.getByText(sampleFullName);
+        expect(userName).toBeInTheDocument();
+    });
 
-    expect(teamName).toBeInTheDocument();
-    expect(teamLeader).toBeInTheDocument();
-});
+    it('should show teams dropdown after clicking on user name', async () => {
+        render(<TopBar onHamburgerClick={() => null}/>);
 
-test('shows "Urlopia" banner', () => {
-    render(<TopBar userName='' teams={[]} onHamburgerClick={() => null}/>);
-    const urlopiaBanner = screen.getByText('Urlopia');
-    expect(urlopiaBanner).toBeInTheDocument();
-});
+        const userNameLabel = screen.getByText(sampleFullName);
+        expect(userNameLabel).toBeInTheDocument();
+
+        await act(async () => {
+            fireEvent.click(userNameLabel);
+        });
+
+        const teamName = screen.getByText(sampleTeams[0].name);
+        const teamLeader = screen.getByText(`Lider: ${sampleTeams[0].leader}`);
+
+        expect(teamName).toBeInTheDocument();
+        expect(teamLeader).toBeInTheDocument();
+    });
+
+    it('should show "Urlopia" banner', () => {
+        render(<TopBar onHamburgerClick={() => null}/>);
+        const urlopiaBanner = screen.getByText('Urlopia');
+        expect(urlopiaBanner).toBeInTheDocument();
+    });
+})

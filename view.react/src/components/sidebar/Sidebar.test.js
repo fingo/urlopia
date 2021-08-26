@@ -1,44 +1,74 @@
 import {render, screen} from '@testing-library/react';
 import {BrowserRouter as Router} from "react-router-dom";
 
+import {USER_DATA_KEY} from "../../constants/session.keystorage";
+import {mockSessionStorage} from "../../helpers/TestHelper";
 import {Sidebar} from "./Sidebar";
 
-test('on desktop show the sidebar', () => {
-    render(<Router><Sidebar onClickOutside={() => null}/></Router>);
-    const calendar = screen.getByText('Kalendarz');
-    const requests = screen.getByText('Wnioski urlopowe');
-    const history = screen.getByText('Historia nieobecności');
-    const workers = screen.getByText('Pracownicy');
-    const coworkers = screen.getByText('Współpracownicy');
-    const holidays = screen.getByText('Dni świąteczne');
-    const raports = screen.getByText('Raporty');
-    expect(calendar).toBeInTheDocument();
-    expect(requests).toBeInTheDocument();
-    expect(history).toBeInTheDocument();
-    expect(workers).toBeInTheDocument();
-    expect(coworkers).toBeInTheDocument();
-    expect(holidays).toBeInTheDocument();
-    expect(raports).toBeInTheDocument();
-});
+describe("Sidebar", () => {
+    const sessionStorageMock = mockSessionStorage()
 
-test('check the correctness of the links', () => {
-    render(<Router><Sidebar onClickOutside={() => null}/></Router>);
-    const calendar = screen.getByText(/Kalendarz/);
-    const requests = screen.getByText(linkWithText("Wnioski urlopowe"))
-    const history = screen.getByText(/Historia nieobecności/);
-    const workers = screen.getByText(/Pracownicy/);
-    const coworkers = screen.getByText(/Współpracownicy/);
-    const holidays = screen.getByText(/Dni świąteczne/);
-    const raports = screen.getByText(/Raport/);
+    beforeEach(() => {
+        sessionStorageMock.clear()
+    })
 
-    expect(calendar.href).toMatch(/calendar/);
-    expect(requests.href).toMatch(/requests/);
-    expect(history.href).toMatch(/history/);
-    expect(workers.href).toMatch(/workers/);
-    expect(coworkers.href).toMatch(/associates/);
-    expect(holidays.href).toMatch(/holidays/);
-    expect(raports.href).toMatch(/reports/);
-});
+    it("should show correct links when user is not an admin", () => {
+        // given
+        sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
+            userRoles: ["ROLES_WORKER"]
+        }))
+
+        // when
+        render(<Router><Sidebar onClickLinkOrOutside={() => {}}/></Router>);
+
+        // then
+        expect(screen.queryByText('Kalendarz')).toBeInTheDocument()
+        expect(screen.queryByText('Wnioski urlopowe')).toBeInTheDocument()
+        expect(screen.queryByText('Historia nieobecności')).toBeInTheDocument()
+        expect(screen.queryByText('Pracownicy')).not.toBeInTheDocument()
+        expect(screen.queryByText('Współpracownicy')).not.toBeInTheDocument()
+        expect(screen.queryByText('Dni świąteczne')).not.toBeInTheDocument()
+        expect(screen.queryByText('Raporty')).not.toBeInTheDocument()
+    })
+
+    it("should show correct links when user is an admin", () => {
+        // given
+        sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
+            userRoles: ["ROLES_WORKER", "ROLES_ADMIN"]
+        }))
+
+        // when
+        render(<Router><Sidebar onClickLinkOrOutside={() => {}}/></Router>);
+
+        // then
+        expect(screen.queryByText('Kalendarz')).toBeInTheDocument()
+        expect(screen.queryByText('Wnioski urlopowe')).toBeInTheDocument()
+        expect(screen.queryByText('Historia nieobecności')).toBeInTheDocument()
+        expect(screen.queryByText('Pracownicy')).toBeInTheDocument()
+        expect(screen.queryByText('Współpracownicy')).toBeInTheDocument()
+        expect(screen.queryByText('Dni świąteczne')).toBeInTheDocument()
+        expect(screen.queryByText('Raporty')).toBeInTheDocument()
+    })
+
+    it("should render links with correct routes", () => {
+        // given
+        sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
+            userRoles: ["ROLES_WORKER", "ROLES_ADMIN"]
+        }))
+
+        // when
+        render(<Router><Sidebar onClickLinkOrOutside={() => {}}/></Router>);
+
+        // then
+        expect(screen.queryByText('Kalendarz').href).toMatch(/calendar/)
+        expect(screen.queryByText(linkWithText('Wnioski urlopowe')).href).toMatch(/requests/)
+        expect(screen.queryByText('Historia nieobecności').href).toMatch(/history/)
+        expect(screen.queryByText('Pracownicy').href).toMatch(/workers/)
+        expect(screen.queryByText('Współpracownicy').href).toMatch(/associates/)
+        expect(screen.queryByText('Dni świąteczne').href).toMatch(/holidays/)
+        expect(screen.queryByText('Raporty').href).toMatch(/reports/)
+    })
+})
 
 const linkWithText = (text) => (content, node) => {
     const nodeWithText = Array.from(node.children).find(child => child.textContent === text)
