@@ -2,7 +2,6 @@ package info.fingo.urlopia.history;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -28,4 +27,5 @@ public interface HistoryLogExcerptProjection {
 
     Integer getWorkTimeDenominator();
 
+    String getDeciderFullName();
 }

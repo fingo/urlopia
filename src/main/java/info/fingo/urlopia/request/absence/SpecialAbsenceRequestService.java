@@ -90,9 +90,9 @@ public class SpecialAbsenceRequestService implements RequestTypeService {
     public Request mapToRequest(User user,
                                 BaseRequestInput input,
                                 int workingDays){
-        var typeInfo = SpecialAbsenceReason.WRONG.toString();
+        var typeInfo = SpecialAbsenceReason.WRONG.getTranslatedReason();
         if (input instanceof SpecialAbsenceRequestInput specialInput) {
-          typeInfo = specialInput.getReason().toString();
+          typeInfo = specialInput.getReason().getTranslatedReason();
         }
         return new Request(
                 user,

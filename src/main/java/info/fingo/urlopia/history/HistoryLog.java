@@ -88,6 +88,10 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
         return id;
     }
 
+    public String getDeciderFullName() {
+        return decider.getFullName();
+    }
+
     public LocalDateTime getCreated() {
         return created;
     }
