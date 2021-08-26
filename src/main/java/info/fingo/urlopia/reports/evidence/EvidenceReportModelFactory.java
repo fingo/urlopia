@@ -7,6 +7,7 @@ import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.user.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class EvidenceReportModelFactory {
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(); // uses default JVM locale
@@ -104,7 +106,7 @@ public class EvidenceReportModelFactory {
                         .orElse(DECIMAL_FORMAT.format(user.getWorkTime()));
             }
         } catch (DateTimeException ignore) {
-            // if day is not exists then default value
+            // if day does not exist then default value
         }
         return "-";
     }

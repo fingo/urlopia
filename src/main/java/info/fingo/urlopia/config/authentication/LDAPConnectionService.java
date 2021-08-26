@@ -54,6 +54,7 @@ public class LDAPConnectionService {
         try {
             return new InitialLdapContext(env, null);
         } catch (NamingException e) {
+            LOGGER.error("Something went wrong while connecting to AD");
             throw new ActiveDirectoryConnectionException(e);
         }
     }

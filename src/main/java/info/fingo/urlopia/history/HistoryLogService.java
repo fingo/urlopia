@@ -5,6 +5,7 @@ import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.Request;
+import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,8 +68,19 @@ public class HistoryLogService {
     public void create(HistoryLogInput historyLog,
                        Long targetUserId,
                        Long deciderId) {
-        var targetUser = userRepository.findById(targetUserId).orElseThrow();
-        var decider = userRepository.findById(deciderId).orElseThrow();
+        var targetUser = userRepository
+                .findById(targetUserId)
+                .orElseThrow(() -> {
+                    log.error("Could not create new history log for nonexistent user with id: {}", targetUserId);
+                    return NoSuchUserException.invalidId();
+                });
+        var decider = userRepository
+                .findById(deciderId)
+                .orElseThrow(() -> {
+                    log.error(("Could not create new history log for user with id: {}" +
+                            " because decider with id: {} does not exist"), targetUserId, deciderId);
+                    return NoSuchUserException.invalidId();
+                });
         var prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByIdDesc(targetUserId);
         var hoursChange = historyLog.getHours();
         var comment = Optional.ofNullable(historyLog.getComment()).orElse("");
@@ -86,7 +98,7 @@ public class HistoryLogService {
         var hours = -reversible.getHours();
         var targetUserId = reversible.getUser().getId();
         this.create(request, hours, comment, targetUserId, deciderId);
-        var loggerInfo = "A history log with id: %d has been removed removed from user with id: %d"
+        var loggerInfo = "A history log with id: %d has been removed from user with id: %d"
                 .formatted(reversible.getId(), targetUserId);
         log.info(loggerInfo);
     }
@@ -96,8 +108,20 @@ public class HistoryLogService {
                        String comment,
                        Long targetUserId,
                        Long deciderId) {
-        var targetUser = userRepository.findById(targetUserId).orElseThrow();
-        var decider = userRepository.findById(deciderId).orElseThrow();
+        var targetUser = userRepository
+                .findById(targetUserId)
+                .orElseThrow(() -> {
+                    log.error("Could not create new history log for nonexistent user with id: {}", targetUserId);
+                    return NoSuchUserException.invalidId();
+                });
+        var decider = userRepository
+                .findById(deciderId)
+                .orElseThrow(() -> {
+                    log.error(("Could not create new history log for user with id: {}" +
+                            " because decider with id: {} does not exist"), targetUserId, deciderId);
+                    return NoSuchUserException.invalidId();
+                });
+
         var prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByIdDesc(targetUserId);
         var historyLog = new HistoryLog(request, targetUser, decider, hours, comment, prevHistoryLog);
         historyLogRepository.save(historyLog);

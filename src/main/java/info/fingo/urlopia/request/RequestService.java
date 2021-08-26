@@ -11,6 +11,7 @@ import info.fingo.urlopia.request.absence.BaseRequestInput;
 import info.fingo.urlopia.request.absence.SpecialAbsenceRequestService;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -22,10 +23,12 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 public class RequestService {
     private final RequestRepository requestRepository;
     private final HistoryLogService historyLogService;
@@ -76,7 +79,12 @@ public class RequestService {
     }
 
     public Request getById(Long requestId) {
-        return requestRepository.findById(requestId).orElseThrow();
+        return requestRepository
+                .findById(requestId)
+                .orElseThrow(() -> {
+                    log.error("Request with id: {} does not exist", requestId);
+                    return new NoSuchElementException();
+                });
     }
 
     public Request create(Long userId, BaseRequestInput requestInput) {
@@ -139,7 +147,12 @@ public class RequestService {
 
     public void accept(Long requestId,
                        Long deciderId) {
-        var request = requestRepository.findById(requestId).orElseThrow();
+        var request = requestRepository
+                .findById(requestId)
+                .orElseThrow(() -> {
+                    log.error("Request with id: {} does not exist", requestId);
+                    return new NoSuchElementException();
+                });
         var service = request.getType().getService();
         service.accept(request);
 
@@ -163,21 +176,33 @@ public class RequestService {
     }
 
     public void reject(Long requestId) {
-        var request = requestRepository.findById(requestId).orElseThrow();
+        var request = requestRepository
+                .findById(requestId)
+                .orElseThrow(() -> {
+                    log.error("Request with id: {} does not exist", requestId);
+                    return new NoSuchElementException();
+                });
         var service = request.getType().getService();
         service.reject(request);
     }
 
     public void cancel(Long requestId, 
                        Long deciderId) {
-        var request = requestRepository.findById(requestId).orElseThrow();
-        var isRequester = request.getRequester().getId()
-                .equals(deciderId);
+        var request = requestRepository
+                .findById(requestId)
+                .orElseThrow(() -> {
+                    log.error("Request with id: {} does not exist", requestId);
+                    return new NoSuchElementException();
+                });
+        var requesterId = request.getRequester().getId();
+        var isRequester = requesterId.equals(deciderId);
 
         try {
             webTokenService.ensureAdmin();
         } catch (UnauthorizedException exception) {
             if (!isRequester) {
+                log.error("User with id: {} has no permissions to cancel request with id: {}",
+                        requesterId, requestId);
                 throw UnauthorizedException.unauthorized();
             }
         }

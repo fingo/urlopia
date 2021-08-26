@@ -40,6 +40,7 @@ public class ReportControllerV2 {
                     .headers(headers)
                     .body(workTimeEvidenceReport::write);
         }catch (IOException ioException){
+            log.error("Could not generate report with name: {}", fileName);
             throw GenerateWorkTimeEvidenceReportException.fromIOException(fileName);
         }
 

@@ -45,7 +45,10 @@ public class SessionService {
         if (ldapConnectionService.authenticate(credentials)) {
             var user = userRepository
                     .findFirstByMail(credentials.getMail())
-                    .orElseThrow(WrongCredentialsException::invalidCredentials);
+                    .orElseThrow(() -> {
+                        log.error("Authentication failed for user: {}", credentials.getMail());
+                        return WrongCredentialsException.invalidCredentials();
+                    });
             var roles = pickRoles(user);
 
             var userData = new UserData(user.getId(), roles);

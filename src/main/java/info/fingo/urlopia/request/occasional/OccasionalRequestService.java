@@ -9,6 +9,7 @@ import info.fingo.urlopia.request.absence.InvalidDatesOrderException;
 import info.fingo.urlopia.request.absence.OperationNotSupportedException;
 import info.fingo.urlopia.request.normal.events.NormalRequestCanceled;
 import info.fingo.urlopia.request.occasional.events.OccasionalRequestCreated;
+import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,12 @@ public class OccasionalRequestService implements RequestTypeService {
 
     @Override
     public Request create(Long userId, BaseRequestInput requestInput) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository
+                .findById(userId)
+                .orElseThrow(() -> {
+                    log.error("Could not create new occasional request: user with id: {} does not exist", userId);
+                    return NoSuchUserException.invalidId();
+                });
         int workingDays = workingDaysCalculator.calculate(requestInput.getStartDate(), requestInput.getEndDate());
 
         Request request = this.createRequestObject(user, requestInput, workingDays);
@@ -72,17 +78,22 @@ public class OccasionalRequestService implements RequestTypeService {
 
     private void validateRequest(Request request) {
         if (request.getEndDate().isBefore(request.getStartDate())) {
+            var requesterId = request.getRequester().getId();
+            log.error("Could not create new occasional request for user with id: {} because dates are in invalid order",
+                    requesterId);
             throw InvalidDatesOrderException.invalidDatesOrder();
         }
     }
 
     @Override
     public void accept(Request request) {
+        log.error("Occasional request can not be accepted");
         throw OperationNotSupportedException.operationNotSupported();
     }
 
     @Override
     public void reject(Request request) {
+        log.error("Occasional request can not be rejected");
         throw OperationNotSupportedException.operationNotSupported();
     }
 

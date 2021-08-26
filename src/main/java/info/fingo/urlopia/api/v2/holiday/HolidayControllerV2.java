@@ -3,6 +3,7 @@ import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.holidays.Holiday;
 import info.fingo.urlopia.holidays.HolidayService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api/v2/holidays")
 @RequiredArgsConstructor
+@Slf4j
 public class HolidayControllerV2 {
 
     private final HolidayService holidayService;
@@ -45,6 +47,7 @@ public class HolidayControllerV2 {
             var holidayDate = holiday.getDate();
             var isWithinRange = isWithinRange(holidayDate,startDate,endDate);
             if(!isWithinRange){
+                log.error("Holidays are not in specified time period");
                 throw HolidayOutsideSpecifiedRange.holidaysOutsideTimePeriod();
             }
         }

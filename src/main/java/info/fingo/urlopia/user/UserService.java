@@ -83,7 +83,11 @@ public class UserService {
         var workTime = fullTimeInHours * Arrays.stream(workTimeString.split("/"))
                 .map(Float::parseFloat)
                 .reduce((a, b) -> a / b)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> {
+                    log.error("Something went wrong while setting work time for user with id: {} from: {}",
+                            userId, workTimeString);
+                    return new RuntimeException();
+                });
 
         userRepository
                 .findById(userId)

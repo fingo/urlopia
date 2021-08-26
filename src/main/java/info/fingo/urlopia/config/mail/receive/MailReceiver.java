@@ -134,6 +134,7 @@ public class MailReceiver extends Thread {
             try {
                 inbox.idle();
             } catch (MessagingException e) {
+                log.error("Something went wrong while watching at inbox");
                 performConfiguration();
             }
         }

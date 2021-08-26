@@ -74,14 +74,19 @@ public class PresenceConfirmationService {
 
     private void checkIfConfirmationIsViable(User user, LocalDate date) {
         if (date.isAfter(LocalDate.now())) {
+            log.error("Could not confirm presence for user with id: {} because date: {} is a future date",
+                    user.getId(), date);
             throw PresenceConfirmationException.confirmationInFuture();
         }
         if (!holidayService.isWorkingDay(date)) {
+            log.error("Could not confirm presence for user with id: {} because date: {} is not a working day",
+                    user.getId(), date);
             throw PresenceConfirmationException.nonWorkingDay();
         }
         var userId = user.getId();
         var isUserOnVacation = !requestService.getByUserAndDate(userId, date).isEmpty();
         if (isUserOnVacation) {
+            log.error("Could not confirm presence for user with id: {} because user is on vacation", userId);
             throw PresenceConfirmationException.userOnVacation();
         }
     }

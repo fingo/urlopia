@@ -75,6 +75,8 @@ public class AcceptanceService {
         var isCurrentUserAuthorizedToUpdateAcceptance = leaderId.equals(deciderId);
 
         if (!isCurrentUserAuthorizedToUpdateAcceptance) {
+            log.error("Acceptance with id: {} could not be accepted because user with id: {} who tried to" +
+                    " perform this operation is not authorized", acceptanceId, deciderId);
             throw UnauthorizedException.unauthorized();
         }
 
@@ -99,6 +101,8 @@ public class AcceptanceService {
         var isCurrentUserAuthorizedToUpdateAcceptance = leaderId.equals(deciderId);
 
         if (!isCurrentUserAuthorizedToUpdateAcceptance) {
+            log.error("Acceptance with id: {} could not be rejected because user with id: {} who tried to" +
+                    " perform this operation is not authorized", acceptanceId, deciderId);
             throw UnauthorizedException.unauthorized();
         }
 
@@ -124,6 +128,7 @@ public class AcceptanceService {
                                 Acceptance.Status... supportedStatuses) {
         var supported = Arrays.asList(supportedStatuses);
         if (!supported.contains(status)) {
+            log.error("Status {} not supported", status.toString());
             throw StatusNotSupportedException.invalidStatus(status.toString());
         }
     }
