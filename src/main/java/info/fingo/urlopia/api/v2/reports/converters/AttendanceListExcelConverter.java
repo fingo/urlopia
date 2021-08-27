@@ -19,10 +19,14 @@ public class AttendanceListExcelConverter {
     private static final int HEADER_FONT_SIZE = 14;
 
     public static void convertToPDF(Workbook workbook, OutputStream out) {
+        convertToPDF(List.of(workbook), out);
+    }
+
+    public static void convertToPDF(List<Workbook> workbooks, OutputStream out) {
         var settings = ExcelToPDFConverterSettings.defaultSettings();
         var rules = conversionRules();
         var converter = new ExcelToPDFConverter(settings, rules);
-        converter.convertAndWrite(workbook, out);
+        converter.convertAndWrite(workbooks, out);
     }
 
     private static List<RowRule> conversionRules() {

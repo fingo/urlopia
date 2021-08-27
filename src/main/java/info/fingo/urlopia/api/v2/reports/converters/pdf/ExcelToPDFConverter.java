@@ -37,21 +37,27 @@ public class ExcelToPDFConverter {
     }
 
     public void convertAndWrite(Workbook workbook, OutputStream outputStream) {
+        convertAndWrite(List.of(workbook), outputStream);
+    }
+
+    public void convertAndWrite(List<Workbook> workbooks, OutputStream outputStream) {
         try {
             var pdf = createNewDocument(outputStream);
             pdf.open();
 
-            for (var sheet : workbook) {
-                var numberOfColumns = ExcelToPDFConverterUtils.maxNumberOfColumnsIn(sheet);
-                var table = createNewTable(numberOfColumns);
-                var font = settings.getFont();
+            for (var workbook : workbooks) {
+                for (var sheet : workbook) {
+                    var numberOfColumns = ExcelToPDFConverterUtils.maxNumberOfColumnsIn(sheet);
+                    var table = createNewTable(numberOfColumns);
+                    var font = settings.getFont();
 
-                for (var row : sheet) {
-                    processRow(row, table, font);
+                    for (var row : sheet) {
+                        processRow(row, table, font);
+                    }
+
+                    pdf.newPage();
+                    pdf.add(table);
                 }
-
-                pdf.newPage();
-                pdf.add(table);
             }
 
             pdf.close();
