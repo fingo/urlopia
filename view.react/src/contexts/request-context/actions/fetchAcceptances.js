@@ -1,15 +1,17 @@
 import {sendGetRequest} from "../../../helpers/RequestHelper";
 import {FETCH_ACCEPTANCES_ACTION_PREFIX, FETCH_ACCEPTANCES_URL} from "../constants";
 
+const SORT_FILTER = `&sort=id,DESC`
 const FILTER = "?filter=status:PENDING"
 
 export const fetchAcceptances = dispatch => {
     dispatch({type: `${FETCH_ACCEPTANCES_ACTION_PREFIX}_request`})
-    sendGetRequest(`${FETCH_ACCEPTANCES_URL}${FILTER}`)
+    sendGetRequest(`${FETCH_ACCEPTANCES_URL}${FILTER}${SORT_FILTER}`)
         .then(data => dispatch({
-            type: `${FETCH_ACCEPTANCES_ACTION_PREFIX}_success`,
-            response: data
-        }))
+                type: `${FETCH_ACCEPTANCES_ACTION_PREFIX}_success`,
+                response: data
+            })
+        )
         .catch(errorMsg => dispatch({
             type: `${FETCH_ACCEPTANCES_ACTION_PREFIX}_failure`,
             error: errorMsg

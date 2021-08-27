@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import {useRef, useState} from 'react';
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
 
+import {getCurrentUser} from "../../api/services/session.service";
 import {
     D1_FUNERAL,
     D1_WEDDING,
@@ -123,7 +124,8 @@ export const CreateAbsenceRequestForm = ({
             occasionalType,
         }
 
-        createRequest(body);
+        const isAdmin = getCurrentUser().userRoles.includes('ROLES_ADMIN');
+        createRequest(body, isAdmin);
     }
 
     const setInitialSelectedRange = () => {

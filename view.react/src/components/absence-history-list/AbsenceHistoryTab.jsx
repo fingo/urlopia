@@ -79,7 +79,6 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
             bootstrap4
             keyField='id'
             data={logs}
-            striped
             wrapperClasses={`table-responsive ${styles.tableWrapper}`}
             columns = {columns}
             bordered={false}

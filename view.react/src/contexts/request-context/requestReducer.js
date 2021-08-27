@@ -29,10 +29,7 @@ const requestReducersMappings = {
     },
     [`${CHANGE_REQUEST_STATUS_ACTION_PREFIX}`]: changeRequestStatusReducer,
     [`${CHANGE_ACCEPTANCE_STATUS_ACTION_PREFIX}`]: changeAcceptanceStatusReducer,
-    [`${CREATE_REQUEST_ACTION_PREFIX}`]: {
-        slicePath: "myRequests",
-        reducer: createRequestReducer,
-    },
+    [`${CREATE_REQUEST_ACTION_PREFIX}`]: createRequestReducer,
 }
 
 export const requestReducer = createForwardingReducer(requestReducersMappings)

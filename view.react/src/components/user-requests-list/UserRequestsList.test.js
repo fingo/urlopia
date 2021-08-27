@@ -1,8 +1,8 @@
 import {fireEvent, render, screen} from "@testing-library/react";
 
-import {UserRequestsTab} from "./UserRequestsTab";
+import {UserRequestsList} from "./UserRequestsList";
 
-const requests = [
+const sampleRequests = [
     {
         "id": 1,
         "type": "NORMAL",
@@ -36,7 +36,7 @@ const requests = [
 ]
 
 test('shows header of table', () => {
-    render(<UserRequestsTab />);
+    render(<UserRequestsList requests={sampleRequests} cancelRequest={() => null}/>);
     const periodHeader = screen.getByText('Termin');
     const typeHeader = screen.getByText('Rodzaj');
     const statusHeader = screen.getByText('Status');
@@ -48,7 +48,7 @@ test('shows header of table', () => {
 });
 
 test('shows cancel button when status is pending', () => {
-    render(<UserRequestsTab requests={requests}/>);
+    render(<UserRequestsList requests={sampleRequests} cancelRequest={() => null}/>);
     const pendingRequest = screen.getByText('Oczekujący');
     const cancelBtn = screen.getByTitle('Anuluj wniosek');
     expect(pendingRequest).toBeInTheDocument();
@@ -56,16 +56,22 @@ test('shows cancel button when status is pending', () => {
 });
 
 test('shows filter inputs', () => {
-    render(<UserRequestsTab />);
+    render(<UserRequestsList requests={sampleRequests} cancelRequest={() => null}/>);
     const inputs = screen.queryAllByPlaceholderText('Filtruj...');
     expect(inputs.length).toBe(2);
 });
 
 test('filter inputs should keep what the user enters', async () => {
-    render(<UserRequestsTab />);
+    render(<UserRequestsList requests={sampleRequests} cancelRequest={() => null}/>);
     const [typeInput, statusInput] = screen.queryAllByPlaceholderText('Filtruj...');
     fireEvent.change(typeInput, {target: {value: 'Wypoczynkowy'}});
     fireEvent.change(statusInput, {target: {value: 'Zatwierdzony'}});
     expect(typeInput).toHaveValue('Wypoczynkowy');
     expect(statusInput).toHaveValue('Zatwierdzony');
+});
+
+test('should show "Tabela jest pusta..." label if requests array is empty', () => {
+    render(<UserRequestsList requests={[]} cancelRequest={() => null}/>);
+    const label = screen.getByText('Tabela jest pusta...');
+    expect(label).toBeInTheDocument();
 });

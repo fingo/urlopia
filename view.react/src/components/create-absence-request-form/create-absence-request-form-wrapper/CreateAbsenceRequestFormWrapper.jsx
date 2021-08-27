@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
 import {useEffect} from "react";
 
-import {fetchHolidays} from "../../contexts/holidays-context/actions/fetchHolidays";
-import {useHolidays} from '../../contexts/holidays-context/holidaysContext';
-import {createRequest} from "../../contexts/request-context/actions/createRequest";
-import {useRequests} from "../../contexts/request-context/requestContext";
-import {CreateAbsenceRequestForm} from "./CreateAbsenceRequestForm";
+import {fetchHolidays} from "../../../contexts/holidays-context/actions/fetchHolidays";
+import {useHolidays} from '../../../contexts/holidays-context/holidaysContext';
+import {createRequest} from "../../../contexts/request-context/actions/createRequest";
+import {useRequests} from "../../../contexts/request-context/requestContext";
+import {CreateAbsenceRequestForm} from "../CreateAbsenceRequestForm";
 
 export const CreateAbsenceRequestFormWrapper = ({shouldFetchHolidays}) => {
     const [holidaysState, holidaysDispatch] = useHolidays();
@@ -20,7 +20,7 @@ export const CreateAbsenceRequestFormWrapper = ({shouldFetchHolidays}) => {
 
     return (
         <CreateAbsenceRequestForm
-            createRequest={body => createRequest(requestsDispatch, body)}
+            createRequest={(body, isAdmin) => createRequest(requestsDispatch, body, isAdmin)}
             holidays={holidays}
         />
     )

@@ -1,9 +1,5 @@
-.btn {
-  background-color: inherit;
-  border: none;
-  color: red;
-}
+@import '../../global-styles/color-variables';
 
-.tableWrapper table {
-  table-layout: auto;
+.cancelBtn {
+  color: red;
 }

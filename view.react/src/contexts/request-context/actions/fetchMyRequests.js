@@ -5,15 +5,17 @@ const TODAY = new Date().toJSON().slice(0, 10)
 const ACCEPTED_FILTER = `filter=status:ACCEPTED,${TODAY}<:endDate`
 const PENDING_FILTER = "filter=status:PENDING"
 const CANCELED_FILTER = `filter=status:CANCELED,${TODAY}<:endDate`
-const FILTER = `?${PENDING_FILTER}?${ACCEPTED_FILTER}?${CANCELED_FILTER}`
+const SORT_FILTER = `&sort=id,DESC`
+const FILTER = `?${PENDING_FILTER}?${ACCEPTED_FILTER}?${CANCELED_FILTER}${SORT_FILTER}`
 
 export const fetchMyRequests = dispatch => {
     dispatch({type: `${FETCH_MY_REQUESTS_ACTION_PREFIX}_request`})
     sendGetRequest(`${FETCH_MY_REQUESTS_URL}${FILTER}`)
         .then(data => dispatch({
-            type: `${FETCH_MY_REQUESTS_ACTION_PREFIX}_success`,
-            response: data
-        }))
+                type: `${FETCH_MY_REQUESTS_ACTION_PREFIX}_success`,
+                response: data
+            })
+        )
         .catch(errorMsg => dispatch({
             type: `${FETCH_MY_REQUESTS_ACTION_PREFIX}_failure`,
             error: errorMsg

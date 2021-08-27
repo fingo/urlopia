@@ -2,10 +2,10 @@ import {useState} from "react";
 
 import {getCurrentUser} from "../../api/services/session.service";
 import {CollapsableArea} from '../../components/collapsable-area/CollapsableArea';
-import {CompanyRequestsList} from "../../components/company-requests-list/CompanyRequestsList";
-import {CreateAbsenceRequestFormWrapper} from "../../components/create-absence-request-form/CreateAbsenceRequestFormWrapper";
-import {TeamRequestsList} from "../../components/team-requests-list/TeamRequestsList";
-import {UserRequestsList} from "../../components/user-requests-list/UserRequestsList";
+import {CompanyRequestsListWrapper} from "../../components/company-requests-list/company-requests-list-wrapper/CompanyRequestsListWrapper";
+import {CreateAbsenceRequestFormWrapper} from "../../components/create-absence-request-form/create-absence-request-form-wrapper/CreateAbsenceRequestFormWrapper";
+import {TeamRequestsListWrapper} from "../../components/team-requests-list/team-requests-list-wrapper/TeamRequestsListWrapper";
+import {UserRequestsListWrapper} from "../../components/user-requests-list/user-requests-list-wrapper/UserRequestsListWrapper";
 import {HolidaysProvider} from "../../contexts/holidays-context/holidaysContext";
 import {AttentionIcon, TextWithIcon} from "../../helpers/icons/Icons";
 import styles from './AbsenceRequestsPage.module.scss';
@@ -38,18 +38,18 @@ export const AbsenceRequestsPage = ({newAcceptancesPresent, setNewAcceptancesPre
             </CollapsableArea>
 
             <CollapsableArea title='Moje wnioski' onOpen={handleUserRequestsListOpen}>
-                <UserRequestsList shouldFetchUserRequests={shouldFetchUserRequests}/>
+                <UserRequestsListWrapper shouldFetchUserRequests={shouldFetchUserRequests}/>
             </CollapsableArea>
 
             {isUserALeader && (
                 <CollapsableArea title={teamRequestsListTitle} onOpen={handleTeamRequestsListOpen}>
-                    <TeamRequestsList/>
+                    <TeamRequestsListWrapper/>
                 </CollapsableArea>
             )}
 
             {isUserAnAdmin && (
                 <CollapsableArea title='Aktywne wnioski firmowe' onOpen={handleCompanyRequestsListOpen}>
-                    <CompanyRequestsList shouldFetchCompanyRequests={shouldFetchCompanyRequests}/>
+                    <CompanyRequestsListWrapper shouldFetchCompanyRequests={shouldFetchCompanyRequests}/>
                 </CollapsableArea>
             )}
         </div>

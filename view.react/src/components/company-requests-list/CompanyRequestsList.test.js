@@ -1,9 +1,8 @@
 import {fireEvent, render, screen, waitFor} from "@testing-library/react";
 
-import {CompanyRequestsTab} from "./CompanyRequestsTab";
+import {CompanyRequestsList} from "./CompanyRequestsList";
 
-
-const testProducts = [
+const sampleRequests = [
     {
         id: 1,
         applicant: 'Jan Kowalski',
@@ -31,21 +30,19 @@ const testProducts = [
 ];
 
 test('shows headers of table', () => {
-    render(<CompanyRequestsTab/>);
+    render(<CompanyRequestsList requests={sampleRequests} rejectRequest={() => null} acceptRequest={() => null}/>);
     const applicantHeader = screen.getByText('Wnioskodawca');
     const examinerHeader = screen.getByText('Rozpatrujący');
     const periodHeader = screen.getByText('Termin');
-    const typeHeader = screen.getByText('Rodzaj');
     const actionHeader = screen.getByText('Akcje');
     expect(applicantHeader).toBeInTheDocument();
     expect(examinerHeader).toBeInTheDocument();
     expect(periodHeader).toBeInTheDocument();
-    expect(typeHeader).toBeInTheDocument();
     expect(actionHeader).toBeInTheDocument();
 });
 
 test('shows cancel and accept button in the action column if data is present', () => {
-    render(<CompanyRequestsTab requests={testProducts}/>);
+    render(<CompanyRequestsList requests={sampleRequests} rejectRequest={() => null} acceptRequest={() => null}/>);
     const isAnyData = document.querySelectorAll("tbody").length === 2;
     if (!isAnyData) return;
     const cancelBtn = screen.getAllByTitle('Anuluj wniosek');
@@ -55,29 +52,31 @@ test('shows cancel and accept button in the action column if data is present', (
 });
 
 test('shows filter inputs', () => {
-    render(<CompanyRequestsTab/>);
+    render(<CompanyRequestsList requests={sampleRequests} rejectRequest={() => null} acceptRequest={() => null}/>);
     const inputs = screen.queryAllByPlaceholderText('Filtruj...');
-    expect(inputs.length).toBe(4);
+    expect(inputs.length).toBe(2);
 });
 
 test('filter inputs should keep what the user enters', () => {
-    render(<CompanyRequestsTab/>);
-    const [applicantInput, examinerInput, periodInput, typeInput] = screen.queryAllByPlaceholderText('Filtruj...');
+    render(<CompanyRequestsList requests={sampleRequests} rejectRequest={() => null} acceptRequest={() => null}/>);
+    const [applicantInput, examinerInput] = screen.queryAllByPlaceholderText('Filtruj...');
     fireEvent.change(applicantInput, {target: {value: 'Jan'}});
     fireEvent.change(examinerInput, {target: {value: 'kowalski'}});
-    fireEvent.change(periodInput, {target: {value: '7 dni'}});
-    fireEvent.change(typeInput, {target: {value: 'Wypocz'}});
     expect(applicantInput).toHaveValue('Jan');
     expect(examinerInput).toHaveValue('kowalski');
-    expect(periodInput).toHaveValue('7 dni');
-    expect(typeInput).toHaveValue('Wypocz');
 });
 
 test('shows a table with no data after entering invalid input into the filter input', async () => {
-    render(<CompanyRequestsTab requests={testProducts}/>);
+    render(<CompanyRequestsList requests={sampleRequests} rejectRequest={() => null} acceptRequest={() => null}/>);
     const isAnyData = document.querySelectorAll("tbody").length === 2;
     if (!isAnyData) return;
     const [applicantInput] = screen.queryAllByPlaceholderText('Filtruj...');
     fireEvent.change(applicantInput, {target: {value: '%'}});
     await waitFor(() => expect(document.querySelectorAll("tbody").length).toBe(1))
+});
+
+test('should show "Tabela jest pusta..." label if requests array is empty', () => {
+    render(<CompanyRequestsList requests={[]} rejectRequest={() => null} acceptRequest={() => null}/>);
+    const label = screen.getByText('Tabela jest pusta...');
+    expect(label).toBeInTheDocument();
 });

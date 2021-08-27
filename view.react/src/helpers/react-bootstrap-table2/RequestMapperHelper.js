@@ -1,3 +1,5 @@
+import {Badge} from "react-bootstrap";
+
 import {ACCEPTED, CANCELED, PENDING, REJECTED} from "../../constants/statuses";
 
 export const requestStatusMapper = (cell) => {
@@ -19,6 +21,31 @@ export const requestStatusMapper = (cell) => {
     }
 }
 
+export const statusFormatter = (cell) => {
+    let color;
+    switch (cell) {
+        case ACCEPTED:
+            cell = 'Zatwierdzony';
+            color = 'success';
+            break;
+        case CANCELED:
+            cell = 'Anulowany';
+            color = 'secondary';
+            break;
+        case PENDING:
+            cell = 'Oczekujący';
+            color = 'warning';
+            break;
+        case REJECTED:
+            cell = 'Odrzucony';
+            color = 'danger';
+            break;
+        default:
+            color = 'primary';
+    }
+    return <Badge pill bg={color}>{cell}</Badge>
+}
+
 export const requestTypeMapper = (cell) => {
     switch (cell) {
         case 'NORMAL':
@@ -36,5 +63,16 @@ export const requestPeriodFormatter = ({startDate, endDate, workingDays}) => {
         suffix = workingDays === 1 ? 'dzień roboczy' : 'dni robocze'
     }
 
-    return [`${startDate} - ${endDate}`, `${workingDays} ${suffix}`];
+    return `${startDate} - ${endDate} (${workingDays} ${suffix})`;
+}
+
+export const examinerFormatter = (examinersArr) => {
+    let str = '';
+    examinersArr.map((examiner, i) => {
+        return i === examinersArr.length - 1 ?
+            str = str.concat(`${examiner}`)
+            :
+            str = str.concat(`${examiner}, `)
+    });
+    return str;
 }

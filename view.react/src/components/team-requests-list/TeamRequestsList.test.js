@@ -1,32 +1,28 @@
 import {fireEvent, render, screen, waitFor} from "@testing-library/react";
 
-import {TeamRequestsTab} from "./TeamRequestsTab";
+import {TeamRequestsList} from "./TeamRequestsList";
 
-describe("TeamRequestsTab", () => {
-    const requests = [
+describe("TeamRequestsList", () => {
+    const sampleRequests = [
         {
             id: 1,
             requester: "Jan Kowalski",
-            period: ["2021-08-18 - 2021-08-25", "(5 dni roboczych)"]
+            period: "2021-08-26 - 2021-08-27 (2 dni robocze)",
         },
         {
             id: 2,
             requester: "Adam Nowak",
-            period: ["2021-08-19 - 2021-08-20", "(2 dni robocze)"]
+            period: "2021-08-26 - 2021-08-27 (2 dni robocze)",
         },
         {
             id: 3,
             requester: "Radek Marek",
-            period: ["2021-08-28 - 2021-09-11", "(14 dni roboczych)"]
+            period: "2021-08-26 - 2021-08-27 (2 dni robocze)",
         }
     ]
 
-    const renderTeamRequestsTab = ({requests, acceptRequest = () => {}, rejectRequest = () => {}}) => {
-        render(<TeamRequestsTab requests={requests} rejectRequest={rejectRequest} acceptRequest={acceptRequest} />)
-    }
-
     it('should show headers of table', () => {
-        renderTeamRequestsTab({})
+        render(<TeamRequestsList requests={sampleRequests} rejectRequest={() => null} acceptRequest={() => null}/>)
         const requesterHeader = screen.getByText('Wnioskodawca');
         const periodHeader = screen.getByText('Termin');
         const actionHeader = screen.getByText('Akcje');
@@ -35,8 +31,14 @@ describe("TeamRequestsTab", () => {
         expect(actionHeader).toBeInTheDocument();
     });
 
+    it('should show "Tabela jest pusta..." label if requests array is empty', () => {
+        render(<TeamRequestsList requests={[]} rejectRequest={() => null} acceptRequest={() => null}/>);
+        const label = screen.getByText('Tabela jest pusta...');
+        expect(label).toBeInTheDocument();
+    });
+
     it('should show reject and accept button in the action column if data is present', () => {
-        renderTeamRequestsTab({requests})
+        render(<TeamRequestsList requests={sampleRequests} rejectRequest={() => null} acceptRequest={() => null}/>);
         const isAnyData = document.querySelectorAll("tbody").length === 2;
         if (!isAnyData) return;
         const cancelBtn = screen.getAllByTitle('Odrzuć wniosek');
@@ -46,20 +48,20 @@ describe("TeamRequestsTab", () => {
     });
 
     it('should show filter inputs', () => {
-        renderTeamRequestsTab({})
+        render(<TeamRequestsList requests={sampleRequests} rejectRequest={() => null} acceptRequest={() => null}/>);
         const inputs = screen.queryAllByPlaceholderText('Filtruj...');
         expect(inputs.length).toBe(1);
     });
 
     it('should filter inputs and should keep what the user enters', () => {
-        renderTeamRequestsTab({})
+        render(<TeamRequestsList requests={sampleRequests} rejectRequest={() => null} acceptRequest={() => null}/>);
         const [requesterInput] = screen.queryAllByPlaceholderText('Filtruj...');
         fireEvent.change(requesterInput, {target: {value: 'Jan'}});
         expect(requesterInput).toHaveValue('Jan');
     });
 
-    it('should show a table with no data after entering invalid input into the filter input', async () => {
-        renderTeamRequestsTab({requests})
+    it('should show a table with no data after entering invanulllid input into the filter input', async () => {
+        render(<TeamRequestsList requests={sampleRequests} rejectRequest={() => null} acceptRequest={() => null}/>);
         const isAnyData = document.querySelectorAll("tbody").length === 2;
         if (!isAnyData) return;
         const [requesterInput] = screen.queryAllByPlaceholderText('Filtruj...');
