@@ -40,6 +40,18 @@ export const sendPatchRequest = (url, body) => {
         .catch(error => handleError(error))
 }
 
+export const sendPutRequest = (url, body) => {
+    return axios
+        .put(URL_PREFIX + url,
+            body, {
+                headers: getAuthHeader()
+            })
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => handleError(error))
+}
+
 const getAuthHeader = () => {
     const user = JSON.parse(sessionStorage.getItem(USER_DATA_KEY));
     if (user && user.token) {

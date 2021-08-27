@@ -1,4 +1,5 @@
 import '../../global-styles/index.scss';
+import '../../global-styles/date-picker.scss';
 
 import classNames from "classnames";
 import {useState} from "react";

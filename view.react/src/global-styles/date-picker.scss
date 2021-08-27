@@ -1,0 +1,81 @@
+@import '~react-datepicker/dist/react-datepicker.css';
+@import 'color-variables';
+
+.react-datepicker {
+  border: 1px solid whitesmoke;
+  padding: 2px;
+  box-shadow: 2px 2px 10px rgb(0 0 0 / 0.2);
+}
+
+.react-datepicker__header {
+  background-color: white;
+  padding: 8px 8px;
+  border-bottom: 1px solid lightgrey;
+  font-family: system-ui;
+}
+
+.react-datepicker__time-container {
+  border-left: 1px solid lightgrey;
+}
+
+.react-datepicker__day-name {
+  color: $GREY-COLOR
+}
+
+.react-datepicker__navigation--previous,
+.react-datepicker__navigation--next {
+  margin-top: 8px;
+}
+
+.react-datepicker__current-month,
+.react-datepicker-time__header,
+.react-datepicker-year-header {
+  font-weight: 500;
+  color: #4e4e4e;
+}
+
+.react-datepicker__day--today,
+.react-datepicker__month-text--today,
+.react-datepicker__quarter-text--today,
+.react-datepicker__year-text--today {
+  font-weight: normal;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected {
+  background-color: $BASE-COLOR;
+  &:hover {
+    background-color: $BASE-COLOR;
+  }
+}
+.react-datepicker__day--selected,
+.react-datepicker__day--in-selecting-range,
+.react-datepicker__day--in-range,
+.react-datepicker__month-text--selected,
+.react-datepicker__month-text--in-selecting-range,
+.react-datepicker__month-text--in-range,
+.react-datepicker__quarter-text--selected,
+.react-datepicker__quarter-text--in-selecting-range,
+.react-datepicker__quarter-text--in-range,
+.react-datepicker__year-text--selected,
+.react-datepicker__year-text--in-selecting-range,
+.react-datepicker__year-text--in-range {
+  background-color: $BASE-COLOR;
+  &:hover {
+    background-color: $BASE-COLOR;
+  }
+}
+
+// It removes highlighting of chosen day in other months
+.react-datepicker__day.react-datepicker__day--keyboard-selected {
+  background: none;
+  color: black;
+}
+
+.react-datepicker-wrapper {
+  width: auto;
+}
+
+.react-datepicker__day--outside-month {
+  color: lightgrey;
+  pointer-events: none;
+}
