@@ -3,6 +3,7 @@ import {Dropdown,DropdownButton} from "react-bootstrap";
 
 import {useAbsenceHistory} from "../../contexts/absence-history-context/absenceHistoryContext";
 import {fetchMyAbsenceHistory} from "../../contexts/absence-history-context/actions/fetchMyAbsenceHistory";
+import {formatLogs} from "../../helpers/AbsenceHistoryFormatterHelper";
 import styles from './AbsenceHistoryList.module.scss';
 import {AbsenceHistoryTab} from "./AbsenceHistoryTab";
 
@@ -37,6 +38,8 @@ export const AbsenceHistoryList = () => {
         setSelectedYear(e)
     }
 
+    const formattedLog = formatLogs(absenceHistory);
+
     return (
         <>
             <div className={styles.panelFooter}>
@@ -58,7 +61,7 @@ export const AbsenceHistoryList = () => {
                     </DropdownButton>
                 </div>
             </div>
-            <AbsenceHistoryTab logs={absenceHistory} isHidden={isHidden}/>
+            <AbsenceHistoryTab logs={formattedLog} isHidden={isHidden}/>
         </>
     );
 }

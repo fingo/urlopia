@@ -37,22 +37,26 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
             headerAlign: 'center',
             align: 'center',
             sort: true,
-            style: function hoursChangColor(cell) {
-                let color = "orange";
-                switch(true) {
-                    case cell > 0:
-                        color = "green"
-                        break;
-                    case cell < 0:
-                        color = "red"
-                        break;
-                    default:
-                        break;
+            style: function hoursChangeColor(cell) {
+                if (typeof cell == 'number') {
+                    let color;
+                    switch (true) {
+                        case cell > 0:
+                            color = "green"
+                            break;
+                        case cell < 0:
+                            color = "red"
+                            break;
+                        default:
+                            color = "orange"
+                            break;
+                    }
+                    return {color: color, verticalAlign: 'middle'};
+                } else {
+                    return {verticalAlign: 'middle', fontWeight: 'bold'}
                 }
-                return {color: color, verticalAlign: 'middle'};
             },
             formatter: (cell, row) => hoursChangeMapper(cell, row.userWorkTime)
-
         },
         {
             dataField: "hoursRemaining",
