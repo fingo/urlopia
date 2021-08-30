@@ -105,7 +105,7 @@ public class ActiveDirectoryTeamSynchronizer {
                 .map(userRepository::findFirstByAdName)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toUnmodifiableSet());
+                .collect(Collectors.toSet());
     }
 
     private List<SearchResult> pickTeamsFromAD() {
