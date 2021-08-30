@@ -1,5 +1,6 @@
 package info.fingo.urlopia.api.v2.presence;
 
+import info.fingo.urlopia.UrlopiaApplication;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.holidays.HolidayService;
@@ -11,8 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +38,15 @@ public class PresenceConfirmationService {
         }
 
         return presenceConfirmationRepository.findAll(filter);
+    }
+
+    public Optional<PresenceConfirmation> getPresenceConfirmation(Long userId, LocalDate date) {
+        var filter = Filter.newBuilder()
+                .and("presenceConfirmationId.userId", Operator.EQUAL, String.valueOf(userId))
+                .and("presenceConfirmationId.date", Operator.EQUAL, String.valueOf(date))
+                .build();
+        var output = presenceConfirmationRepository.findAll(filter);
+        return output.isEmpty() ? Optional.empty() : Optional.of(output.get(0));
     }
 
     private String[] convertFilters(String[] filters) {

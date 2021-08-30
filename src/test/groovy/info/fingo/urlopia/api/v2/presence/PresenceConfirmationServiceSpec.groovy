@@ -280,4 +280,37 @@ class PresenceConfirmationServiceSpec extends Specification {
         then: "the presence confirmation are deleted"
         1 * presenceConfirmationRepository.deleteAll(userPresenceConfirmations)
     }
+
+    def "getPresenceConfirmation() WHEN presence confirmation exists SHOULD one"() {
+        given:
+        def userId = 1L
+        def date = LocalDate.now()
+        def presenceConfirmation = samplePresenceConfirmation(userId, date)
+
+        presenceConfirmationRepository.findAll(_ as Filter) >> [presenceConfirmation]
+
+        def presenceConfirmationService = new PresenceConfirmationService(presenceConfirmationRepository, requestService, holidayService, userService)
+
+        when:
+        def output = presenceConfirmationService.getPresenceConfirmation(userId, date)
+
+        then:
+        output == presenceConfirmation
+    }
+
+    def "getPresenceConfirmation() WHEN does not exist SHOULD return null"() {
+        given:
+        def userId = 1L
+        def date = LocalDate.now()
+
+        presenceConfirmationRepository.findAll(_ as Filter) >> []
+
+        def presenceConfirmationService = new PresenceConfirmationService(presenceConfirmationRepository, requestService, holidayService, userService)
+
+        when:
+        def output = presenceConfirmationService.getPresenceConfirmation(userId, date)
+
+        then:
+        output == null
+    }
 }

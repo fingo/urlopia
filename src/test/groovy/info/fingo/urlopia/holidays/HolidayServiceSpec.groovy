@@ -7,9 +7,9 @@ import java.time.LocalDate
 
 class HolidayServiceSpec extends Specification{
 
-    private HolidayRepository holidayRepository;
-    private List<Holiday> holidaysData;
-    private HolidayService holidayService;
+    private HolidayRepository holidayRepository
+    private List<Holiday> holidaysData
+    private HolidayService holidayService
 
      void setup(){
          holidayRepository = Mock(HolidayRepository)
@@ -26,7 +26,7 @@ class HolidayServiceSpec extends Specification{
 
 
         when:
-        def result = holidayService.getAll(filter);
+        def result = holidayService.getAll(filter)
 
         then:
         result == holidaysData
@@ -36,7 +36,7 @@ class HolidayServiceSpec extends Specification{
         given:
         1 * holidayRepository.saveAll(holidaysData) >> holidaysData
         when:
-        def resultList = holidayService.saveHolidays(holidaysData);
+        def resultList = holidayService.saveHolidays(holidaysData)
 
         then:
         resultList == holidaysData
@@ -49,10 +49,22 @@ class HolidayServiceSpec extends Specification{
         1 * holidayRepository.findByDateBetween(startDate,endDate) >> holidaysData
 
         when:
-        holidayService.deleteBetweenDates(startDate,endDate);
+        holidayService.deleteBetweenDates(startDate,endDate)
 
         then:
         1 * holidayRepository.deleteAll(holidaysData)
+    }
+
+    def "getByDate() WHEN called with date SHOULD return holidays for that day"() {
+        given:
+        def date = LocalDate.now()
+        1 * holidayRepository.findByDate(date) >> List.of(holidaysData.get(0))
+
+        when:
+        def output = holidayService.getByDate(date)
+
+        then:
+        output == List.of(holidaysData.get(0))
     }
 
 }

@@ -49,10 +49,13 @@ public class HolidayService {
         return holidayRepository.findAll(filter);
     }
 
+    public List<Holiday> getByDate(LocalDate date) {
+        return holidayRepository.findByDate(date);
+    }
+
     public List<Holiday> saveHolidays(List<Holiday> holidays){
         return holidayRepository.saveAll(holidays);
     }
-
 
 
     public void addHoliday(HolidayResponse holidayResponse) {

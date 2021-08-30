@@ -1,10 +1,13 @@
 package info.fingo.urlopia.request
 
+import info.fingo.urlopia.api.v2.calendar.AbsentUserOutput
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
 import info.fingo.urlopia.config.authentication.WebTokenService
+import info.fingo.urlopia.config.persistance.filter.Filter
 import info.fingo.urlopia.history.HistoryLogService
 import info.fingo.urlopia.request.normal.NormalRequestService
+import info.fingo.urlopia.team.Team
 import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserService
 import spock.lang.Specification
@@ -181,5 +184,33 @@ class RequestServiceSpec extends Specification {
 
         then:
         returnedRequest == request
+    }
+
+    def "getVacations() SHOULD return list of absent users outputs"() {
+        given:
+        def date = LocalDate.now()
+        def filter = Filter.from("")
+        def fullName = "Jan Kowalski"
+        def nameOfTeam = "ZPH"
+        def users = [Mock(User) {
+            getId() >> 1L
+            getFullName() >> fullName
+            getTeams() >> [Mock(Team) {
+                getName() >> nameOfTeam
+            }]
+        }]
+        def requests = [Mock(Request) {
+            getStatus() >> Request.Status.ACCEPTED
+        }]
+        userService.get(filter) >> users
+        requestRepository.findAll(_ as Filter) >> requests
+
+        def expectedResult = [new AbsentUserOutput(fullName, [nameOfTeam])]
+
+        when:
+        def output = requestService.getVacations(date, filter)
+
+        then:
+        output == expectedResult
     }
 }

@@ -11,6 +11,8 @@ import java.util.List;
 public interface HolidayRepository extends BaseRepository<Holiday>, JpaRepository<Holiday, Long> {
     List<Holiday> findByDateBetween(LocalDate startDate, LocalDate endDate);
 
+    List<Holiday> findByDate(LocalDate date);
+
     @Query("""
            SELECT CASE WHEN COUNT(h) > 0 THEN true ELSE false END
            FROM Holiday h

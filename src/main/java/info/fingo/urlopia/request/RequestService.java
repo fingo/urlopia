@@ -1,6 +1,7 @@
 package info.fingo.urlopia.request;
 
 import info.fingo.urlopia.UrlopiaApplication;
+import info.fingo.urlopia.api.v2.calendar.AbsentUserOutput;
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
 import info.fingo.urlopia.config.authentication.WebTokenService;
@@ -9,6 +10,7 @@ import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.request.absence.BaseRequestInput;
 import info.fingo.urlopia.request.absence.SpecialAbsenceRequestService;
+import info.fingo.urlopia.team.Team;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -92,6 +94,14 @@ public class RequestService {
         return service.create(userId, requestInput);
     }
 
+    public List<AbsentUserOutput> getVacations(LocalDate date, Filter filter) {
+        var users = userService.get(filter);
+        return users.stream()
+                .filter(user -> isVacationing(user, date))
+                .map(this::createAbsentUserOutput)
+                .toList();
+    }
+
     public List<VacationDay> getTeammatesVacationsForNextTwoWeeks(Long userId) {
         var startDate = LocalDate.now();
         var endDate = startDate.plusWeeks(2);
@@ -107,6 +117,14 @@ public class RequestService {
                 .filter(date -> !isWeekend(date))
                 .map(date -> createVacationDay(teammates, date))
                 .collect(Collectors.toList());
+    }
+
+    private AbsentUserOutput createAbsentUserOutput(User user){
+        var userName = user.getFullName();
+        var teams = user.getTeams().stream()
+                .map(Team::getName)
+                .toList();
+        return new AbsentUserOutput(userName, teams);
     }
 
     private VacationDay createVacationDay(List<User> users, 
@@ -130,8 +148,8 @@ public class RequestService {
         return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
     }
 
-    private boolean isVacationing(User user, 
-                                  LocalDate date) {
+    public boolean isVacationing(User user,
+                                 LocalDate date) {
         return this.getByUserAndDate(user.getId(), date).stream()
                 .anyMatch(request -> request.getStatus() == Request.Status.ACCEPTED);
     }

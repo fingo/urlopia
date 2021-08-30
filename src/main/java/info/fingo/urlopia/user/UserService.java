@@ -28,6 +28,10 @@ public class UserService {
         return userRepository.findAll(filter, sort, UserExcerptProjection.class);
     }
 
+    public List<User> get(Filter filter) {
+        return userRepository.findAll(filter);
+    }
+
     public User get(Long userId) {
         return userRepository
                 .findById(userId)

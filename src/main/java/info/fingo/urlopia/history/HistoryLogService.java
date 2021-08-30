@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +38,20 @@ public class HistoryLogService {
     }
 
     public List<HistoryLogExcerptProjection> get(Filter filter) {
+        return historyLogRepository.findAll(filter, HistoryLogExcerptProjection.class);
+    }
+
+    public List<HistoryLogExcerptProjection> get(LocalDate date, Long userId) {
+        var startOfDay = LocalDateTime.of(date, LocalTime.MIN);
+        var endOfDay = LocalDateTime.of(date, LocalTime.MAX);
+        var formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_TIME_FORMAT);
+        var formattedStartOfDay = formatter.format(startOfDay);
+        var formattedEndOfDay = formatter.format(endOfDay);
+        var filter = Filter.newBuilder()
+                .and("user.id", Operator.EQUAL, String.valueOf(userId))
+                .and("created", Operator.GREATER_OR_EQUAL, formattedStartOfDay)
+                .and("created", Operator.LESS_OR_EQUAL, formattedEndOfDay)
+                .build();
         return historyLogRepository.findAll(filter, HistoryLogExcerptProjection.class);
     }
 
