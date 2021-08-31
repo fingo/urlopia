@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EvidenceReportStatusFromHolidayHandler {
     private static final String FREE_FOR_SATURDAY_STATUS = "dwś";
+    private static final String HOLIDAY_STATUS = "wś";
     private final HolidayService holidayService;
 
     public String handle(Holiday holiday){
@@ -14,7 +15,7 @@ public class EvidenceReportStatusFromHolidayHandler {
             return FREE_FOR_SATURDAY_STATUS;
         }
         else {
-            return "-";
+            return HOLIDAY_STATUS;
         }
     }
 

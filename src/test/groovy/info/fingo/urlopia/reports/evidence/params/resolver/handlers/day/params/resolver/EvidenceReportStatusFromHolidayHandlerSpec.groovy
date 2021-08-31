@@ -14,6 +14,7 @@ class EvidenceReportStatusFromHolidayHandlerSpec extends Specification {
     def evidenceReportStatusFromHolidayHandler = new EvidenceReportStatusFromHolidayHandler(holidayService)
     def defaultHoliday = new Holiday(holidayName, holidayDate)
     def SPECIAL_SYMBOL = "dwś"
+    def BASIC_HOLIDAY_SYMBOL = "wś"
 
     def "handle() WHEN called with holiday that was move from Saturday SHOULD return special symbol"() {
         given:
@@ -27,7 +28,7 @@ class EvidenceReportStatusFromHolidayHandlerSpec extends Specification {
         result == SPECIAL_SYMBOL
     }
 
-    def "handle() WHEN called with holiday that date was not change SHOULD return -"() {
+    def "handle() WHEN called with holiday that date was not change SHOULD return basic holiday symbol"() {
         given:
         holidayService.generateHolidaysList(_ as Integer) >> [defaultHoliday]
         def holiday = new Holiday(holidayName, holidayDate)
@@ -36,6 +37,6 @@ class EvidenceReportStatusFromHolidayHandlerSpec extends Specification {
         def result = evidenceReportStatusFromHolidayHandler.handle(holiday)
 
         then:
-        result == "-"
+        result == BASIC_HOLIDAY_SYMBOL
     }
 }
