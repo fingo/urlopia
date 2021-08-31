@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -134,5 +135,12 @@ public class PresenceConfirmationService {
                 .build();
         var presenceConfirmationsToDelete = presenceConfirmationRepository.findAll(filter);
         presenceConfirmationRepository.deleteAll(presenceConfirmationsToDelete);
+    }
+
+    public double countWorkingHoursInDay(PresenceConfirmation presenceConfirmation){
+        var startTime = presenceConfirmation.getStartTime();
+        var endTime = presenceConfirmation.getEndTime();
+        var workTime = Duration.between(startTime,endTime);
+        return  workTime.toHours();
     }
 }

@@ -42,6 +42,7 @@ class EvidenceReportDayWithPresenceHandlerSpec extends Specification{
         }
         def hoursBetween = 2
         presenceConfirmationService.getByUserAndDate(_ as Long, _ as LocalDate) >> [presenceConfirmation]
+        presenceConfirmationService.countWorkingHoursInDay(_ as PresenceConfirmation) >> hoursBetween
 
         when:
         def result = evidenceReportDayWithPresenceHandler.handle(user,exampleDate)
