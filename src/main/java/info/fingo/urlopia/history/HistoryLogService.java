@@ -3,6 +3,7 @@ package info.fingo.urlopia.history;
 import info.fingo.urlopia.UrlopiaApplication;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
+import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.user.NoSuchUserException;
@@ -28,6 +29,7 @@ public class HistoryLogService {
     private final HistoryLogRepository historyLogRepository;
     private final UserRepository userRepository;
     private final WorkingDaysCalculator workingDaysCalculator;
+    private final HolidayService holidayService;
 
 
     public List<HistoryLogExcerptProjection> get(Filter filter) {
@@ -203,12 +205,82 @@ public class HistoryLogService {
 
     public double countTheHoursUsedDuringTheYear(Long userId,
                                                  int year) {
-        var historyLogFromYear = getFromYear(userId, year);
-        return historyLogFromYear.stream()
+        var historyLogs = historyLogRepository.findAll().stream()
+                .filter(historyLog -> historyLog.getUser().getId().equals(userId))
                 .filter(historyLog -> historyLog.getRequest() != null)
-                .map(HistoryLog::getHours)
-                .filter(hours -> hours < 0)
-                .mapToDouble(hours -> -hours)
-                .sum();
+                .filter(historyLog -> historyLog.getHours() < 0)
+                .toList();
+        double usedHours = 0.0;
+        for (var historyLog : historyLogs) {
+            var request = historyLog.getRequest();
+                usedHours +=  countUsedHoursFromYearAndRequest(year,request,historyLog);
+        }
+        return usedHours;
+    }
+
+    private double countUsedHoursFromYearAndRequest(int year,
+                                                    Request request,
+                                                    HistoryLog historyLog){
+        var endOfYear = LocalDate.of(year,12,31);
+        var startOfYear = LocalDate.of(year,1,1);
+        if (!request.getEndDate().isAfter(endOfYear) && !request.getStartDate().isBefore(startOfYear)){
+            return -historyLog.getHours();
+        }
+        else if (!request.getEndDate().isAfter(endOfYear) && request.getStartDate().isBefore(startOfYear)){
+            return countUsedHoursWhenRequestStartInPastYear(year,request,historyLog);
+        }
+        else if (request.getEndDate().isAfter(endOfYear) && !request.getStartDate().isBefore(startOfYear)){
+            return countUsedHoursWhenRequestEndInNextYear(year,request,historyLog);
+        }
+        return 0;
+    }
+
+    private double countUsedHoursWhenRequestEndInNextYear(int year,
+                                                          Request request,
+                                                          HistoryLog historyLog){
+        var startDate = request.getStartDate();
+        var endDate = request.getEndDate();
+        var startOfNextYear = LocalDate.of(year+1,1,1);
+        var numberOfWorkingDays =0;
+        var workingDaysBeforeNextYear = 0;
+        while (!startDate.isAfter(endDate)){
+            if (holidayService.isWorkingDay(startDate)) {
+                numberOfWorkingDays++;
+                if (startDate.isBefore(startOfNextYear)){
+                    workingDaysBeforeNextYear++;
+                }
+            }
+            startDate = startDate.plusDays(1);
+        }
+        if (numberOfWorkingDays == 0){
+            return 0;
+        }
+        var usedHoursPerDay = (-historyLog.getHours()) / numberOfWorkingDays;
+        return usedHoursPerDay * workingDaysBeforeNextYear;
+    }
+
+    private double countUsedHoursWhenRequestStartInPastYear(int year,
+                                                          Request request,
+                                                          HistoryLog historyLog){
+
+        var startDate = request.getStartDate();
+        var endDate = request.getEndDate();
+        var startOfYear = LocalDate.of(year,1,1);
+        var numberOfWorkingDays =0;
+        var workingDaysBeforeNextYear = 0;
+        while (!startDate.isAfter(endDate)){
+            if (holidayService.isWorkingDay(startDate)) {
+                numberOfWorkingDays++;
+                if (!startDate.isBefore(startOfYear)){
+                    workingDaysBeforeNextYear++;
+                }
+            }
+            startDate = startDate.plusDays(1);
+        }
+        if (numberOfWorkingDays == 0){
+            return 0;
+        }
+        var usedHoursPerDay = (-historyLog.getHours()) / numberOfWorkingDays;
+        return usedHoursPerDay * workingDaysBeforeNextYear;
     }
 }
