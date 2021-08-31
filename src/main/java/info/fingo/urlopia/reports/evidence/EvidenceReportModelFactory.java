@@ -1,43 +1,39 @@
 package info.fingo.urlopia.reports.evidence;
 
-import info.fingo.urlopia.history.HistoryLog;
+import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.HolidayService;
-import info.fingo.urlopia.request.Request;
+import info.fingo.urlopia.reports.ParamResolver;
+import info.fingo.urlopia.reports.evidence.params.resolver.*;
 import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.user.User;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.text.DecimalFormat;
-import java.time.DateTimeException;
-import java.time.LocalDate;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class EvidenceReportModelFactory {
+    private static final String START_TIME_PREFIX = "startTime";
+    private static final String REPORT_DATE_PREFIX = "reportDate";
+    private static final String END_TIME_PREFIX = "endTime";
+    private static final String USER_METADATA_PREFIX = "user";
+    private static final String VACATION_LEAVE_PREFIX = "vacationLeave";
+    private static final String DAY_STATUS_PREFIX = "day";
+    private static final String USED_TIME_PREFIX = "usedTime";
 
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(); // uses default JVM locale
-    private static final int NUMBER_OF_MONTHS = 12;
-    private static final int NUMBER_OF_DAYS = 31;
-
-    private final RequestService requestService;
+    private final PresenceConfirmationService presenceConfirmationService;
     private final HolidayService holidayService;
+    private final RequestService requestService;
     private final HistoryLogService historyLogService;
-    private final EvidenceReportStatusFromRequestMapper statusFromRequestMapper;
 
-
-    public EvidenceReportModel create(User user, int year) {
+    public EvidenceReportModel create(User user,
+                                      int year) {
+        var resolvers = getResolvers(user,year);
         Map<String, String> model = new HashMap<>();
-        this.putAllWithPrefix(this.reportDateParams(year), model, "reportDate");
-        this.putAllWithPrefix(this.userMetadataParams(user), model, "user");
-        this.putAllWithPrefix(this.vacationLeaveParams(user, year), model, "vacationLeave");
-        this.putAllWithPrefix(this.dayStatusesParams(user, year), model, "day");
+        resolvers.forEach((prefix, resolver) -> putAllWithPrefix(resolver.resolve(), model, prefix));
         return new EvidenceReportModel(model);
     }
 
@@ -47,69 +43,22 @@ public class EvidenceReportModelFactory {
         from.forEach((key, value) -> to.put(prefix + "." + key, value));
     }
 
-    private Map<String, String> reportDateParams(int year) {
-        return Collections.singletonMap("year", String.valueOf(year));
+    private Map<String, ParamResolver> getResolvers(User user,
+                              int year){
+        Map<String, ParamResolver> resolvers = new HashMap<>();
+        resolvers.put(START_TIME_PREFIX, EvidenceReportPresenceConfirmationTimeParamResolver.ofStartTime(user, year,
+                                                                            presenceConfirmationService, holidayService));
+        resolvers.put(END_TIME_PREFIX, EvidenceReportPresenceConfirmationTimeParamResolver.ofEndTime(user, year,
+                presenceConfirmationService, holidayService));
+        resolvers.put(REPORT_DATE_PREFIX, new EvidenceReportDateParamsResolver(year));
+        resolvers.put(USER_METADATA_PREFIX, new EvidenceReportUserParamsResolver(user));
+        resolvers.put(USED_TIME_PREFIX, new EvidenceReportUsedTimeDuringTheYearParamsResolver(user, year,
+                                                                                              historyLogService));
+        resolvers.put(VACATION_LEAVE_PREFIX, new EvidenceReportVacationLeaveParamsResolver(user, year,
+                                                                                            historyLogService));
+        resolvers.put(DAY_STATUS_PREFIX, new EvidenceReportDayParamsResolver(user, year, holidayService,
+                requestService, presenceConfirmationService));
+        return resolvers;
+
     }
-
-    private Map<String, String> userMetadataParams(User user) {
-        return Map.of("firstName", user.getFirstName(),
-                "lastName", user.getLastName(),
-                "workTime", DECIMAL_FORMAT.format(user.getWorkTime()));
-    }
-
-    private Map<String, String> vacationLeaveParams(User user,
-                                                    int year) {
-        var previousYearRemainingHours = this.historyLogService
-                .countRemainingHoursForYear(user.getId(), year - 1);
-        var currentYearAddedHours = this.historyLogService
-                .getFromYear(user.getId(), year).stream()
-                .filter(historyLog -> historyLog.getRequest() == null)
-                .map(HistoryLog::getHours)
-                .filter(hours -> hours > 0)
-                .reduce(Float::sum)
-                .orElse(0f);
-        var remainingHoursAtYearStart = previousYearRemainingHours + currentYearAddedHours;
-        return Collections.singletonMap("remainingHoursAtYearStart", DECIMAL_FORMAT.format(remainingHoursAtYearStart));
-    }
-
-    private Map<String, String> dayStatusesParams(User user,
-                                                  int year) {
-        Map<String, String> parameters = new HashMap<>();
-        for (int month = 1; month <= NUMBER_OF_MONTHS; month++) {
-            for (int dayOfMonth = 1; dayOfMonth <= NUMBER_OF_DAYS; dayOfMonth++) {
-                var dayStatus = this.getDayStatus(user, year, month, dayOfMonth);
-                var paramName = String.format("%02d_%02d", month, dayOfMonth);
-                parameters.put(paramName, dayStatus);
-            }
-        }
-        return parameters;
-    }
-
-    private String getDayStatus(User user,
-                                int year,
-                                int month,
-                                int dayOfMonth) {
-        var currentDate = LocalDate.now();
-        if (year > currentDate.getYear()
-                || (year == currentDate.getYear() && month >= currentDate.getMonthValue())) {
-            return "";
-        }
-
-        try {
-            var date = LocalDate.of(year, month, dayOfMonth);
-            if (this.holidayService.isWorkingDay(date)) {
-                return this.requestService
-                        .getByUserAndDate(user.getId(), date).stream()
-                        .filter(req -> req.getStatus() == Request.Status.ACCEPTED)
-                        .map(statusFromRequestMapper::getEvidenceReportStatusFromRequest)
-                        .findFirst()
-                        .orElse(DECIMAL_FORMAT.format(user.getWorkTime()));
-            }
-        } catch (DateTimeException ignore) {
-            // if day does not exist then default value
-        }
-        return "-";
-    }
-
-
 }

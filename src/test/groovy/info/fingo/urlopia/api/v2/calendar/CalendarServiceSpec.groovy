@@ -82,7 +82,7 @@ class CalendarServiceSpec extends Specification {
         holidayService.getByDate(startDate) >> []
         requestService.getVacations(startDate, filter) >> absentUserOutputs
         userService.get(userId) >> user
-        presenceConfirmationService.getPresenceConfirmation(userId, startDate) >> presenceConfirmation
+        presenceConfirmationService.getPresenceConfirmation(userId, startDate) >> Optional.of(presenceConfirmation)
         historyLogService.get(startDate, userId) >> historyLogExcerptProjections
 
         when:
@@ -128,6 +128,7 @@ class CalendarServiceSpec extends Specification {
         holidayService.getByDate(startDate) >> holidays
         holidayService.getByDate(endDate) >> holidays
         userService.get(userId) >> user
+        presenceConfirmationService.getPresenceConfirmation(userId, _ as LocalDate) >> Optional.empty()
         historyLogService.get(startDate, userId) >> []
         historyLogService.get(endDate, userId) >> []
 

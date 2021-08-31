@@ -52,7 +52,9 @@ public class SpecialAbsenceRequestService implements RequestTypeService {
         requestRepository.save(request);
         log.info("New request with id: {} has been saved", request.getId());
         publisher.publishEvent(new SpecialAbsenceRequestCreated(request));
-        var message = request.getRequestDescription();
+        var requestReason = request.getSpecialTypeInfo();
+        var messageReason = SpecialAbsenceReason.valueOf(requestReason).getTranslatedReason();
+        var message = "%s (%s)".formatted(request.getTerm(), messageReason);
         historyLogService.create(request, 0f, message, userId, adminId);
 
         return request;
@@ -90,16 +92,16 @@ public class SpecialAbsenceRequestService implements RequestTypeService {
     public Request mapToRequest(User user,
                                 BaseRequestInput input,
                                 int workingDays){
-        var typeInfo = SpecialAbsenceReason.WRONG.getTranslatedReason();
+        var typeInfo = SpecialAbsenceReason.WRONG;
         if (input instanceof SpecialAbsenceRequestInput specialInput) {
-          typeInfo = specialInput.getReason().getTranslatedReason();
+          typeInfo = specialInput.getReason();
         }
         return new Request(
                 user,
                 input.getStartDate(),
                 input.getEndDate(),
                 workingDays,
-                typeInfo
+                typeInfo.toString()
         );
     }
 

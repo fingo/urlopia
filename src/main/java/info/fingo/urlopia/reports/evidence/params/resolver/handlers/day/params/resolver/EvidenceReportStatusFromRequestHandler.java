@@ -1,19 +1,19 @@
-package info.fingo.urlopia.reports.evidence;
+package info.fingo.urlopia.reports.evidence.params.resolver.handlers.day.params.resolver;
 
+import info.fingo.urlopia.reports.ReportStatusFromRequestType;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.absence.SpecialAbsenceReason;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
 
-@Component
-@Slf4j
-public class EvidenceReportStatusFromRequestMapper {
 
-    public String getEvidenceReportStatusFromRequest(Request request){
+@RequiredArgsConstructor
+public class EvidenceReportStatusFromRequestHandler {
+
+    public String handle(Request request){
         var requestType = request.getType();
         return switch (requestType) {
-            case NORMAL -> ReportStatusFromReportType.NORMAL.getEvidenceReportStatus();
-            case OCCASIONAL -> ReportStatusFromReportType.OCCASIONAL.getEvidenceReportStatus();
+            case NORMAL -> ReportStatusFromRequestType.NORMAL.getEvidenceReportStatus();
+            case OCCASIONAL -> ReportStatusFromRequestType.OCCASIONAL.getEvidenceReportStatus();
             case SPECIAL -> mapSpecialAbsenceReasonToEvidenceReportStatus(request);
         };
     }
@@ -23,8 +23,7 @@ public class EvidenceReportStatusFromRequestMapper {
         if (SpecialAbsenceReason.valueOf(specialTypeInfo) == SpecialAbsenceReason.DELEGATION) {
             return "" + request.getRequester().getWorkTime();
         }
-        return ReportStatusFromReportType.valueOf(specialTypeInfo).getEvidenceReportStatus();
+        return ReportStatusFromRequestType.valueOf(specialTypeInfo).getEvidenceReportStatus();
 
     }
-
 }

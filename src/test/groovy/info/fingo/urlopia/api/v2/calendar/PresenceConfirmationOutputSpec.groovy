@@ -24,9 +24,9 @@ class PresenceConfirmationOutputSpec extends Specification {
         output.isConfirmed()
     }
 
-    def "fromPresenceConfirmation() WHEN called with null SHOULD return PresenceConfirmationOutput"() {
+    def "empty() SHOULD return PresenceConfirmationOutput"() {
         when:
-        def output = PresenceConfirmationOutput.fromPresenceConfirmation(null)
+        def output = PresenceConfirmationOutput.empty()
 
         then:
         output.getStartTime() == null

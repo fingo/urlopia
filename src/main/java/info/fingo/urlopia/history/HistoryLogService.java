@@ -7,8 +7,8 @@ import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,20 +22,13 @@ import java.util.Optional;
 @Service
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class HistoryLogService {
 
     private final HistoryLogRepository historyLogRepository;
     private final UserRepository userRepository;
     private final WorkingDaysCalculator workingDaysCalculator;
 
-    @Autowired
-    public HistoryLogService(HistoryLogRepository historyLogRepository,
-                             UserRepository userRepository,
-                             WorkingDaysCalculator workingDaysCalculator) {
-        this.historyLogRepository = historyLogRepository;
-        this.userRepository = userRepository;
-        this.workingDaysCalculator = workingDaysCalculator;
-    }
 
     public List<HistoryLogExcerptProjection> get(Filter filter) {
         return historyLogRepository.findAll(filter, HistoryLogExcerptProjection.class);
@@ -168,7 +161,7 @@ public class HistoryLogService {
                     hours += log.getHours();
                 }
             } else if (request.isNormal()) {
-                hours = countRemainingHoursFromNormalRequest(request,year,log,hours);
+                hours = countRemainingHoursFromNormalRequest(request, year, log, hours);
             }
         }
         return hours;
@@ -177,7 +170,7 @@ public class HistoryLogService {
     private float countRemainingHoursFromNormalRequest(Request request,
                                                        Integer year,
                                                        HistoryLog log,
-                                                       float hours){
+                                                       float hours) {
         var startDate = request.getStartDate();
         var endDate = request.getEndDate();
         if (startDate.getYear() <= year && endDate.getYear() <= year) {
@@ -201,4 +194,21 @@ public class HistoryLogService {
         return firstDate.getYear();
     }
 
+    public boolean checkIfWorkedFullTimeForTheWholeYear(Long userId,
+                                                        int year) {
+        var historyLogFromYear = getFromYear(userId, year);
+        return historyLogFromYear.stream()
+                .allMatch(historyLog -> historyLog.getUserWorkTime() == 8.0);
+    }
+
+    public double countTheHoursUsedDuringTheYear(Long userId,
+                                                 int year) {
+        var historyLogFromYear = getFromYear(userId, year);
+        return historyLogFromYear.stream()
+                .filter(historyLog -> historyLog.getRequest() != null)
+                .map(HistoryLog::getHours)
+                .filter(hours -> hours < 0)
+                .mapToDouble(hours -> -hours)
+                .sum();
+    }
 }

@@ -11,12 +11,14 @@ import java.util.List;
 public interface HolidayRepository extends BaseRepository<Holiday>, JpaRepository<Holiday, Long> {
     List<Holiday> findByDateBetween(LocalDate startDate, LocalDate endDate);
 
+    Holiday findFirstByDate(LocalDate date);
+
     List<Holiday> findByDate(LocalDate date);
 
     @Query("""
-           SELECT CASE WHEN COUNT(h) > 0 THEN true ELSE false END
-           FROM Holiday h
-           WHERE h.date = :date
-           """)
+            SELECT CASE WHEN COUNT(h) > 0 THEN true ELSE false END
+            FROM Holiday h
+            WHERE h.date = :date
+            """)
     Boolean existsByDate(@Param("date") LocalDate date);
 }

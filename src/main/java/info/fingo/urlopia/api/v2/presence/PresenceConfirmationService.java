@@ -21,6 +21,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class PresenceConfirmationService {
+    private static final String USER_ID_FROM_PRESENCE = "presenceConfirmationId.userId";
+    private static final String DATE_FROM_PRESENCE = "presenceConfirmationId.date";
+
     private final PresenceConfirmationRepository presenceConfirmationRepository;
     private final RequestService requestService;
     private final HolidayService holidayService;
@@ -33,7 +36,7 @@ public class PresenceConfirmationService {
 
         if (!authenticatedUser.isAdmin()) {
             filter = filter.toBuilder()
-                    .and("presenceConfirmationId.userId", Operator.EQUAL, authenticatedUserId.toString())
+                    .and(USER_ID_FROM_PRESENCE, Operator.EQUAL, authenticatedUserId.toString())
                     .build();
         }
 
@@ -42,17 +45,27 @@ public class PresenceConfirmationService {
 
     public Optional<PresenceConfirmation> getPresenceConfirmation(Long userId, LocalDate date) {
         var filter = Filter.newBuilder()
-                .and("presenceConfirmationId.userId", Operator.EQUAL, String.valueOf(userId))
-                .and("presenceConfirmationId.date", Operator.EQUAL, String.valueOf(date))
+                .and(USER_ID_FROM_PRESENCE, Operator.EQUAL, String.valueOf(userId))
+                .and(DATE_FROM_PRESENCE, Operator.EQUAL, String.valueOf(date))
                 .build();
         var output = presenceConfirmationRepository.findAll(filter);
         return output.isEmpty() ? Optional.empty() : Optional.of(output.get(0));
     }
 
+    public List<PresenceConfirmation> getByUserAndDate(Long userId, LocalDate date) {
+        var dateTimeFormatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_FORMAT);
+        var formattedDate = dateTimeFormatter.format(date);
+        var filter = Filter.newBuilder()
+                .and(USER_ID_FROM_PRESENCE, Operator.EQUAL, String.valueOf(userId))
+                .and(DATE_FROM_PRESENCE, Operator.EQUAL, formattedDate)
+                .build();
+        return this.presenceConfirmationRepository.findAll(filter);
+    }
+
     private String[] convertFilters(String[] filters) {
         return Arrays.stream(filters)
-                .map(filter -> filter.replace("userId", "presenceConfirmationId.userId"))
-                .map(filter -> filter.replace("date", "presenceConfirmationId.date"))
+                .map(filter -> filter.replace("userId", USER_ID_FROM_PRESENCE))
+                .map(filter -> filter.replace("date", DATE_FROM_PRESENCE))
                 .toArray(String[]::new);
     }
 
@@ -105,9 +118,9 @@ public class PresenceConfirmationService {
 
     public void deletePresenceConfirmations(Long userId, LocalDate startDate, LocalDate endDate) {
         var filter = Filter.newBuilder()
-                .and("presenceConfirmationId.userId", Operator.EQUAL, userId.toString())
-                .and("presenceConfirmationId.date", Operator.GREATER_OR_EQUAL, startDate.toString())
-                .and("presenceConfirmationId.date", Operator.LESS_OR_EQUAL, endDate.toString())
+                .and(USER_ID_FROM_PRESENCE, Operator.EQUAL, userId.toString())
+                .and(DATE_FROM_PRESENCE, Operator.GREATER_OR_EQUAL, startDate.toString())
+                .and(DATE_FROM_PRESENCE, Operator.LESS_OR_EQUAL, endDate.toString())
                 .build();
         var presenceConfirmationsToDelete = presenceConfirmationRepository.findAll(filter);
         presenceConfirmationRepository.deleteAll(presenceConfirmationsToDelete);

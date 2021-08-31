@@ -46,6 +46,26 @@ class PresenceConfirmationServiceSpec extends Specification {
         return new PresenceConfirmation(user, date, sampleStartTime, sampleEndTime)
     }
 
+
+    def "getByUserAndDate() WHEN called SHOULD return only filtered authenticated user confirmations"() {
+        given: "a presence confirmation repository that returns user confirmations"
+        def userPresenceConfirmations = [
+                samplePresenceConfirmation(authenticatedUserId, sampleDate.plusDays(1)),
+                samplePresenceConfirmation(authenticatedUserId, sampleDate.plusDays(2))
+        ]
+        1 * presenceConfirmationRepository.findAll(_ as Filter) >> userPresenceConfirmations
+
+        and: "userId and day from what we want get confirmations "
+        def userId = 5
+
+        when:
+        def confirmations = presenceConfirmationService.getByUserAndDate(userId, sampleDate)
+
+        then:
+        confirmations == userPresenceConfirmations
+    }
+
+
     def "getPresenceConfirmations() WHEN user is not admin SHOULD return only authenticated user confirmations"() {
         given: "any filters"
         def filters = [] as String[]
@@ -281,7 +301,7 @@ class PresenceConfirmationServiceSpec extends Specification {
         1 * presenceConfirmationRepository.deleteAll(userPresenceConfirmations)
     }
 
-    def "getPresenceConfirmation() WHEN presence confirmation exists SHOULD one"() {
+    def "getPresenceConfirmation() WHEN presence confirmation exists SHOULD return optional of it"() {
         given:
         def userId = 1L
         def date = LocalDate.now()
@@ -295,10 +315,10 @@ class PresenceConfirmationServiceSpec extends Specification {
         def output = presenceConfirmationService.getPresenceConfirmation(userId, date)
 
         then:
-        output == presenceConfirmation
+        output == Optional.of(presenceConfirmation)
     }
 
-    def "getPresenceConfirmation() WHEN does not exist SHOULD return null"() {
+    def "getPresenceConfirmation() WHEN does not exist SHOULD return empty optional"() {
         given:
         def userId = 1L
         def date = LocalDate.now()
@@ -311,6 +331,6 @@ class PresenceConfirmationServiceSpec extends Specification {
         def output = presenceConfirmationService.getPresenceConfirmation(userId, date)
 
         then:
-        output == null
+        output == Optional.empty()
     }
 }

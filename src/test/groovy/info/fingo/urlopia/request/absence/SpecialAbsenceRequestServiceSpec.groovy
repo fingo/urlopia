@@ -191,7 +191,7 @@ class SpecialAbsenceRequestServiceSpec extends Specification{
                .mapToRequest(requester, specialAbsenceInput, workingDays)
 
        then:
-       newRequest.getSpecialTypeInfo() == reason.getTranslatedReason()
+       newRequest.getSpecialTypeInfo() == reason.toString()
        newRequest.getStartDate() == specialAbsenceInput.getStartDate()
        newRequest.getEndDate() == specialAbsenceInput.getEndDate()
        newRequest.getRequester() == requester
@@ -209,7 +209,7 @@ class SpecialAbsenceRequestServiceSpec extends Specification{
                 .mapToRequest(requester, input, workingDays)
 
         then:
-        newRequest.getSpecialTypeInfo() == SpecialAbsenceReason.WRONG.getTranslatedReason()
+        newRequest.getSpecialTypeInfo() == SpecialAbsenceReason.WRONG.toString()
         newRequest.getStartDate() == input.getStartDate()
         newRequest.getEndDate() == input.getEndDate()
         newRequest.getRequester() == requester

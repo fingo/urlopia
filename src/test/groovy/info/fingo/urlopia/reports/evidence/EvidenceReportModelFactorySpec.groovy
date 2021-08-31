@@ -1,111 +1,60 @@
 package info.fingo.urlopia.reports.evidence
 
-import info.fingo.urlopia.history.HistoryLog
+import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
 import info.fingo.urlopia.history.HistoryLogService
 import info.fingo.urlopia.holidays.HolidayService
-import info.fingo.urlopia.request.Request
 import info.fingo.urlopia.request.RequestService
-import info.fingo.urlopia.request.RequestType
 import info.fingo.urlopia.user.User
 import spock.lang.Specification
 
-import java.time.LocalDate
+class EvidenceReportModelFactorySpec extends Specification {
 
-class EvidenceReportModelFactorySpec extends Specification{
-    private EvidenceReportModelFactory modelFactory;
-    private RequestService requestService;
-    private HolidayService holidayService;
-    private HistoryLogService historyLogService;
-    private EvidenceReportStatusFromRequestMapper statusFromRequestMapper;
-
-    private User user;
-    private int year = 2021
-    private HistoryLog historyLog
-    private exampleWorkingDay = "01_01"
-    private exampleHolidayDay = "01_01"
-
-
-    void setup(){
-        requestService = Mock(RequestService)
-        holidayService = Mock(HolidayService)
-        historyLog = Mock(HistoryLog)
-        historyLogService = Mock(HistoryLogService){
-            countRemainingHoursForYear(1,year-1) >> 0.0f
-            getFromYear(1,year) >> [historyLog]
-        }
-        statusFromRequestMapper = Mock(EvidenceReportStatusFromRequestMapper){
-            getEvidenceReportStatusFromRequest(_ as Request) >> "status"
-        }
-        modelFactory = new EvidenceReportModelFactory(requestService,holidayService,
-                                                        historyLogService,statusFromRequestMapper)
-        user = Mock(User){
-            getFirstName() >> "John"
-            getLastName() >> "Snow"
-            getWorkTime() >> 7.0f
-            getId() >> 1
-        }
-
+    def presenceConfirmationService = Mock(PresenceConfirmationService)
+    def holidayService = Mock(HolidayService)
+    def requestService = Mock(RequestService)
+    def historyLogService = Mock(HistoryLogService){
+        getFromYear(_ as Long, _ as Integer) >> []
     }
 
-    def "create() WHEN called with ACCEPTED request on working day SHOULD return evidence with valid status"(){
+    def evidenceReportModelFactory = new EvidenceReportModelFactory(presenceConfirmationService,holidayService,
+                                                                    requestService,historyLogService)
+    def year = 2021
+    def user = Mock(User){
+        getId() >> 5
+    }
+
+    def "create WHEN called with year SHOULD use all resolvers to build a model representing this year "(){
         given:
-        def request = Mock(Request){
-            getStatus() >> Request.Status.ACCEPTED
-            getType() >> RequestType.NORMAL
-        }
-        historyLog.getRequest() >> request
-        holidayService.isWorkingDay(_ as LocalDate) >> true
-
-
-        requestService.getByUserAndDate(_ as Long, _ as LocalDate) >> [request]
+        def START_TIME_PREFIX = "startTime";
+        def REPORT_DATE_PREFIX = "reportDate";
+        def END_TIME_PREFIX = "endTime";
+        def USER_METADATA_PREFIX = "user";
+        def VACATION_LEAVE_PREFIX = "vacationLeave";
+        def DAY_STATUS_PREFIX = "day";
+        def USED_TIME_PREFIX = "usedTime";
 
         when:
-        def result = modelFactory.create(user,year)
+        def result = evidenceReportModelFactory.create(user, year)
 
         then:
-
-        result.getModel().get("day."+exampleWorkingDay) == "status"
+        containsKeyStartsWith(result.getModel(),START_TIME_PREFIX)
+        containsKeyStartsWith(result.getModel(),REPORT_DATE_PREFIX)
+        containsKeyStartsWith(result.getModel(),END_TIME_PREFIX)
+        containsKeyStartsWith(result.getModel(),USER_METADATA_PREFIX)
+        containsKeyStartsWith(result.getModel(),VACATION_LEAVE_PREFIX)
+        containsKeyStartsWith(result.getModel(),DAY_STATUS_PREFIX)
+        containsKeyStartsWith(result.getModel(),USED_TIME_PREFIX)
     }
 
 
-    def "create() WHEN called with not accepted request on working day SHOULD return evidence with userWorkTime as status"(){
-        given:
-
-        def request = Mock(Request){
-            getStatus() >> Request.Status.CANCELED
-            getType() >> RequestType.NORMAL
+    private boolean containsKeyStartsWith(Map<String,String> model,
+                                          String prefix){
+        var keys = model.keySet()
+        for (String key: keys){
+            if (key.startsWith(prefix)){
+                return true
+            }
         }
-        historyLog.getRequest() >> request
-        holidayService.isWorkingDay(_ as LocalDate) >> true
-        requestService.getByUserAndDate(_ as Long, _ as LocalDate) >> [request]
-
-        when:
-        def result = modelFactory.create(user,year)
-
-        then:
-
-        result.getModel().get("day."+exampleWorkingDay) == "7"
-    }
-
-    def "create() WHEN called with on holidayDate day SHOULD return -"(){
-        given:
-
-        def request = Mock(Request){
-            getStatus() >> Request.Status.ACCEPTED
-            getType() >> RequestType.NORMAL
-        }
-        historyLog.getRequest() >> request
-
-        holidayService.isWorkingDay(_ as LocalDate) >> false
-
-        requestService.getByUserAndDate(_ as Long, _ as LocalDate) >> [request]
-
-
-        when:
-        def result = modelFactory.create(user,year)
-
-        then:
-
-        result.getModel().get("day." + exampleHolidayDay) == "-"
+        return false
     }
 }
