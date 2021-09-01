@@ -2,14 +2,9 @@ package info.fingo.urlopia.history
 
 import info.fingo.urlopia.config.persistance.filter.Filter
 import info.fingo.urlopia.holidays.HolidayService
-import info.fingo.urlopia.user.User
-
-import java.time.LocalDate
 import info.fingo.urlopia.holidays.WorkingDaysCalculator
 import info.fingo.urlopia.request.Request
-
-import info.fingo.urlopia.config.persistance.filter.Filter
-import info.fingo.urlopia.holidays.WorkingDaysCalculator
+import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserRepository
 import spock.lang.Specification
 
@@ -92,7 +87,7 @@ class HistoryLogServiceSpec extends Specification {
             getUser() >> user
         }
 
-        historyLogRepository.findAll() >> [firstHistoryLog, secondHistoryLog]
+        historyLogRepository.findLogsByUserId(userID) >> [firstHistoryLog, secondHistoryLog]
         holidayService.isWorkingDay(_ as LocalDate) >> true
 
         when:
@@ -103,54 +98,92 @@ class HistoryLogServiceSpec extends Specification {
 
     }
 
-
-    def "countTheHoursUsedDuringTheYear() WHEN called with request that start in past year and end in this SHOULD count how many hours he used from 01.01"() {
-        given: "logs which start in 2020 and end in 2021"
-        def hours = -10.0f
-        def numberOfDays = 2
+    def "countTheHoursUsedDuringTheYear() WHEN called with request which is overlapping the given year SHOULD return correct number of hours used"() {
+        given: "logs which start in 2021 and end in 2022"
+        def hours = -24.0f
         def firstHistoryLog = Mock(HistoryLog) {
             getHours() >> hours
             getRequest() >> Mock(Request){
-                getEndDate() >> LocalDate.of(year,1,1)
-                getStartDate() >> LocalDate.of(year-1,12,31)
+                getEndDate() >> LocalDate.of(year + 1,1,6)
+                getStartDate() >> LocalDate.of(year,12,30)
             }
             getUser() >> user
         }
 
-        historyLogRepository.findAll() >> [firstHistoryLog]
-        holidayService.isWorkingDay(_ as LocalDate) >> true
+        historyLogRepository.findLogsByUserId(userID) >> [firstHistoryLog]
+        holidayService.isWorkingDay(_ as LocalDate) >> {LocalDate date -> {
+            def weekendStartDate = LocalDate.of(year + 1, 1, 1)
+            if (date == weekendStartDate || date == weekendStartDate.plusDays(1)) {
+                return false
+            }
+            return true
+        }}
 
         when:
-        def result = historyLogService.countTheHoursUsedDuringTheYear(userID, 2021)
+        def resultYear2021 = historyLogService.countTheHoursUsedDuringTheYear(userID, 2021)
+        def resultYear2022 = historyLogService.countTheHoursUsedDuringTheYear(userID, 2022)
 
         then:
-        result == Math.abs(hours/numberOfDays)
-
+        resultYear2021 == 8.0f
+        resultYear2022 == 16.0f
     }
 
+    def "countTheHoursUsedDuringTheYear() WHEN called with multiple requests SHOULD return correct number of hours used"() {
+        given: "user work time"
+        def workTime = 8.0f
 
-    def "countTheHoursUsedDuringTheYear() WHEN called with request that start in this year and end in next one SHOULD count how many hours he used to 12.31 "() {
-        given: "logs which start in 2020 and end in 2021"
-        def hours = -10.0f
-        def numberOfDays = 2
-        def firstHistoryLog = Mock(HistoryLog) {
-            getHours() >> hours
+        def notIncludedLogOnLeft = Mock(HistoryLog) {
+            getHours() >> -3 * workTime
             getRequest() >> Mock(Request){
-                getEndDate() >> LocalDate.of(year+1,1,1)
-                getStartDate() >> LocalDate.of(year,12,31)
+                getStartDate() >> LocalDate.of(year - 1,12,22)
+                getEndDate() >> LocalDate.of(year - 1,12,24)
             }
-            getUser() >> user
         }
 
-        historyLogRepository.findAll() >> [firstHistoryLog]
+        def logOverlappingOnLeft = Mock(HistoryLog) {
+            getHours() >> -4 * workTime
+            getRequest() >> Mock(Request){
+                getStartDate() >> LocalDate.of(year - 1,12,30)
+                getEndDate() >> LocalDate.of(year,1,2)
+            }
+        }
+
+        def fullyIncludedLog = Mock(HistoryLog) {
+            getHours() >> -4 * workTime
+            getRequest() >> Mock(Request){
+                getStartDate() >> LocalDate.of(year,3,30)
+                getEndDate() >> LocalDate.of(year,4,2)
+            }
+        }
+
+        def logOverlappingOnRight = Mock(HistoryLog) {
+            getHours() >> -2 * workTime
+            getRequest() >> Mock(Request){
+                getStartDate() >> LocalDate.of(year,12,31)
+                getEndDate() >> LocalDate.of(year + 1,01,1)
+            }
+        }
+
+        def notIncludedLogOnRight = Mock(HistoryLog) {
+            getHours() >> -3 * workTime
+            getRequest() >> Mock(Request){
+                getStartDate() >> LocalDate.of(year + 1,02,22)
+                getEndDate() >> LocalDate.of(year + 1,02,24)
+            }
+        }
+
+        historyLogRepository.findLogsByUserId(userID) >> [notIncludedLogOnLeft,
+                                                          logOverlappingOnLeft,
+                                                          fullyIncludedLog,
+                                                          logOverlappingOnRight,
+                                                          notIncludedLogOnRight]
         holidayService.isWorkingDay(_ as LocalDate) >> true
 
         when:
-        def result = historyLogService.countTheHoursUsedDuringTheYear(userID, 2021)
+        def result = historyLogService.countTheHoursUsedDuringTheYear(userID, year)
 
         then:
-        result == Math.abs(hours/numberOfDays)
-
+        result == 7 * workTime
     }
 
     def "get() WHEN called SHOULD return history logs for user and date"() {

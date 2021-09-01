@@ -19,6 +19,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Service
 @Transactional
@@ -205,82 +206,80 @@ public class HistoryLogService {
 
     public double countTheHoursUsedDuringTheYear(Long userId,
                                                  int year) {
-        var historyLogs = historyLogRepository.findAll().stream()
-                .filter(historyLog -> historyLog.getUser().getId().equals(userId))
+        var historyLogs = historyLogRepository.findLogsByUserId(userId).stream()
                 .filter(historyLog -> historyLog.getRequest() != null)
                 .filter(historyLog -> historyLog.getHours() < 0)
                 .toList();
+
         double usedHours = 0.0;
         for (var historyLog : historyLogs) {
             var request = historyLog.getRequest();
-                usedHours +=  countUsedHoursFromYearAndRequest(year,request,historyLog);
+            if (isRequestActiveInYear(request, year)) {
+                usedHours += countUsedHoursFromYearAndRequest(year, request, historyLog);
+            }
         }
+
         return usedHours;
+    }
+
+    private boolean isRequestActiveInYear(Request request, int year) {
+        var yearStart = LocalDate.of(year, 1, 1);
+        var yearEnd = LocalDate.of(year, 12, 31);
+
+        var overlappingOnLeft = requestOverlappingOnLeft(request, year);
+        var isFullyIncluded = !request.getStartDate().isBefore(yearStart) && !request.getEndDate().isAfter(yearEnd);
+        var overlappingOnRight = requestOverlappingOnRight(request, year);
+
+        return overlappingOnLeft || isFullyIncluded || overlappingOnRight;
+    }
+
+    private boolean requestOverlappingOnLeft(Request request, int year) {
+        var yearStart = LocalDate.of(year, 1, 1);
+        return request.getStartDate().isBefore(yearStart) && !request.getEndDate().isBefore(yearStart);
+    }
+
+    private boolean requestOverlappingOnRight(Request request, int year) {
+        var yearEnd = LocalDate.of(year, 12, 31);
+        return !request.getStartDate().isAfter(yearEnd) && request.getEndDate().isAfter(yearEnd);
     }
 
     private double countUsedHoursFromYearAndRequest(int year,
                                                     Request request,
                                                     HistoryLog historyLog){
-        var endOfYear = LocalDate.of(year,12,31);
-        var startOfYear = LocalDate.of(year,1,1);
-        if (!request.getEndDate().isAfter(endOfYear) && !request.getStartDate().isBefore(startOfYear)){
+        if (requestOverlappingOnLeft(request, year)) {
+            return -countUsedHoursInOverlappingRequest(year, request, historyLog, true);
+        } else if (requestOverlappingOnRight(request, year)) {
+            return -countUsedHoursInOverlappingRequest(year, request, historyLog, false);
+        } else {
             return -historyLog.getHours();
         }
-        else if (!request.getEndDate().isAfter(endOfYear) && request.getStartDate().isBefore(startOfYear)){
-            return countUsedHoursWhenRequestStartInPastYear(year,request,historyLog);
-        }
-        else if (request.getEndDate().isAfter(endOfYear) && !request.getStartDate().isBefore(startOfYear)){
-            return countUsedHoursWhenRequestEndInNextYear(year,request,historyLog);
-        }
-        return 0;
     }
 
-    private double countUsedHoursWhenRequestEndInNextYear(int year,
-                                                          Request request,
-                                                          HistoryLog historyLog){
-        var startDate = request.getStartDate();
-        var endDate = request.getEndDate();
-        var startOfNextYear = LocalDate.of(year+1,1,1);
-        var numberOfWorkingDays =0;
-        var workingDaysBeforeNextYear = 0;
-        while (!startDate.isAfter(endDate)){
-            if (holidayService.isWorkingDay(startDate)) {
-                numberOfWorkingDays++;
-                if (startDate.isBefore(startOfNextYear)){
-                    workingDaysBeforeNextYear++;
-                }
-            }
-            startDate = startDate.plusDays(1);
-        }
-        if (numberOfWorkingDays == 0){
+    private double countUsedHoursInOverlappingRequest(int year,
+                                                      Request request,
+                                                      HistoryLog historyLog,
+                                                      boolean overlappedOnLeft) {
+        var requestStartDate = request.getStartDate();
+        var requestEndDate = request.getEndDate();
+        var yearStart = LocalDate.of(year, 1, 1);
+        var yearEnd = LocalDate.of(year, 12, 31);
+
+        Predicate<LocalDate> filter = overlappedOnLeft ? day -> !day.isBefore(yearStart) : day -> !day.isAfter(yearEnd);
+
+        var workingDays = requestStartDate.datesUntil(requestEndDate.plusDays(1))
+                .filter(holidayService::isWorkingDay)
+                .toList();
+
+        var numOfWorkingDaysBeforeNextYear = workingDays.stream()
+                .filter(filter)
+                .count();
+        var numOfWorkingDays = workingDays.size();
+
+        if (numOfWorkingDays == 0) {
             return 0;
         }
-        var usedHoursPerDay = (-historyLog.getHours()) / numberOfWorkingDays;
-        return usedHoursPerDay * workingDaysBeforeNextYear;
-    }
 
-    private double countUsedHoursWhenRequestStartInPastYear(int year,
-                                                          Request request,
-                                                          HistoryLog historyLog){
-
-        var startDate = request.getStartDate();
-        var endDate = request.getEndDate();
-        var startOfYear = LocalDate.of(year,1,1);
-        var numberOfWorkingDays =0;
-        var workingDaysBeforeNextYear = 0;
-        while (!startDate.isAfter(endDate)){
-            if (holidayService.isWorkingDay(startDate)) {
-                numberOfWorkingDays++;
-                if (!startDate.isBefore(startOfYear)){
-                    workingDaysBeforeNextYear++;
-                }
-            }
-            startDate = startDate.plusDays(1);
-        }
-        if (numberOfWorkingDays == 0){
-            return 0;
-        }
-        var usedHoursPerDay = (-historyLog.getHours()) / numberOfWorkingDays;
-        return usedHoursPerDay * workingDaysBeforeNextYear;
+        var hoursUsedPerDay = (historyLog.getHours()) / numOfWorkingDays;
+        return hoursUsedPerDay * numOfWorkingDaysBeforeNextYear;
     }
 }
