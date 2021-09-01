@@ -83,7 +83,7 @@ export const PresenceConfirmationPanel = () => {
                 className={styles.presenceConfirmationButton}
                 onClick={() => handlePresenceConfirmation()}
             >
-                {confirmations[formattedDate(chosenDate)] ? "Nadpisz obecność" : "Zgłoś obecność"}
+                {confirmations[formattedDate(chosenDate)] ? "Zaktualizuj obecność" : "Zgłoś obecność"}
             </button>
         </div>
     )
