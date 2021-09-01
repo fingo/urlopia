@@ -24,7 +24,7 @@ public class ActiveDirectorySynchronizationScheduler {
         this.teamSynchronizer = teamSynchronizer;
     }
 
-    @Scheduled(cron = "0 00 01 * * *")
+    @Scheduled(cron = "0 0-59/15 * * * *")
     public void fullSynchronization() {
         LOGGER.info("*** FULL SYNCHRONIZATION START ***");
         userSynchronizer.addNewUsers();
@@ -35,16 +35,6 @@ public class ActiveDirectorySynchronizationScheduler {
         teamSynchronizer.assignUsersToTeams();
         teamSynchronizer.removeDeletedTeams();
         LOGGER.info("*** FULL SYNCHRONIZATION END ***");
-    }
-
-    @Scheduled(cron = "0 0-59/5 * * * *")
-    public void continuousSynchronization() {
-        LOGGER.info("*** CONTINUOUS SYNCHRONIZATION START ***");
-        userSynchronizer.addNewUsers();
-        userSynchronizer.synchronizeIncremental();
-        teamSynchronizer.addNewTeams();
-        teamSynchronizer.synchronize();
-        LOGGER.info("*** CONTINUOUS SYNCHRONIZATION END ***");
     }
 
     @Bean
