@@ -28,10 +28,10 @@ test('"Wybierz typ wniosku" selector enabled by default', () => {
     expect(selector).not.toBeDisabled();
 });
 
-test('"Wybierz okoliczność" selector disabled by default', () => {
+test('"Wybierz okoliczność" selector hidden by default', () => {
     render(<CreateAbsenceRequestForm createRequest={() => null} holidays={[]}/>);
     const selector = screen.getByText(/Wybierz okoliczność/);
-    expect(selector).toBeDisabled();
+    expect(selector).not.toBeVisible();
 });
 
 test('Calendar disabled by default', () => {

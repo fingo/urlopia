@@ -164,7 +164,7 @@ export const CreateAbsenceRequestForm = ({
                         <Form.Select defaultValue={PLACEHOLDER}
                                      className={styles.formSelect}
                                      onChange={e => handleOccasionalTypeChange(e)}
-                                     disabled={type !== OCCASIONAL}
+                                     hidden={type !== OCCASIONAL}
                                      data-testid='selector'
                         >
                             <option value={PLACEHOLDER} hidden>Wybierz okoliczność...</option>
