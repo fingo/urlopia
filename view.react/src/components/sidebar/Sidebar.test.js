@@ -24,7 +24,7 @@ describe("Sidebar", () => {
         // then
         expect(screen.queryByText('Kalendarz')).toBeInTheDocument()
         expect(screen.queryByText('Wnioski urlopowe')).toBeInTheDocument()
-        expect(screen.queryByText('Historia nieobecności')).toBeInTheDocument()
+        expect(screen.queryByText('Historia użytkownika')).toBeInTheDocument()
         expect(screen.queryByText('Pracownicy')).not.toBeInTheDocument()
         expect(screen.queryByText('Współpracownicy')).not.toBeInTheDocument()
         expect(screen.queryByText('Dni świąteczne')).not.toBeInTheDocument()
@@ -43,7 +43,7 @@ describe("Sidebar", () => {
         // then
         expect(screen.queryByText('Kalendarz')).toBeInTheDocument()
         expect(screen.queryByText('Wnioski urlopowe')).toBeInTheDocument()
-        expect(screen.queryByText('Historia nieobecności')).toBeInTheDocument()
+        expect(screen.queryByText('Historia użytkownika')).toBeInTheDocument()
         expect(screen.queryByText('Pracownicy')).toBeInTheDocument()
         expect(screen.queryByText('Współpracownicy')).toBeInTheDocument()
         expect(screen.queryByText('Dni świąteczne')).toBeInTheDocument()
@@ -62,7 +62,7 @@ describe("Sidebar", () => {
         // then
         expect(screen.queryByText('Kalendarz').href).toMatch(/calendar/)
         expect(screen.queryByText(linkWithText('Wnioski urlopowe')).href).toMatch(/requests/)
-        expect(screen.queryByText('Historia nieobecności').href).toMatch(/history/)
+        expect(screen.queryByText('Historia użytkownika').href).toMatch(/history/)
         expect(screen.queryByText('Pracownicy').href).toMatch(/workers/)
         expect(screen.queryByText('Współpracownicy').href).toMatch(/associates/)
         expect(screen.queryByText('Dni świąteczne').href).toMatch(/holidays/)

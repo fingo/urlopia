@@ -26,7 +26,7 @@ export const Sidebar = ({onClickLinkOrOutside, newAcceptancesPresent}) => {
                             showIcon={newAcceptancesPresent}
                         />
                     </Link>
-                    <Link to="/history" onClick={onClickLinkOrOutside}>Historia nieobecności</Link>
+                    <Link to="/history" onClick={onClickLinkOrOutside}>Historia użytkownika</Link>
                     {isUserAnAdmin && (
                         <>
                             <LinkGroup name="Konfiguracja aplikacji">

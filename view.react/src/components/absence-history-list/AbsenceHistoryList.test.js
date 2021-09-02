@@ -11,7 +11,7 @@ describe("AbsenceHistoryList", () => {
        render(<AbsenceHistoryProvider>
            <AbsenceHistoryList/>
        </AbsenceHistoryProvider>);
-       const title = screen.getByText("Historia nieobecności");
+       const title = screen.getByText("Historia użytkownika");
        const dropdown = screen.getByText(currentYear.toString());
        const table = screen.getByText("Utworzono")
        expect(title).toBeInTheDocument();
