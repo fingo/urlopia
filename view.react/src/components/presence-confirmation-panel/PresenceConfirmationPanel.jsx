@@ -9,14 +9,20 @@ import {DatePicker} from "../date-picker/DatePicker";
 import {TimePicker} from "../time-picker/TimePicker";
 import styles from './PresenceConfirmationPanel.module.scss'
 
+const getTime = (hours, minutes) => {
+    const date = new Date()
+    date.setHours(hours, minutes)
+    return date
+}
+
 export const PresenceConfirmationPanel = () => {
     const [state, presenceDispatcher] = usePresence()
     const {confirmations} = state.myConfirmations
 
     const TODAY = new Date()
     const [chosenDate, setChosenDate] = useState(TODAY)
-    const [chosenStartTime, setChosenStartTime] = useState(TODAY)
-    const [chosenEndTime, setChosenEndTime] = useState(TODAY)
+    const [chosenStartTime, setChosenStartTime] = useState(getTime(8, 0))
+    const [chosenEndTime, setChosenEndTime] = useState(getTime(16, 0))
 
     useEffect(() => {
         fetchMyPresenceConfirmations(presenceDispatcher)
