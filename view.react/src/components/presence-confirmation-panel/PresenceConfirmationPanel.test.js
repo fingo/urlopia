@@ -14,7 +14,8 @@ describe('PresenceConfirmationPanel', () => {
     beforeAll(() => {
         sessionStorageMock.clear()
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
-            userId: 1
+            userId: 1,
+            userRoles: []
         }))
     })
 

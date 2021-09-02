@@ -1,24 +1,26 @@
 import {render, screen} from "@testing-library/react";
 
-import {CompanyRequestsList} from "../../components/company-requests-list/CompanyRequestsList";
-import {CreateAbsenceRequestFormWrapper} from "../../components/create-absence-request-form/CreateAbsenceRequestFormWrapper";
-import {TeamRequestsList} from "../../components/team-requests-list/TeamRequestsList";
-import {UserRequestsList} from "../../components/user-requests-list/UserRequestsList";
+import {UserRequestsListWrapper} from "../../components/user-requests-list/user-requests-list-wrapper/UserRequestsListWrapper";
+import {TeamRequestsListWrapper} from "../../components/team-requests-list/team-requests-list-wrapper/TeamRequestsListWrapper";
+import {CompanyRequestsListWrapper} from "../../components/company-requests-list/company-requests-list-wrapper/CompanyRequestsListWrapper";
+import {CreateAbsenceRequestFormWrapper} from "../../components/create-absence-request-form/create-absence-request-form-wrapper/CreateAbsenceRequestFormWrapper";
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
 import {mockSessionStorage} from "../../helpers/TestHelper";
 import {AbsenceRequestsPage} from "./AbsenceRequestsPage";
 
-jest.mock("../../components/company-requests-list/CompanyRequestsList")
-jest.mock("../../components/team-requests-list/TeamRequestsList")
-jest.mock("../../components/user-requests-list/UserRequestsList")
-jest.mock("../../components/create-absence-request-form/CreateAbsenceRequestFormWrapper")
+jest.mock("../../components/user-requests-list/user-requests-list-wrapper/UserRequestsListWrapper")
+jest.mock("../../components/team-requests-list/team-requests-list-wrapper/TeamRequestsListWrapper")
+jest.mock("../../components/company-requests-list/company-requests-list-wrapper/CompanyRequestsListWrapper")
+jest.mock("../../components/create-absence-request-form/create-absence-request-form-wrapper/CreateAbsenceRequestFormWrapper")
 
 describe("AbsenceRequestPage", () => {
     const sessionStorageMock = mockSessionStorage()
 
     beforeEach(() => {
         sessionStorageMock.clear()
-        UserRequestsList.mockImplementation(() => null)
+        UserRequestsListWrapper.mockImplementation(() => null)
+        TeamRequestsListWrapper.mockImplementation(() => null)
+        CompanyRequestsListWrapper.mockImplementation(() => null)
         CreateAbsenceRequestFormWrapper.mockImplementation(() => null)
     })
 
@@ -27,7 +29,7 @@ describe("AbsenceRequestPage", () => {
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
             userRoles: ["ROLES_WORKER"]
         }))
-        CompanyRequestsList.mockImplementation(() => <div>CompanyRequestListMock</div>)
+        CompanyRequestsListWrapper.mockImplementation(() => <div>CompanyRequestListMock</div>)
 
         // when
         render(<AbsenceRequestsPage />)
@@ -41,7 +43,7 @@ describe("AbsenceRequestPage", () => {
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
             userRoles: ["ROLES_WORKER"]
         }))
-        TeamRequestsList.mockImplementation(() => <div>TeamRequestListMock</div>)
+        TeamRequestsListWrapper.mockImplementation(() => <div>TeamRequestListMock</div>)
 
         // when
         render(<AbsenceRequestsPage />)
@@ -55,7 +57,7 @@ describe("AbsenceRequestPage", () => {
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
             userRoles: ["ROLES_ADMIN"]
         }))
-        CompanyRequestsList.mockImplementation(() => <div>CompanyRequestListMock</div>)
+        CompanyRequestsListWrapper.mockImplementation(() => <div>CompanyRequestListMock</div>)
 
         // when
         render(<AbsenceRequestsPage />)
@@ -69,7 +71,7 @@ describe("AbsenceRequestPage", () => {
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
             userRoles: ["ROLES_LEADER"]
         }))
-        TeamRequestsList.mockImplementation(() => <div>TeamRequestListMock</div>)
+        TeamRequestsListWrapper.mockImplementation(() => <div>TeamRequestListMock</div>)
 
         // when
         render(<AbsenceRequestsPage />)
