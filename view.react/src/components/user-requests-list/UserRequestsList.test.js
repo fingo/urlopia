@@ -69,9 +69,3 @@ test('filter inputs should keep what the user enters', async () => {
     expect(typeInput).toHaveValue('Wypoczynkowy');
     expect(statusInput).toHaveValue('Zatwierdzony');
 });
-
-test('should show "Tabela jest pusta..." label if requests array is empty', () => {
-    render(<UserRequestsList requests={[]} cancelRequest={() => null}/>);
-    const label = screen.getByText('Tabela jest pusta...');
-    expect(label).toBeInTheDocument();
-});

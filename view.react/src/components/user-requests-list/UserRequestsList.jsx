@@ -93,20 +93,17 @@ export const UserRequestsList = ({
         <>
             {
                 !isFetching ?
-                    requests.length ?
-                        <BootstrapTable
-                            bootstrap4
-                            keyField='id'
-                            data={formattedRequests}
-                            wrapperClasses={tableClass}
-                            columns={columns}
-                            filter={filterFactory()}
-                            filterPosition='top'
-                            bordered={false}
-                            hover
-                        />
-                        :
-                        <h1 className={spinner}>Tabela jest pusta...</h1>
+                    <BootstrapTable
+                        bootstrap4
+                        keyField='id'
+                        data={formattedRequests}
+                        wrapperClasses={tableClass}
+                        columns={columns}
+                        filter={filterFactory()}
+                        filterPosition='top'
+                        bordered={false}
+                        hover
+                    />
                     :
                     <div className={spinner}>
                         <BeatLoader color='deepskyblue' size={50}/>

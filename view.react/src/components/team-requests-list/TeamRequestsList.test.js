@@ -31,12 +31,6 @@ describe("TeamRequestsList", () => {
         expect(actionHeader).toBeInTheDocument();
     });
 
-    it('should show "Tabela jest pusta..." label if requests array is empty', () => {
-        render(<TeamRequestsList requests={[]} rejectRequest={() => null} acceptRequest={() => null}/>);
-        const label = screen.getByText('Tabela jest pusta...');
-        expect(label).toBeInTheDocument();
-    });
-
     it('should show reject and accept button in the action column if data is present', () => {
         render(<TeamRequestsList requests={sampleRequests} rejectRequest={() => null} acceptRequest={() => null}/>);
         const isAnyData = document.querySelectorAll("tbody").length === 2;

@@ -4,7 +4,6 @@ import {CheckLg as AcceptIcon, XLg as XIcon} from "react-bootstrap-icons";
 import BootstrapTable from "react-bootstrap-table-next";
 import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
 
-import {spinner} from "../../global-styles/loading-spinner.module.scss";
 import {actionBtn, actions} from '../../global-styles/table-styles.module.scss';
 import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
 
@@ -74,20 +73,17 @@ export const TeamRequestsList = ({
     ];
 
     return (
-        requests.length ?
-            <BootstrapTable
-                bootstrap4
-                keyField='id'
-                data={requests}
-                wrapperClasses={tableClass}
-                columns={columns}
-                filter={filterFactory()}
-                filterPosition='top'
-                bordered={false}
-                hover
-            />
-            :
-            <h1 className={spinner}>Tabela jest pusta...</h1>
+        <BootstrapTable
+            bootstrap4
+            keyField='id'
+            data={requests}
+            wrapperClasses={tableClass}
+            columns={columns}
+            filter={filterFactory()}
+            filterPosition='top'
+            bordered={false}
+            hover
+        />
     );
 }
 

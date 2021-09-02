@@ -74,9 +74,3 @@ test('shows a table with no data after entering invalid input into the filter in
     fireEvent.change(applicantInput, {target: {value: '%'}});
     await waitFor(() => expect(document.querySelectorAll("tbody").length).toBe(1))
 });
-
-test('should show "Tabela jest pusta..." label if requests array is empty', () => {
-    render(<CompanyRequestsList requests={[]} rejectRequest={() => null} acceptRequest={() => null}/>);
-    const label = screen.getByText('Tabela jest pusta...');
-    expect(label).toBeInTheDocument();
-});
