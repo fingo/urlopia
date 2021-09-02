@@ -1,17 +1,11 @@
 import {createForwardingReducer} from "../utils";
-import {fetchMyAbsenceHistoryReducer} from "./actions/fetchMyAbsenceHistory";
-import {fetchUserAbsenceHistoryReducer} from "./actions/fetchUserAbsenceHistory";
-import {FETCH_MY_ABSENCE_HISTORY_ACTION_PREFIX, FETCH_USER_ABSENCE_HISTORY_PREFIX} from "./constants";
+import {fetchAbsenceHistoryReducer} from "./actions/fetchAbsenceHistory";
+import {fetchUserRecentAbsenceHistoryReducer} from "./actions/fetchUserRecentAbsenceHistory";
+import {FETCH_ABSENCE_HISTORY_ACTION_PREFIX, FETCH_USER_RECENT_ABSENCE_HISTORY_ACTION_PREFIX} from "./constants";
 
 const absenceHistoryReducersMappings = {
-    [`${FETCH_MY_ABSENCE_HISTORY_ACTION_PREFIX}`]: {
-        slicePath: "myAbsenceHistory",
-        reducer: fetchMyAbsenceHistoryReducer,
-    },
-    [`${FETCH_USER_ABSENCE_HISTORY_PREFIX}`]: {
-        slicePath: "userAbsenceHistory",
-        reducer: fetchUserAbsenceHistoryReducer,
-    }
+    [`${FETCH_ABSENCE_HISTORY_ACTION_PREFIX}`]: fetchAbsenceHistoryReducer,
+    [`${FETCH_USER_RECENT_ABSENCE_HISTORY_ACTION_PREFIX}`]: fetchUserRecentAbsenceHistoryReducer,
 }
 
 export const absenceHistoryReducer = createForwardingReducer(absenceHistoryReducersMappings)

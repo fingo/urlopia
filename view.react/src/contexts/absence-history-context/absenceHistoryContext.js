@@ -5,16 +5,10 @@ import {absenceHistoryReducer} from "./absenceHistoryReducer";
 const AbsenceHistoryContext = createContext();
 
 const initialState = {
-    myAbsenceHistory: {
-        fetching: false,
-        error: null,
-        absenceHistory: []
-    },
-    userAbsenceHistory: {
-        fetching: false,
-        error: null,
-        absenceHistory: []
-    },
+    fetching: false,
+    error: null,
+    absenceHistory: [],
+    recentUserHistory: [],
     contextError: null
 }
 
@@ -22,8 +16,8 @@ export const AbsenceHistoryProvider = ({children}) => {
     const [state, dispatch] = useReducer(absenceHistoryReducer, initialState);
     const value = [state, dispatch];
     return <AbsenceHistoryContext.Provider value={value}>
-                {children}
-            </AbsenceHistoryContext.Provider>
+        {children}
+    </AbsenceHistoryContext.Provider>
 }
 
 export const useAbsenceHistory = () => {

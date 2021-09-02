@@ -1,0 +1,11 @@
+@import '../../../global-styles/color-variables';
+
+.buttonsSection {
+  display: flex;
+  justify-content: space-evenly;
+  margin: 2.5rem auto;
+}
+
+.icon {
+  font-size: 2rem;
+}

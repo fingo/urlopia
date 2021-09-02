@@ -52,6 +52,25 @@ export const sendPutRequest = (url, body) => {
         .catch(error => handleError(error))
 }
 
+export const getXlsxFromResponse = (url, fileName) => {
+    axios.get(URL_PREFIX + url, {
+        responseType: "blob",
+        headers: getAuthHeader(),
+    }).then(response => {
+        const objectURL = window.URL.createObjectURL(
+            new Blob([response.data], {
+                type: response.headers["content-type"],
+            })
+        );
+
+        const link = document.createElement("a");
+        link.href = objectURL;
+        link.setAttribute("download", `${fileName}.xlsx`);
+        document.body.appendChild(link);
+        link.click();
+    });
+}
+
 const getAuthHeader = () => {
     const user = JSON.parse(sessionStorage.getItem(USER_DATA_KEY));
     if (user && user.token) {

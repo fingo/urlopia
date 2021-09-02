@@ -1,13 +1,13 @@
 import classNames from "classnames";
 import PropTypes from "prop-types";
-import {CheckLg as AcceptIcon, XLg as XIcon} from "react-bootstrap-icons";
+import {CheckSquareFill as AcceptIcon, XSquareFill as XIcon} from "react-bootstrap-icons";
 import BootstrapTable from "react-bootstrap-table-next";
 import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
 import {BeatLoader} from "react-spinners";
 
 import {spinner} from '../../global-styles/loading-spinner.module.scss';
 import {actionBtn, actions} from '../../global-styles/table-styles.module.scss'
-import {examinerFormatter} from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
+import {textAsArrayFormatter} from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
 import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
 
 export const CompanyRequestsList = ({
@@ -17,8 +17,8 @@ export const CompanyRequestsList = ({
     isFetching,
 }) => {
     const actionFormatter = (cell, row) => {
-        const cancelBtnClass = classNames(actionBtn, 'text-danger');
         const acceptBtnClass = classNames(actionBtn, 'text-success');
+        const cancelBtnClass = classNames(actionBtn, 'text-danger');
         return (
             <div className={actions}>
                 <button
@@ -30,7 +30,7 @@ export const CompanyRequestsList = ({
                 </button>
 
                 <button
-                    title='Anuluj wniosek'
+                    title='Odrzuć wniosek'
                     className={cancelBtnClass}
                     onClick={() => rejectRequest(row.id)}
                 >
@@ -69,7 +69,7 @@ export const CompanyRequestsList = ({
                 delay: 0,
             }),
             sort: true,
-            formatter: examinerFormatter,
+            formatter: textAsArrayFormatter,
             style: {verticalAlign: 'middle'},
         },
         {

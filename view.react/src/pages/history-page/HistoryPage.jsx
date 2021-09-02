@@ -1,15 +1,24 @@
+import {useEffect} from "react";
+import {useHistory, useParams} from "react-router-dom";
+
 import {AbsenceHistoryList} from "../../components/absence-history-list/AbsenceHistoryList";
-import {AbsenceHistoryProvider} from "../../contexts/absence-history-context/absenceHistoryContext";
 import styles from './HistoryPage.module.scss';
 
 export const URL = '/history';
 
-export const HistoryPage = () => {
+export const HistoryPage = ({isAdmin}) => {
+    const params = useParams();
+    const history = useHistory();
+
+    useEffect(() => {
+        if (!isAdmin) {
+            history.push('/history/me');
+        }
+    }, [isAdmin, history]);
+
     return (
-        <AbsenceHistoryProvider>
-            <div className={styles.container}>
-                <AbsenceHistoryList/>
-            </div>
-        </AbsenceHistoryProvider>
+        <div className={styles.container}>
+            <AbsenceHistoryList forWhomToFetch={params.userId}/>
+        </div>
     );
 };

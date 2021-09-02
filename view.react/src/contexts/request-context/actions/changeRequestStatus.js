@@ -45,6 +45,10 @@ export const changeRequestStatusReducer = (state, action) => {
                 companyRequests: {
                     ...state.companyRequests,
                     requests: handleCompanyRequestsStatusChange(state.companyRequests.requests, changedStatusRequestId, newStatus)
+                },
+                workerRequestsHistory: {
+                    ...state.workerRequestsHistory,
+                    requests: handleWorkerRequestsHistoryStatusChange(state.workerRequestsHistory.requests, changedStatusRequestId, newStatus),
                 }
             }
         }
@@ -88,6 +92,17 @@ const handleCompanyRequestsStatusChange = (requests, requestId, newStatus) => {
         case "ACCEPTED":
         case "REJECTED":
             return removeRequest(requests, requestId)
+        default:
+            return requests
+    }
+}
+
+const handleWorkerRequestsHistoryStatusChange = (requests, requestId, newStatus) => {
+    switch (newStatus) {
+        case "CANCELED":
+        case "ACCEPTED":
+        case "REJECTED":
+            return updateRequestStatus(requests, requestId, newStatus)
         default:
             return requests
     }

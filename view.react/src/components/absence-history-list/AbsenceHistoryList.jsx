@@ -1,18 +1,19 @@
+import PropTypes from "prop-types";
 import {useEffect, useState} from "react";
-import {Dropdown,DropdownButton} from "react-bootstrap";
+import {Dropdown, DropdownButton} from "react-bootstrap";
+import {useLocation} from "react-router-dom";
 
 import {useAbsenceHistory} from "../../contexts/absence-history-context/absenceHistoryContext";
-import {fetchMyAbsenceHistory} from "../../contexts/absence-history-context/actions/fetchMyAbsenceHistory";
+import {fetchAbsenceHistory} from "../../contexts/absence-history-context/actions/fetchAbsenceHistory";
 import {formatLogs} from "../../helpers/AbsenceHistoryFormatterHelper";
 import styles from './AbsenceHistoryList.module.scss';
 import {AbsenceHistoryTab} from "./AbsenceHistoryTab";
 
-
-export const AbsenceHistoryList = () => {
-
+export const AbsenceHistoryList = ({forWhomToFetch}) => {
     const [state, absenceHistoryDispatch] = useAbsenceHistory()
-    const {absenceHistory} = state.myAbsenceHistory
-    const isHidden = false;
+    const {absenceHistory} = state;
+
+    const location = useLocation();
 
     const FIRST_AVAILABLE_YEAR = 2016;
     const currentYear = (new Date()).getFullYear()
@@ -20,9 +21,9 @@ export const AbsenceHistoryList = () => {
     const [availableYears, setAvailableYears] = useState([]);
 
     useEffect(() => {
-        getAvailableYears()
-        fetchMyAbsenceHistory(absenceHistoryDispatch, selectedYear)
-    }, [absenceHistoryDispatch]);
+        getAvailableYears();
+        fetchAbsenceHistory(absenceHistoryDispatch, forWhomToFetch, selectedYear);
+    }, [absenceHistoryDispatch, selectedYear, forWhomToFetch]);
 
     const getAvailableYears = () => {
         const startYear = FIRST_AVAILABLE_YEAR;
@@ -33,23 +34,26 @@ export const AbsenceHistoryList = () => {
         setAvailableYears(years);
     };
 
-    const handleYearChange = (e) => {
-        fetchMyAbsenceHistory(absenceHistoryDispatch, e);
-        setSelectedYear(e)
+    const handleYearChange = (newYear) => {
+        setSelectedYear(newYear);
     }
 
     const formattedLog = formatLogs(absenceHistory);
 
+    let header = 'Historia użytkownika';
+    if (location.state?.fullName && location.pathname !== '/history/me') {
+        header = header.concat(` - ${location.state.fullName}`);
+    }
     return (
         <>
             <div className={styles.panelFooter}>
-                <h3>Historia nieobecności</h3>
+                <h3>{header}</h3>
                 <div>
                     <DropdownButton id="dropdown-basic-button"
                                     title={selectedYear}
                                     size="sm"
                                     bsPrefix={styles.datesDropdown}
-                                    onSelect={e => handleYearChange(e)}>
+                                    onSelect={year => handleYearChange(year)}>
                         {availableYears.map((val, index) => (
                             <Dropdown.Item className={styles.dropItem}
                                            key={index}
@@ -61,7 +65,11 @@ export const AbsenceHistoryList = () => {
                     </DropdownButton>
                 </div>
             </div>
-            <AbsenceHistoryTab logs={formattedLog} isHidden={isHidden}/>
+            <AbsenceHistoryTab logs={formattedLog} />
         </>
     );
+}
+
+AbsenceHistoryList.propTypes = {
+    forWhomToFetch: PropTypes.number.isRequired,
 }

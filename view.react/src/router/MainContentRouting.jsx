@@ -1,6 +1,10 @@
 import {Redirect, Route, Switch} from "react-router-dom";
 
 import {getCurrentUser} from "../api/services/session.service";
+import {AbsenceHistoryProvider} from "../contexts/absence-history-context/absenceHistoryContext";
+import {HolidaysProvider} from "../contexts/holidays-context/holidaysContext";
+import {PresenceProvider} from "../contexts/presence-context/presenceContext";
+import {WorkersProvider} from "../contexts/workers-context/workersContext";
 import {AbsenceRequestsPage, URL as VacationRequestsURL} from '../pages/absence-requests-page/AbsenceRequestsPage';
 import {AssociatesPage, URL as AssociatesURL} from '../pages/associates-page/AssociatesPage';
 import {CalendarPage, URL as CalendarURL} from '../pages/calendar-page/CalendarPage';
@@ -18,42 +22,54 @@ export const MainContentRouting = ({newAcceptancesPresent, setNewAcceptancesPres
                 <Redirect to={CalendarURL}/>
             </Route>
 
-            <Route path={CalendarURL} exact>
-                <CalendarPage/>
-            </Route>
+            <PresenceProvider>
+                <HolidaysProvider>
+                    <Route path={CalendarURL} exact>
+                        <CalendarPage/>
+                    </Route>
 
-            <Route path={VacationRequestsURL} exact>
-                    <AbsenceRequestsPage
-                        newAcceptancesPresent={newAcceptancesPresent}
-                        setNewAcceptancesPresent={setNewAcceptancesPresent}
-                    />
-            </Route>
+                    <WorkersProvider>
+                        <Route path={VacationRequestsURL} exact>
+                            <AbsenceRequestsPage
+                                newAcceptancesPresent={newAcceptancesPresent}
+                                setNewAcceptancesPresent={setNewAcceptancesPresent}
+                            />
+                        </Route>
 
-            <Route path={HistoryURL} exact>
-                <HistoryPage/>
-            </Route>
+                        <AbsenceHistoryProvider>
+                            <Route path={HistoryURL} exact>
+                                <Redirect to={`${HistoryURL}/me`}/>
+                            </Route>
 
-            {isUserAnAdmin && (
-              <>
-                  <Route path={WorkersURL} exact>
-                      <WorkersPage/>
-                  </Route>
+                            <Route path={`${HistoryURL}/:userId`} exact>
+                                <HistoryPage isAdmin={isUserAnAdmin}/>
+                            </Route>
 
-                  <Route path={AssociatesURL} exact>
-                      <AssociatesPage/>
-                  </Route>
+                            {isUserAnAdmin && (
+                                <>
+                                    <Route path={WorkersURL} exact>
+                                        <WorkersPage/>
+                                    </Route>
 
-                  <Route path={HolidaysURL} exact>
-                      <HolidaysPage/>
-                  </Route>
+                                    <Route path={AssociatesURL} exact>
+                                        <AssociatesPage/>
+                                    </Route>
 
-                  <Route path={ReportsURL} exact>
-                      <ReportsPage/>
-                  </Route>
-              </>
-            )}
+                                    <Route path={HolidaysURL} exact>
+                                        <HolidaysPage/>
+                                    </Route>
 
-            <Route path="*" >
+                                    <Route path={ReportsURL} exact>
+                                        <ReportsPage/>
+                                    </Route>
+                                </>
+                            )}
+                        </AbsenceHistoryProvider>
+                    </WorkersProvider>
+                </HolidaysProvider>
+            </PresenceProvider>
+
+            <Route path="*">
                 <Page404/>
             </Route>
         </Switch>

@@ -1,0 +1,23 @@
+@import './color-variables';
+
+.btnClass {
+  background-color: $BASE-COLOR;
+  border: none;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: $HOVER-COLOR;
+  }
+
+  &:focus {
+    background-color: $BASE-COLOR;
+  }
+
+  &:active {
+    background-color: $ACTIVE-COLOR !important;
+  }
+
+  &:disabled {
+    background-color: $GREY-COLOR;
+  }
+}

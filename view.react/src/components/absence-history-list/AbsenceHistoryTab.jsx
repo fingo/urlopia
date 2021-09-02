@@ -1,10 +1,10 @@
+import PropTypes from "prop-types";
 import BootstrapTable from 'react-bootstrap-table-next';
 
 import {hoursChangeMapper} from "../../helpers/react-bootstrap-table2/HistoryLogMapperHelper";
-import styles from './AbsenceHistoryList.module.scss'
+import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
 
 export const AbsenceHistoryTab = ({logs, isHidden}) => {
-
     const columns = [
         {
             dataField: 'id',
@@ -21,6 +21,9 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
             align: 'center',
             sort: true,
             style: {verticalAlign: 'middle'},
+            headerAttrs: {
+                hidden: isHidden
+            },
         },
         {
             dataField: 'deciderFullName',
@@ -56,7 +59,10 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
                     return {verticalAlign: 'middle', fontWeight: 'bold'}
                 }
             },
-            formatter: (cell, row) => hoursChangeMapper(cell, row.userWorkTime)
+            formatter: (cell, row) => hoursChangeMapper(cell, row.userWorkTime),
+            headerAttrs: {
+                hidden: isHidden
+            }
         },
         {
             dataField: "hoursRemaining",
@@ -74,7 +80,10 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
             headerAlign: 'center',
             sort: true,
             align: 'center',
-            style: {verticalAlign: 'middle'}
+            style: {verticalAlign: 'middle'},
+            headerAttrs: {
+                hidden: isHidden
+            }
         }
     ];
 
@@ -83,11 +92,21 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
             bootstrap4
             keyField='id'
             data={logs}
-            wrapperClasses={`table-responsive ${styles.tableWrapper}`}
+            wrapperClasses={tableClass}
             columns = {columns}
             bordered={false}
             hover
+            striped={isHidden}
         />
     );
+}
 
+AbsenceHistoryTab.propTypes = {
+    logs: PropTypes.array,
+    isHidden: PropTypes.bool,
+}
+
+AbsenceHistoryTab.defaultProps = {
+    logs: [],
+    isHidden: false,
 }

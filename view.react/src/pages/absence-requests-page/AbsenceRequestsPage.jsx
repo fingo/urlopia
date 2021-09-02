@@ -6,7 +6,6 @@ import {CompanyRequestsListWrapper} from "../../components/company-requests-list
 import {CreateAbsenceRequestFormWrapper} from "../../components/create-absence-request-form/create-absence-request-form-wrapper/CreateAbsenceRequestFormWrapper";
 import {TeamRequestsListWrapper} from "../../components/team-requests-list/team-requests-list-wrapper/TeamRequestsListWrapper";
 import {UserRequestsListWrapper} from "../../components/user-requests-list/user-requests-list-wrapper/UserRequestsListWrapper";
-import {HolidaysProvider} from "../../contexts/holidays-context/holidaysContext";
 import {AttentionIcon, TextWithIcon} from "../../helpers/icons/Icons";
 import styles from './AbsenceRequestsPage.module.scss';
 
@@ -32,9 +31,9 @@ export const AbsenceRequestsPage = ({newAcceptancesPresent, setNewAcceptancesPre
     return (
         <div className={styles.main}>
             <CollapsableArea title='Złóż wniosek' onOpen={handleAbsenceRequestFormWrapperOpen}>
-                <HolidaysProvider>
-                    <CreateAbsenceRequestFormWrapper shouldFetchHolidays={shouldFetchHolidays}/>
-                </HolidaysProvider>
+
+                <CreateAbsenceRequestFormWrapper shouldFetchHolidays={shouldFetchHolidays}/>
+
             </CollapsableArea>
 
             <CollapsableArea title='Moje wnioski' onOpen={handleUserRequestsListOpen}>

@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import PropTypes from 'prop-types'
-import {XLg as XIcon} from "react-bootstrap-icons";
+import {XSquareFill as XIcon} from "react-bootstrap-icons";
 import BootstrapTable from "react-bootstrap-table-next";
 import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
 import {BeatLoader} from "react-spinners";
@@ -15,7 +15,6 @@ import {
     statusFormatter
 } from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
 import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
-import styles from "./UserRequestsList.module.scss";
 
 export const UserRequestsList = ({
     requests,
@@ -23,7 +22,7 @@ export const UserRequestsList = ({
     isFetching,
 }) => {
     const actionFormatter = (cell, row) => {
-        const cancelBtnClass = classNames(actionBtn, styles.cancelBtn);
+        const cancelBtnClass = classNames(actionBtn, 'text-warning');
         if (row.status === PENDING) {
             return (
                 <button

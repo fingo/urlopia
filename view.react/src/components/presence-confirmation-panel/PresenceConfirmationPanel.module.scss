@@ -57,7 +57,7 @@
   margin-top: 24px;
 }
 
-@include media-breakpoint-down(md) {
+@include media-breakpoint-down(lg) {
   .container {
     flex-direction: column;
   }
@@ -66,5 +66,20 @@
   }
   .presenceConfirmationButton {
     margin-top: 1.2rem;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .dash {
+    transform: none;
+    margin: 0 auto;
+  }
+
+  .timePickersContainer {
+    flex-direction: column;
+  }
+
+  .inputWrapper {
+    text-align: center;
   }
 }

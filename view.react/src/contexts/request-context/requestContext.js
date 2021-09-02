@@ -20,6 +20,11 @@ const initialState = {
         error: null,
         requests: [],
     },
+    workerRequestsHistory: {
+        fetching: false,
+        error: null,
+        requests: [],
+    },
     contextError: null,
 }
 

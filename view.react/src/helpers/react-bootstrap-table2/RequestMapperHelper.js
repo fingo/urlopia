@@ -66,7 +66,7 @@ export const requestPeriodFormatter = ({startDate, endDate, workingDays}) => {
     return `${startDate} - ${endDate} (${workingDays} ${suffix})`;
 }
 
-export const examinerFormatter = (examinersArr) => {
+export const textAsArrayFormatter = (examinersArr) => {
     let str = '';
     examinersArr.map((examiner, i) => {
         return i === examinersArr.length - 1 ?
