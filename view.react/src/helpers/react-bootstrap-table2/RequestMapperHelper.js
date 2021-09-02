@@ -51,7 +51,9 @@ export const requestTypeMapper = (cell) => {
         case 'NORMAL':
             return 'Wypoczynkowy';
         case 'OCCASIONAL':
-            return 'Okazjonalny';
+            return 'Okolicznościowy';
+        case 'SPECIAL':
+            return 'Specjalny';
         default:
             return cell;
     }
