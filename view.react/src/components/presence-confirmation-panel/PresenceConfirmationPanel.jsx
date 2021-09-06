@@ -7,6 +7,7 @@ import {usePresence} from "../../contexts/presence-context/presenceContext";
 import {formattedDate, formattedTime} from "../../helpers/DateHelper";
 import {DatePicker} from "../date-picker/DatePicker";
 import {TimePicker} from "../time-picker/TimePicker";
+import {ConfirmationLabel} from "./ConfirmationLabel";
 import styles from './PresenceConfirmationPanel.module.scss'
 
 const getTime = (hours, minutes) => {
@@ -17,7 +18,7 @@ const getTime = (hours, minutes) => {
 
 export const PresenceConfirmationPanel = () => {
     const [state, presenceDispatcher] = usePresence()
-    const {confirmations} = state.myConfirmations
+    const {confirmations, fetching} = state.myConfirmations
 
     const TODAY = new Date()
     const [chosenDate, setChosenDate] = useState(TODAY)
@@ -53,44 +54,50 @@ export const PresenceConfirmationPanel = () => {
     const LineBreak = () => <div className={styles.lineBreak}/>
 
     return (
-        <div className={styles.container}>
-            <InputWrapper>
-                Data
-                <DatePicker
-                    withWeekend={false}
-                    customInput={<DateTimePickerInput />}
-                    chosenDate={chosenDate}
-                    onChange={date => setChosenDate(date)}
-                />
-            </InputWrapper>
-            <div className={styles.timePickersContainer}>
+        <div className={styles.mainContainer}>
+            <div className={styles.flexContainer}>
                 <InputWrapper>
-                    Godziny pracy
-                    <TimePicker
+                    Data
+                    <DatePicker
+                        withWeekend={false}
                         customInput={<DateTimePickerInput />}
-                        chosenTime={chosenStartTime}
-                        onChange={date => setChosenStartTime(date)}
+                        chosenDate={chosenDate}
+                        onChange={date => setChosenDate(date)}
                     />
                 </InputWrapper>
-                <InputWrapper>
-                    <LineBreak/>
-                    <div className={styles.dash} />
-                </InputWrapper>
-                <InputWrapper>
-                    <LineBreak/>
-                    <TimePicker
-                        customInput={<DateTimePickerInput />}
-                        chosenTime={chosenEndTime}
-                        onChange={date => setChosenEndTime(date)}
-                    />
-                </InputWrapper>
+                <div className={styles.timePickersContainer}>
+                    <InputWrapper>
+                        Godziny pracy
+                        <TimePicker
+                            customInput={<DateTimePickerInput />}
+                            chosenTime={chosenStartTime}
+                            onChange={date => setChosenStartTime(date)}
+                        />
+                    </InputWrapper>
+                    <InputWrapper>
+                        <LineBreak/>
+                        <div className={styles.dash} />
+                    </InputWrapper>
+                    <InputWrapper>
+                        <LineBreak/>
+                        <TimePicker
+                            customInput={<DateTimePickerInput />}
+                            chosenTime={chosenEndTime}
+                            onChange={date => setChosenEndTime(date)}
+                        />
+                    </InputWrapper>
+                </div>
+                <button
+                    className={styles.presenceConfirmationButton}
+                    onClick={() => handlePresenceConfirmation()}
+                >
+                    {confirmations[formattedDate(chosenDate)] ? "Nadpisz obecność" : "Zgłoś obecność"}
+                </button>
             </div>
-            <button
-                className={styles.presenceConfirmationButton}
-                onClick={() => handlePresenceConfirmation()}
-            >
-                {confirmations[formattedDate(chosenDate)] ? "Zaktualizuj obecność" : "Zgłoś obecność"}
-            </button>
+            <ConfirmationLabel
+                fetching={fetching}
+                confirmation={confirmations[formattedDate(chosenDate)]}
+            />
         </div>
     )
 }

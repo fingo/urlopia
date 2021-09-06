@@ -1,0 +1,20 @@
+@import "src/global-styles/bootstrap-breakpoints";
+
+.label {
+  margin-top: 0.75rem;
+  font-size: 1rem;
+
+  &.green {
+    color: green
+  }
+
+  &.red {
+    color: red
+  }
+}
+
+@include media-breakpoint-down(md) {
+  .label {
+    margin-left: 0.5rem;
+  }
+}
