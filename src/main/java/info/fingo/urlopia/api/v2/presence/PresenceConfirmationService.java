@@ -4,6 +4,7 @@ import info.fingo.urlopia.UrlopiaApplication;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.holidays.HolidayService;
+import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
@@ -119,10 +120,8 @@ public class PresenceConfirmationService {
             throw PresenceConfirmationException.nonWorkingDay();
         }
 
-        var userId = user.getId();
-        var isUserOnVacation = !requestService.getByUserAndDate(userId, date).isEmpty();
-        if (isUserOnVacation) {
-            log.error("Could not confirm presence for user with id: {} because user is on vacation", userId);
+        if (requestService.isVacationing(user, date)) {
+            log.error("Could not confirm presence for user with id: {} because user is on vacation", user.getId());
             throw PresenceConfirmationException.userOnVacation();
         }
     }

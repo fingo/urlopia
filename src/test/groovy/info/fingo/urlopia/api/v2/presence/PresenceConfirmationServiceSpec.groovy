@@ -2,7 +2,6 @@ package info.fingo.urlopia.api.v2.presence
 
 import info.fingo.urlopia.config.persistance.filter.Filter
 import info.fingo.urlopia.holidays.HolidayService
-import info.fingo.urlopia.request.Request
 import info.fingo.urlopia.request.RequestService
 import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserService
@@ -254,7 +253,7 @@ class PresenceConfirmationServiceSpec extends Specification {
         holidayService.isWorkingDay(_ as LocalDate) >> true
 
         and: "a request service that returns some requests"
-        requestService.getByUserAndDate(authenticatedUserId, sampleDate) >> [new Request()]
+        requestService.isVacationing(authenticatedUser, dto.getDate()) >> true
 
         when: "user tries to confirm his presence"
         presenceConfirmationService.confirmPresence(authenticatedUserId, dto)
