@@ -6,7 +6,9 @@ import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
 import info.fingo.urlopia.config.authentication.WebTokenService
 import info.fingo.urlopia.config.persistance.filter.Filter
 import info.fingo.urlopia.history.HistoryLogService
+import info.fingo.urlopia.request.absence.SpecialAbsenceRequestService
 import info.fingo.urlopia.request.normal.NormalRequestService
+import info.fingo.urlopia.request.normal.RequestTooFarInThePastException
 import info.fingo.urlopia.team.Team
 import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserService
@@ -56,6 +58,65 @@ class RequestServiceSpec extends Specification {
             userService,
             webTokenServiceThrowingException,
             presenceConfirmationService)
+
+    def "create() WHEN request is not special and startDate is before one month past SHOULD throw RequestTooFarInThePastException"() {
+        given:
+        def today = LocalDate.now()
+        def requestStartDate = today.minusMonths(2)
+        def type = RequestType.NORMAL
+        def normalRequestService = Mock(NormalRequestService)
+        type.setService(normalRequestService)
+
+        and: "Valid requestInput"
+        def requestInput = Mock(RequestInput)
+        requestInput.getStartDate() >> requestStartDate
+        requestInput.getType() >> type
+
+        when:
+        requestService.create(requesterId, requestInput)
+
+        then:
+        thrown(RequestTooFarInThePastException)
+    }
+
+    def "create() WHEN request is special and startDate is before one month past SHOULD not throw RequestTooFarInThePastException"() {
+        given:
+        def today = LocalDate.now()
+        def requestStartDate = today.minusMonths(2)
+        def type = RequestType.SPECIAL
+        def specialRequestService = Mock(SpecialAbsenceRequestService)
+        type.setService(specialRequestService)
+
+        and: "Valid requestInput"
+        def requestInput = Mock(RequestInput)
+        requestInput.getStartDate() >> requestStartDate
+        requestInput.getType() >> type
+
+        when:
+        requestService.create(requesterId, requestInput)
+
+        then:
+        notThrown(RequestTooFarInThePastException)
+    }
+
+    def "create() WHEN startDate is after one month past SHOULD not throw RequestTooFarInThePastException"() {
+        given:
+        def today = LocalDate.now()
+        def type = RequestType.NORMAL
+        def normalRequestService = Mock(NormalRequestService)
+        type.setService(normalRequestService)
+
+        and: "Valid requestInput"
+        def requestInput = Mock(RequestInput)
+        requestInput.getStartDate() >> today
+        requestInput.getType() >> type
+
+        when:
+        requestService.create(requesterId, requestInput)
+
+        then:
+        notThrown(RequestTooFarInThePastException)
+    }
 
     def "validateAdminPermissionAndAccept() when admin is accepting request should change request status to ACCEPTED"() {
         given:

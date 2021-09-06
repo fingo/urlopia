@@ -10,6 +10,7 @@ import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.request.absence.BaseRequestInput;
 import info.fingo.urlopia.request.absence.SpecialAbsenceRequestService;
+import info.fingo.urlopia.request.normal.RequestTooFarInThePastException;
 import info.fingo.urlopia.team.Team;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
@@ -90,7 +91,13 @@ public class RequestService {
     }
 
     public Request create(Long userId, BaseRequestInput requestInput) {
-        RequestTypeService service = requestInput.getType().getService();
+        var type = requestInput.getType();
+
+        if (type != RequestType.SPECIAL) {
+            ensureRequestIsNotTooFarInThePast(requestInput.getStartDate());
+        }
+
+        RequestTypeService service = type.getService();
         return service.create(userId, requestInput);
     }
 
@@ -117,6 +124,13 @@ public class RequestService {
                 .filter(date -> !isWeekend(date))
                 .map(date -> createVacationDay(teammates, date))
                 .collect(Collectors.toList());
+    }
+
+    private void ensureRequestIsNotTooFarInThePast(LocalDate startDate) {
+        if (startDate.isBefore(LocalDate.now().minusMonths(1))) {
+            log.error("Request that starts on {} could not be created, because it's too far in the past.", startDate);
+            throw RequestTooFarInThePastException.requestTooFarInThePast();
+        }
     }
 
     private AbsentUserOutput createAbsentUserOutput(User user){
