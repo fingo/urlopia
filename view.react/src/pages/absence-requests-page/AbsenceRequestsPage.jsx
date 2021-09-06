@@ -14,7 +14,7 @@ export const URL = '/requests';
 export const AbsenceRequestsPage = ({newAcceptancesPresent, setNewAcceptancesPresent}) => {
     const {isAdmin: isUserAnAdmin, isLeader: isUserALeader} = getCurrentUser()
     const [shouldFetchHolidays, setShouldFetchHolidays] = useState(false)
-    const [shouldFetchUserRequests, setShouldFetchUserRequests] = useState(false)
+    const [shouldFetchUserRequests, setShouldFetchUserRequests] = useState(true)
     const [shouldFetchCompanyRequests, setShouldFetchCompanyRequests] = useState(false)
 
     const teamRequestsListTitle = <TextWithIcon
@@ -36,7 +36,7 @@ export const AbsenceRequestsPage = ({newAcceptancesPresent, setNewAcceptancesPre
 
             </CollapsableArea>
 
-            <CollapsableArea title='Moje wnioski' onOpen={handleUserRequestsListOpen}>
+            <CollapsableArea title='Moje wnioski' onOpen={handleUserRequestsListOpen} shouldBeCollapsed={false}>
                 <UserRequestsListWrapper shouldFetchUserRequests={shouldFetchUserRequests}/>
             </CollapsableArea>
 
