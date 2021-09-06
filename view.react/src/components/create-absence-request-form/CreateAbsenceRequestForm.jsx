@@ -143,28 +143,29 @@ export const CreateAbsenceRequestForm = ({
                 <Col xs={12} xl={4}>
                     <Form>
                         <div className={styles.labelAndInfo}>
-
                             <Form.Label>
                                 Typ wniosku:
                             </Form.Label>
-                            <InfoOverlay/>
                         </div>
-                        <Form.Select defaultValue={PLACEHOLDER}
-                                     className={styles.formSelect}
-                                     onChange={e => handleRequestsTypeChange(e)}
-                                     data-testid='selector'
-                        >
-                            <option value={PLACEHOLDER} hidden>Wybierz typ wniosku...</option>
-                            <option value={NORMAL} data-testid='select-option'>Wypoczynkowy</option>
-                            <option value={OCCASIONAL} data-testid='select-option'>Okolicznościowy</option>
-                        </Form.Select>
+                        <div className='d-flex'>
+                            <Form.Select defaultValue={PLACEHOLDER}
+                                         className={styles.formSelect}
+                                         onChange={e => handleRequestsTypeChange(e)}
+                                         data-testid='selector'
+                            >
+                                <option value={PLACEHOLDER} hidden>Wybierz typ wniosku...</option>
+                                <option value={NORMAL} data-testid='select-option'>Wypoczynkowy</option>
+                                <option value={OCCASIONAL} data-testid='select-option'>Okolicznościowy</option>
+                            </Form.Select>
+                            <div className='invisible'>
+                                <InfoOverlay/>
+                            </div>
+                        </div>
                     </Form>
-
-                    <Form ref={formRef}>
+                    <Form ref={formRef} className={type === OCCASIONAL ? "d-flex" : "d-none"}>
                         <Form.Select defaultValue={PLACEHOLDER}
                                      className={styles.formSelect}
                                      onChange={e => handleOccasionalTypeChange(e)}
-                                     hidden={type !== OCCASIONAL}
                                      data-testid='selector'
                         >
                             <option value={PLACEHOLDER} hidden>Wybierz okoliczność...</option>
@@ -178,6 +179,9 @@ export const CreateAbsenceRequestForm = ({
                                 <option value={D1_WEDDING}>Ślub dziecka</option>
                             </optgroup>
                         </Form.Select>
+                        <div>
+                            <InfoOverlay/>
+                        </div>
                     </Form>
 
                     <p className={styles.additionalInfo}>{occasionalTypeInfoMapperHelper(occasionalType)}</p>
