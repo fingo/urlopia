@@ -17,26 +17,27 @@ import {URL as WorkersURL, WorkersPage} from '../pages/workers-page/WorkersPage'
 export const MainContentRouting = ({newAcceptancesPresent, setNewAcceptancesPresent}) => {
     const {isAdmin: isUserAnAdmin} = getCurrentUser()
     return (
-        <Switch>
-            <Route path="/" exact>
-                <Redirect to={CalendarURL}/>
-            </Route>
+        <PresenceProvider>
+            <HolidaysProvider>
+                <WorkersProvider>
+                    <AbsenceHistoryProvider>
 
-            <PresenceProvider>
-                <HolidaysProvider>
-                    <Route path={CalendarURL} exact>
-                        <CalendarPage/>
-                    </Route>
+                        <Switch>
+                            <Route path="/" exact>
+                                <Redirect to={CalendarURL}/>
+                            </Route>
 
-                    <WorkersProvider>
-                        <Route path={VacationRequestsURL} exact>
-                            <AbsenceRequestsPage
-                                newAcceptancesPresent={newAcceptancesPresent}
-                                setNewAcceptancesPresent={setNewAcceptancesPresent}
-                            />
-                        </Route>
+                            <Route path={CalendarURL} exact>
+                                <CalendarPage/>
+                            </Route>
 
-                        <AbsenceHistoryProvider>
+                             <Route path={VacationRequestsURL} exact>
+                                <AbsenceRequestsPage
+                                    newAcceptancesPresent={newAcceptancesPresent}
+                                    setNewAcceptancesPresent={setNewAcceptancesPresent}
+                                />
+                            </Route>
+
                             <Route path={HistoryURL} exact>
                                 <Redirect to={`${HistoryURL}/me`}/>
                             </Route>
@@ -45,33 +46,39 @@ export const MainContentRouting = ({newAcceptancesPresent, setNewAcceptancesPres
                                 <HistoryPage isAdmin={isUserAnAdmin}/>
                             </Route>
 
-                            {isUserAnAdmin && (
-                                <>
-                                    <Route path={WorkersURL} exact>
-                                        <WorkersPage/>
-                                    </Route>
+                            {isUserAnAdmin &&
+                            <Route path={WorkersURL} exact>
+                                <WorkersPage/>
+                            </Route>
+                            }
 
-                                    <Route path={AssociatesURL} exact>
-                                        <AssociatesPage/>
-                                    </Route>
+                            {isUserAnAdmin &&
+                            <Route path={AssociatesURL} exact>
+                                <AssociatesPage/>
+                            </Route>
+                            }
 
-                                    <Route path={HolidaysURL} exact>
-                                        <HolidaysPage/>
-                                    </Route>
+                            {isUserAnAdmin &&
+                            <Route path={HolidaysURL} exact>
+                                <HolidaysPage/>
+                            </Route>
+                            }
 
-                                    <Route path={ReportsURL} exact>
-                                        <ReportsPage/>
-                                    </Route>
-                                </>
-                            )}
-                        </AbsenceHistoryProvider>
-                    </WorkersProvider>
-                </HolidaysProvider>
-            </PresenceProvider>
+                            {isUserAnAdmin &&
+                            <Route path={ReportsURL} exact>
+                                <ReportsPage/>
+                            </Route>
+                            }
 
-            <Route path="*">
-                <Page404/>
-            </Route>
-        </Switch>
+                            <Route path="*">
+                                <Page404/>
+                            </Route>
+
+                        </Switch>
+
+                    </AbsenceHistoryProvider>
+                </WorkersProvider>
+            </HolidaysProvider>
+        </PresenceProvider>
     );
 }
