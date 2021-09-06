@@ -19,7 +19,7 @@ export const App = () => {
     const user = getCurrentUser()
     const {token: sessionToken, isLeader: isUserALeader} = user
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [newAcceptancesPresent, setNewAcceptancesPresent] = useState(false);
+    const [acceptancesPresent, setAcceptancesPresent] = useState(false);
 
     const handleHamburgerClick = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -50,15 +50,14 @@ export const App = () => {
                                 <Col xs={3} xl={2} className={sidebarColClass}>
                                     <Sidebar
                                         onClickLinkOrOutside={handleClickOutsideSidebar}
-                                        newAcceptancesPresent={newAcceptancesPresent}
+                                        acceptancesPresent={acceptancesPresent}
                                     />
                                 </Col>
                                 <Col xs={12} lg={9} xl={10} className={styles.mainContent}>
                                     <RequestProvider>
-                                        {isUserALeader && <AcceptanceLoader setNewAcceptancesPresent={setNewAcceptancesPresent}/>}
+                                        {isUserALeader && <AcceptanceLoader setAcceptancesPresent={setAcceptancesPresent}/>}
                                         <MainContentRouting
-                                            newAcceptancesPresent={newAcceptancesPresent}
-                                            setNewAcceptancesPresent={setNewAcceptancesPresent}
+                                            acceptancesPresent={acceptancesPresent}
                                         />
                                     </RequestProvider>
                                 </Col>

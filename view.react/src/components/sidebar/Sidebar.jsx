@@ -11,7 +11,7 @@ import {Link} from "./link/Link";
 import {LinkGroup} from "./link-group/LinkGroup";
 import styles from './Sidebar.module.scss';
 
-export const Sidebar = ({onClickLinkOrOutside, newAcceptancesPresent}) => {
+export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
     const {isAdmin: isUserAnAdmin} = getCurrentUser()
     const overlayClass = classNames(styles.overlay, 'd-lg-none');
     return (
@@ -23,7 +23,7 @@ export const Sidebar = ({onClickLinkOrOutside, newAcceptancesPresent}) => {
                         <TextWithIcon
                             text={"Wnioski urlopowe"}
                             icon={<AttentionIcon />}
-                            showIcon={newAcceptancesPresent}
+                            showIcon={acceptancesPresent}
                         />
                     </Link>
                     <Link to="/history" onClick={onClickLinkOrOutside}>Historia użytkownika</Link>

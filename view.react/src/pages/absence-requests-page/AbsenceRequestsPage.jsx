@@ -11,7 +11,7 @@ import styles from './AbsenceRequestsPage.module.scss';
 
 export const URL = '/requests';
 
-export const AbsenceRequestsPage = ({newAcceptancesPresent, setNewAcceptancesPresent}) => {
+export const AbsenceRequestsPage = ({acceptancesPresent}) => {
     const {isAdmin: isUserAnAdmin, isLeader: isUserALeader} = getCurrentUser()
     const [shouldFetchHolidays, setShouldFetchHolidays] = useState(false)
     const [shouldFetchUserRequests, setShouldFetchUserRequests] = useState(true)
@@ -20,12 +20,11 @@ export const AbsenceRequestsPage = ({newAcceptancesPresent, setNewAcceptancesPre
     const teamRequestsListTitle = <TextWithIcon
         text={"Wnioski zespołu do rozpatrzenia"}
         icon={<AttentionIcon/>}
-        showIcon={newAcceptancesPresent}
+        showIcon={acceptancesPresent}
     />
 
     const handleAbsenceRequestFormWrapperOpen = () => setShouldFetchHolidays(true)
     const handleUserRequestsListOpen = () => setShouldFetchUserRequests(true)
-    const handleTeamRequestsListOpen = () => setNewAcceptancesPresent(false)
     const handleCompanyRequestsListOpen = () => setShouldFetchCompanyRequests(true)
 
     return (
@@ -41,7 +40,7 @@ export const AbsenceRequestsPage = ({newAcceptancesPresent, setNewAcceptancesPre
             </CollapsableArea>
 
             {isUserALeader && (
-                <CollapsableArea title={teamRequestsListTitle} onOpen={handleTeamRequestsListOpen}>
+                <CollapsableArea title={teamRequestsListTitle}>
                     <TeamRequestsListWrapper/>
                 </CollapsableArea>
             )}

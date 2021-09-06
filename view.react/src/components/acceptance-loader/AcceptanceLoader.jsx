@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import {fetchAcceptances} from "../../contexts/request-context/actions/fetchAcceptances";
 import {useRequests} from "../../contexts/request-context/requestContext";
 
-export const AcceptanceLoader = ({setNewAcceptancesPresent}) => {
+export const AcceptanceLoader = ({setAcceptancesPresent}) => {
     const [requestsState, requestsDispatch] = useRequests()
     const [acceptancesFetched, setAcceptancesFetched] = useState(false)
     const {fetching: fetchingAcceptances, requests: acceptances} = requestsState.teamRequests
@@ -21,14 +21,9 @@ export const AcceptanceLoader = ({setNewAcceptancesPresent}) => {
     useEffect(() => {
         const initialDataIsFetched = !fetchingAcceptances && acceptancesFetched
         if (initialDataIsFetched) {
-            const oldCount = parseInt(localStorage.getItem("acceptancesCount"))
-            const newCount = acceptances.length
-            if (newCount > oldCount) {
-                setNewAcceptancesPresent(true)
-            }
-            localStorage.setItem("acceptancesCount", newCount)
+            setAcceptancesPresent(acceptances.length > 0)
         }
-    }, [fetchingAcceptances, acceptancesFetched, acceptances, setNewAcceptancesPresent])
+    }, [fetchingAcceptances, acceptancesFetched, acceptances, setAcceptancesPresent])
 
     return null;
 }

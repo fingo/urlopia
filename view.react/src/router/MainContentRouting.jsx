@@ -14,7 +14,7 @@ import {Page404} from '../pages/page-404/Page404';
 import {ReportsPage, URL as ReportsURL} from '../pages/reports-page/ReportsPage';
 import {URL as WorkersURL, WorkersPage} from '../pages/workers-page/WorkersPage';
 
-export const MainContentRouting = ({newAcceptancesPresent, setNewAcceptancesPresent}) => {
+export const MainContentRouting = ({acceptancesPresent}) => {
     const {isAdmin: isUserAnAdmin} = getCurrentUser()
     return (
         <PresenceProvider>
@@ -32,10 +32,9 @@ export const MainContentRouting = ({newAcceptancesPresent, setNewAcceptancesPres
                             </Route>
 
                              <Route path={VacationRequestsURL} exact>
-                                <AbsenceRequestsPage
-                                    newAcceptancesPresent={newAcceptancesPresent}
-                                    setNewAcceptancesPresent={setNewAcceptancesPresent}
-                                />
+                                 <AbsenceRequestsPage
+                                     acceptancesPresent={acceptancesPresent}
+                                 />
                             </Route>
 
                             <Route path={HistoryURL} exact>
