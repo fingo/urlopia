@@ -22,7 +22,7 @@ class PresenceConfirmationServiceSpec extends Specification {
 
     def authenticatedUserId = 1L
     def userWhomPresenceIsAddedId = 999L
-    def sampleDate = LocalDate.of(2021, 8, 10)
+    def sampleDate = LocalDate.now()
     def sampleStartTime = LocalTime.of(8, 0)
     def sampleEndTime = LocalTime.of(16, 0)
 
@@ -271,6 +271,44 @@ class PresenceConfirmationServiceSpec extends Specification {
         and: "a user service that returns authenticated user"
         def authenticatedUser = Mock(User) {
             isAdmin() >> false
+            getId() >> authenticatedUserId
+        }
+        userService.get(authenticatedUserId) >> authenticatedUser
+
+        when: "user tries to confirm his presence"
+        presenceConfirmationService.confirmPresence(authenticatedUserId, dto)
+
+        then: "an exception is thrown"
+        thrown(PresenceConfirmationException)
+    }
+
+    def "confirmPresence() WHEN date is in the past and user is not an admin SHOULD throw an exception"() {
+        given: "an invalid dto"
+        def dto = samplePresenceConfirmationDTO(authenticatedUserId)
+        dto.setDate(LocalDate.now().minusWeeks(2).minusDays(1))
+
+        and: "a user service that returns authenticated user"
+        def authenticatedUser = Mock(User) {
+            isAdmin() >> false
+            getId() >> authenticatedUserId
+        }
+        userService.get(authenticatedUserId) >> authenticatedUser
+
+        when: "user tries to confirm his presence"
+        presenceConfirmationService.confirmPresence(authenticatedUserId, dto)
+
+        then: "an exception is thrown"
+        thrown(PresenceConfirmationException)
+    }
+
+    def "confirmPresence() WHEN date is in the past and user is an admin SHOULD not throw an exception"() {
+        given: "an invalid dto"
+        def dto = samplePresenceConfirmationDTO(authenticatedUserId)
+        dto.setDate(LocalDate.now().minusWeeks(2).minusDays(1))
+
+        and: "a user service that returns authenticated user"
+        def authenticatedUser = Mock(User) {
+            isAdmin() >> true
             getId() >> authenticatedUserId
         }
         userService.get(authenticatedUserId) >> authenticatedUser
