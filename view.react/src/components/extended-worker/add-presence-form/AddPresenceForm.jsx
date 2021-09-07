@@ -4,7 +4,6 @@ import {Modal} from 'react-bootstrap';
 import {PresenceConfirmationPanel} from "../../presence-confirmation-panel/PresenceConfirmationPanel";
 
 export const AddPresenceForm = ({show, onHide, fullName}) => {
-
     return (
         <Modal
             show={show}

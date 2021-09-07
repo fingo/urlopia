@@ -1,3 +1,4 @@
+import {pushSuccessNotification} from "../../../helpers/notifications/Notifications";
 import {sendPutRequest} from "../../../helpers/RequestHelper";
 import {CHANGE_WORK_TIME_ACTION_PREFIX, CHANGE_WORK_TIME_URL_POSTFIX, WORKERS_ENDPOINT} from "../constants";
 
@@ -6,14 +7,16 @@ export const changeWorkTime = (dispatch, userId, value) => {
     sendPutRequest(`${WORKERS_ENDPOINT}/${userId}${CHANGE_WORK_TIME_URL_POSTFIX}`, {
         value,
     })
-        .then(data => dispatch({
+        .then(data => {
+            dispatch({
                 type: `${CHANGE_WORK_TIME_ACTION_PREFIX}_success`,
                 payload: {
                     userId,
                 },
                 response: data,
             })
-        )
+            pushSuccessNotification("Pomyślnie zmieniono etat pracownika")
+        })
         .catch(errorMsg => dispatch({
             type: `${CHANGE_WORK_TIME_ACTION_PREFIX}_failure`,
             error: errorMsg,

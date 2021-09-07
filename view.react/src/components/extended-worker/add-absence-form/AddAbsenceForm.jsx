@@ -8,6 +8,7 @@ import {fetchHolidays} from "../../../contexts/holidays-context/actions/fetchHol
 import {useHolidays} from "../../../contexts/holidays-context/holidaysContext";
 import {btnClass} from '../../../global-styles/btn.module.scss';
 import {formatDate} from "../../../helpers/DateFormatterHelper";
+import {pushSuccessNotification} from "../../../helpers/notifications/Notifications";
 import {sendPostRequest} from "../../../helpers/RequestHelper";
 import {Calendar} from '../../create-absence-request-form/calendar/Calendar';
 import styles from './AddAbsenceForm.module.scss';
@@ -52,6 +53,7 @@ export const AddAbsenceForm = ({show, onHide, userId, fullName}) => {
             endDate,
             reason: selectedReason,
         }).then(() => {
+            pushSuccessNotification("Pomyślnie dodano nieobecność wybranemu użytkownikowi")
             fetchUserRecentAbsenceHistory(absenceHistoryDispatch, userId);
             onHide();
         }).catch(error => {

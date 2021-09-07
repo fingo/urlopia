@@ -1,4 +1,5 @@
 import {getCurrentUser} from "../../../api/services/session.service";
+import {pushSuccessNotification} from "../../../helpers/notifications/Notifications";
 import {sendPutRequest} from "../../../helpers/RequestHelper";
 import {ADD_PRESENCE_CONFIRMATION_ACTION_PREFIX, ADD_PRESENCE_CONFIRMATION_URL} from "../constants";
 
@@ -11,14 +12,33 @@ export const addPresenceConfirmation = (dispatch, {date, startTime, endTime, use
         userId
     }
     sendPutRequest(ADD_PRESENCE_CONFIRMATION_URL, body)
-        .then(data => dispatch({
-            type: `${ADD_PRESENCE_CONFIRMATION_ACTION_PREFIX}_success`,
-            response: data
-        }))
-        .catch(errorMsg => dispatch({
-            type: `${ADD_PRESENCE_CONFIRMATION_ACTION_PREFIX}_failure`,
-            error: errorMsg
-        }))
+        .then(data => {
+            const action = {
+                type: `${ADD_PRESENCE_CONFIRMATION_ACTION_PREFIX}_success`,
+                response: data
+            }
+            dispatch(action)
+            pushNotificationOnSuccess(action)
+        })
+        .catch(error => {
+            dispatch({
+                type: `${ADD_PRESENCE_CONFIRMATION_ACTION_PREFIX}_failure`,
+                error: error.message
+            })
+        })
+}
+
+const pushNotificationOnSuccess = action => {
+    const {isAdmin, userId} = getCurrentUser()
+    const confirmation = action.response
+    const {userId: confirmationUserId, startTime, endTime} = confirmation
+    const confirmingHisOwnPresence = userId === confirmationUserId
+
+    if (confirmingHisOwnPresence) {
+        pushSuccessNotification(`Pomyślnie zgłoszono obecność w godzinach ${startTime} - ${endTime}`)
+    } else if (isAdmin) {
+        pushSuccessNotification(`Pomyślnie zgłoszono obecność wybranego użytkownika w godzinach ${startTime} - ${endTime}`)
+    }
 }
 
 export const addPresenceConfirmationReducer = (state, action) => {
@@ -45,11 +65,10 @@ export const addPresenceConfirmationReducer = (state, action) => {
 }
 
 const handleSuccess = (state, action) => {
-    const user = getCurrentUser()
-    const isAdmin = user.userRoles.includes("ROLES_ADMIN")
+    const {isAdmin, userId} = getCurrentUser()
     const confirmation = action.response
     const {userId: confirmationUserId, date} = confirmation
-    const confirmingHisOwnPresence = user.userId === confirmationUserId
+    const confirmingHisOwnPresence = userId === confirmationUserId
 
     let newState = {...state}
 

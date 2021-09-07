@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import BootstrapTable from 'react-bootstrap-table-next';
 
-import styles from '../../global-styles/AbsenceHistoryList.module.scss'
 import {hoursChangeMapper} from "../../helpers/react-bootstrap-table2/HistoryLogMapperHelper";
 import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
 

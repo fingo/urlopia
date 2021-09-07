@@ -6,6 +6,7 @@ import {fetchUserRecentAbsenceHistory} from "../../../contexts/absence-history-c
 import {changeRemainingDays} from "../../../contexts/workers-context/actions/changeRemainingDays";
 import {changeWorkTime} from "../../../contexts/workers-context/actions/changeWorkTime";
 import {useWorkers} from "../../../contexts/workers-context/workersContext";
+import {pushSuccessNotification} from "../../../helpers/notifications/Notifications";
 import {parseDaysPool} from "../../../helpers/parseDaysPoolToHours";
 import {sendPutRequest} from "../../../helpers/RequestHelper";
 import {ChangeDaysPoolForm} from "../change-days-pool-form/ChangeDaysPoolForm";
@@ -29,6 +30,7 @@ export const ChangeDaysPoolAndWorkTimeSection = ({workTime}) => {
                 comment,
             }).then(data => {
                 workersDispatch(changeRemainingDays(data.remainingDays.toString(), data.remainingHours.toString()));
+                pushSuccessNotification("Pomyślnie zmieniono pulę godzin pracownika");
             }).then(() => {
                 fetchUserRecentAbsenceHistory(absenceHistoryDispatch, userId);
             }).catch(error => {

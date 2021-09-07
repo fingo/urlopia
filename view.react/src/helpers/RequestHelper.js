@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 import {USER_DATA_KEY} from "../constants/session.keystorage";
-import {mapCodeToMessage} from "./ErrorCodeMapperHelper";
+import {mapCodeToMessage} from "./errors/ErrorCodeMapper";
+import {pushErrorNotification} from "./notifications/Notifications";
 
 export const URL_PREFIX = process.env.NODE_ENV === 'development' ? "http://localhost:8080" : '';
 
@@ -95,6 +96,8 @@ const handleError = (error) => {
     } else {
         errorMessage = mapCodeToMessage(UNKNOWN_ERROR_CODE);
     }
+
+    pushErrorNotification(errorMessage)
 
     throw new Error(errorMessage);
 }

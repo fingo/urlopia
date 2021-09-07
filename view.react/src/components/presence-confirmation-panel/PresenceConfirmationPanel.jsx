@@ -16,9 +16,11 @@ const getTime = (hours, minutes) => {
     return date
 }
 
-export const PresenceConfirmationPanel = () => {
+export const PresenceConfirmationPanel = ({userId}) => {
     const [state, presenceDispatcher] = usePresence()
-    const {confirmations, fetching} = state.myConfirmations
+    const {confirmations: myConfirmations} = state.myConfirmations
+    const {confirmations: usersConfirmations} = state.usersConfirmations
+    const {fetching} = userId ? state.usersConfirmations : state.myConfirmations
 
     const TODAY = new Date()
     const [chosenDate, setChosenDate] = useState(TODAY)
@@ -35,7 +37,7 @@ export const PresenceConfirmationPanel = () => {
             date: formattedDate(chosenDate),
             startTime: formattedTime(chosenStartTime),
             endTime: formattedTime(chosenEndTime),
-            userId: currentUser.userId
+            userId: userId || currentUser.userId
         })
     }
 
@@ -52,6 +54,13 @@ export const PresenceConfirmationPanel = () => {
     }
 
     const LineBreak = () => <div className={styles.lineBreak}/>
+
+    const getConfirmation = (date) => {
+        if (userId) {
+            return usersConfirmations[userId] && usersConfirmations[userId][formattedDate(date)]
+        }
+        return myConfirmations[formattedDate(date)]
+    }
 
     return (
         <div className={styles.mainContainer}>
@@ -91,12 +100,13 @@ export const PresenceConfirmationPanel = () => {
                     className={styles.presenceConfirmationButton}
                     onClick={() => handlePresenceConfirmation()}
                 >
-                    {confirmations[formattedDate(chosenDate)] ? "Nadpisz obecność" : "Zgłoś obecność"}
+                    {getConfirmation(chosenDate) ? "Nadpisz obecność" : "Zgłoś obecność"}
                 </button>
             </div>
             <ConfirmationLabel
                 fetching={fetching}
-                confirmation={confirmations[formattedDate(chosenDate)]}
+                confirmation={getConfirmation(chosenDate)}
+                isOwnPresence={userId === undefined}
             />
         </div>
     )

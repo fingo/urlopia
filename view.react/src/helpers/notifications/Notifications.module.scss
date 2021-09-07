@@ -1,0 +1,24 @@
+.mainContainer {
+  display: flex;
+  align-items: center;
+}
+
+.iconContainer {
+  width: 2rem;
+}
+
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0.8rem;
+}
+
+.title {
+  font-weight: 500;
+  font-size: 1.05rem;
+  padding: 4px
+}
+
+.message {
+  padding: 4px
+}

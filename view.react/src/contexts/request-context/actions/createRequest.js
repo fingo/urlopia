@@ -1,3 +1,4 @@
+import {pushSuccessNotification} from "../../../helpers/notifications/Notifications";
 import {sendPostRequest} from "../../../helpers/RequestHelper";
 import {CREATE_REQUEST_ACTION_PREFIX, CREATE_REQUEST_URL} from "../constants";
 
@@ -9,18 +10,32 @@ export const createRequest = (dispatch, {startDate, endDate, type, occasionalTyp
         type,
         occasionalType,
     })
-        .then(data => dispatch({
-            type: `${CREATE_REQUEST_ACTION_PREFIX}_success`,
-            payload: {
-                isAdmin,
-                occasionalType,
-            },
-            response: data,
-        }))
+        .then(data => {
+            const action = {
+                type: `${CREATE_REQUEST_ACTION_PREFIX}_success`,
+                payload: {
+                    isAdmin,
+                    occasionalType,
+                    type
+                },
+                response: data,
+            }
+            dispatch(action)
+            pushNotificationOnSuccess(action)
+        })
         .catch(errorMsg => dispatch({
             type: `${CREATE_REQUEST_ACTION_PREFIX}_failure`,
             error: errorMsg,
         }))
+}
+
+const pushNotificationOnSuccess = action => {
+    let suffix = "wypoczynkowy"
+    if (action.payload.type === "OCCASIONAL") {
+        suffix = "okolicznościowy"
+    }
+
+    pushSuccessNotification(`Pomyślnie złożono wniosek o urlop ${suffix}`)
 }
 
 export const createRequestReducer = (state, action) => {

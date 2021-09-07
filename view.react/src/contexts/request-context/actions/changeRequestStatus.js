@@ -1,3 +1,4 @@
+import {pushSuccessNotification} from "../../../helpers/notifications/Notifications";
 import {sendPatchRequest} from "../../../helpers/RequestHelper";
 import {CHANGE_REQUEST_STATUS_ACTION_PREFIX, CHANGE_REQUEST_STATUS_URL} from "../constants";
 
@@ -6,20 +7,36 @@ const changeRequestStatus = (dispatch, {requestId, newStatus}) => {
     sendPatchRequest(`${CHANGE_REQUEST_STATUS_URL}/${requestId}`, {
         status: newStatus
     })
-        .then(data => dispatch({
-            type: `${CHANGE_REQUEST_STATUS_ACTION_PREFIX}_success`,
-            payload: {requestId},
-            response: data
-        }))
-        .catch(errorMsg => dispatch({
+        .then(data => {
+            const action = {
+                type: `${CHANGE_REQUEST_STATUS_ACTION_PREFIX}_success`,
+                payload: {requestId},
+                response: data
+            }
+            dispatch(action)
+            pushNotificationOnSuccess(action)
+        })
+        .catch(error => dispatch({
             type: `${CHANGE_REQUEST_STATUS_ACTION_PREFIX}_failure`,
-            error: errorMsg
+            error: error.message
         }))
 }
 
 export const cancelRequest = (dispatch, {requestId}) => changeRequestStatus(dispatch, {requestId, newStatus: "CANCELED"})
 export const acceptRequest = (dispatch, {requestId}) => changeRequestStatus(dispatch, {requestId, newStatus: "ACCEPTED"})
 export const rejectRequest = (dispatch, {requestId}) => changeRequestStatus(dispatch, {requestId, newStatus: "REJECTED"})
+
+const pushNotificationOnSuccess = action => {
+    const {status} = action.response
+    let message = "Pomyślnie anulowano wniosek o urlop"
+    if (status === "ACCEPTED") {
+        message = "Pomyślnie zaakceptowano wniosek o urlop"
+    } else if (status === "REJECTED") {
+        message = "Pomyślnie odrzucono wniosek o urlop"
+    }
+
+    pushSuccessNotification(message)
+}
 
 export const changeRequestStatusReducer = (state, action) => {
     switch (action.type) {

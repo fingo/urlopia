@@ -45,7 +45,7 @@ test('shows cancel and accept button in the action column if data is present', (
     render(<CompanyRequestsList requests={sampleRequests} rejectRequest={() => null} acceptRequest={() => null}/>);
     const isAnyData = document.querySelectorAll("tbody").length === 2;
     if (!isAnyData) return;
-    const cancelBtn = screen.getAllByTitle('Anuluj wniosek');
+    const cancelBtn = screen.getAllByTitle('Odrzuć wniosek');
     const acceptBtn = screen.getAllByTitle('Zaakceptuj wniosek');
     expect(cancelBtn.length).toBeGreaterThanOrEqual(1);
     expect(acceptBtn.length).toBeGreaterThanOrEqual(1);
