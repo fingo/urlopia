@@ -1,9 +1,12 @@
 import {sendGetRequest} from "../../../helpers/RequestHelper";
 import {FETCH_HOLIDAYS_ACTION_PREFIX,HOLIDAYS_ENDPOINT_URL} from "../constants";
 
-export const fetchHolidays = dispatch => {
+export const fetchHolidays = (dispatch, year) => {
+    const yearURL = year ? ("?year=" + year) : "";
+
+    const URL_WITH_YEAR = `${HOLIDAYS_ENDPOINT_URL}${yearURL}`;
     dispatch({type: `${FETCH_HOLIDAYS_ACTION_PREFIX}_request`})
-    sendGetRequest(HOLIDAYS_ENDPOINT_URL)
+    sendGetRequest(URL_WITH_YEAR)
         .then(data => {
             dispatch({
                 type: `${FETCH_HOLIDAYS_ACTION_PREFIX}_success`,

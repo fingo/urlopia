@@ -1,4 +1,5 @@
 import {render, screen} from "@testing-library/react";
+
 import {Page404} from "./Page404";
 
 test('renders Page404', () => {

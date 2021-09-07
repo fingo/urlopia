@@ -45,7 +45,13 @@ public class HolidayService {
         return result;
     }
 
-    public List<Holiday> getAll(Filter filter) {
+    public List<Holiday> getAllHolidaysByYear(int year) {
+        var startDate = LocalDate.of(year, 1, 1);
+        var endDate = LocalDate.of(year, 12, 31);
+        return holidayRepository.findByDateBetween(startDate, endDate);
+    }
+
+    public List<Holiday> getAll(Filter filter){
         return holidayRepository.findAll(filter);
     }
 

@@ -21,9 +21,11 @@ public class HolidayControllerV2 {
 
     @RolesAllowed({"ROLES_ADMIN", "ROLES_LEADER", "ROLES_WORKER"})
     @GetMapping(produces= MediaType.APPLICATION_JSON_VALUE)
-    public List<HolidayOutput> getAll(@RequestParam(name = "filter", defaultValue = "") String[] filters) {
+    public List<HolidayOutput> getAll(@RequestParam(name = "filter", defaultValue = "") String[] filters,
+                                      @RequestParam(required = false) Integer year) {
         var filter = Filter.from(filters);
-        var holidays =  holidayService.getAll(filter);
+        var holidays = year == null ?
+                holidayService.getAll(filter) : holidayService.getAllHolidaysByYear(year);
         return mapHolidaysListToHolidayOutputList(holidays);
     }
 
@@ -35,7 +37,6 @@ public class HolidayControllerV2 {
         var holidays =  holidayService.generateHolidaysList(year);
         return mapHolidaysListToHolidayOutputList(holidays);
     }
-
 
     @RolesAllowed("ROLES_ADMIN")
     @PutMapping(produces= MediaType.APPLICATION_JSON_VALUE)

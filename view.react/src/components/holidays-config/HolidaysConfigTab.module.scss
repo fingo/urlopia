@@ -1,0 +1,31 @@
+@import 'src/global-styles/color-variables';
+
+.actionButtonsContainer {
+  display: flex;
+
+  justify-content: center;
+  flex-direction: row;
+  justify-items: center;
+
+  button {
+    background: none;
+    border: none;
+    margin: 0 1em;
+  }
+}
+
+.settingsButton {
+  color: $BASE-COLOR;
+
+  :hover {
+    color: $HOVER-COLOR;
+  }
+}
+
+.removeButton {
+  color: $REJECT-COLOR;
+
+  :hover {
+    color: $REJECT-HOVER-COLOR;
+  }
+}

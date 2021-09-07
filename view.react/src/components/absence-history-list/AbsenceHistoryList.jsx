@@ -5,8 +5,8 @@ import {useLocation} from "react-router-dom";
 
 import {useAbsenceHistory} from "../../contexts/absence-history-context/absenceHistoryContext";
 import {fetchAbsenceHistory} from "../../contexts/absence-history-context/actions/fetchAbsenceHistory";
+import styles from '../../global-styles/AbsenceHistoryList.module.scss';
 import {formatLogs} from "../../helpers/AbsenceHistoryFormatterHelper";
-import styles from './AbsenceHistoryList.module.scss';
 import {AbsenceHistoryTab} from "./AbsenceHistoryTab";
 
 export const AbsenceHistoryList = ({forWhomToFetch}) => {
