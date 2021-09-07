@@ -94,6 +94,7 @@ export const AddAbsenceForm = ({show, onHide, userId, fullName}) => {
                     <option value='SICK_LEAVE_CHILD'>Zwolnienie lekarskie na dziecko</option>
                     <option value='SICK_LEAVE_FAMILY'>Zwolnienie lekarskie na członka rodziny</option>
                     <option value='UNEXCUSED'>Nieobecność nieusprawiedliwiona</option>
+                    <option value='EXCUSED_UNPAID'>Nieobecność usprawiedliwiona niepłatna</option>
                     <option value='CHILDCARE'>Urlop wychowawczy</option>
                     <option value='CHILDCARE_FOR_14_YEARS_OLD'>Opieka nad dzieckiem do lat 14</option>
                     <option value='OTHER'>Inny powód nieobecności</option>

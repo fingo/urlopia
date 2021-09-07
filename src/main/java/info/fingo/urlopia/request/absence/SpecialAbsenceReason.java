@@ -13,6 +13,7 @@ public enum SpecialAbsenceReason {
     SICK_LEAVE_CHILD("Zwolnienie lekarskie na dziecko"),
     SICK_LEAVE_FAMILY("Zwolnienie lekarskie na członka rodziny"),
     UNEXCUSED("Nieobecność nieusprawiedliwiona"),
+    EXCUSED_UNPAID("Nieobecność usprawiedliwiona niepłatna"),
     CHILDCARE("Urlop wychowawczy"),
     CHILDCARE_FOR_14_YEARS_OLD("Opieka nad dzieckiem do lat 14"),
     WRONG("Nieznany powód nieobecności"),

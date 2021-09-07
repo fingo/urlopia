@@ -15,6 +15,7 @@ public enum ReportStatusFromRequestType {
     SICK_LEAVE_CHILD("cd"),
     SICK_LEAVE_FAMILY("co"),
     UNEXCUSED("nn"),
+    EXCUSED_UNPAID("nun"),
     CHILDCARE("w"),
     CHILDCARE_FOR_14_YEARS_OLD("uop"),
     OTHER("??"),
