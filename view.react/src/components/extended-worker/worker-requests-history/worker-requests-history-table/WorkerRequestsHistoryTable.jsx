@@ -156,10 +156,10 @@ export const WorkerRequestsHistoryTable = ({
 
 WorkerRequestsHistoryTable.propTypes = {
     requests: PropTypes.array,
-    rejectRequest: PropTypes.func.isRequired,
     acceptRequest: PropTypes.func.isRequired,
+    cancelRequest: PropTypes.func.isRequired,
+    rejectRequest: PropTypes.func.isRequired,
     isFetching: PropTypes.bool,
-
 }
 
 WorkerRequestsHistoryTable.defaultProps = {

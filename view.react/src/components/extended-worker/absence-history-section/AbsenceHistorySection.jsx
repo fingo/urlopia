@@ -14,7 +14,8 @@ export const AbsenceHistorySection = () => {
     const {recentUserHistory} = absenceHistoryState;
 
     const [workersState] = useWorkers();
-    const {userId, fullName} = workersState.selectedUser;
+    const {isEC} = workersState;
+    const {userId, fullName} = isEC ? workersState.workers.selectedWorker : workersState.associates.selectedAssociate;
 
     const handleShowMoreClick = (e) => {
         e.currentTarget.blur();

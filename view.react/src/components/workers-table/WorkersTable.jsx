@@ -1,7 +1,10 @@
+import PropTypes from "prop-types";
 import {useEffect, useState} from "react";
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
 
+import {changeIsEC} from "../../contexts/workers-context/actions/changeIsEC";
+import {fetchAssociates} from "../../contexts/workers-context/actions/fetchAssociates";
 import {fetchWorkers} from "../../contexts/workers-context/actions/fetchWorkers";
 import {useWorkers} from "../../contexts/workers-context/workersContext";
 import {textAsArrayFormatter} from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
@@ -11,9 +14,10 @@ import styles from './WorkersTable.module.scss';
 
 export const URL = '/workers';
 
-export const WorkersTable = () => {
+export const WorkersTable = ({isEC}) => {
     const [workersState, workersDispatch] = useWorkers();
-    const {workers, selectedUser} = workersState;
+    const workers = isEC ? workersState.workers.workers : workersState.associates.associates;
+    const selectedUser = isEC ? workersState.workers.selectedWorker : workersState.associates.selectedAssociate;
 
     const [whichExpanded, setWhichExpanded] = useState([]);
 
@@ -26,8 +30,14 @@ export const WorkersTable = () => {
     }, [selectedUser]);
 
     useEffect(() => {
-        fetchWorkers(workersDispatch);
-    }, [workersDispatch]);
+        workersDispatch(changeIsEC(isEC));
+        if (isEC) {
+            fetchWorkers(workersDispatch);
+        }
+        else {
+            fetchAssociates(workersDispatch);
+        }
+    }, [workersDispatch, isEC]);
 
     const expandRow = {
         onlyOneExpanding: true,
@@ -113,7 +123,7 @@ export const WorkersTable = () => {
 
     return (
         <div className={styles.main}>
-            <h1 className='text-center'>Pracownicy</h1>
+            <h1 className='text-center'>{isEC ? 'Pracownicy' : 'Współpracownicy'}</h1>
             <BootstrapTable
                 bootstrap4
                 keyField='userId'
@@ -128,3 +138,11 @@ export const WorkersTable = () => {
         </div>
     );
 };
+
+WorkersTable.propTypes = {
+    isEC: PropTypes.bool,
+}
+
+WorkersTable.defaultProps = {
+    isEC: true,
+}

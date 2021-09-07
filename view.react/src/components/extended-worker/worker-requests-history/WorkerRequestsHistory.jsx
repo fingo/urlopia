@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import {useEffect} from "react";
 import {Button, Modal} from "react-bootstrap";
 
@@ -8,16 +9,12 @@ import {
 } from "../../../contexts/request-context/actions/changeRequestStatus";
 import {fetchWorkerRequestsHistory} from "../../../contexts/request-context/actions/fetchWorkerRequestsHistory";
 import {useRequests} from "../../../contexts/request-context/requestContext";
-import {useWorkers} from "../../../contexts/workers-context/workersContext";
 import {btnClass} from "../../../global-styles/btn.module.scss";
 import {requestPeriodFormatter} from "../../../helpers/react-bootstrap-table2/RequestMapperHelper";
 import {WorkerRequestsHistoryTable} from "./worker-requests-history-table/WorkerRequestsHistoryTable";
 import styles from './WorkerRequestsHistory.module.scss';
 
-export const WorkerRequestsHistory = ({show, onHide}) => {
-    const [workersState] = useWorkers();
-    const {fullName} = workersState.selectedUser;
-
+export const WorkerRequestsHistory = ({show, onHide, fullName}) => {
     const [requestsState, requestsDispatch] = useRequests();
     const {requests, fetching} = requestsState.workerRequestsHistory;
 
@@ -66,3 +63,14 @@ export const WorkerRequestsHistory = ({show, onHide}) => {
         </Modal>
     );
 };
+
+WorkerRequestsHistory.propTypes = {
+    show: PropTypes.bool,
+    onHide: PropTypes.func.isRequired,
+    fullName: PropTypes.string,
+}
+
+WorkerRequestsHistory.defaultProps = {
+    show: false,
+    fullName: 'unknown',
+}

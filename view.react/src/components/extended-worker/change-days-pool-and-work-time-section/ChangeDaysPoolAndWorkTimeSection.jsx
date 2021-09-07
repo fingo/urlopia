@@ -17,7 +17,8 @@ const CHANGE_DAYS_POOL_URL_POSTFIX = '/vacation-days';
 export const ChangeDaysPoolAndWorkTimeSection = ({workTime}) => {
     const [, absenceHistoryDispatch] = useAbsenceHistory();
     const [workersState, workersDispatch] = useWorkers();
-    const {userId} = workersState.selectedUser;
+    const {isEC} = workersState;
+    const {userId} = isEC ? workersState.workers.selectedWorker : workersState.associates.selectedAssociate;
 
     const handleChangeDaysPool = (valuesFromForm) => {
         const {daysToChange, comment} = valuesFromForm;

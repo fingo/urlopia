@@ -1,12 +1,9 @@
 import PropTypes from "prop-types";
 import {Modal} from 'react-bootstrap';
 
-import {useWorkers} from "../../../contexts/workers-context/workersContext";
 import {PresenceConfirmationPanel} from "../../presence-confirmation-panel/PresenceConfirmationPanel";
 
-export const AddPresenceForm = ({show, onHide}) => {
-    const [workersState] = useWorkers();
-    const {fullName} = workersState.selectedUser;
+export const AddPresenceForm = ({show, onHide, fullName}) => {
 
     return (
         <Modal
@@ -31,8 +28,10 @@ export const AddPresenceForm = ({show, onHide}) => {
 AddPresenceForm.propTypes = {
     show: PropTypes.bool,
     onHide: PropTypes.func.isRequired,
+    fullName: PropTypes.string,
 }
 
 AddPresenceForm.defaultProps = {
     show: false,
+    fullName: 'unknown',
 }

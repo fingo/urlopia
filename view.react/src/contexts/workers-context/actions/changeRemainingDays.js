@@ -13,13 +13,30 @@ export const changeRemainingDays = (days, hours) => {
 export const changeRemainingDaysReducer = (state, action) => {
     switch (action.type) {
         case `${CHANGE_REMAINING_DAYS_ACTION_PREFIX}_change`: {
+            const {isEC} = state;
             const {days, hours} = action.payload;
-            return {
-                ...state,
-                remainingDaysOfCurrentSelectedUser: {
-                    remainingDays: days,
-                    remainingHours: hours,
-                },
+            if (isEC) {
+                return {
+                    ...state,
+                    workers: {
+                        ...state.workers,
+                        remainingDaysOfCurrentSelectedWorker: {
+                            remainingDays: days,
+                            remainingHours: hours,
+                        },
+                    }
+                }
+            } else {
+                return {
+                    ...state,
+                    associates: {
+                        ...state.associates,
+                        remainingDaysOfCurrentSelectedAssociate: {
+                            remainingDays: days,
+                            remainingHours: hours,
+                        },
+                    }
+                }
             }
         }
         default: {

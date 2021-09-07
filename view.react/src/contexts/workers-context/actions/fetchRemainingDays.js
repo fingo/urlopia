@@ -25,10 +25,25 @@ export const fetchRemainingDaysReducer = (state, action) => {
             }
         }
         case `${FETCH_REMAINING_DAYS_ACTION_PREFIX}_success`: {
-            return {
-                ...state,
-                fetching: false,
-                remainingDaysOfCurrentSelectedUser: action.response,
+            const {isEC} = state;
+            if (isEC) {
+                return {
+                    ...state,
+                    workers: {
+                        ...state.workers,
+                        fetching: false,
+                        remainingDaysOfCurrentSelectedWorker: action.response,
+                    }
+                }
+            } else {
+                return {
+                    ...state,
+                    associates: {
+                        ...state.associates,
+                        fetching: false,
+                        remainingDaysOfCurrentSelectedAssociate: action.response,
+                    }
+                }
             }
         }
         case `${FETCH_REMAINING_DAYS_ACTION_PREFIX}_failure`: {

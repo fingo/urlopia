@@ -53,7 +53,7 @@ export const sendPutRequest = (url, body) => {
 }
 
 export const getXlsxFromResponse = (url, fileName) => {
-    axios.get(URL_PREFIX + url, {
+    return axios.get(URL_PREFIX + url, {
         responseType: "blob",
         headers: getAuthHeader(),
     }).then(response => {
@@ -86,14 +86,14 @@ const handleError = (error) => {
     let errorMessage;
     if (error.response) {
         let code = error.response.message;
-        if(error.response.data.message) {
+        if (error.response.data.message) {
             code = error.response.data.message;
         }
         errorMessage = mapCodeToMessage(code);
     } else if (error.request) {
         errorMessage = mapCodeToMessage(NO_RESPONSE_CODE);
     } else {
-        errorMessage =  mapCodeToMessage(UNKNOWN_ERROR_CODE);
+        errorMessage = mapCodeToMessage(UNKNOWN_ERROR_CODE);
     }
 
     throw new Error(errorMessage);

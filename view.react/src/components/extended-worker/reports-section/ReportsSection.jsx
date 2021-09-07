@@ -1,6 +1,8 @@
+import classNames from "classnames";
 import PropTypes from "prop-types";
 import {useState} from "react";
 import {Button, ButtonGroup, Form} from "react-bootstrap";
+import {BeatLoader} from "react-spinners";
 
 import {useWorkers} from "../../../contexts/workers-context/workersContext";
 import {btnClass} from "../../../global-styles/btn.module.scss";
@@ -12,13 +14,19 @@ const GET_XLSX_REPORT_URL = '/api/v2/reports/work-time-evidence/user/';
 
 export const ReportsSection = ({availableYears}) => {
     const [reportYear, setReportYear] = useState(new Date().getFullYear().toString());
+    const [isDownloading, setIsDownloading] = useState(false);
 
     const [workersState] = useWorkers();
-    const {userId, fullName} = workersState.selectedUser;
+    const {isEC} = workersState;
+    const {userId, fullName} = isEC ? workersState.workers.selectedWorker : workersState.associates.selectedAssociate;
 
-    const handleGenerateReport = e => {
+    const handleGenerateReport = async (e) => {
         e.currentTarget.blur();
-        getXlsxFromResponse(`${GET_XLSX_REPORT_URL}${userId}?year=${reportYear}`, formatReportFileName(fullName, reportYear));
+        setIsDownloading(true);
+        await getXlsxFromResponse(`${GET_XLSX_REPORT_URL}${userId}?year=${reportYear}`, formatReportFileName(fullName, reportYear))
+            .then(() => {
+                setIsDownloading(false);
+            })
     }
 
     const handleChangeReportYear = e => {
@@ -26,13 +34,23 @@ export const ReportsSection = ({availableYears}) => {
         setReportYear(value);
     }
 
+    const generateReportBtnClass = classNames(btnClass, styles.generateReportBtn);
     return (
         <div className={styles.reportsSection}>
             <ButtonGroup>
-                <Button className={btnClass}
+                <Button className={generateReportBtnClass}
                         onClick={e => handleGenerateReport(e)}
                 >
-                    Generuj raport
+                    {
+                        isDownloading ?
+                            <>
+                                <BeatLoader color='white' size={10}/>
+                            </>
+                            :
+                            <>
+                                Ewidencja czasu pracy
+                            </>
+                    }
                 </Button>
 
                 <Form.Select defaultValue={reportYear}

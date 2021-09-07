@@ -6,7 +6,6 @@ import {useAbsenceHistory} from "../../../contexts/absence-history-context/absen
 import {fetchUserRecentAbsenceHistory} from "../../../contexts/absence-history-context/actions/fetchUserRecentAbsenceHistory";
 import {fetchHolidays} from "../../../contexts/holidays-context/actions/fetchHolidays";
 import {useHolidays} from "../../../contexts/holidays-context/holidaysContext";
-import {useWorkers} from "../../../contexts/workers-context/workersContext";
 import {btnClass} from '../../../global-styles/btn.module.scss';
 import {formatDate} from "../../../helpers/DateFormatterHelper";
 import {sendPostRequest} from "../../../helpers/RequestHelper";
@@ -17,14 +16,11 @@ const KEY = 'selection';
 const DEFAULT_REASON = 'ADDITIONAL_CARE_ALLOWANCE_PANDEMIC';
 const POST_ABSENCE_URL = '/api/v2/absence-requests/special-absence'
 
-export const AddAbsenceForm = ({show, onHide}) => {
+export const AddAbsenceForm = ({show, onHide, userId, fullName}) => {
     const [, absenceHistoryDispatch] = useAbsenceHistory();
 
     const [holidaysState, holidaysDispatch] = useHolidays();
     const {holidays} = holidaysState;
-
-    const [workersState] = useWorkers();
-    const {userId, fullName} = workersState.selectedUser;
 
     const [selectedRange, setSelectedRange] = useState([{
             startDate: new Date(),
@@ -125,8 +121,11 @@ export const AddAbsenceForm = ({show, onHide}) => {
 AddAbsenceForm.propTypes = {
     show: PropTypes.bool,
     onHide: PropTypes.func.isRequired,
+    userId: PropTypes.number.isRequired,
+    fullName: PropTypes.string,
 }
 
 AddAbsenceForm.defaultProps = {
     show: false,
+    fullName: 'unknown',
 }

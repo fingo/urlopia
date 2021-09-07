@@ -25,6 +25,7 @@ export const ExtendedWorker = ({workTime, userId}) => {
     const [availableYears, setAvailableYears] = useState([]);
 
     const [workersState, workersDispatch] = useWorkers();
+    const {isEC} = workersState;
 
     const [, absenceHistoryDispatch] = useAbsenceHistory();
 
@@ -45,10 +46,13 @@ export const ExtendedWorker = ({workTime, userId}) => {
     }, [workersDispatch, userId]);
 
     useEffect(() => {
-        const {remainingDays, remainingHours} = workersState.remainingDaysOfCurrentSelectedUser;
+        const {remainingDays, remainingHours} = isEC
+            ? workersState.workers.remainingDaysOfCurrentSelectedWorker
+            : workersState.associates.remainingDaysOfCurrentSelectedAssociate;
+
         setRemainingDays(remainingDays);
         setRemainingHours(remainingHours);
-    }, [workersState]);
+    }, [workersState, isEC]);
 
     useEffect(() => {
         fetchUserRecentAbsenceHistory(absenceHistoryDispatch, userId);
@@ -63,7 +67,7 @@ export const ExtendedWorker = ({workTime, userId}) => {
                         <h3><strong>{remainingDays} dni</strong> {remainingHours} godzin</h3>
                     </div>
 
-                    <ChangeDaysPoolAndWorkTimeSection workTime={workTime}/>
+                    <ChangeDaysPoolAndWorkTimeSection workTime={workTime} />
 
                     <ButtonsSection/>
                 </Col>

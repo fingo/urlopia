@@ -4,6 +4,6 @@ export const URL = '/workers';
 
 export const WorkersPage = () => {
     return (
-        <WorkersTable/>
+        <WorkersTable isEC={true}/>
     );
 };

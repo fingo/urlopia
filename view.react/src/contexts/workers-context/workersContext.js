@@ -5,14 +5,27 @@ import {workersReducer} from "./workersReducer";
 const WorkersContext = createContext();
 
 const initialState = {
-    fetching: false,
-    error: null,
-    workers: [],
-    remainingDaysOfCurrentSelectedUser: {
-        remainingDays: 0,
-        remainingHours: 0,
+    isEC: true,
+    workers: {
+        fetching: false,
+        error: null,
+        workers: [],
+        remainingDaysOfCurrentSelectedWorker: {
+            remainingDays: 0,
+            remainingHours: 0,
+        },
+        selectedWorker: {},
     },
-    selectedUser: {},
+    associates: {
+        fetching: false,
+        error: null,
+        associates: [],
+        remainingDaysOfCurrentSelectedAssociate: {
+            remainingDays: 0,
+            remainingHours: 0,
+        },
+        selectedAssociate: {},
+    }
 }
 
 export const WorkersProvider = ({children}) => {

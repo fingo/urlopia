@@ -30,14 +30,33 @@ export const changeWorkTimeReducer = (state, action) => {
             }
         }
         case `${CHANGE_WORK_TIME_ACTION_PREFIX}_success`: {
+            const {isEC} = state;
             const {userId} = action.payload;
-            const workerToChange = state.workers.find(worker => worker.userId === userId);
-            workerToChange.workTime = action.response;
-            const newWorkers = state.workers;
-            return {
-                ...state,
-                fetching: false,
-                workers: newWorkers,
+            if (isEC) {
+                const workerToChange = state.workers.workers.find(worker => worker.userId === userId);
+                workerToChange.workTime = action.response;
+                const newWorkers = state.workers.workers;
+                return {
+                    ...state,
+                    workers: {
+                        ...state.workers,
+                        fetching: false,
+                        workers: newWorkers,
+                    },
+                }
+            }
+            else {
+                const workerToChange = state.associates.associates.find(worker => worker.userId === userId);
+                workerToChange.workTime = action.response;
+                const newWorkers = state.associates.associates;
+                return {
+                    ...state,
+                    associates: {
+                        ...state.associates,
+                        fetching: false,
+                        associates: newWorkers,
+                    },
+                }
             }
         }
         case `${CHANGE_WORK_TIME_ACTION_PREFIX}_failure`: {

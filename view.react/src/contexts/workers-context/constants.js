@@ -5,6 +5,8 @@ const REMAINING_DAYS_ACTION_PREFIX = 'remaining-days';
 
 export const FETCH_WORKERS_ACTION_PREFIX = `${WORKERS_ACTION_PREFIX}/fetch/workers`;
 
+export const FETCH_ASSOCIATES_ACTION_PREFIX = `${WORKERS_ACTION_PREFIX}/fetch/associates`;
+
 export const FETCH_REMAINING_DAYS_URL_POSTFIX = `/vacation-days`;
 export const FETCH_REMAINING_DAYS_ACTION_PREFIX = `${REMAINING_DAYS_ACTION_PREFIX}/fetch/user`;
 
@@ -14,3 +16,5 @@ export const CHANGE_WORK_TIME_ACTION_PREFIX = `${WORKERS_ACTION_PREFIX}/change/w
 export const CHANGE_SELECTED_USER_ACTION_PREFIX = `${WORKERS_ACTION_PREFIX}/change/selected-user`;
 
 export const CHANGE_REMAINING_DAYS_ACTION_PREFIX = `${WORKERS_ACTION_PREFIX}/change/remaining-days`;
+
+export const CHANGE_IS_EC_ACTION_PREFIX = `${WORKERS_ACTION_PREFIX}/change/is-ec`;

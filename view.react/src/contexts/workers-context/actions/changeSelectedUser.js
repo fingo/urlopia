@@ -12,12 +12,29 @@ export const changeSelectedUser = (userId) => {
 export const changeSelectedUserReducer = (state, action) => {
     switch (action.type) {
         case `${CHANGE_SELECTED_USER_ACTION_PREFIX}_change`: {
+            const {isEC} = state;
             const {userId} = action.payload;
-            const foundWorker = state.workers.find(worker => worker.userId === userId);
-            return {
-                ...state,
-                fetching: false,
-                selectedUser: foundWorker,
+            if (isEC) {
+                const foundWorker = state.workers.workers.find(worker => worker.userId === userId);
+                return {
+                    ...state,
+                    workers: {
+                        ...state.workers,
+                        fetching: false,
+                        selectedWorker: foundWorker,
+                    },
+                }
+            }
+            else {
+                const foundAssociate = state.associates.associates.find(worker => worker.userId === userId);
+                return {
+                    ...state,
+                    associates: {
+                        ...state.associates,
+                        fetching: false,
+                        selectedAssociate: foundAssociate,
+                    },
+                }
             }
         }
         default: {
