@@ -63,6 +63,10 @@ public class RequestService {
         return requestRepository.findAll(filter, pageable, RequestExcerptProjection.class);
     }
 
+    public List<Request> getAll(Filter filter) {
+        return requestRepository.findAll(filter);
+    }
+
     public List<Request> getByUserAndDate(Long userId, LocalDate date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_FORMAT);
         String formattedDate = formatter.format(date);

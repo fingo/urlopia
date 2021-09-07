@@ -1,5 +1,7 @@
 package info.fingo.urlopia.api.v2.calendar;
 
+import info.fingo.urlopia.api.v2.calendar.unspecifiedabsence.UnspecifiedAbsenceOutput;
+import info.fingo.urlopia.api.v2.calendar.unspecifiedabsence.UnspecifiedAbsenceService;
 import info.fingo.urlopia.config.authentication.AuthInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class CalendarControllerV2 {
     private final CalendarService calendarService;
+    private final UnspecifiedAbsenceService unspecifiedAbsenceService;
 
     @RolesAllowed({"ROLES_WORKER", "ROLES_ADMIN"})
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -26,5 +29,11 @@ public class CalendarControllerV2 {
         var authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
         var filter = Filter.from(filters);
         return calendarService.getCalendarInfo(authenticatedId, startDate, endDate, filter);
+    }
+
+    @RolesAllowed("ROLES_ADMIN")
+    @GetMapping(path = "/unspecified-absences", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UnspecifiedAbsenceOutput getUsersWithUnspecifiedAbsences() {
+        return unspecifiedAbsenceService.getEmployeesWithUnspecifiedAbsences();
     }
 }

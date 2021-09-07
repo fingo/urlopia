@@ -1,5 +1,6 @@
 package info.fingo.urlopia.api.v2.calendar
 
+import info.fingo.urlopia.api.v2.calendar.unspecifiedabsence.UnspecifiedAbsenceService
 import info.fingo.urlopia.config.persistance.filter.Filter
 import spock.lang.Specification
 
@@ -11,6 +12,7 @@ class CalendarControllerV2Spec extends Specification {
     def startDate = LocalDate.now()
     def endDate = startDate.plusDays(1)
     def calendarService = Mock(CalendarService)
+    def unspecfiedAbsenceService = Mock(UnspecifiedAbsenceService)
     def calendar = Mock(Map<LocalDate, SingleDayOutput>)
     def calendarOutput = GroovyMock(CalendarOutput) {
         getCalendar() >> calendar
@@ -18,7 +20,7 @@ class CalendarControllerV2Spec extends Specification {
     def filters = new String[0]
 
 
-    def calendarControllerV2 = new CalendarControllerV2(calendarService)
+    def calendarControllerV2 = new CalendarControllerV2(calendarService, unspecfiedAbsenceService)
 
     def "getCalendarInformation() WHEN called with proper params SHOULD return calendarOutput"() {
         given:

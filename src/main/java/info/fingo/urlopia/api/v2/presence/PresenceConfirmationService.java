@@ -42,6 +42,10 @@ public class PresenceConfirmationService {
                     .build();
         }
 
+        return getAll(filter);
+    }
+
+    public List<PresenceConfirmation> getAll(Filter filter) {
         return presenceConfirmationRepository.findAll(filter);
     }
 
@@ -134,6 +138,10 @@ public class PresenceConfirmationService {
                 .build();
         var presenceConfirmationsToDelete = presenceConfirmationRepository.findAll(filter);
         presenceConfirmationRepository.deleteAll(presenceConfirmationsToDelete);
+    }
+
+    public Optional<PresenceConfirmation> getFirstUserConfirmation(Long userId) {
+        return presenceConfirmationRepository.findTopByPresenceConfirmationIdUserIdOrderByPresenceConfirmationIdDateAsc(userId);
     }
 
     public double countWorkingHoursInDay(PresenceConfirmation presenceConfirmation){

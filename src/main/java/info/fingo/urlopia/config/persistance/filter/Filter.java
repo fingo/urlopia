@@ -14,6 +14,10 @@ public class Filter {
         this.components = components;
     }
 
+    public static Filter empty() {
+        return new Filter(Collections.emptyList());
+    }
+
     public Builder toBuilder() {
         return new Builder(components);
     }
