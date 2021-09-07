@@ -57,6 +57,7 @@ public class SessionService {
             userData.setMail(user.getMail());
             userData.setLanguage(user.getLang());
             userData.setTeams(this.pickTeamsInfo(user));
+            userData.setIsEc(user.getEc());
             userData.setToken(webTokenService.generateWebToken(user.getId(), roles));
             var loggerInfo = "User: %s successfully authenticated"
                     .formatted(credentials.getMail());

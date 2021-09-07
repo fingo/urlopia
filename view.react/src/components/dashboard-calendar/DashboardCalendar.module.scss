@@ -1,0 +1,112 @@
+@import '../../global-styles/bootstrap-breakpoints';
+@import '../../global-styles/color-variables';
+
+.calendarWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.calendar {
+  overflow: auto;
+  border: 1px solid $CALENDAR-BORDER-COLOR;
+  font-size: 1.125rem;
+
+  button {
+    border: 1px solid $CALENDAR-BORDER-COLOR;
+
+    &:hover {
+      background-color: $CALENDAR-HOVER-COLOR;
+    }
+
+    span[class='rdrDayNumber'] {
+      color: $CALENDAR-HOVER-COLOR;
+    }
+
+    span[class='rdrSelected'] {
+      border-radius: 0;
+      left: 0;
+      top: 0;
+      width: 101%;
+      height: 101%;
+    }
+
+    span[class='rdrSelected'] + span[class='rdrDayNumber'] {
+      color: $BASE-COLOR;
+    }
+  }
+}
+
+.mainNumber {
+  position: absolute;
+  bottom: 0.3rem;
+  left: 0.5rem;
+
+  &::after {
+    bottom: 1rem !important;
+  }
+}
+
+.absentUsersLabel {
+  font-size: 0.75rem;
+  padding-top: 1.25rem;
+
+  &::after {
+    content: none !important;
+  }
+}
+
+.exclamationIcon,
+.absenceIcon {
+  color: red;
+  font-size: 0.9rem;
+  position: absolute;
+  top: 0.2rem;
+  right: 0.5rem;
+}
+
+.absenceIcon {
+  color: green;
+  font-size: 0.8rem;
+  top: 0.3rem;
+}
+
+.filterSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.filter {
+  display: flex;
+  width: 100%;
+}
+
+.filter + .filter {
+  margin-top: 1rem;
+}
+
+.selection {
+  width: 100%;
+}
+
+.label {
+  margin: 0.3rem 0.4rem 0 0;
+}
+
+@include media-breakpoint-up(md) {
+  .filterSection {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .filter {
+    width: 45%;
+  }
+
+  .filter + .filter {
+    margin-top: 0;
+  }
+}

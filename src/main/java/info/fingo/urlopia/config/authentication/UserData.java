@@ -18,6 +18,7 @@ public class UserData {
     private String token;
     private Set<Map<String, String>> teams;
     private int employmentYear;
+    private boolean isEc;
 
     UserData(long userId, List<String> userRoles) {
         this.userId = userId;
@@ -50,6 +51,10 @@ public class UserData {
 
     public void setEmploymentYear(int employmentYear) {
         this.employmentYear = employmentYear;
+    }
+
+    public void setIsEc(boolean isEc) {
+        this.isEc = isEc;
     }
 }
 
