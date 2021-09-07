@@ -11,6 +11,7 @@ import info.fingo.urlopia.request.absence.SpecialAbsenceRequestInput;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,7 @@ public class AbsenceRequestControllerV2 {
 
     @RolesAllowed("ROLES_ADMIN")
     @PostMapping(value = "/special-absence", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
     public RequestsOutput createSpecialAbsence(@RequestBody SpecialAbsence specialAbsence) {
         var requesterId = specialAbsence.requesterId();
         var requestInput = SpecialAbsenceRequestInput.fromSpecialAbsence(specialAbsence);
@@ -37,6 +39,7 @@ public class AbsenceRequestControllerV2 {
 
     @RolesAllowed("ROLES_WORKER")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
     public RequestsOutput create(@RequestBody RequestInput input,
                                     HttpServletRequest httpRequest) {
         var authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);

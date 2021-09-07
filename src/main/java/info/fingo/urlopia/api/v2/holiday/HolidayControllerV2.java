@@ -4,6 +4,7 @@ import info.fingo.urlopia.holidays.Holiday;
 import info.fingo.urlopia.holidays.HolidayService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,7 @@ public class HolidayControllerV2 {
 
     @RolesAllowed("ROLES_ADMIN")
     @PutMapping(produces= MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
     public List<HolidayOutput> save(@RequestBody HolidayInput holidaysInput) {
         var startDate = holidaysInput.startDate();
         var endDate = holidaysInput.endDate();
