@@ -252,7 +252,7 @@ class PresenceConfirmationServiceSpec extends Specification {
         and: "a holiday service that tells that every day is working day"
         holidayService.isWorkingDay(_ as LocalDate) >> true
 
-        and: "a request service that returns some requests"
+        and: "a request service that tells that user is vacationing"
         requestService.isVacationing(authenticatedUser, dto.getDate()) >> true
 
         when: "user tries to confirm his presence"
@@ -281,7 +281,7 @@ class PresenceConfirmationServiceSpec extends Specification {
         thrown(PresenceConfirmationException)
     }
 
-    def "confirmPresence() WHEN date is in the past and user is not an admin SHOULD throw an exception"() {
+    def "confirmPresence() WHEN date is in the past and authenticated user is not an admin SHOULD throw an exception"() {
         given: "an invalid dto"
         def dto = samplePresenceConfirmationDTO(authenticatedUserId)
         dto.setDate(LocalDate.now().minusWeeks(2).minusDays(1))
@@ -300,7 +300,7 @@ class PresenceConfirmationServiceSpec extends Specification {
         thrown(PresenceConfirmationException)
     }
 
-    def "confirmPresence() WHEN date is in the past and user is an admin SHOULD not throw an exception"() {
+    def "confirmPresence() WHEN date is in the past and authenticated user is an admin SHOULD not throw an exception"() {
         given: "an invalid dto"
         def dto = samplePresenceConfirmationDTO(authenticatedUserId)
         dto.setDate(LocalDate.now().minusWeeks(2).minusDays(1))
@@ -312,11 +312,17 @@ class PresenceConfirmationServiceSpec extends Specification {
         }
         userService.get(authenticatedUserId) >> authenticatedUser
 
+        and: "a holiday service that tells that every day is working day"
+        holidayService.isWorkingDay(_ as LocalDate) >> true
+
+        and: "a request service that tells that user is not vacationing"
+        requestService.isVacationing(authenticatedUser, dto.getDate()) >> false
+
         when: "user tries to confirm his presence"
         presenceConfirmationService.confirmPresence(authenticatedUserId, dto)
 
-        then: "an exception is thrown"
-        thrown(PresenceConfirmationException)
+        then: "an exception is not thrown"
+        notThrown(PresenceConfirmationException)
     }
 
     def "deletePresenceConfirmations() SHOULD delete presence confirmation in a given date range"() {

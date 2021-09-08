@@ -82,7 +82,7 @@ public class PresenceConfirmationService {
 
         var isConfirmingOwnPresence = authenticatedUserId.equals(confirmationUserId);
         var confirmationUser = isConfirmingOwnPresence ? authenticatedUser : userService.get(confirmationUserId);
-        checkIfConfirmationIsViable(confirmationUser, dto.getDate());
+        checkIfConfirmationIsViable(authenticatedUser, confirmationUser, dto.getDate());
 
         return presenceConfirmationRepository.save(presenceConfirmationFromDto(dto, confirmationUser));
     }
@@ -103,29 +103,29 @@ public class PresenceConfirmationService {
         }
     }
 
-    private void checkIfConfirmationIsViable(User user, LocalDate date) {
+    private void checkIfConfirmationIsViable(User authenticatedUser, User confirmationUser, LocalDate date) {
         var today = LocalDate.now();
 
         if (date.isAfter(today)) {
             log.error("Could not confirm presence for user with id: {} because date: {} is a future date",
-                      user.getId(), date);
+                      confirmationUser.getId(), date);
             throw PresenceConfirmationException.confirmationInFuture();
         }
 
-        if (!user.isAdmin() && date.isBefore(today.minusWeeks(2))) {
+        if (!authenticatedUser.isAdmin() && date.isBefore(today.minusWeeks(2))) {
             log.error("Could not confirm presence for user with id: {} because date: {} is more than 2 weeks in the past",
-                      user.getId(), date);
+                      confirmationUser.getId(), date);
             throw PresenceConfirmationException.confirmationInPast();
         }
 
         if (!holidayService.isWorkingDay(date)) {
             log.error("Could not confirm presence for user with id: {} because date: {} is not a working day",
-                      user.getId(), date);
+                      confirmationUser.getId(), date);
             throw PresenceConfirmationException.nonWorkingDay();
         }
 
-        if (requestService.isVacationing(user, date)) {
-            log.error("Could not confirm presence for user with id: {} because user is on vacation", user.getId());
+        if (requestService.isVacationing(confirmationUser, date)) {
+            log.error("Could not confirm presence for user with id: {} because user is on vacation", confirmationUser.getId());
             throw PresenceConfirmationException.userOnVacation();
         }
     }
