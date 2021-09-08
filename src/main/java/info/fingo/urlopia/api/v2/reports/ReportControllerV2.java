@@ -1,5 +1,6 @@
 package info.fingo.urlopia.api.v2.reports;
 
+import info.fingo.urlopia.api.v2.reports.converters.AttendanceListExcelConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ContentDisposition;
@@ -46,6 +47,26 @@ public class ReportControllerV2 {
 
     }
 
+    @RolesAllowed("ROLES_ADMIN")
+    @GetMapping(path = "/monthly-presence/{year}/{month}",
+            produces= MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<StreamingResponseBody> generateMonthlyPresenceReport(@PathVariable Integer year,
+                                                                               @PathVariable Integer month){
+
+        var fileName = reportService.getMonthlyPresenceReportName(year, month);
+        try{
+            var monthlyPresenceReports = reportService.generateAttendanceList(year, month);
+            var headers = getFileContentHeaders(fileName);
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(outputStream -> AttendanceListExcelConverter.convertToPDF(monthlyPresenceReports,outputStream));
+        }catch (IOException ioException){
+            log.error("Could not generate report with name: {}", fileName);
+            throw GenerateWorkTimeEvidenceReportException.fromIOException(fileName);
+        }
+
+    }
+
     private HttpHeaders getFileContentHeaders(String fileName){
         var contentDispositionBuilderType = "inline";
         HttpHeaders headers = new HttpHeaders();
@@ -54,5 +75,6 @@ public class ReportControllerV2 {
                 .build());
         return headers;
     }
+
 
 }

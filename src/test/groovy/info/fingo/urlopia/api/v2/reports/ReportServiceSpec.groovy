@@ -1,5 +1,6 @@
 package info.fingo.urlopia.api.v2.reports
 
+import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReportFactory
 import info.fingo.urlopia.reports.ReportTemplateLoader
 import info.fingo.urlopia.reports.XlsxTemplateResolver
 import info.fingo.urlopia.reports.evidence.EvidenceReportModel
@@ -13,7 +14,8 @@ class ReportServiceSpec extends Specification{
     private UserService userService;
     private ReportTemplateLoader reportTemplateLoader;
     private XlsxTemplateResolver xlsxTemplateResolver;
-    private EvidenceReportModelFactory evidenceReportModelFactory;
+    private EvidenceReportModelFactory evidenceReportModelFactory
+    private MonthlyAttendanceListReportFactory monthlyPresenceReportFactory
     private ReportService reportService
 
     void setup(){
@@ -22,7 +24,7 @@ class ReportServiceSpec extends Specification{
         xlsxTemplateResolver = Mock(XlsxTemplateResolver)
         evidenceReportModelFactory = Mock(EvidenceReportModelFactory)
         reportService = new ReportService(userService,reportTemplateLoader,
-                                            xlsxTemplateResolver,evidenceReportModelFactory)
+                                            xlsxTemplateResolver,evidenceReportModelFactory,monthlyPresenceReportFactory)
     }
 
     def "getWorkTimeEvidenceReportName() WHEN called with id and year SHOULD return formatted file name string"(){

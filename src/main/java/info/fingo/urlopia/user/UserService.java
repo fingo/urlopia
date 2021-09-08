@@ -7,9 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,6 +16,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private static final String NO_USER_WITH_ID_MESSAGE = "There is no user with id: {}";
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -36,7 +35,7 @@ public class UserService {
         return userRepository
                 .findById(userId)
                 .orElseThrow(() ->{
-                    log.error("There is no user with id: {}", userId);
+                    log.error(NO_USER_WITH_ID_MESSAGE, userId);
                     return NoSuchUserException.invalidId();
                 });
     }
@@ -62,7 +61,7 @@ public class UserService {
                             userRepository.save(user);
                         },
                         () -> {
-                            log.error("There is no user with id: {}", userId);
+                            log.error(NO_USER_WITH_ID_MESSAGE, userId);
                             throw NoSuchUserException.invalidId();
                         });
         var loggerInfo = "Language of user with id: %d has been set to: %s".formatted(userId, language);
@@ -75,7 +74,7 @@ public class UserService {
                 .map(User::getEc)
                 .orElseThrow(() ->
                 {
-                    log.error("There is no user with id: {}", userId);
+                    log.error(NO_USER_WITH_ID_MESSAGE, userId);
                     return NoSuchUserException.invalidId();
                 });
     }
@@ -101,13 +100,12 @@ public class UserService {
                             userRepository.save(user);
                         },
                         () -> {
-                            log.error("There is no user with id: {}", userId);
+                            log.error(NO_USER_WITH_ID_MESSAGE, userId);
                             throw NoSuchUserException.invalidId();
                         });
         var loggerInfo = "Work time of user with id: %d has been set to: %f".formatted(userId, workTime);
         log.info(loggerInfo);
     }
-
 
     public Set<User> getAdmins() {
         var admins = userRepository.findAdmins();
@@ -120,7 +118,7 @@ public class UserService {
                 .map(this::getLeaders)
                 .map(Set::copyOf)
                 .orElseThrow(() -> {
-                    log.error("There is no user with id: {}", userId);
+                    log.error(NO_USER_WITH_ID_MESSAGE, userId);
                     return NoSuchUserException.invalidId();
                 });
     }
