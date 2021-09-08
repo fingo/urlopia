@@ -5,13 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.naming.AuthenticationException;
 import javax.naming.Context;
-import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -63,6 +62,11 @@ public class LDAPConnectionService {
         DirContext ctx = getContext();
 
         try {
+            var password = credentials.getPassword();
+            if (password.equals("")) {
+                throw new AuthenticationException("Password is blank");
+            }
+
             var controls = new SearchControls();
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             var filter = "(&(memberOf=" + usersGroup + ")" + "(userPrincipalName=" + credentials.getMail() + "))";
