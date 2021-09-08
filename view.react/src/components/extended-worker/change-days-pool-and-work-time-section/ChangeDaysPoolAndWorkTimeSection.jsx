@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import {Form} from "react-bootstrap";
 
 import {useAbsenceHistory} from "../../../contexts/absence-history-context/absenceHistoryContext";
-import {fetchUserRecentAbsenceHistory} from "../../../contexts/absence-history-context/actions/fetchUserRecentAbsenceHistory";
+import {fetchUserAbsenceHistory} from "../../../contexts/absence-history-context/actions/fetchUserAbsenceHistory";
 import {changeRemainingDays} from "../../../contexts/workers-context/actions/changeRemainingDays";
 import {changeWorkTime} from "../../../contexts/workers-context/actions/changeWorkTime";
 import {useWorkers} from "../../../contexts/workers-context/workersContext";
@@ -32,7 +32,7 @@ export const ChangeDaysPoolAndWorkTimeSection = ({workTime}) => {
                 workersDispatch(changeRemainingDays(data.remainingDays.toString(), data.remainingHours.toString()));
                 pushSuccessNotification("Pomyślnie zmieniono pulę godzin pracownika");
             }).then(() => {
-                fetchUserRecentAbsenceHistory(absenceHistoryDispatch, userId);
+                fetchUserAbsenceHistory(absenceHistoryDispatch, userId);
             }).catch(error => {
                 console.log('err: ', error);
             })

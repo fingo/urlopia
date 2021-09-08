@@ -3,7 +3,7 @@ import {Modal} from 'react-bootstrap';
 
 import {PresenceConfirmationPanel} from "../../presence-confirmation-panel/PresenceConfirmationPanel";
 
-export const AddPresenceForm = ({show, onHide, fullName}) => {
+export const AddPresenceForm = ({show, onHide, fullName, userId}) => {
     return (
         <Modal
             show={show}
@@ -18,7 +18,7 @@ export const AddPresenceForm = ({show, onHide, fullName}) => {
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <PresenceConfirmationPanel />
+                <PresenceConfirmationPanel userId={userId} />
             </Modal.Body>
         </Modal>
     );

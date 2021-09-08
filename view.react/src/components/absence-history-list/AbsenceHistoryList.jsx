@@ -4,12 +4,11 @@ import {Dropdown, DropdownButton} from "react-bootstrap";
 import {useLocation} from "react-router-dom";
 
 import {useAbsenceHistory} from "../../contexts/absence-history-context/absenceHistoryContext";
-import {fetchAbsenceHistory} from "../../contexts/absence-history-context/actions/fetchAbsenceHistory";
-import styles from '../../global-styles/AbsenceHistoryList.module.scss';
+import styles from "../../global-styles/AbsenceHistoryList.module.scss";
 import {formatLogs} from "../../helpers/AbsenceHistoryFormatterHelper";
 import {AbsenceHistoryTab} from "./AbsenceHistoryTab";
 
-export const AbsenceHistoryList = ({forWhomToFetch}) => {
+export const AbsenceHistoryList = ({fetchHistoryLogs}) => {
     const [state, absenceHistoryDispatch] = useAbsenceHistory()
     const {absenceHistory} = state;
 
@@ -22,8 +21,8 @@ export const AbsenceHistoryList = ({forWhomToFetch}) => {
 
     useEffect(() => {
         getAvailableYears();
-        fetchAbsenceHistory(absenceHistoryDispatch, forWhomToFetch, selectedYear);
-    }, [absenceHistoryDispatch, selectedYear, forWhomToFetch]);
+        fetchHistoryLogs(absenceHistoryDispatch, {selectedYear})
+    }, [absenceHistoryDispatch, selectedYear, fetchHistoryLogs]);
 
     const getAvailableYears = () => {
         const startYear = FIRST_AVAILABLE_YEAR;
@@ -71,5 +70,5 @@ export const AbsenceHistoryList = ({forWhomToFetch}) => {
 }
 
 AbsenceHistoryList.propTypes = {
-    forWhomToFetch: PropTypes.number.isRequired,
+    fetchHistoryLogs: PropTypes.func.isRequired,
 }

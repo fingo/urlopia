@@ -10,6 +10,8 @@ import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,10 @@ public class HistoryLogService {
         return historyLogRepository.findAll(filter, HistoryLogExcerptProjection.class);
     }
 
+    public Page<HistoryLogExcerptProjection> get(Filter filter, Pageable pageable) {
+        return historyLogRepository.findAll(filter, pageable, HistoryLogExcerptProjection.class);
+    }
+
     public List<HistoryLogExcerptProjection> get(LocalDate date, Long userId) {
         var startOfDay = LocalDateTime.of(date, LocalTime.MIN);
         var endOfDay = LocalDateTime.of(date, LocalTime.MAX);
@@ -54,8 +60,15 @@ public class HistoryLogService {
     public List<HistoryLogExcerptProjection> get(Long userId,
                                                  Integer year,
                                                  Filter filter) {
+        return get(userId, year, filter, Pageable.unpaged()).getContent();
+    }
+
+    public Page<HistoryLogExcerptProjection> get(Long userId,
+                                                 Integer year,
+                                                 Filter filter,
+                                                 Pageable pageable) {
         if (year == null) {
-            return historyLogRepository.findByUserId(userId);
+            return historyLogRepository.findByUserId(userId, pageable);
         }
         var formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_TIME_FORMAT);
         var yearStart = LocalDateTime.of(year, 1, 1, 0, 0).format(formatter);
@@ -66,7 +79,7 @@ public class HistoryLogService {
                 .and("created", Operator.GREATER_OR_EQUAL, yearStart)
                 .and("created", Operator.LESS_OR_EQUAL, yearEnd)
                 .build();
-        return this.get(filterWithRestrictions);
+        return get(filterWithRestrictions, pageable);
     }
 
     public List<HistoryLog> getFromYear(Long userId,

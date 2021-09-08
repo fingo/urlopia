@@ -5,12 +5,13 @@ import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.history.HistoryLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -23,29 +24,29 @@ public class HistoryLogControllerV2 {
 
     @RolesAllowed({"ROLES_WORKER", "ROLES_LEADER", "ROLES_ADMIN"})
     @GetMapping(value="/me", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<HistoryLogOutput> getHistoryLogs(
+    public Page<HistoryLogOutput> getHistoryLogs(
             HttpServletRequest request,
             @RequestParam(required = false) Integer year,
-            @RequestParam(name = "filter", defaultValue = "") String[] filters) {
+            @RequestParam(name = "filter", defaultValue = "") String[] filters,
+            Pageable pageable) {
 
         var authenticatedUserId = (Long) request.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
         var filter = Filter.from(filters);
-        var historyLog = historyLogService.get(authenticatedUserId, year, filter);
-        Collections.reverse(historyLog);
-        return HistoryLogOutput.from(historyLog);
+        var historyLogsPage = historyLogService.get(authenticatedUserId, year, filter, pageable);
+        return historyLogsPage.map(HistoryLogOutput::from);
     }
 
     @RolesAllowed("ROLES_ADMIN")
     @GetMapping(value="/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<HistoryLogOutput> getSpecificHistoryLogs(
+    public Page<HistoryLogOutput> getSpecificHistoryLogs(
             @PathVariable Long userId,
             @RequestParam(required = false) Integer year,
-            @RequestParam(name = "filter", defaultValue = "") String[] filters) {
+            @RequestParam(name = "filter", defaultValue = "") String[] filters,
+            Pageable pageable) {
 
         var filter = Filter.from(filters);
-        var historyLog = historyLogService.get(userId, year, filter);
-        Collections.reverse(historyLog);
-        return HistoryLogOutput.from(historyLog);
+        var historyLogsPage = historyLogService.get(userId, year, filter, pageable);
+        return historyLogsPage.map(HistoryLogOutput::from);
     }
 
 }

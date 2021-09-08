@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import {Col, Container, Row} from "react-bootstrap";
 
 import {useAbsenceHistory} from "../../contexts/absence-history-context/absenceHistoryContext";
-import {fetchUserRecentAbsenceHistory} from "../../contexts/absence-history-context/actions/fetchUserRecentAbsenceHistory";
+import {fetchUserAbsenceHistory} from "../../contexts/absence-history-context/actions/fetchUserAbsenceHistory";
 import {changeSelectedUser} from "../../contexts/workers-context/actions/changeSelectedUser";
 import {fetchRemainingDays} from "../../contexts/workers-context/actions/fetchRemainingDays";
 import {useWorkers} from "../../contexts/workers-context/workersContext";
@@ -55,7 +55,7 @@ export const ExtendedWorker = ({workTime, userId}) => {
     }, [workersState, isEC]);
 
     useEffect(() => {
-        fetchUserRecentAbsenceHistory(absenceHistoryDispatch, userId);
+        fetchUserAbsenceHistory(absenceHistoryDispatch, userId);
     }, [absenceHistoryDispatch, userId]);
 
     return (

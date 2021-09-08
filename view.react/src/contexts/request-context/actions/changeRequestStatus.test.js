@@ -41,6 +41,11 @@ describe('changeRequestStatusReducer', () => {
             error: null,
             requests: sampleRequests
         },
+        workerRequestsHistory: {
+            fetching: false,
+            error: null,
+            requests: []
+        },
         contextError: null
     }
 
@@ -109,7 +114,10 @@ describe('changeRequestStatusReducer', () => {
                         ...sampleRequests[1],
                     }
                 ]
-            }
+            },
+            workerRequestsHistory: {
+                ...sampleState.workerRequestsHistory,
+            },
         }
 
         const newState = changeRequestStatusReducer(sampleState, action)
@@ -160,7 +168,10 @@ describe('changeRequestStatusReducer', () => {
                         ...sampleRequests[0],
                     }
                 ]
-            }
+            },
+            workerRequestsHistory: {
+                ...sampleState.workerRequestsHistory,
+            },
         }
 
         const newState = changeRequestStatusReducer(sampleState, action)
@@ -211,7 +222,10 @@ describe('changeRequestStatusReducer', () => {
                         ...sampleRequests[0],
                     }
                 ]
-            }
+            },
+            workerRequestsHistory: {
+                ...sampleState.workerRequestsHistory,
+            },
         }
 
         const newState = changeRequestStatusReducer(sampleState, action)

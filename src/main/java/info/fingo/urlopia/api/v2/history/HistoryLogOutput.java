@@ -22,10 +22,14 @@ public class HistoryLogOutput {
     private Float userWorkTime;
 
     public static List<HistoryLogOutput> from(List<HistoryLogExcerptProjection> projections) {
-        var modelMapper = new ModelMapper();
-
+        var mapper = new ModelMapper();
         return projections.stream()
-                    .map(x->modelMapper.map(x, HistoryLogOutput.class))
-                    .toList();
+                .map(proj -> mapper.map(proj, HistoryLogOutput.class))
+                .toList();
+    }
+
+    public static HistoryLogOutput from(HistoryLogExcerptProjection projection) {
+        var mapper = new ModelMapper();
+        return mapper.map(projection, HistoryLogOutput.class);
     }
 }

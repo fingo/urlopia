@@ -25,7 +25,7 @@ export const AbsenceHistorySection = () => {
         });
     }
 
-    const formattedRecentUserHistory = formatLogs(recentUserHistory);
+    const formattedRecentUserHistory = formatLogs(recentUserHistory).slice(0, 5);
 
     return (
         <div>

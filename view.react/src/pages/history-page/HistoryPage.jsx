@@ -1,24 +1,32 @@
-import {useEffect} from "react";
-import {useHistory, useParams} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {useLocation, useParams} from "react-router-dom";
 
 import {AbsenceHistoryList} from "../../components/absence-history-list/AbsenceHistoryList";
+import {fetchAbsenceHistory} from "../../contexts/absence-history-context/actions/fetchAbsenceHistory";
+import {fetchUserAbsenceHistory} from "../../contexts/absence-history-context/actions/fetchUserAbsenceHistory";
 import styles from './HistoryPage.module.scss';
 
 export const URL = '/history';
 
 export const HistoryPage = ({isAdmin}) => {
     const params = useParams();
-    const history = useHistory();
+    const location = useLocation();
+    const [fetchHistoryAction, setFetchHistoryAction] = useState(() => () => {})
 
     useEffect(() => {
-        if (!isAdmin) {
-            history.push('/history/me');
-        }
-    }, [isAdmin, history]);
+        setFetchHistoryAction(() => {
+            if (isAdmin && location.pathname !== '/history/me') {
+                return (dispatch) => fetchUserAbsenceHistory(dispatch, params.userId, false)
+            }
+            return (dispatch, {selectedYear}) => fetchAbsenceHistory(dispatch, selectedYear)
+        })
+    }, [isAdmin, params.userId, location.pathname])
 
     return (
         <div className={styles.container}>
-            <AbsenceHistoryList forWhomToFetch={params.userId}/>
+            <AbsenceHistoryList
+                fetchHistoryLogs={fetchHistoryAction}
+            />
         </div>
     );
 };

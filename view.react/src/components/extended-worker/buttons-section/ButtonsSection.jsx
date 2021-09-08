@@ -69,6 +69,7 @@ export const ButtonsSection = () => {
                 addPresenceModalShow &&
                 <AddPresenceForm show={addPresenceModalShow}
                                  onHide={() => setAddPresenceModalShow(false)}
+                                 userId={userId}
                                  fullName={fullName}
                 />
             }

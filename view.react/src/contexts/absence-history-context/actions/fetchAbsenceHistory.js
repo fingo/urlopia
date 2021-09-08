@@ -4,9 +4,11 @@ import {
     FETCH_ABSENCE_HISTORY_URL
 } from "../constants";
 
-export const fetchAbsenceHistory = (dispatch, userId, year) => {
+const PAGING = "sort=id,desc"
+
+export const fetchAbsenceHistory = (dispatch, year) => {
     dispatch({type: `${FETCH_ABSENCE_HISTORY_ACTION_PREFIX}_absence-history`})
-    sendGetRequest(`${FETCH_ABSENCE_HISTORY_URL}/${userId}/?year=${year}`)
+    sendGetRequest(`${FETCH_ABSENCE_HISTORY_URL}?year=${year}&${PAGING}`)
         .then(data => dispatch({
                 type: `${FETCH_ABSENCE_HISTORY_ACTION_PREFIX}_success`,
                 response: data
@@ -30,7 +32,7 @@ export const fetchAbsenceHistoryReducer = (state, action) => {
             return {
                 ...state,
                 fetching: false,
-                absenceHistory: action.response
+                absenceHistory: action.response.content
             }
         }
         case `${FETCH_ABSENCE_HISTORY_ACTION_PREFIX}_failure`: {
