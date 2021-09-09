@@ -9,6 +9,7 @@ import {Redirect} from "react-router-dom";
 
 import {getCurrentUser} from "../../api/services/session.service";
 import {RequestProvider} from "../../contexts/request-context/requestContext";
+import {VacationDaysProvider} from "../../contexts/vacation-days-context/vacationDaysContext";
 import {LoginPage} from "../../pages/login-page/LoginPage";
 import {MainContentRouting} from "../../router/MainContentRouting";
 import {AcceptanceLoader} from "../acceptance-loader/AcceptanceLoader";
@@ -47,22 +48,24 @@ export const App = () => {
                     <>
                         <TopBar onHamburgerClick={handleHamburgerClick}/>
                         <Container fluid>
-                            <Row>
-                                <Col xs={3} xl={2} className={sidebarColClass}>
-                                    <Sidebar
-                                        onClickLinkOrOutside={handleClickOutsideSidebar}
-                                        acceptancesPresent={acceptancesPresent}
-                                    />
-                                </Col>
-                                <Col xs={12} lg={9} xl={10} className={styles.mainContent}>
-                                    <RequestProvider>
-                                        {isUserALeader && <AcceptanceLoader setAcceptancesPresent={setAcceptancesPresent}/>}
-                                        <MainContentRouting
+                            <VacationDaysProvider>
+                                <Row>
+                                    <Col xs={3} xl={2} className={sidebarColClass}>
+                                        <Sidebar
+                                            onClickLinkOrOutside={handleClickOutsideSidebar}
                                             acceptancesPresent={acceptancesPresent}
                                         />
-                                    </RequestProvider>
-                                </Col>
-                            </Row>
+                                    </Col>
+                                    <Col xs={12} lg={9} xl={10} className={styles.mainContent}>
+                                        <RequestProvider>
+                                            {isUserALeader && <AcceptanceLoader setAcceptancesPresent={setAcceptancesPresent}/>}
+                                            <MainContentRouting
+                                                acceptancesPresent={acceptancesPresent}
+                                            />
+                                        </RequestProvider>
+                                    </Col>
+                                </Row>
+                            </VacationDaysProvider>
                         </Container>
                     </>
             }

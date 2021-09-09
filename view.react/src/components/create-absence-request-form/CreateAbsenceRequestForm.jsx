@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import {addDays, isWeekend} from 'date-fns';
 import PropTypes from "prop-types";
-import {useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
 
 import {getCurrentUser} from "../../api/services/session.service";
@@ -15,10 +15,12 @@ import {
     OCCASIONAL,
     PLACEHOLDER
 } from "../../constants/requestsTypes";
+import {useVacationDays} from "../../contexts/vacation-days-context/vacationDaysContext";
 import {countWorkingDays} from "../../helpers/CountWorkingDaysHelper";
 import {formatDate} from "../../helpers/DateFormatterHelper";
 import {isHoliday} from "../../helpers/IsHolidayHelper";
 import {occasionalTypeInfoMapperHelper} from "../../helpers/OccasionalTypeInfoMapperHelper";
+import {updateVacationDays} from "../../helpers/updateVacationDays";
 import {Calendar} from "./calendar/Calendar";
 import styles from './CreateAbsenceRequestForm.module.scss';
 import {InfoOverlay} from "./info-overlay/InfoOverlay";
@@ -46,6 +48,25 @@ export const CreateAbsenceRequestForm = ({
     const [occasionalType, setOccasionalType] = useState(null);
     const formRef = useRef(null);
     const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
+
+    const [vacationDays, setVacationDays] = useState(0);
+    const [vacationHours, setVacationHours] = useState(0);
+    const [pendingDays, setPendingDays] = useState(0);
+    const [pendingHours, setPendingHours] = useState(0);
+
+    const [vacationDaysState, vacationDaysDispatch] = useVacationDays();
+
+    useEffect(() => {
+        const {days, hours} = vacationDaysState.pendingDays;
+        setPendingDays(days);
+        setPendingHours(hours);
+    }, [vacationDaysState.pendingDays]);
+
+    useEffect(() => {
+        const {remainingDays, remainingHours} = vacationDaysState.vacationDays;
+        setVacationDays(remainingDays);
+        setVacationHours(remainingHours);
+    }, [vacationDaysState.vacationDays]);
 
     const handleRequestsTypeChange = e => {
         setInitialSelectedRange();
@@ -114,7 +135,7 @@ export const CreateAbsenceRequestForm = ({
         setIsReadyToSubmit(true);
     }
 
-    const handleSendRequest = e => {
+    const handleSendRequest = async e => {
         const startDate = formatDate(selectedRange[0].startDate);
         const endDate = formatDate(selectedRange[0].endDate);
         const body = {
@@ -125,7 +146,8 @@ export const CreateAbsenceRequestForm = ({
         }
 
         const isAdmin = getCurrentUser().userRoles.includes('ROLES_ADMIN');
-        createRequest(body, isAdmin);
+        await createRequest(body, isAdmin);
+        updateVacationDays(vacationDaysDispatch);
     }
 
     const setInitialSelectedRange = () => {
@@ -187,6 +209,8 @@ export const CreateAbsenceRequestForm = ({
                     <p className={styles.additionalInfo}>{occasionalTypeInfoMapperHelper(occasionalType)}</p>
 
                     <h5>Liczba dni roboczych: <strong>{workingDaysCounter}</strong></h5>
+                    <h5>Pozostały urlop: <strong>{vacationDays-pendingDays} dni</strong> {vacationHours-pendingHours} godzin</h5>
+                    <h5>Złożone wnioski: <strong>{pendingDays} dni</strong> {pendingHours} godzin</h5>
                 </Col>
 
                 <Col xs={12} xl={8} className={styles.calendarColumn}>

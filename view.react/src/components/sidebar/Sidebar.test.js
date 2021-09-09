@@ -2,6 +2,7 @@ import {render, screen} from '@testing-library/react';
 import {BrowserRouter as Router} from "react-router-dom";
 
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
+import {VacationDaysProvider} from "../../contexts/vacation-days-context/vacationDaysContext";
 import {mockSessionStorage} from "../../helpers/TestHelper";
 import {Sidebar} from "./Sidebar";
 
@@ -19,7 +20,7 @@ describe("Sidebar", () => {
         }))
 
         // when
-        render(<Router><Sidebar onClickLinkOrOutside={() => {}}/></Router>);
+        render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
 
         // then
         expect(screen.queryByText('Kalendarz')).toBeInTheDocument()
@@ -38,7 +39,7 @@ describe("Sidebar", () => {
         }))
 
         // when
-        render(<Router><Sidebar onClickLinkOrOutside={() => {}}/></Router>);
+        render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
 
         // then
         expect(screen.queryByText('Kalendarz')).toBeInTheDocument()
@@ -57,7 +58,7 @@ describe("Sidebar", () => {
         }))
 
         // when
-        render(<Router><Sidebar onClickLinkOrOutside={() => {}}/></Router>);
+        render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
 
         // then
         expect(screen.queryByText('Kalendarz').href).toMatch(/calendar/)

@@ -3,12 +3,14 @@ import {Form} from "react-bootstrap";
 
 import {useAbsenceHistory} from "../../../contexts/absence-history-context/absenceHistoryContext";
 import {fetchUserAbsenceHistory} from "../../../contexts/absence-history-context/actions/fetchUserAbsenceHistory";
+import {useVacationDays} from "../../../contexts/vacation-days-context/vacationDaysContext";
 import {changeRemainingDays} from "../../../contexts/workers-context/actions/changeRemainingDays";
 import {changeWorkTime} from "../../../contexts/workers-context/actions/changeWorkTime";
 import {useWorkers} from "../../../contexts/workers-context/workersContext";
 import {pushSuccessNotification} from "../../../helpers/notifications/Notifications";
 import {parseDaysPool} from "../../../helpers/parseDaysPoolToHours";
 import {sendPutRequest} from "../../../helpers/RequestHelper";
+import {updateVacationDays} from "../../../helpers/updateVacationDays";
 import {ChangeDaysPoolForm} from "../change-days-pool-form/ChangeDaysPoolForm";
 import styles from "./ChangeDaysPoolAndWorkTimeSection.module.scss";
 
@@ -21,6 +23,8 @@ export const ChangeDaysPoolAndWorkTimeSection = ({workTime}) => {
     const {isEC} = workersState;
     const {userId} = isEC ? workersState.workers.selectedWorker : workersState.associates.selectedAssociate;
 
+    const [, vacationDaysDispatch] = useVacationDays();
+
     const handleChangeDaysPool = (valuesFromForm) => {
         const {daysToChange, comment} = valuesFromForm;
         if (daysToChange !== '') {
@@ -31,6 +35,7 @@ export const ChangeDaysPoolAndWorkTimeSection = ({workTime}) => {
             }).then(data => {
                 workersDispatch(changeRemainingDays(data.remainingDays.toString(), data.remainingHours.toString()));
                 pushSuccessNotification("Pomyślnie zmieniono pulę godzin pracownika");
+                updateVacationDays(vacationDaysDispatch);
             }).then(() => {
                 fetchUserAbsenceHistory(absenceHistoryDispatch, userId);
             }).catch(error => {

@@ -1,5 +1,6 @@
 import {fireEvent, render, screen} from "@testing-library/react";
 
+import {VacationDaysProvider} from "../../contexts/vacation-days-context/vacationDaysContext";
 import {UserRequestsList} from "./UserRequestsList";
 
 const sampleRequests = [
@@ -36,7 +37,7 @@ const sampleRequests = [
 ]
 
 test('shows header of table', () => {
-    render(<UserRequestsList requests={sampleRequests} cancelRequest={() => null}/>);
+    render(<VacationDaysProvider><UserRequestsList requests={sampleRequests} cancelRequest={() => null}/></VacationDaysProvider>);
     const periodHeader = screen.getByText('Termin');
     const typeHeader = screen.getByText('Rodzaj');
     const statusHeader = screen.getByText('Status');
@@ -48,7 +49,7 @@ test('shows header of table', () => {
 });
 
 test('shows cancel button when status is pending', () => {
-    render(<UserRequestsList requests={sampleRequests} cancelRequest={() => null}/>);
+    render(<VacationDaysProvider><UserRequestsList requests={sampleRequests} cancelRequest={() => null}/></VacationDaysProvider>);
     const pendingRequest = screen.getByText('Oczekujący');
     const cancelBtn = screen.getByTitle('Anuluj wniosek');
     expect(pendingRequest).toBeInTheDocument();
@@ -56,13 +57,13 @@ test('shows cancel button when status is pending', () => {
 });
 
 test('shows filter inputs', () => {
-    render(<UserRequestsList requests={sampleRequests} cancelRequest={() => null}/>);
+    render(<VacationDaysProvider><UserRequestsList requests={sampleRequests} cancelRequest={() => null}/></VacationDaysProvider>);
     const inputs = screen.queryAllByPlaceholderText('Filtruj...');
     expect(inputs.length).toBe(2);
 });
 
 test('filter inputs should keep what the user enters', async () => {
-    render(<UserRequestsList requests={sampleRequests} cancelRequest={() => null}/>);
+    render(<VacationDaysProvider><UserRequestsList requests={sampleRequests} cancelRequest={() => null}/></VacationDaysProvider>);
     const [typeInput, statusInput] = screen.queryAllByPlaceholderText('Filtruj...');
     fireEvent.change(typeInput, {target: {value: 'Wypoczynkowy'}});
     fireEvent.change(statusInput, {target: {value: 'Zatwierdzony'}});

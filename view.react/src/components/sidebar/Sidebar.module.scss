@@ -35,6 +35,15 @@
   }
 }
 
+.days {
+  font-size: 0.9rem;
+  color: $GREY-COLOR;
+
+  p {
+    margin: 0;
+  }
+}
+
 .overlay {
   z-index: 5;
   position: fixed;

@@ -6,6 +6,7 @@ import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
 import {BeatLoader} from "react-spinners";
 
 import {PENDING} from "../../constants/statuses";
+import {useVacationDays} from "../../contexts/vacation-days-context/vacationDaysContext";
 import {spinner} from '../../global-styles/loading-spinner.module.scss';
 import {actionBtn} from '../../global-styles/table-styles.module.scss';
 import {
@@ -15,12 +16,16 @@ import {
     statusFormatter
 } from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
 import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
+import {updateVacationDays} from "../../helpers/updateVacationDays";
 
 export const UserRequestsList = ({
     requests,
     cancelRequest,
     isFetching,
 }) => {
+
+    const [, vacationDaysDispatch] = useVacationDays();
+
     const actionFormatter = (cell, row) => {
         const cancelBtnClass = classNames(actionBtn, 'text-warning');
         if (row.status === PENDING) {
@@ -28,7 +33,10 @@ export const UserRequestsList = ({
                 <button
                     title='Anuluj wniosek'
                     className={cancelBtnClass}
-                    onClick={() => cancelRequest(row.id)}
+                    onClick={async () => {
+                        await cancelRequest(row.id);
+                        updateVacationDays(vacationDaysDispatch);
+                    }}
                 >
                     <XIcon/>
                 </button>
