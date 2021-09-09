@@ -1,0 +1,8 @@
+@import "src/global-styles/btn.module";
+@import "src/global-styles/color-variables";
+
+.btnClass {
+  background-color: $GREY-COLOR;
+  color: $BLACK-COLOR;
+  width: 100%;
+}

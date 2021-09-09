@@ -44,7 +44,7 @@ export const DefaultHolidaysModal = ({show, onHide, year}) => {
 }
 
 DefaultHolidaysModal.propTypes = {
-    show: PropTypes.func.isRequired,
+    show: PropTypes.bool.isRequired,
     onHide: PropTypes.func.isRequired,
     year: PropTypes.number,
 }

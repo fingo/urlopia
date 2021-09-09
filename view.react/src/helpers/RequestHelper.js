@@ -72,6 +72,44 @@ export const getXlsxFromResponse = (url, fileName) => {
     });
 }
 
+export const getPdfFromResponse = (url, fileName) => {
+    return axios.get(URL_PREFIX + url, {
+        responseType: 'blob',
+        headers: getAuthHeader(),
+    }).then(response => {
+        const objURL = window.URL.createObjectURL(
+            new Blob([response.data], {
+                type: response.headers['content-type'],
+            })
+        );
+
+        const link = document.createElement("a");
+        link.href = objURL;
+        link.setAttribute("download", `${fileName}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+    })
+}
+
+export const getZipFromResponse = (url, fileName) => {
+    return axios.get(URL_PREFIX + url, {
+        responseType: "blob",
+        headers: getAuthHeader(),
+    }).then(response => {
+        const oURL = window.URL.createObjectURL(
+            new Blob([response.data], {
+                type: response.headers["content-type"],
+            })
+        );
+
+        const link = document.createElement("a");
+        link.href = oURL;
+        link.setAttribute("download", `${fileName}.zip`);
+        document.body.appendChild(link);
+        link.click();
+    });
+}
+
 const getAuthHeader = () => {
     const user = JSON.parse(sessionStorage.getItem(USER_DATA_KEY));
     if (user && user.token) {
