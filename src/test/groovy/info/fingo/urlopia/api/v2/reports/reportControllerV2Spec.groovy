@@ -19,6 +19,7 @@ class reportControllerV2Spec extends Specification{
         reportService.generateWorkTimeEvidenceReport(userID,year) >> {
             throw new IOException();
         }
+        reportService.getWorkTimeEvidenceReportName(userID, year) >> ""
 
         when:
         reportControllerV2.generateWorkTimeEvidenceReport(userID,year)

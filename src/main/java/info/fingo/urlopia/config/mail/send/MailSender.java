@@ -1,5 +1,6 @@
 package info.fingo.urlopia.config.mail.send;
 
+import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
 import info.fingo.urlopia.config.mail.Mail;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -19,7 +20,8 @@ public class MailSender {
         MimeMessage mimeMessage = new MailConverter(mail).toMimeMessage();
         mailSender.send(mimeMessage);
         var loggerInfo = "New mail with subject: %s has been sent to: %s"
-                .formatted(mail.getSubject(), mail.getRecipientAddress());
+                .formatted(Anonymizer.anonymizeSubject(mail.getSubject()),
+                        Anonymizer.anonymizeMail(mail.getRecipientAddress()));
         log.info(loggerInfo);
     }
 

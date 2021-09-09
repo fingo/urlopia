@@ -1,6 +1,7 @@
 package info.fingo.urlopia.config.mail.receive;
 
 import  info.fingo.urlopia.acceptance.AcceptanceService;
+import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
 import info.fingo.urlopia.config.mail.Mail;
 import info.fingo.urlopia.config.mail.MailBot;
 import info.fingo.urlopia.request.*;
@@ -52,7 +53,7 @@ public class MailDecider {
         if (emailBounceDetector.isBounce(mail)
                 || senderMail.equals(this.mailBotAddress)) {
             var loggerInfo = "An attempt to parse a message was blocked. Subject: %s, senderMailAddress: %s"
-                    .formatted(mail.getSubject(),senderMail);
+                    .formatted(Anonymizer.anonymizeSubject(mail.getSubject()), Anonymizer.anonymizeMail(senderMail));
             log.warn(loggerInfo);
             return;
         }
@@ -124,14 +125,14 @@ public class MailDecider {
 
     private void userNotFound(String senderMail) {
         var loggerInfo = "Sender with mail: %s not found"
-                .formatted(senderMail);
+                .formatted(Anonymizer.anonymizeMail(senderMail));
         log.warn(loggerInfo);
         mailBot.userNotFound(senderMail);
     }
 
     private void parsingProblem(String senderMail) {
         var loggerInfo = "Could not parse email from user: %s"
-                .formatted(senderMail);
+                .formatted(Anonymizer.anonymizeMail(senderMail));
         log.warn(loggerInfo);
         mailBot.parsingProblem(senderMail);
     }

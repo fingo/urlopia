@@ -1,5 +1,6 @@
 package info.fingo.urlopia.api.v2.reports;
 
+import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
 import info.fingo.urlopia.api.v2.reports.converters.AttendanceListExcelConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ public class ReportControllerV2 {
                                                                                 @RequestParam int year){
 
         var fileName = reportService.getWorkTimeEvidenceReportName(userId,year);
+        var anonymizedFileName = Anonymizer.anonymizeYearlyReportFileName(fileName);
         try{
             var workTimeEvidenceReport = reportService.generateWorkTimeEvidenceReport(userId, year);
 
@@ -41,8 +43,8 @@ public class ReportControllerV2 {
                     .headers(headers)
                     .body(workTimeEvidenceReport::write);
         }catch (IOException ioException){
-            log.error("Could not generate report with name: {}", fileName);
-            throw GenerateWorkTimeEvidenceReportException.fromIOException(fileName);
+            log.error("Could not generate report with name: {}", anonymizedFileName);
+            throw GenerateWorkTimeEvidenceReportException.fromIOException(anonymizedFileName);
         }
 
     }

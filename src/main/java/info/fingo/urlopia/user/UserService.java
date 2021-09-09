@@ -1,5 +1,6 @@
 package info.fingo.urlopia.user;
 
+import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.team.Team;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,7 @@ public class UserService {
         return userRepository
                 .findFirstByMail(userMail)
                 .orElseThrow(() -> {
-                    log.error("There is no user with email: {}", userMail);
+                    log.error("There is no user with email: {}", Anonymizer.anonymizeMail(userMail));
                     return NoSuchUserException.invalidEmail();
                 });
     }

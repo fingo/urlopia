@@ -1,5 +1,6 @@
 package info.fingo.urlopia.config.authentication;
 
+import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
 import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
@@ -46,7 +47,7 @@ public class SessionService {
             var user = userRepository
                     .findFirstByMail(credentials.getMail())
                     .orElseThrow(() -> {
-                        log.error("Authentication failed for user: {}", credentials.getMail());
+                        log.error("Authentication failed for user: {}", Anonymizer.anonymizeMail(credentials.getMail()));
                         return WrongCredentialsException.invalidCredentials();
                     });
             var roles = pickRoles(user);
@@ -60,12 +61,12 @@ public class SessionService {
             userData.setIsEc(user.getEc());
             userData.setToken(webTokenService.generateWebToken(user.getId(), roles));
             var loggerInfo = "User: %s successfully authenticated"
-                    .formatted(credentials.getMail());
+                    .formatted(Anonymizer.anonymizeMail(credentials.getMail()));
             log.info(loggerInfo);
             return userData;
         }
         var loggerInfo = "Authentication failed for user: %s"
-                .formatted(credentials.getMail());
+                .formatted(Anonymizer.anonymizeMail(credentials.getMail()));
         log.error(loggerInfo);
         throw WrongCredentialsException.invalidCredentials();
     }

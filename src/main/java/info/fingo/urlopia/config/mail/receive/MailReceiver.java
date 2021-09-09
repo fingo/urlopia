@@ -1,6 +1,7 @@
 package info.fingo.urlopia.config.mail.receive;
 
 import com.sun.mail.imap.IMAPFolder;
+import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
 import info.fingo.urlopia.config.mail.Mail;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -181,9 +182,9 @@ public class MailReceiver extends Thread {
                 for (int messageId = currentMessageCount + 1; messageId <= newMessageCount; messageId++) {
                     var message = inbox.getMessage(messageId);
                     var mail = new MessageConverter(message).toMail();
-                    var loggerInfo = "New email sent by %s %n Subject: %s %n Content: %s"
-                            .formatted(mail.getSenderAddress(),
-                                    mail.getSubject(), mail.getContent());
+                    var loggerInfo = "New email sent by %s %n Subject: %s"
+                            .formatted(Anonymizer.anonymizeMail(mail.getSenderAddress()),
+                                    Anonymizer.anonymizeSubject(mail.getSubject()));
                     log.info(loggerInfo);
                     mailDecider.resolve(mail);
                 }

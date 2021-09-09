@@ -97,8 +97,8 @@ public class PresenceConfirmationService {
     private void checkIfUserIsAuthorizedToConfirmPresence(User authenticatedUser, Long confirmationUserId) {
         var isConfirmingOwnPresence = authenticatedUser.getId().equals(confirmationUserId);
         if (!isConfirmingOwnPresence && !authenticatedUser.isAdmin()) {
-            var logMessage = "User: {} was forbidden to confirm presence of user with id: {}";
-            log.info(logMessage, authenticatedUser.getPrincipalName(), confirmationUserId);
+            var logMessage = "User with id: {} was forbidden to confirm presence of user with id: {}";
+            log.info(logMessage, authenticatedUser.getId(), confirmationUserId);
             throw ForbiddenConfirmationException.notConfirmingOwnPresence();
         }
     }
