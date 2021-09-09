@@ -57,6 +57,7 @@ export const ReportsSection = ({availableYears}) => {
                              className={styles.yearSelection}
                              onChange={e => handleChangeReportYear(e)}
                              aria-label="Year select"
+                             data-testid='selector'
                 >
                     {
                         availableYears.map(year => {
