@@ -6,10 +6,11 @@ import {pushErrorNotification} from "./notifications/Notifications";
 
 export const URL_PREFIX = process.env.NODE_ENV === 'development' ? "http://localhost:8080" : '';
 
-export const sendGetRequest = (url) => {
+export const sendGetRequest = (url, params) => {
     return axios
         .get(URL_PREFIX + url,{
-            headers: getAuthHeader()
+            headers: getAuthHeader(),
+            params,
         })
         .then(response => {
             return response.data;

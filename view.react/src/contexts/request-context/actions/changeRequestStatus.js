@@ -86,10 +86,20 @@ const handleMyRequestsStatusChange = (requests, requestId, newStatus) => {
         case "CANCELED":
         case "ACCEPTED":
         case "REJECTED":
-            return updateRequestStatus(requests, requestId, newStatus)
+            const request = requests.find(req => req.id === requestId)
+            if (request && isRequestEndDateInFuture(request)) {
+                return updateRequestStatus(requests, requestId, newStatus)
+            }
+            return removeRequest(requests, requestId)
         default:
             return requests
     }
+}
+
+const isRequestEndDateInFuture = request => {
+    let today = new Date()
+    today.setDate(today.getDate() - 1)
+    return today <= new Date(request.endDate)
 }
 
 const handleTeamRequestsStatusChange = (requests, requestId, newStatus) => {
