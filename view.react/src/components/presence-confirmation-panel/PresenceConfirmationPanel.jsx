@@ -23,7 +23,7 @@ export const PresenceConfirmationPanel = ({userId, onConfirmation}) => {
     const {confirmations: usersConfirmations} = state.usersConfirmations
     const {fetching} = userId ? state.usersConfirmations : state.myConfirmations
 
-    const TODAY = new Date()
+    const TODAY = new Date();
     const [chosenDate, setChosenDate] = useState(TODAY)
     const [chosenStartTime, setChosenStartTime] = useState(getTime(8, 0))
     const [chosenEndTime, setChosenEndTime] = useState(getTime(16, 0))
@@ -116,5 +116,9 @@ export const PresenceConfirmationPanel = ({userId, onConfirmation}) => {
 
 PresenceConfirmationPanel.propTypes = {
     userId: PropTypes.number.isRequired,
-    onConfirmation: PropTypes.func.isRequired,
+    onConfirmation: PropTypes.func,
+}
+
+PresenceConfirmationPanel.defaultProps = {
+    onConfirmation: () => {},
 }
