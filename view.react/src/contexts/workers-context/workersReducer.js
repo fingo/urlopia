@@ -5,6 +5,7 @@ import {changeSelectedUserReducer} from "./actions/changeSelectedUser";
 import {changeWorkTimeReducer} from "./actions/changeWorkTime";
 import {fetchAssociatesReducer} from "./actions/fetchAssociates";
 import {fetchRemainingDaysReducer} from "./actions/fetchRemainingDays";
+import {fetchUnspecifiedUsersReducer} from "./actions/fetchUnspecifiedUsers";
 import {fetchWorkersReducer} from "./actions/fetchWorkers";
 import {
     CHANGE_IS_EC_ACTION_PREFIX,
@@ -12,7 +13,7 @@ import {
     CHANGE_SELECTED_USER_ACTION_PREFIX,
     CHANGE_WORK_TIME_ACTION_PREFIX,
     FETCH_ASSOCIATES_ACTION_PREFIX,
-    FETCH_REMAINING_DAYS_ACTION_PREFIX,
+    FETCH_REMAINING_DAYS_ACTION_PREFIX, FETCH_UNSPECIFIED_USERS_ACTION_PREFIX,
     FETCH_WORKERS_ACTION_PREFIX,
 } from "./constants";
 
@@ -26,6 +27,7 @@ const workersReducersMappings = {
         reducer: fetchAssociatesReducer,
     },
     [`${FETCH_REMAINING_DAYS_ACTION_PREFIX}`]: fetchRemainingDaysReducer,
+    [`${FETCH_UNSPECIFIED_USERS_ACTION_PREFIX}`]: fetchUnspecifiedUsersReducer,
     [`${CHANGE_WORK_TIME_ACTION_PREFIX}`]: changeWorkTimeReducer,
     [`${CHANGE_SELECTED_USER_ACTION_PREFIX}`]: changeSelectedUserReducer,
     [`${CHANGE_REMAINING_DAYS_ACTION_PREFIX}`]: changeRemainingDaysReducer,

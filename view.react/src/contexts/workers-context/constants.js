@@ -10,6 +10,8 @@ export const FETCH_ASSOCIATES_ACTION_PREFIX = `${WORKERS_ACTION_PREFIX}/fetch/as
 export const FETCH_REMAINING_DAYS_URL_POSTFIX = `/vacation-days`;
 export const FETCH_REMAINING_DAYS_ACTION_PREFIX = `${REMAINING_DAYS_ACTION_PREFIX}/fetch/user`;
 
+export const FETCH_UNSPECIFIED_USERS_ACTION_PREFIX = `${WORKERS_ACTION_PREFIX}/fetch/unspecified-users`;
+
 export const CHANGE_WORK_TIME_URL_POSTFIX = '/work-time';
 export const CHANGE_WORK_TIME_ACTION_PREFIX = `${WORKERS_ACTION_PREFIX}/change/work-time`;
 

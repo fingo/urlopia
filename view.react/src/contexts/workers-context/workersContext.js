@@ -6,6 +6,9 @@ const WorkersContext = createContext();
 
 const initialState = {
     isEC: true,
+    fetching: false,
+    error: null,
+    unspecifiedUsers: [],
     workers: {
         fetching: false,
         error: null,
