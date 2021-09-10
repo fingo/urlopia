@@ -31,7 +31,6 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
             text: 'Rozpatrujący',
             headerAlign: 'center',
             align: 'center',
-            sort: true,
             style: {verticalAlign: 'middle'},
             hidden: isHidden
         },
@@ -40,7 +39,6 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
             text: 'Wartość zmiany',
             headerAlign: 'center',
             align: 'center',
-            sort: true,
             style: function hoursChangeColor(cell) {
                 if (typeof cell == 'number') {
                     let color;
@@ -71,7 +69,6 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
             headerAlign: 'center',
             align: 'center',
             style: {verticalAlign: 'middle'},
-            sort: true,
             hidden: isHidden,
             formatter: (cell, row) => hoursChangeMapper(cell, row.userWorkTime)
         },
@@ -79,7 +76,6 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
             dataField: "comment",
             text: 'Komentarz',
             headerAlign: 'center',
-            sort: true,
             align: 'center',
             style: {verticalAlign: 'middle'},
             headerAttrs: {
