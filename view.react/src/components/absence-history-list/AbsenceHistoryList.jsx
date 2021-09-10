@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {Dropdown, DropdownButton} from "react-bootstrap";
 import {useLocation} from "react-router-dom";
 
@@ -19,19 +19,19 @@ export const AbsenceHistoryList = ({fetchHistoryLogs}) => {
     const [selectedYear, setSelectedYear] = useState(currentYear);
     const [availableYears, setAvailableYears] = useState([]);
 
-    useEffect(() => {
-        getAvailableYears();
-        fetchHistoryLogs(absenceHistoryDispatch, {selectedYear})
-    }, [absenceHistoryDispatch, selectedYear, fetchHistoryLogs]);
-
-    const getAvailableYears = () => {
+    const getAvailableYears = useCallback(() => {
         const startYear = FIRST_AVAILABLE_YEAR;
         const years = [];
         for (let i = currentYear; i >= startYear; i--) {
             years.push(i);
         }
         setAvailableYears(years);
-    };
+    }, [currentYear]);
+
+    useEffect(() => {
+        getAvailableYears();
+        fetchHistoryLogs(absenceHistoryDispatch, {selectedYear})
+    }, [absenceHistoryDispatch, selectedYear, fetchHistoryLogs, getAvailableYears]);
 
     const handleYearChange = (newYear) => {
         setSelectedYear(newYear);
@@ -64,7 +64,7 @@ export const AbsenceHistoryList = ({fetchHistoryLogs}) => {
                     </DropdownButton>
                 </div>
             </div>
-            <AbsenceHistoryTab logs={formattedLog} />
+            <AbsenceHistoryTab logs={formattedLog}/>
         </>
     );
 }
