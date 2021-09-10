@@ -108,6 +108,7 @@ export const EvidenceReportModal = ({show, onHide}) => {
                         control={
                             <Checkbox
                                 checked={isChecked}
+                                disabled={true}
                                 data-testid={"checkbox"}
                                 onChange={() => handleChecking()}
                                 name="checkedB"
