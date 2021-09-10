@@ -12,7 +12,7 @@ project.ext.set("mainViewModule", project(":view.react"))
 
 
 allprojects {
-    project.version = "1.2.2"
+    project.version = "2.0.0"
 }
 
 java {
@@ -90,7 +90,7 @@ bootJar {
     }
 }
 
-springBoot  {
+springBoot {
     buildInfo()
 }
 
