@@ -138,7 +138,7 @@ export const WorkersTable = ({isEC}) => {
         },
         {
             dataField: 'teams',
-            text: 'Zespół',
+            text: 'Zespoły',
             headerAlign: 'center',
             align: 'center',
             style: {verticalAlign: 'middle', cursor: 'pointer'},
