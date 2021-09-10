@@ -100,3 +100,15 @@ Then in the fields:
 - Set `Database` to `urlopiadb`
 - Set `User` to `urlopia`
 - Set `Password` to `urlopia123`
+
+#### Slack bot configuration
+To create a slack app:
+1. Go [here](https://api.slack.com/apps) and click on the `Create App` button
+2. Select `from an app manifest`
+3. Choose your workspace
+4. Paste the `slack-app-manifest.json` file and replace `{your-domain}` part with domain Urlopia is being run on
+5. Install the app in your workspace
+6. Go to the `App Home` sidebar section and on the very bottom tick `Allow users to send Slash commands and messages from the messages tab`
+7. If Urlopia is up and running, you can go to the `Event Subscriptions` sidebar section, paste the `Request URL` (i.e. `{your-domain}/api/v2/slack/events`) and verify if slack is able to communicate with it
+
+If everything's good you should now be able to interact with the `@Urlopia` bot in your slack workspace
