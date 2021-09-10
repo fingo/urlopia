@@ -76,11 +76,14 @@ public class PresenceConfirmationService {
     }
 
     public PresenceConfirmation confirmPresence(Long authenticatedUserId, PresenceConfirmationInputOutput dto) {
-        var authenticatedUser = userService.get(authenticatedUserId);
+        return confirmPresence(userService.get(authenticatedUserId), dto);
+    }
+
+    public PresenceConfirmation confirmPresence(User authenticatedUser, PresenceConfirmationInputOutput dto) {
         var confirmationUserId = dto.getUserId();
         checkIfUserIsAuthorizedToConfirmPresence(authenticatedUser, confirmationUserId);
 
-        var isConfirmingOwnPresence = authenticatedUserId.equals(confirmationUserId);
+        var isConfirmingOwnPresence = authenticatedUser.getId().equals(confirmationUserId);
         var confirmationUser = isConfirmingOwnPresence ? authenticatedUser : userService.get(confirmationUserId);
         checkIfConfirmationIsViable(authenticatedUser, confirmationUser, dto.getDate());
 
