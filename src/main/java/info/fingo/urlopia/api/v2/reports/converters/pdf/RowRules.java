@@ -9,14 +9,14 @@ import java.util.List;
 
 public class RowRules {
     private final List<RowRule> rules;
-    private final ExcelToPDFConverterSettings settings;
+    private final PDFGenerationSettings settings;
 
-    private RowRules(ExcelToPDFConverterSettings settings) {
+    private RowRules(PDFGenerationSettings settings) {
         this.rules = new LinkedList<>();
         this.settings = settings;
     }
 
-    public static RowRules withSettings(ExcelToPDFConverterSettings settings) {
+    public static RowRules withSettings(PDFGenerationSettings settings) {
         return new RowRules(settings);
     }
 

@@ -13,7 +13,7 @@ import java.io.IOException;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ExcelToPDFConverterSettings {
+public class PDFGenerationSettings {
     public static final float DEFAULT_WIDTH_PERCENTAGE = 80.f;
     public static final String DEFAULT_FONT_NAME = BaseFont.HELVETICA;
     public static final int DEFAULT_FONT_SIZE = 12;
@@ -22,8 +22,8 @@ public class ExcelToPDFConverterSettings {
     private String fontName;
     private int fontSize;
 
-    public static ExcelToPDFConverterSettings defaultSettings() {
-        var settings = new ExcelToPDFConverterSettings();
+    public static PDFGenerationSettings defaultSettings() {
+        var settings = new PDFGenerationSettings();
         settings.setWidthPercentage(DEFAULT_WIDTH_PERCENTAGE);
         settings.setFontName(DEFAULT_FONT_NAME);
         settings.setFontSize(DEFAULT_FONT_SIZE);

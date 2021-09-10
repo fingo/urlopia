@@ -4,7 +4,7 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
-import info.fingo.urlopia.api.v2.reports.converters.pdf.ExcelToPDFConverterSettings;
+import info.fingo.urlopia.api.v2.reports.converters.pdf.PDFGenerationSettings;
 import info.fingo.urlopia.api.v2.reports.converters.pdf.ExcelToPDFConverterUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -26,13 +26,13 @@ public class ColspanRow extends RowRule {
     }
 
     @Override
-    public void apply(Row row, PdfPTable table, ExcelToPDFConverterSettings settings) {
+    public void apply(Row row, PdfPTable table, PDFGenerationSettings settings) {
         var colspanCell = createColspanCell(row, settings);
         table.addCell(colspanCell);
         cellsAfterColspan(row, table.getNumberOfColumns(), settings).forEach(table::addCell);
     }
 
-    private PdfPCell createColspanCell(Row row, ExcelToPDFConverterSettings settings) {
+    private PdfPCell createColspanCell(Row row, PDFGenerationSettings settings) {
         var cell = row.getCell(0, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
         var cellValue = cell.getStringCellValue();
         var font = settings.getFont();
@@ -43,7 +43,7 @@ public class ColspanRow extends RowRule {
         return colspanCell;
     }
 
-    private List<PdfPCell> cellsAfterColspan(Row row, int numberOfColumns, ExcelToPDFConverterSettings settings) {
+    private List<PdfPCell> cellsAfterColspan(Row row, int numberOfColumns, PDFGenerationSettings settings) {
         var font = settings.getFont();
         return IntStream.range(colspan, numberOfColumns)
                 .mapToObj(idx -> row.getCell(idx, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL))

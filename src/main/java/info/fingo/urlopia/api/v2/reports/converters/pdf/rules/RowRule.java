@@ -1,7 +1,7 @@
 package info.fingo.urlopia.api.v2.reports.converters.pdf.rules;
 
 import com.itextpdf.text.pdf.PdfPTable;
-import info.fingo.urlopia.api.v2.reports.converters.pdf.ExcelToPDFConverterSettings;
+import info.fingo.urlopia.api.v2.reports.converters.pdf.PDFGenerationSettings;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.poi.ss.usermodel.Row;
@@ -20,7 +20,7 @@ public abstract class RowRule {
     private ApplyMethod applyMethod;
     private Predicate<Row> predicate;
 
-    public abstract void apply(Row row, PdfPTable table, ExcelToPDFConverterSettings settings);
+    public abstract void apply(Row row, PdfPTable table, PDFGenerationSettings settings);
 
     public boolean isApplicable(Row row) {
         return predicate.test(row);

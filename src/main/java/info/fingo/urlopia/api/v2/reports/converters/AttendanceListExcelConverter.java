@@ -1,7 +1,7 @@
 package info.fingo.urlopia.api.v2.reports.converters;
 
 import info.fingo.urlopia.api.v2.reports.converters.pdf.ExcelToPDFConverter;
-import info.fingo.urlopia.api.v2.reports.converters.pdf.ExcelToPDFConverterSettings;
+import info.fingo.urlopia.api.v2.reports.converters.pdf.PDFGenerationSettings;
 import info.fingo.urlopia.api.v2.reports.converters.pdf.rules.RowRule;
 import info.fingo.urlopia.api.v2.reports.converters.pdf.rules.BlankRow;
 import info.fingo.urlopia.api.v2.reports.converters.pdf.rules.ColspanRow;
@@ -23,7 +23,7 @@ public class AttendanceListExcelConverter {
     }
 
     public static void convertToPDF(List<Workbook> workbooks, OutputStream out) {
-        var settings = ExcelToPDFConverterSettings.defaultSettings();
+        var settings = PDFGenerationSettings.defaultSettings();
         var rules = conversionRules();
         var converter = new ExcelToPDFConverter(settings, rules);
         converter.convertAndWrite(workbooks, out);

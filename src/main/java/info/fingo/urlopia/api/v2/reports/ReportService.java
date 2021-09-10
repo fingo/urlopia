@@ -3,6 +3,7 @@ package info.fingo.urlopia.api.v2.reports;
 import info.fingo.urlopia.api.v2.reports.attendance.AttendanceListPage;
 import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReport;
 import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReportFactory;
+import info.fingo.urlopia.api.v2.reports.holidays.UserHolidaysReportFactory;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.reports.ReportTemplateLoader;
 import info.fingo.urlopia.reports.XlsxTemplateResolver;
@@ -20,6 +21,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,6 +35,7 @@ public class ReportService {
     private final XlsxTemplateResolver xlsxTemplateResolver;
     private final EvidenceReportModelFactory evidenceReportModelFactory;
     private final MonthlyAttendanceListReportFactory monthlyPresenceReportFactory;
+    private final UserHolidaysReportFactory userHolidaysReportFactory;
 
     public Workbook generateWorkTimeEvidenceReport(Long userId,
                                                    int year) throws IOException {
@@ -134,7 +138,18 @@ public class ReportService {
     }
 
     public String getMonthlyPresenceReportName(Integer year, Integer month) {
-        var filename = "lista_obecności_%s_%s.xlsx".formatted(month, year);
-        return "attachment; filename=%s".formatted(filename);
+        return "lista_obecności_%s_%s.pdf".formatted(month, year);
+    }
+
+    public void generateUserHolidaysReport(Long userId, OutputStream outputStream, Filter requestFilter) {
+        userHolidaysReportFactory.createAsPDF(userId, outputStream, requestFilter);
+    }
+
+    public String getHolidaysReportName(Long userId) {
+        var user = userService.get(userId);
+        var userFirstName = user.getFirstName();
+        var userLastName = user.getLastName();
+        var date = LocalDate.now();
+        return "wnioski_urlopowe_%s_%s_%s.pdf".formatted(userFirstName, userLastName, date);
     }
 }

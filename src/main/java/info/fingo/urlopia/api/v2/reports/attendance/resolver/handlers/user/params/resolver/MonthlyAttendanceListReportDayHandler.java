@@ -8,6 +8,7 @@ import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.user.User;
 
 import java.text.DecimalFormat;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 
 public class MonthlyAttendanceListReportDayHandler {
@@ -38,14 +39,18 @@ public class MonthlyAttendanceListReportDayHandler {
             return "";
         }
 
-        var date = LocalDate.of(year, month, dayOfMonth);
-        if (holidayService.isWorkingDay(date)) {
-            return requestService
-                    .getByUserAndDate(user.getId(), date).stream()
-                    .filter(req -> req.getStatus() == Request.Status.ACCEPTED)
-                    .map(this::handleRequest)
-                    .findFirst()
-                    .orElse(handlePresence(date,user));
+        try {
+            var date = LocalDate.of(year, month, dayOfMonth);
+            if (holidayService.isWorkingDay(date)) {
+                return requestService
+                        .getByUserAndDate(user.getId(), date).stream()
+                        .filter(req -> req.getStatus() == Request.Status.ACCEPTED)
+                        .map(this::handleRequest)
+                        .findFirst()
+                        .orElse(handlePresence(date,user));
+            }
+        } catch (DateTimeException e) {
+            // if day does not exist then default value
         }
 
         return "-";

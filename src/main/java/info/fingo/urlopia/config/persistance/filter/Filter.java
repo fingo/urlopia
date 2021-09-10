@@ -22,6 +22,10 @@ public class Filter {
         return new Builder(components);
     }
 
+    public boolean isEmpty() {
+        return components.isEmpty();
+    }
+
     public <E> Specification<E> generateSpecification() {
         return this.components.stream()
                 .map(this::<E>generateSpecificationFrom)

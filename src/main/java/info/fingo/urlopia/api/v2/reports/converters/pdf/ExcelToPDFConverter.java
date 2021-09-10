@@ -16,16 +16,16 @@ import java.io.OutputStream;
 import java.util.*;
 
 public class ExcelToPDFConverter {
-    private final ExcelToPDFConverterSettings settings;
+    private final PDFGenerationSettings settings;
     private final Map<RowRule.ApplyMethod, RowRules> rules;
 
-    public ExcelToPDFConverter(ExcelToPDFConverterSettings settings, List<RowRule> rules) {
+    public ExcelToPDFConverter(PDFGenerationSettings settings, List<RowRule> rules) {
         this.settings = settings;
         this.rules = initializeRules(rules, settings);
     }
 
     private Map<RowRule.ApplyMethod, RowRules> initializeRules(List<RowRule> rules,
-                                                               ExcelToPDFConverterSettings settings) {
+                                                               PDFGenerationSettings settings) {
         Map<RowRule.ApplyMethod, RowRules> result = new HashMap<>();
 
         for (var applyMethodType : RowRule.ApplyMethod.values()) {
