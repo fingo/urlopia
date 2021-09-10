@@ -17,8 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import javax.annotation.security.RolesAllowed;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.zip.ZipOutputStream;
 
 @Controller
 @Slf4j
@@ -44,6 +45,26 @@ public class ReportControllerV2 {
             log.error("Could not generate report with name: {}", anonymizedFileName);
             throw GenerateWorkTimeEvidenceReportException.fromIOException(anonymizedFileName);
         }
+    }
+
+    @RolesAllowed("ROLES_ADMIN")
+    @GetMapping(path = "/work-time-evidence", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<StreamingResponseBody> generateWorkTimeEvidenceForAllUsers(@RequestParam int year) {
+
+        return ResponseEntity
+                .ok()
+                .header("Content-Disposition",
+                        "attachment;filename=EwidencjaCzasuPracy%d.zip".formatted(year))
+                .body(outputStream -> {
+                    try(ZipOutputStream zipOut = new ZipOutputStream(outputStream)) {
+                        reportService.generateZipWithReports(zipOut, year);
+                    }
+                    catch (IOException e) {
+                        log.error("Something went wrong while generating work time evidences for all users");
+                        throw GenerateWorkTimeEvidenceReportException.fromIOExceptionInZip();
+                    }
+                });
+
     }
 
     @RolesAllowed("ROLES_ADMIN")

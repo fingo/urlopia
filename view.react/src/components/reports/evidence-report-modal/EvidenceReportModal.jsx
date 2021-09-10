@@ -54,7 +54,7 @@ export const EvidenceReportModal = ({show, onHide}) => {
     const handleAllUsersGenerating = async () => {
         setIsLoading(true);
         await getZipFromResponse(`${GET_EVIDENCE_REPORT_URL}?year=${chosenYear.value}`,
-            `EwidencjaCzasuPracy_${chosenYear.year}`)
+            `EwidencjaCzasuPracy_${chosenYear.value}`)
             .then(() => {
                 setIsLoading(false);
                 handleModalHide();
@@ -108,7 +108,6 @@ export const EvidenceReportModal = ({show, onHide}) => {
                         control={
                             <Checkbox
                                 checked={isChecked}
-                                disabled={true}
                                 data-testid={"checkbox"}
                                 onChange={() => handleChecking()}
                                 name="checkedB"

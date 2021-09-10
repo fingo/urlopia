@@ -1,5 +1,6 @@
 package info.fingo.urlopia.api.v2.reports;
 
+import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
 import info.fingo.urlopia.api.v2.reports.attendance.AttendanceListPage;
 import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReport;
 import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReportFactory;
@@ -20,11 +21,14 @@ import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -47,6 +51,34 @@ public class ReportService {
         var reportFile = new XSSFWorkbook(inputStream);
         this.xlsxTemplateResolver.resolve(reportFile, model.getModel());
         return reportFile;
+    }
+
+    public void generateZipWithReports(ZipOutputStream zipOut, int year) {
+        var users = userService.getAll();
+        var fileName = "";
+
+        try {
+            ByteArrayOutputStream byteOutput;
+
+            for (User user : users) {
+                var evidenceReport = generateWorkTimeEvidenceReport(user.getId(), year);
+                fileName = "EwidencjaCzasuPracy_%d_%s_%d.xlsx".formatted(year, user.getFullName(), user.getId());
+
+                zipOut.putNextEntry(new ZipEntry(fileName));
+                byteOutput = new ByteArrayOutputStream();
+                evidenceReport.write(byteOutput);
+                byteOutput.writeTo(zipOut);
+                zipOut.closeEntry();
+                byteOutput.close();
+            }
+
+            zipOut.close();
+        }
+        catch (IOException ioException) {
+            log.error("Could not generate report with name: {}",
+                    Anonymizer.anonymizeYearlyReportFileName(fileName));
+            throw GenerateWorkTimeEvidenceReportException.fromIOException(fileName);
+        }
     }
 
     public String getWorkTimeEvidenceReportName(Long userId,
