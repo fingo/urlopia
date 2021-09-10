@@ -1,10 +1,10 @@
 import {act, fireEvent, render, screen} from "@testing-library/react";
+import axios from "axios";
 
-import {WorkersTable} from "./WorkersTable";
+import {USER_DATA_KEY} from "../../constants/session.keystorage";
 import {WorkersProvider} from "../../contexts/workers-context/workersContext";
 import {mockSessionStorage} from "../../helpers/TestHelper";
-import {USER_DATA_KEY} from "../../constants/session.keystorage";
-import axios from "axios";
+import {WorkersTable} from "./WorkersTable";
 
 jest.mock('axios');
 

@@ -1,9 +1,17 @@
 import PropTypes from "prop-types";
 import {Modal} from 'react-bootstrap';
 
+import {changeNoActionWorkers} from "../../../contexts/workers-context/actions/changeNoActionWorkers";
+import {useWorkers} from "../../../contexts/workers-context/workersContext";
 import {PresenceConfirmationPanel} from "../../presence-confirmation-panel/PresenceConfirmationPanel";
+import {MissingPresence} from "./missing-presence/MissingPresence";
 
 export const AddPresenceForm = ({show, onHide, fullName, userId}) => {
+    const [, workersDispatch] = useWorkers();
+    const handlePresenceConfirmation = (date) => {
+        workersDispatch(changeNoActionWorkers(userId, date));
+    }
+
     return (
         <Modal
             show={show}
@@ -18,7 +26,8 @@ export const AddPresenceForm = ({show, onHide, fullName, userId}) => {
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <PresenceConfirmationPanel userId={userId} />
+                <PresenceConfirmationPanel userId={userId} onConfirmation={handlePresenceConfirmation}/>
+                <MissingPresence />
             </Modal.Body>
         </Modal>
     );

@@ -21,14 +21,14 @@ describe("PresenceListModal", () => {
     it('should display Generuj on button after render', () => {
         render(<PresenceListModal show={true} onHide={() => false}/>);
 
-        expect(screen.getByText('Generuj', { selector: 'button' }))
+        expect(screen.getByText('Generuj', { selector: 'button' })).toBeInTheDocument()
     })
 
     it('should display ... when button ic clicked', () => {
         render(<PresenceListModal show={true} onHide={() => false}/>);
 
         fireEvent.click(screen.getByTestId('generateButton'));
-        expect(screen.getByText('...', { selector: 'button'}));
+        expect(screen.getByText('...', { selector: 'button'})).toBeInTheDocument();
     })
     }
 )

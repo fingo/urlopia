@@ -1,5 +1,5 @@
+import PropTypes from "prop-types";
 import {useState} from "react";
-import {Button, OverlayTrigger, Tooltip} from "react-bootstrap";
 import {
     ClockHistory as HistoryIcon,
     PersonCheckFill as PresenceIcon,
@@ -7,16 +7,16 @@ import {
 } from "react-bootstrap-icons";
 
 import {useWorkers} from "../../../contexts/workers-context/workersContext";
-import {btnClass} from "../../../global-styles/btn.module.scss";
 import {AddAbsenceForm} from "../add-absence-form/AddAbsenceForm";
 import {AddPresenceForm} from "../add-presence-form/AddPresenceForm";
 import {WorkerRequestsHistory} from "../worker-requests-history/WorkerRequestsHistory";
+import {ActionButton} from "./action-button/ActionButton";
 import styles from './ButtonsSection.module.scss';
 
-export const ButtonsSection = () => {
+export const ButtonsSection = ({isUnspecifiedAbsences}) => {
+    const [workerRequestsHistoryModalShow, setWorkerRequestsHistoryModalShow] = useState(false);
     const [addPresenceModalShow, setAddPresenceModalShow] = useState(false);
     const [addAbsenceModalShow, setAddAbsenceModalShow] = useState(false);
-    const [workerRequestsHistoryModalShow, setWorkerRequestsHistoryModalShow] = useState(false);
 
     const [workersState] = useWorkers();
     const {isEC} = workersState;
@@ -24,80 +24,48 @@ export const ButtonsSection = () => {
 
     return (
         <div className={styles.buttonsSection}>
-            <OverlayTrigger
-                placement='bottom'
-                overlay={
-                    <Tooltip id='tooltip-requests-history'>
-                        Historia wniosków
-                    </Tooltip>
-                }
-            >
-                <Button className={btnClass}
-                        onClick={(e) => {
-                            e.currentTarget.blur();
-                            setWorkerRequestsHistoryModalShow(true);
-                        }}
-                >
-                    <HistoryIcon className={styles.icon}/>
-                </Button>
-            </OverlayTrigger>
+            <ActionButton tooltipText='Historia wniosków'
+                          icon={<HistoryIcon className={styles.icon}/>}
+                          onButtonClick={(showStatus) => setWorkerRequestsHistoryModalShow(showStatus)}
+                          showModal={workerRequestsHistoryModalShow}
+                          modal={<WorkerRequestsHistory show={workerRequestsHistoryModalShow}
+                                                        onHide={() => setWorkerRequestsHistoryModalShow(false)}
+                                                        fullName={fullName}/>}
+                          isWithNotification={false}
+            />
+
             {
-                workerRequestsHistoryModalShow &&
-                <WorkerRequestsHistory show={workerRequestsHistoryModalShow}
-                                       onHide={() => setWorkerRequestsHistoryModalShow(false)}
-                                       fullName={fullName}
+                isEC &&
+                <ActionButton tooltipText='Dodaj obecność'
+                              icon={<PresenceIcon className={styles.icon}/>}
+                              onButtonClick={(showStatus) => setAddPresenceModalShow(showStatus)}
+                              showModal={addPresenceModalShow}
+                              modal={<AddPresenceForm show={addPresenceModalShow}
+                                                      onHide={() => setAddPresenceModalShow(false)}
+                                                      userId={userId}
+                                                      fullName={fullName}/>}
+                              isWithNotification={isUnspecifiedAbsences}
                 />
             }
 
-            <OverlayTrigger
-                placement='bottom'
-                overlay={
-                    <Tooltip id='tooltip-add-presence'>
-                        Dodaj obecność
-                    </Tooltip>
-                }
-            >
-                <Button className={btnClass}
-                        onClick={(e) => {
-                            e.currentTarget.blur();
-                            setAddPresenceModalShow(true);
-                        }}>
-                    <PresenceIcon className={styles.icon}/>
-                </Button>
-            </OverlayTrigger>
-            {
-                addPresenceModalShow &&
-                <AddPresenceForm show={addPresenceModalShow}
-                                 onHide={() => setAddPresenceModalShow(false)}
-                                 userId={userId}
-                                 fullName={fullName}
-                />
-            }
-
-            <OverlayTrigger
-                placement='bottom'
-                overlay={
-                    <Tooltip id='tooltip-add-absence'>
-                        Dodaj nieobecność
-                    </Tooltip>
-                }
-            >
-                <Button className={btnClass}
-                        onClick={(e) => {
-                            e.currentTarget.blur();
-                            setAddAbsenceModalShow(true);
-                        }}>
-                    <AbsenceIcon className={styles.icon}/>
-                </Button>
-            </OverlayTrigger>
-            {
-                addAbsenceModalShow &&
-                <AddAbsenceForm show={addAbsenceModalShow}
-                                onHide={() => setAddAbsenceModalShow(false)}
-                                userId={userId}
-                                fullName={fullName}
-                />
-            }
+            <ActionButton tooltipText='Dodaj nieobecność'
+                          icon={<AbsenceIcon className={styles.icon}/>}
+                          onButtonClick={(showStatus) => setAddAbsenceModalShow(showStatus)}
+                          showModal={addAbsenceModalShow}
+                          modal={<AddAbsenceForm show={addAbsenceModalShow}
+                                                 onHide={() => setAddAbsenceModalShow(false)}
+                                                 userId={userId}
+                                                 fullName={fullName}/>}
+                          isWithNotification={false}
+            />
         </div>
     );
 };
+
+ButtonsSection.propTypes = {
+    isUnspecifiedAbsences: PropTypes.bool,
+}
+
+ButtonsSection.defaultProps = {
+    isUnspecifiedAbsences: false,
+}

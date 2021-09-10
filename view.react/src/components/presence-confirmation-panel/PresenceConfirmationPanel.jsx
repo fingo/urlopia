@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import {forwardRef, useEffect, useState} from "react";
 
 import {getCurrentUser} from "../../api/services/session.service";
@@ -16,7 +17,7 @@ const getTime = (hours, minutes) => {
     return date
 }
 
-export const PresenceConfirmationPanel = ({userId}) => {
+export const PresenceConfirmationPanel = ({userId, onConfirmation}) => {
     const [state, presenceDispatcher] = usePresence()
     const {confirmations: myConfirmations} = state.myConfirmations
     const {confirmations: usersConfirmations} = state.usersConfirmations
@@ -39,6 +40,7 @@ export const PresenceConfirmationPanel = ({userId}) => {
             endTime: formattedTime(chosenEndTime),
             userId: userId || currentUser.userId
         })
+        onConfirmation(formattedDate(chosenDate));
     }
 
     const DateTimePickerInput = forwardRef(({ value, onClick }, ref) => {
@@ -110,4 +112,9 @@ export const PresenceConfirmationPanel = ({userId}) => {
             />
         </div>
     )
+}
+
+PresenceConfirmationPanel.propTypes = {
+    userId: PropTypes.number.isRequired,
+    onConfirmation: PropTypes.func.isRequired,
 }

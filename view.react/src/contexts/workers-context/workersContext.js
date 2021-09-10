@@ -11,6 +11,7 @@ const initialState = {
     unspecifiedUsers: [],
     workers: {
         fetching: false,
+        areUnspecifiedAbsencesFetched: false,
         error: null,
         workers: [],
         remainingDaysOfCurrentSelectedWorker: {
@@ -18,6 +19,7 @@ const initialState = {
             remainingHours: 0,
         },
         selectedWorker: {},
+        unspecifiedAbsences: {},
     },
     associates: {
         fetching: false,
@@ -28,7 +30,7 @@ const initialState = {
             remainingHours: 0,
         },
         selectedAssociate: {},
-    }
+    },
 }
 
 export const WorkersProvider = ({children}) => {

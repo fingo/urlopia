@@ -18,7 +18,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 const GET_AVAILABLE_YEARS_URL_PREFIX = '/api/users/';
 const GET_AVAILABLE_YEARS_URL_POSTFIX = '/days/employment-year';
 
-export const ExtendedWorker = ({workTime, userId}) => {
+export const ExtendedWorker = ({workTime, userId, isUnspecifiedAbsences}) => {
     const [remainingDays, setRemainingDays] = useState('');
     const [remainingHours, setRemainingHours] = useState('');
 
@@ -63,13 +63,13 @@ export const ExtendedWorker = ({workTime, userId}) => {
             <Row>
                 <Col lg={5}>
                     <div className={styles.holidayDaysInfo}>
-                        <h3>Pozostały urlop:</h3>
+                        <h3>{isEC ? 'Pozostały urlop' : 'Pozostała przerwa w świadczeniu usług'}:</h3>
                         <h3><strong>{remainingDays} dni</strong> {remainingHours} godzin</h3>
                     </div>
 
                     <ChangeDaysPoolAndWorkTimeSection workTime={workTime} />
 
-                    <ButtonsSection/>
+                    <ButtonsSection isUnspecifiedAbsences={isUnspecifiedAbsences}/>
                 </Col>
 
                 <Col lg={7} className='text-center'>
@@ -85,4 +85,9 @@ export const ExtendedWorker = ({workTime, userId}) => {
 ExtendedWorker.propTypes = {
     workTime: PropTypes.string.isRequired,
     userId: PropTypes.number.isRequired,
+    isUnspecifiedAbsences: PropTypes.bool,
+}
+
+ExtendedWorker.defaultProps = {
+    isUnspecifiedAbsences: false,
 }

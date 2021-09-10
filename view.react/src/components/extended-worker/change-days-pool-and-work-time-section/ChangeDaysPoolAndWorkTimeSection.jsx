@@ -52,28 +52,30 @@ export const ChangeDaysPoolAndWorkTimeSection = ({workTime}) => {
     return (
         <div className={styles.forms}>
             <ChangeDaysPoolForm onSubmit={values => handleChangeDaysPool(values)}/>
-            <Form>
-                <Form.Label><strong>Zmień etat</strong></Form.Label>
-                <Form.Select aria-label="Default select example"
-                             className={styles.workingHoursSelection}
-                             defaultValue={workTime}
-                             onChange={e => handleChangeWorkTime(e)}
-                             data-testid='selector'
-                >
-                    <option value='1/1'>pełny etat</option>
-                    <option value='1/2'>1/2 etatu</option>
-                    <option value='3/4'>3/4 etatu</option>
-                    <option value='1/4'>1/4 etatu</option>
-                    <option value='4/5'>4/5 etatu</option>
-                    <option value='3/5'>3/5 etatu</option>
-                    <option value='2/5'>2/5 etatu</option>
-                    <option value='1/5'>1/5 etatu</option>
-                    <option value='7/8'>7/8 etatu</option>
-                    <option value='3/8'>3/8 etatu</option>
-                    <option value='1/8'>1/8 etatu</option>
-                    <option value='1/16'>1/16 etatu</option>
-                </Form.Select>
-            </Form>
+            {
+                isEC &&
+                <Form>
+                    <Form.Label><strong>Zmień etat</strong></Form.Label>
+                    <Form.Select aria-label="Default select example"
+                                 className={styles.workingHoursSelection}
+                                 defaultValue={workTime}
+                                 onChange={e => handleChangeWorkTime(e)}
+                    >
+                        <option value='1/1'>pełny etat</option>
+                        <option value='1/2'>1/2 etatu</option>
+                        <option value='3/4'>3/4 etatu</option>
+                        <option value='1/4'>1/4 etatu</option>
+                        <option value='4/5'>4/5 etatu</option>
+                        <option value='3/5'>3/5 etatu</option>
+                        <option value='2/5'>2/5 etatu</option>
+                        <option value='1/5'>1/5 etatu</option>
+                        <option value='7/8'>7/8 etatu</option>
+                        <option value='3/8'>3/8 etatu</option>
+                        <option value='1/8'>1/8 etatu</option>
+                        <option value='1/16'>1/16 etatu</option>
+                    </Form.Select>
+                </Form>
+            }
         </div>
     );
 };
