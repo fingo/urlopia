@@ -3,7 +3,6 @@ import {Button, Form, FormControl} from "react-bootstrap";
 import {useHistory} from "react-router-dom";
 
 import {login} from "../../api/services/session.service"
-import {pushSuccessNotification} from "../../helpers/notifications/Notifications";
 import styles from "./LoginForm.module.scss"
 
 const LOADING_MESSAGE = "...";
@@ -25,7 +24,6 @@ export const LoginForm = () => {
         }
         login(credentials).then(
             () => {
-                pushSuccessNotification("Logowanie zakończone sukcesem")
                 history.push("/");
                 history.go(0);
             },
