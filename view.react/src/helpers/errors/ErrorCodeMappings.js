@@ -2,6 +2,7 @@ const presenceConfirmationErrorCodeMappings = {
     "YOU_CANNOT_CONFIRM_A_PRESENCE_IN_A_DAY_YOU_ARE_ON_VACATION": "Nie możesz potwierdzić obecności w dniu, w którym jesteś na urlopie",
     "YOU_CANNOT_CONFIRM_A_PRESENCE_IN_A_NON_WORKING_DAY": "Nie możesz potwierdzić obecności w dniu nieroboczym",
     "YOU_CANNOT_CONFIRM_A_PRESENCE_IN_A_FUTURE_DATE": "Nie możesz potwierdzić swojej obecności w przyszłości",
+    "YOU_CAN_ONLY_CONFIRM_A_PRESENCE_UP_TO_2_WEEKS_PAST": "Możesz potwierdzić obecność tylko dwa tygodnie wstecz",
 }
 
 const holidaysErrorCodeMappings = {
