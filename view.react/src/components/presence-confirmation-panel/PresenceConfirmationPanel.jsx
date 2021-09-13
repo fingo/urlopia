@@ -102,7 +102,7 @@ export const PresenceConfirmationPanel = ({userId, onConfirmation}) => {
                     className={styles.presenceConfirmationButton}
                     onClick={() => handlePresenceConfirmation()}
                 >
-                    {getConfirmation(chosenDate) ? "Zaktualizuj obecność" : "Zgłoś obecność"}
+                    {getConfirmation(chosenDate) ? "Zaktualizuj godziny obecności" : "Zgłoś obecność"}
                 </button>
             </div>
             <ConfirmationLabel
