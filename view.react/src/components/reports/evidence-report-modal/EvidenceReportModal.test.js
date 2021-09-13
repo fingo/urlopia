@@ -1,11 +1,13 @@
-import {render, screen} from '@testing-library/react';
+import {act, render, screen} from '@testing-library/react';
 
 import {EvidenceReportModal} from "./EvidenceReportModal";
 
 describe("EvidenceReportModal", () => {
 
     it("should render modal", ()=> {
-        render(<EvidenceReportModal show={true} onHide={() => false} />)
+        act(() => {
+            render(<EvidenceReportModal show={true} onHide={() => false} />)
+        })
 
         const evidenceModal = screen.getByTestId("evidenceModal");
         const evidenceModalTitle = screen.getByText("Ewidencja czasu pracy");
@@ -31,7 +33,9 @@ describe("EvidenceReportModal", () => {
     })
 
     it("doesnt allow to generate if year is not chosen", () => {
-        render(<EvidenceReportModal show={true} onHide={() => false} />)
+        act(() => {
+            render(<EvidenceReportModal show={true} onHide={() => false} />)
+        })
 
         const yearSelect = screen.getByText("Wybierz rok...");
         const generateButton = screen.getByText('Generuj', { selector: 'button'})
@@ -41,7 +45,9 @@ describe("EvidenceReportModal", () => {
     })
 
     it("doesnt allow to generate if there is no info about person", () => {
-        render(<EvidenceReportModal show={true} onHide={() => false} />)
+        act(() => {
+            render(<EvidenceReportModal show={true} onHide={() => false} />)
+        })
 
         const personSelect = screen.getByText("Wybierz osobę...");
         const checkBox = screen.getByTestId("checkbox");

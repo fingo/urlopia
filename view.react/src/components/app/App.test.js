@@ -1,4 +1,4 @@
-import {render, screen} from "@testing-library/react";
+import {act, render, screen} from "@testing-library/react";
 
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
 import {mockSessionStorage} from "../../helpers/TestHelper";
@@ -32,7 +32,9 @@ describe("App", () => {
         }))
 
         // when
-        render(<App/>)
+        act(() => {
+            render(<App/>)
+        })
 
         // then
         expect(screen.queryByText("AcceptanceLoaderMock")).not.toBeInTheDocument()
@@ -46,7 +48,9 @@ describe("App", () => {
         }))
 
         // when
-        render(<App/>)
+        act(() => {
+            render(<App/>)
+        })
 
         // then
         expect(screen.queryByText("AcceptanceLoaderMock")).toBeInTheDocument()

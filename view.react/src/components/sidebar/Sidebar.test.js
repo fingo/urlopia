@@ -1,10 +1,30 @@
-import {render, screen} from '@testing-library/react';
+import {act, render, screen} from '@testing-library/react';
 import {BrowserRouter as Router} from "react-router-dom";
 
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
 import {VacationDaysProvider} from "../../contexts/vacation-days-context/vacationDaysContext";
 import {mockSessionStorage} from "../../helpers/TestHelper";
 import {Sidebar} from "./Sidebar";
+
+jest.mock("../../contexts/vacation-days-context/actions/fetchPendingDays", () => {
+    const originalModule = jest.requireActual("../../contexts/vacation-days-context/actions/fetchPendingDays");
+
+    return {
+        __esModule: true,
+        ...originalModule,
+        fetchPendingDays: () => {}
+    };
+})
+
+jest.mock("../../contexts/vacation-days-context/actions/fetchVacationDays", () => {
+    const originalModule = jest.requireActual("../../contexts/vacation-days-context/actions/fetchVacationDays");
+
+    return {
+        __esModule: true,
+        ...originalModule,
+        fetchVacationDays: () => {}
+    };
+})
 
 describe("Sidebar", () => {
     const sessionStorageMock = mockSessionStorage()
@@ -20,7 +40,9 @@ describe("Sidebar", () => {
         }))
 
         // when
-        render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
+        act(() => {
+            render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
+        })
 
         // then
         expect(screen.queryByText('Kalendarz')).toBeInTheDocument()
@@ -39,7 +61,9 @@ describe("Sidebar", () => {
         }))
 
         // when
-        render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
+        act(() => {
+            render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
+        })
 
         // then
         expect(screen.queryByText('Kalendarz')).toBeInTheDocument()
@@ -58,7 +82,9 @@ describe("Sidebar", () => {
         }))
 
         // when
-        render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
+        act(() => {
+            render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
+        })
 
         // then
         expect(screen.queryByText('Kalendarz').href).toMatch(/calendar/)

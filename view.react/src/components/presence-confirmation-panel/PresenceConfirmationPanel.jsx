@@ -115,7 +115,7 @@ export const PresenceConfirmationPanel = ({userId, onConfirmation}) => {
 }
 
 PresenceConfirmationPanel.propTypes = {
-    userId: PropTypes.number.isRequired,
+    userId: PropTypes.number,
     onConfirmation: PropTypes.func,
 }
 

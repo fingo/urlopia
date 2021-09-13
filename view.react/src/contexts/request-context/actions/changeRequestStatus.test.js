@@ -91,10 +91,6 @@ describe('changeRequestStatusReducer', () => {
                 ...sampleState.myRequests,
                 requests: [
                     {
-                        ...sampleRequests[0],
-                        status: "CANCELED"
-                    },
-                    {
                         ...sampleRequests[1],
                     }
                 ]
@@ -146,10 +142,6 @@ describe('changeRequestStatusReducer', () => {
                 requests: [
                     {
                         ...sampleRequests[0]
-                    },
-                    {
-                        ...sampleRequests[1],
-                        status: "ACCEPTED"
                     }
                 ]
             },
@@ -200,10 +192,6 @@ describe('changeRequestStatusReducer', () => {
                 requests: [
                     {
                         ...sampleRequests[0]
-                    },
-                    {
-                        ...sampleRequests[1],
-                        status: "REJECTED"
                     }
                 ]
             },
