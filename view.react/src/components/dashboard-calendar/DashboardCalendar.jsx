@@ -1,8 +1,9 @@
 import {faUmbrellaBeach} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import axios from "axios";
 import {format, lastDayOfMonth, startOfMonth} from "date-fns";
 import pl from "date-fns/locale/pl";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Form} from "react-bootstrap";
 import {ExclamationTriangleFill as ExclamationIcon} from "react-bootstrap-icons";
 import Calendar from "react-date-range/dist/components/Calendar";
@@ -38,6 +39,8 @@ const getSelectedUsersFilter = () => {
     return JSON.parse(localStorage.getItem("dashboard.selectedUsers")) || []
 }
 
+const CancelToken = axios.CancelToken
+
 export const DashboardCalendar = () => {
     const [presenceState] = usePresence();
 
@@ -53,6 +56,8 @@ export const DashboardCalendar = () => {
 
     const [calendarResponse, setCalendarResponse] = useState(null);
 
+    const requestCancelToken = useRef(undefined)
+
     useEffect(() => {
         sendGetRequest(`${ENDPOINT_PREFIX_URL}/users?filter=active:true`)
             .then(users => setUsersOptions(formatUsers(users)))
@@ -63,11 +68,18 @@ export const DashboardCalendar = () => {
     }, []);
 
     useEffect(() => {
-        const formattedFirstDayOfCurrentMonth = formatDate(currentMonth);
-        const firstDayFromCalendarMonthView = getFirstDayFromCalendarMonthView(formattedFirstDayOfCurrentMonth)
-        const formattedLastDayOfCurrentMonth = formatDate(lastDayOfMonth(currentMonth));
-        const lastDayFromCalendarMonthView = getLastDayFromCalendarMonthView(formattedLastDayOfCurrentMonth)
-        sendGetRequest(`${ENDPOINT_PREFIX_URL}/calendar?startDate=${firstDayFromCalendarMonthView}&endDate=${lastDayFromCalendarMonthView}&filter=active:true`)
+        const firstDay = formatDate(currentMonth);
+        const lastDay = formatDate(lastDayOfMonth(currentMonth));
+        const firstDayFromCalendarMonthView = getFirstDayFromCalendarMonthView(firstDay)
+        const lastDayFromCalendarMonthView = getLastDayFromCalendarMonthView(lastDay)
+
+        requestCancelToken.current?.cancel()
+        requestCancelToken.current = CancelToken.source()
+
+        const url = `${ENDPOINT_PREFIX_URL}/calendar?startDate=${firstDayFromCalendarMonthView}&endDate=${lastDayFromCalendarMonthView}&filter=active:true`
+        sendGetRequest(url, {}, {
+            cancelToken: requestCancelToken.current.token
+        })
             .then(data => {
                 setCalendarResponse(data.calendar);
             }).catch(error => error);

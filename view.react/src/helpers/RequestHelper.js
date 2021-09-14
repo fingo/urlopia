@@ -8,7 +8,11 @@ import {pushErrorNotification} from "./notifications/Notifications";
 export const URL_PREFIX = process.env.NODE_ENV === 'development' ? "http://localhost:8080" : '';
 
 axios.interceptors.response.use(response => response, error => {
-    const {status} = error.response
+    if (axios.isCancel(error)) {
+        return Promise.resolve(error)
+    }
+
+    const {status} = error?.response
     if (status === 401) {
         logout()
         window.location = "/"
@@ -16,11 +20,12 @@ axios.interceptors.response.use(response => response, error => {
     return Promise.reject(error)
 })
 
-export const sendGetRequest = (url, params) => {
+export const sendGetRequest = (url, params, config) => {
     return axios
         .get(URL_PREFIX + url,{
             headers: getAuthHeader(),
             params,
+            ...config
         })
         .then(response => {
             return response.data;
