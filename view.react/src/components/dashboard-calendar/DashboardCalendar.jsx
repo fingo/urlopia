@@ -18,6 +18,22 @@ import styles from "./DashboardCalendar.module.scss";
 
 const ENDPOINT_PREFIX_URL = '/api/v2';
 
+const saveSelectedTeamsFilter = selectedTeams => {
+    localStorage.setItem("dashboard.selectedTeams", JSON.stringify(selectedTeams))
+}
+
+const getSelectedTeamsFilter = () => {
+    return JSON.parse(localStorage.getItem("dashboard.selectedTeams")) || []
+}
+
+const saveSelectedUsersFilter = selectedUsers => {
+    localStorage.setItem("dashboard.selectedUsers", JSON.stringify(selectedUsers))
+}
+
+const getSelectedUsersFilter = () => {
+    return JSON.parse(localStorage.getItem("dashboard.selectedUsers")) || []
+}
+
 export const DashboardCalendar = () => {
     const [presenceState] = usePresence();
 
@@ -26,10 +42,10 @@ export const DashboardCalendar = () => {
     const [currentMonth, setCurrentMonth] = useState(startOfMonth(new Date()));
 
     const [teamsOptions, setTeamsOptions] = useState([]);
-    const [selectedTeams, setSelectedTeams] = useState([]);
+    const [selectedTeams, setSelectedTeams] = useState(() => getSelectedTeamsFilter());
 
     const [usersOptions, setUsersOptions] = useState([]);
-    const [selectedUsers, setSelectedUsers] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState(() => getSelectedUsersFilter());
 
     const [calendarResponse, setCalendarResponse] = useState(null);
 
@@ -130,7 +146,11 @@ export const DashboardCalendar = () => {
                         isMulti
                         name="users"
                         options={usersOptions}
-                        onChange={(items) => setSelectedUsers(items)}
+                        value={selectedUsers}
+                        onChange={(items) => {
+                            setSelectedUsers(items)
+                            saveSelectedUsersFilter(items)
+                        }}
                         noOptionsMessage={() => 'Brak użytkowników do wyboru!'}
                     />
                 </div>
@@ -143,7 +163,11 @@ export const DashboardCalendar = () => {
                         isMulti
                         name="teams"
                         options={teamsOptions}
-                        onChange={(items) => setSelectedTeams(items)}
+                        value={selectedTeams}
+                        onChange={(items) => {
+                            setSelectedTeams(items)
+                            saveSelectedTeamsFilter(items)
+                        }}
                         noOptionsMessage={() => 'Brak zespołów do wyboru!'}
                     />
                 </div>
