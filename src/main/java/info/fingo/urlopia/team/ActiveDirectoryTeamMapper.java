@@ -8,12 +8,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.naming.directory.SearchResult;
+import java.util.List;
 
 @Component
 public class ActiveDirectoryTeamMapper {
 
     @Value("${ad.identifiers.team}")
-    private String teamIdentifier;
+    private List<String> teamIdentifiers;
 
     private final UserRepository userRepository;
 
@@ -47,6 +48,14 @@ public class ActiveDirectoryTeamMapper {
     }
 
     private String normalizeName(String adName) {
+        return teamIdentifiers.stream()
+                .filter(adName::contains)
+                .findFirst()
+                .map(teamIdentifier -> normalizeName(adName, teamIdentifier))
+                .orElse("");
+    }
+
+    private String normalizeName(String adName, String teamIdentifier) {
         var end = adName.length() - teamIdentifier.length() - 1; // -1 for space between name and identifier
         return adName.substring(0, end);
     }
