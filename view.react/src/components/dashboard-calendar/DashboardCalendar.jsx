@@ -13,6 +13,8 @@ import {usePresence} from "../../contexts/presence-context/presenceContext";
 import {formatDate} from "../../helpers/DateFormatterHelper";
 import {filterAbsentUsers} from "../../helpers/FilterAbsentUsersBySelectedTeamsHelper";
 import {sendGetRequest} from "../../helpers/RequestHelper";
+import {sortedTeams} from "../../helpers/sorts/TeamSortHelper"
+import {sortedUsers} from "../../helpers/sorts/UsersSortHelper";
 import {CalendarDayInfo} from "./calendar-day-info/CalendarDayInfo";
 import styles from "./DashboardCalendar.module.scss";
 
@@ -118,21 +120,24 @@ export const DashboardCalendar = () => {
     }
 
     const formatUsers = (users) => {
-        return users.map(user => {
+        const formattedUsers = users.map(user => {
             return {
                 value: user.fullName,
                 label: user.fullName,
             }
         });
+        return sortedUsers(formattedUsers)
     }
 
     const formatTeams = (teams) => {
-        return teams.map(team => {
+        const formattedTeams = teams.map(team => {
             return {
                 value: team.teamName,
                 label: team.teamName,
             }
         }).concat({value: 'noTeams', label: '- brak zespołów -'});
+        return sortedTeams(formattedTeams);
+
     }
 
     return (
