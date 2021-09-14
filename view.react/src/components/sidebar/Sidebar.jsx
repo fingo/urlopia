@@ -23,6 +23,7 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
     const [vacationHours, setVacationHours] = useState(0);
     const [pendingDays, setPendingDays] = useState(0);
     const [pendingHours, setPendingHours] = useState(0);
+    const [workTime, setWorkTime] = useState(8);
 
     const [vacationDaysState, vacationDaysDispatch] = useVacationDays();
 
@@ -35,15 +36,16 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
     }, [vacationDaysDispatch]);
 
     useEffect(() => {
-        const {days, hours} = vacationDaysState.pendingDays;
-        setPendingDays(days);
-        setPendingHours(hours);
+        const {pendingDays, pendingHours} = vacationDaysState.pendingDays;
+        setPendingDays(pendingDays);
+        setPendingHours(pendingHours);
     }, [vacationDaysState.pendingDays]);
 
     useEffect(() => {
-        const {remainingDays, remainingHours} = vacationDaysState.vacationDays;
+        const {remainingDays, remainingHours, workTime} = vacationDaysState.vacationDays;
         setVacationDays(remainingDays);
         setVacationHours(remainingHours);
+        setWorkTime(workTime);
     }, [vacationDaysState.vacationDays]);
 
     return (
@@ -59,7 +61,12 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                         />
                         <div className={styles.days}>
                             <p>Pozostały urlop: </p>
-                            <p><strong>{vacationDays-pendingDays}d</strong> {vacationHours-pendingHours}h (<strong>+{pendingDays}d</strong> {pendingHours}h)</p>
+                            {
+                                workTime === 8 ?
+                                    <p><strong>{vacationDays-pendingDays}d</strong> {vacationHours-pendingHours}h (<strong>+{pendingDays}d</strong> {pendingHours}h)</p>
+                                    :
+                                    <p><strong>{vacationHours-pendingHours}h ({pendingHours}h)</strong></p>
+                            }
                         </div>
                     </Link>
                     <Link to="/history" onClick={onClickLinkOrOutside}>Historia użytkownika</Link>

@@ -2,6 +2,8 @@ package info.fingo.urlopia.request.normal;
 
 import info.fingo.urlopia.acceptance.AcceptanceService;
 import info.fingo.urlopia.acceptance.StatusNotSupportedException;
+import info.fingo.urlopia.api.v2.user.PendingDaysOutput;
+import info.fingo.urlopia.api.v2.user.VacationDaysOutput;
 import info.fingo.urlopia.request.absence.BaseRequestInput;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
@@ -101,15 +103,31 @@ public class NormalRequestService implements RequestTypeService {
     }
 
     public DayHourTime getPendingRequestsTime(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> {
-            log.error("Could not get pending requests time for a non-existent user with id: {}", userId);
-            return NoSuchUserException.invalidId();
-        });
+        var user = getUserById(userId);
         double pendingRequestsHours = countPendingRequestsHours(user);
         float userWorkTime = user.getWorkTime();
         int days = (int) Math.floor(pendingRequestsHours / userWorkTime);
         double hours =  Math.round((pendingRequestsHours % userWorkTime) * 100.0) / 100.0;
         return DayHourTime.of(days, hours);
+    }
+
+    public PendingDaysOutput getPendingRequestsTimeV2(Long userId) {
+        var user = getUserById(userId);
+        double pendingRequestsHours = countPendingRequestsHours(user);
+        float userWorkTime = user.getWorkTime();
+        int days = (int) Math.floor(pendingRequestsHours / userWorkTime);
+        double hours =  Math.round((pendingRequestsHours % userWorkTime) * 100.0) / 100.0;
+        if (userWorkTime == 8) {
+            return new PendingDaysOutput(days, hours);
+        }
+        return new PendingDaysOutput(0, pendingRequestsHours);
+    }
+
+    private User getUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> {
+            log.error("Could not get pending requests time for a non-existent user with id: {}", userId);
+            return NoSuchUserException.invalidId();
+        });
     }
 
     private Request createRequestObject(User user, BaseRequestInput requestInput, int workingDays) {

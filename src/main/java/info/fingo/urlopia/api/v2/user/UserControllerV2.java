@@ -4,7 +4,6 @@ import info.fingo.urlopia.config.authentication.AuthInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.history.HistoryLogInput;
 import info.fingo.urlopia.history.HistoryLogService;
-import info.fingo.urlopia.request.normal.DayHourTime;
 import info.fingo.urlopia.request.normal.NormalRequestService;
 import info.fingo.urlopia.user.UserExcerptProjection;
 import info.fingo.urlopia.user.UserService;
@@ -40,9 +39,9 @@ public class UserControllerV2 {
 
    @RolesAllowed("ROLES_WORKER")
    @GetMapping(path = "/me/pending-days", produces = MediaType.APPLICATION_JSON_VALUE)
-   public DayHourTime getPendingDays(HttpServletRequest httpRequest) {
+   public PendingDaysOutput getPendingDays(HttpServletRequest httpRequest) {
       var authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
-      return normalRequestService.getPendingRequestsTime(authenticatedId);
+      return normalRequestService.getPendingRequestsTimeV2(authenticatedId);
    }
 
    @RolesAllowed("ROLES_WORKER")

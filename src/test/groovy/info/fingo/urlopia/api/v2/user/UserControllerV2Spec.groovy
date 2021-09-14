@@ -101,16 +101,16 @@ class UserControllerV2Spec extends Specification{
         and: "valid DayHourTime object"
         def days = 3
         def hours = 3
-        def dayHour = DayHourTime.of(days,hours)
-        1 * normalRequestService.getPendingRequestsTime(authId) >> dayHour
+        def dayHour = new PendingDaysOutput(days, hours)
+        normalRequestService.getPendingRequestsTimeV2(authId) >> dayHour
 
 
         when:
         def result = userControllerV2.getPendingDays(httpRequest)
 
         then:
-        result.getHours() == hours
-        result.getDays() == days
+        result.pendingHours() == hours
+        result.pendingDays() == days
 
     }
 
@@ -123,12 +123,14 @@ class UserControllerV2Spec extends Specification{
         and: "valid WorkTimeResponse mock"
         def days = 3
         def hours = 3
+        def workTime = 8
         def workTimeResponse = Mock(WorkTimeResponse){
             getDays() >> days
             getHours() >> hours
+            getWorkTime() >> workTime
         }
         and: "valid VacationDaysOutput mapped from WorkTimeResponse"
-        def vacationDaysOutput = new VacationDaysOutput(days,hours)
+        def vacationDaysOutput = new VacationDaysOutput(days, hours, workTime)
         1 * historyLogService.countRemainingDays(authId) >> workTimeResponse
 
         when:
@@ -183,20 +185,22 @@ class UserControllerV2Spec extends Specification{
         then:
         result == workTimeOutput
     }
-    def "getVacationDays() WHEN called SHOULD called service and return saved value"() {
+    def "getVacationDays() WHEN called SHOULD call service and return saved value"() {
         given: "userID"
         def userId = 5
 
         and: "valid WorkTimeResponse mock"
         def days = 3
         def hours = 3d
+        def workTime = 8
         def workTimeResponse = Mock(WorkTimeResponse){
             getDays() >> days
             getHours() >> hours
+            getWorkTime() >> workTime
         }
 
         and: "valid VacationDaysOutput mapped from WorkTimeResponse"
-        def vacationDaysOutput = new VacationDaysOutput(days,hours)
+        def vacationDaysOutput = new VacationDaysOutput(days, hours, workTime)
         1 * historyLogService.countRemainingDays(userId) >> workTimeResponse;
 
         when:
