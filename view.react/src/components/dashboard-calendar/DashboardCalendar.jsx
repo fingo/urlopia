@@ -56,6 +56,8 @@ export const DashboardCalendar = () => {
 
     const [calendarResponse, setCalendarResponse] = useState(null);
 
+    const [isFetched, setIsFetched] = useState(false);
+
     const requestCancelToken = useRef(undefined)
 
     useEffect(() => {
@@ -68,6 +70,7 @@ export const DashboardCalendar = () => {
     }, []);
 
     useEffect(() => {
+        setIsFetched(false);
         const firstDay = formatDate(currentMonth);
         const lastDay = formatDate(lastDayOfMonth(currentMonth));
         const firstDayFromCalendarMonthView = getFirstDayFromCalendarMonthView(firstDay)
@@ -82,6 +85,7 @@ export const DashboardCalendar = () => {
         })
             .then(data => {
                 setCalendarResponse(data.calendar);
+                setIsFetched(true);
             }).catch(error => error);
     }, [currentMonth]);
 
@@ -205,7 +209,7 @@ export const DashboardCalendar = () => {
                     color="transparent"
                     showPreview={false}
                     showSelectionPreview={false}
-                    disabledDay={day => shouldBeDisabled(day)}
+                    disabledDay={day => !isFetched || shouldBeDisabled(day)}
                     onShownDateChange={item => setCurrentMonth(item)}
                 />
             </div>
