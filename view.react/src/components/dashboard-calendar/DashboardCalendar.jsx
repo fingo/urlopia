@@ -116,7 +116,7 @@ export const DashboardCalendar = () => {
                 value: team.teamName,
                 label: team.teamName,
             }
-        }).concat({value: 'noTeams', label: 'Brak zespołów'});
+        }).concat({value: 'noTeams', label: '- brak zespołów -'});
     }
 
     return (
