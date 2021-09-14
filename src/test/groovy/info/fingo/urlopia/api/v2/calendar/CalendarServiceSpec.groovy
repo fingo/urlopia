@@ -83,6 +83,7 @@ class CalendarServiceSpec extends Specification {
         requestService.getVacations(startDate, filter) >> absentUserOutputs
         userService.get(userId) >> user
         presenceConfirmationService.getPresenceConfirmation(userId, startDate) >> Optional.of(presenceConfirmation)
+        presenceConfirmationService.getFirstUserConfirmation(userId) >> Optional.empty()
         historyLogService.get(startDate, userId) >> historyLogExcerptProjections
 
         when:
@@ -105,22 +106,36 @@ class CalendarServiceSpec extends Specification {
         def holidays = [holiday]
 
         and: "Expected current user information"
-        def presenceConfirmationOutput = new PresenceConfirmationOutput(false, null, null)
-        def currentUserInformation = new CurrentUserInformationOutput()
-        currentUserInformation.setAbsent(false)
-        currentUserInformation.setPresenceConfirmation(presenceConfirmationOutput)
-        currentUserInformation.setVacationHoursModifications([])
+        def presenceConfirmationOutput1 = new PresenceConfirmationOutput(true, null, null)
+        def currentUserInformation1 = new CurrentUserInformationOutput()
+        currentUserInformation1.setAbsent(false)
+        currentUserInformation1.setPresenceConfirmation(presenceConfirmationOutput1)
+        currentUserInformation1.setVacationHoursModifications([])
 
-        def singleDayOutput = new SingleDayOutput()
-        singleDayOutput.setWorkingDay(false)
-        singleDayOutput.setHolidays([holidayName])
-        singleDayOutput.setCurrentUserInformation(currentUserInformation)
+        def singleDayOutput1 = new SingleDayOutput()
+        singleDayOutput1.setWorkingDay(false)
+        singleDayOutput1.setHolidays([holidayName])
+        singleDayOutput1.setCurrentUserInformation(currentUserInformation1)
+
+        def presenceConfirmationOutput2 = new PresenceConfirmationOutput(false, null, null)
+        def currentUserInformation2 = new CurrentUserInformationOutput()
+        currentUserInformation2.setAbsent(false)
+        currentUserInformation2.setPresenceConfirmation(presenceConfirmationOutput2)
+        currentUserInformation2.setVacationHoursModifications([])
+
+        def singleDayOutput2 = new SingleDayOutput()
+        singleDayOutput2.setWorkingDay(false)
+        singleDayOutput2.setHolidays([holidayName])
+        singleDayOutput2.setCurrentUserInformation(currentUserInformation2)
 
         and: "Expected calendar output"
         def expectedCalendarMap = new HashMap<LocalDate, SingleDayOutput>()
-        expectedCalendarMap.put(startDate, singleDayOutput)
-        expectedCalendarMap.put(endDate, singleDayOutput)
+        expectedCalendarMap.put(startDate, singleDayOutput1)
+        expectedCalendarMap.put(endDate, singleDayOutput2)
         def expectedCalendarOutput = new CalendarOutput(expectedCalendarMap)
+
+        and: "Expected first user presence confirmation"
+        def firstUserConfirmation = new PresenceConfirmation(user, startDate, null, null)
 
         and: "Working services"
         holidayService.isWorkingDay(startDate) >> false
@@ -128,7 +143,9 @@ class CalendarServiceSpec extends Specification {
         holidayService.getByDate(startDate) >> holidays
         holidayService.getByDate(endDate) >> holidays
         userService.get(userId) >> user
-        presenceConfirmationService.getPresenceConfirmation(userId, _ as LocalDate) >> Optional.empty()
+        presenceConfirmationService.getPresenceConfirmation(userId, endDate) >> Optional.empty()
+        presenceConfirmationService.getPresenceConfirmation(userId, firstUserConfirmation.getDate()) >> Optional.of(firstUserConfirmation)
+        presenceConfirmationService.getFirstUserConfirmation(userId) >> Optional.of(firstUserConfirmation)
         historyLogService.get(startDate, userId) >> []
         historyLogService.get(endDate, userId) >> []
 

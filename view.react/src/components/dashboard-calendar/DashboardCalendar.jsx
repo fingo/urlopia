@@ -91,7 +91,8 @@ export const DashboardCalendar = () => {
                 extra = <FontAwesomeIcon icon={faUmbrellaBeach} className={styles.absenceIcon}/>;
             } else if (getCurrentUser().ec
                 && !presenceState.myConfirmations.confirmations[formatDate(day)]
-                && day.getTime() <= new Date().getTime()) {
+                && day.getTime() <= new Date().getTime()
+                && !thisDay?.currentUserInformation.presenceConfirmation.confirmed) {
                 extra = <ExclamationIcon className={styles.exclamationIcon}/>;
             }
 

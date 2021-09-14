@@ -1,5 +1,6 @@
 package info.fingo.urlopia.api.v2.calendar;
 
+import info.fingo.urlopia.api.v2.presence.PresenceConfirmation;
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.history.HistoryLogService;
@@ -28,9 +29,10 @@ public class CalendarService {
         var currentUserInformation = new CurrentUserInformationOutput();
         var user = userService.get(userId);
         currentUserInformation.setAbsent(requestService.isVacationing(user, date));
+
         var presenceConfirmationOutput = presenceConfirmationService.getPresenceConfirmation(userId, date)
                 .map(PresenceConfirmationOutput::fromPresenceConfirmation)
-                .orElse(PresenceConfirmationOutput.empty());
+                .orElse(getFallbackValue(userId, date));
         currentUserInformation.setPresenceConfirmation(presenceConfirmationOutput);
 
         var historyLogExcerptProjections = historyLogService.get(date, userId);
@@ -40,6 +42,17 @@ public class CalendarService {
 
         currentUserInformation.setVacationHoursModifications(vacationHoursModifications);
         return currentUserInformation;
+    }
+
+    private PresenceConfirmationOutput getFallbackValue(Long userId, LocalDate date) {
+        return presenceConfirmationService.getFirstUserConfirmation(userId)
+                .map(firstConfirmation -> {
+                    if (date.isBefore(firstConfirmation.getDate())) {
+                        return PresenceConfirmationOutput.unspecified();
+                    }
+                    return PresenceConfirmationOutput.empty();
+                })
+                .orElse(PresenceConfirmationOutput.unspecified());
     }
 
     private SingleDayOutput getSingleDayInfo(Long userId,
