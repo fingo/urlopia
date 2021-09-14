@@ -3,7 +3,7 @@ import {BrowserRouter as Router} from "react-router-dom";
 
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
 import {VacationDaysProvider} from "../../contexts/vacation-days-context/vacationDaysContext";
-import {mockSessionStorage} from "../../helpers/TestHelper";
+import {mockLocalStorage} from "../../helpers/TestHelper";
 import {Sidebar} from "./Sidebar";
 
 jest.mock("../../contexts/vacation-days-context/actions/fetchPendingDays", () => {
@@ -27,7 +27,7 @@ jest.mock("../../contexts/vacation-days-context/actions/fetchVacationDays", () =
 })
 
 describe("Sidebar", () => {
-    const sessionStorageMock = mockSessionStorage()
+    const sessionStorageMock = mockLocalStorage()
 
     beforeEach(() => {
         sessionStorageMock.clear()

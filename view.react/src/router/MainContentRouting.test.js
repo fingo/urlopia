@@ -2,7 +2,7 @@ import {render, screen} from "@testing-library/react";
 import {MemoryRouter} from "react-router-dom";
 
 import {USER_DATA_KEY} from "../constants/session.keystorage";
-import {mockSessionStorage} from "../helpers/TestHelper";
+import {mockLocalStorage} from "../helpers/TestHelper";
 import {AbsenceRequestsPage, URL as VacationRequestsURL} from '../pages/absence-requests-page/AbsenceRequestsPage';
 import {AssociatesPage, URL as AssociatesURL} from '../pages/associates-page/AssociatesPage';
 import {CalendarPage, URL as CalendarURL} from '../pages/calendar-page/CalendarPage';
@@ -21,7 +21,7 @@ jest.mock('../pages/reports-page/ReportsPage');
 jest.mock('../pages/workers-page/WorkersPage');
 
 describe("MainContentRouting", () => {
-    const sessionStorageMock = mockSessionStorage()
+    const sessionStorageMock = mockLocalStorage()
 
     beforeEach(() => {
         sessionStorageMock.clear()

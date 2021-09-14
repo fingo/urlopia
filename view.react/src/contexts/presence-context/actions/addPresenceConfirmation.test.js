@@ -1,5 +1,5 @@
 import {USER_DATA_KEY} from "../../../constants/session.keystorage";
-import {mockSessionStorage} from "../../../helpers/TestHelper";
+import {mockLocalStorage} from "../../../helpers/TestHelper";
 import {ADD_PRESENCE_CONFIRMATION_ACTION_PREFIX} from "../constants";
 import {addPresenceConfirmationReducer} from "./addPresenceConfirmation";
 
@@ -17,7 +17,7 @@ describe("addPresenceConfirmationReducer", () => {
         }
     }
 
-    const sessionStorageMock = mockSessionStorage()
+    const sessionStorageMock = mockLocalStorage()
 
     beforeEach(() => {
         sessionStorageMock.clear()

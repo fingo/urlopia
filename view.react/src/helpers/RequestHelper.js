@@ -1,10 +1,20 @@
 import axios from 'axios';
 
+import {logout} from "../api/services/session.service";
 import {USER_DATA_KEY} from "../constants/session.keystorage";
 import {mapCodeToMessage} from "./errors/ErrorCodeMapper";
 import {pushErrorNotification} from "./notifications/Notifications";
 
 export const URL_PREFIX = process.env.NODE_ENV === 'development' ? "http://localhost:8080" : '';
+
+axios.interceptors.response.use(response => response, error => {
+    const {status} = error.response
+    if (status === 401) {
+        logout()
+        window.location = "/"
+    }
+    return Promise.reject(error)
+})
 
 export const sendGetRequest = (url, params) => {
     return axios
@@ -112,7 +122,7 @@ export const getZipFromResponse = (url, fileName) => {
 }
 
 const getAuthHeader = () => {
-    const user = JSON.parse(sessionStorage.getItem(USER_DATA_KEY));
+    const user = JSON.parse(localStorage.getItem(USER_DATA_KEY));
     if (user && user.token) {
         return { 'authorization': user.token };
     } else {

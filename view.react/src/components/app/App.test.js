@@ -1,7 +1,7 @@
 import {act, render, screen} from "@testing-library/react";
 
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
-import {mockSessionStorage} from "../../helpers/TestHelper";
+import {mockLocalStorage} from "../../helpers/TestHelper";
 import {MainContentRouting} from "../../router/MainContentRouting";
 import {AcceptanceLoader} from "../acceptance-loader/AcceptanceLoader";
 import {Sidebar} from "../sidebar/Sidebar";
@@ -14,7 +14,7 @@ jest.mock("../sidebar/Sidebar")
 jest.mock("../topbar/TopBar")
 
 describe("App", () => {
-    const sessionStorageMock = mockSessionStorage()
+    const sessionStorageMock = mockLocalStorage()
 
     beforeEach(() => {
         sessionStorageMock.clear()

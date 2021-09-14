@@ -2,15 +2,15 @@ import {act, fireEvent, render, screen, waitFor} from "@testing-library/react";
 import axios from "axios";
 
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
-import {WorkersProvider} from "../../contexts/workers-context/workersContext";
-import {mockSessionStorage} from "../../helpers/TestHelper";
-import {WorkersTable} from "./WorkersTable";
 import {PresenceProvider} from "../../contexts/presence-context/presenceContext";
+import {WorkersProvider} from "../../contexts/workers-context/workersContext";
+import {mockLocalStorage} from "../../helpers/TestHelper";
+import {WorkersTable} from "./WorkersTable";
 
 jest.mock('axios');
 
 describe('WorkersTable', () => {
-    const sessionStorageMock = mockSessionStorage()
+    const sessionStorageMock = mockLocalStorage()
 
     beforeAll(() => {
         sessionStorageMock.clear()

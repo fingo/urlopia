@@ -3,13 +3,13 @@ import axios from "axios";
 
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
 import {PresenceProvider} from "../../contexts/presence-context/presenceContext";
-import {mockSessionStorage} from "../../helpers/TestHelper";
+import {mockLocalStorage} from "../../helpers/TestHelper";
 import {PresenceConfirmationPanel} from "./PresenceConfirmationPanel";
 
 jest.mock('axios')
 
 describe('PresenceConfirmationPanel', () => {
-    const sessionStorageMock = mockSessionStorage()
+    const sessionStorageMock = mockLocalStorage()
 
     beforeAll(() => {
         sessionStorageMock.clear()

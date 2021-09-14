@@ -2,11 +2,11 @@ import {act, fireEvent, render, screen} from "@testing-library/react";
 import {BrowserRouter as Router} from "react-router-dom";
 
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
-import {mockSessionStorage} from "../../helpers/TestHelper";
+import {mockLocalStorage} from "../../helpers/TestHelper";
 import {TopBar} from "./TopBar";
 
 describe("TopBar", () => {
-    const sessionStorageMock = mockSessionStorage()
+    const sessionStorageMock = mockLocalStorage()
     const sampleFullName = 'Kacper Bartek'
     const sampleTeams = [
         {name: 'ABC', leader: 'Piotr Nowak'},
