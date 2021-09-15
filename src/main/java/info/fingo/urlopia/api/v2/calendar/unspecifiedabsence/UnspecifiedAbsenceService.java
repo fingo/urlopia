@@ -54,15 +54,14 @@ public class UnspecifiedAbsenceService {
         return new UnspecifiedAbsenceOutput(usersWithUnspecifiedAbsences);
     }
 
-    private UsersIdentifiedDays getEmployeesVacationDays() {
+    public UsersIdentifiedDays getUsersVacationDays(Filter requestFilter) {
         var usersIdentifiedDays = UsersIdentifiedDays.empty();
 
-        var filter = Filter.newBuilder()
-                .and("requester.b2b", Operator.EQUAL, String.valueOf(false))
+        requestFilter = requestFilter.toBuilder()
                 .and("status", Operator.EQUAL, Request.Status.ACCEPTED.toString())
                 .build();
 
-        var usersAcceptedRequests = requestService.getAll(filter);
+        var usersAcceptedRequests = requestService.getAll(requestFilter);
         Map<Long, List<Request>> groupedRequests = groupByUserId(usersAcceptedRequests, req -> req.getRequester().getId());
 
         groupedRequests.forEach((userId, requests) -> {
@@ -77,6 +76,14 @@ public class UnspecifiedAbsenceService {
         });
 
         return usersIdentifiedDays;
+    }
+
+    private UsersIdentifiedDays getEmployeesVacationDays() {
+        var filter = Filter.newBuilder()
+                .and("requester.b2b", Operator.EQUAL, String.valueOf(false))
+                .build();
+
+        return getUsersVacationDays(filter);
     }
 
     private UsersIdentifiedDays getEmployeesConfirmedPresenceDays() {

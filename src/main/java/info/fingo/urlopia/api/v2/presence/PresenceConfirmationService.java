@@ -23,8 +23,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class PresenceConfirmationService {
-    private static final String USER_ID_FROM_PRESENCE = "presenceConfirmationId.userId";
-    private static final String DATE_FROM_PRESENCE = "presenceConfirmationId.date";
+    public static final String USER_ID_FROM_PRESENCE = "presenceConfirmationId.userId";
+    public static final String DATE_FROM_PRESENCE = "presenceConfirmationId.date";
 
     private final PresenceConfirmationRepository presenceConfirmationRepository;
     private final RequestService requestService;
