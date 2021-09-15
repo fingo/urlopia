@@ -13,9 +13,11 @@ import info.fingo.urlopia.request.normal.events.NormalRequestAccepted;
 import info.fingo.urlopia.request.normal.events.NormalRequestCanceled;
 import info.fingo.urlopia.request.normal.events.NormalRequestCreated;
 import info.fingo.urlopia.request.normal.events.NormalRequestRejected;
+import info.fingo.urlopia.team.TeamService;
 import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
+import info.fingo.urlopia.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -45,6 +47,8 @@ public class NormalRequestService implements RequestTypeService {
     private final ApplicationEventPublisher publisher;
 
     private final AcceptanceService acceptanceService;
+
+    private final UserService userService;
 
 
     @Override
@@ -163,8 +167,9 @@ public class NormalRequestService implements RequestTypeService {
     }
 
     private void createAcceptances(User user, Request request) {
+        var allUsersLeader = userService.getAllUsersLeader();
         user.getTeams().stream()
-                .map(team -> user.equals(team.getLeader()) ? team.getBusinessPartLeader() : team.getLeader())
+                .map(team -> user.equals(team.getLeader()) ? allUsersLeader : team.getLeader())
                 .filter(Objects::nonNull)
                 .distinct()
                 .forEach(leader -> this.acceptanceService.create(request, leader));

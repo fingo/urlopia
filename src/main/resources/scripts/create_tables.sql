@@ -22,7 +22,6 @@ CREATE TABLE teams (
   name                      VARCHAR(50)   PRIMARY KEY,
   ad_name                   VARCHAR(100)  NOT NULL UNIQUE,
   leader_id                 INT           REFERENCES users(id),
-  business_part_leader_id   INT           REFERENCES users(id)
 );
 
 CREATE UNIQUE INDEX teams_ad_name_index ON teams(ad_name);
