@@ -1,3 +1,4 @@
+import moment from "moment/moment";
 import {v4 as uuidv4} from "uuid";
 
 export const formatLogs = (logs) => {
@@ -12,7 +13,8 @@ export const formatLogs = (logs) => {
 
             if(firstLogWorkTime !== secondLogWorkTime) {
                 const newWorkTime = `Zmiana etatu: ${logs[i].workTimeNumerator}/${logs[i].workTimeDenominator}`;
-                const workTimeChangeLog = createWorkTimeChangeLog(newWorkTime);
+                const created = calculateWorkTimeLogCreationDateTime(logs[i+1].created)
+                const workTimeChangeLog = createWorkTimeChangeLog(newWorkTime, created);
                 formattedLogs.push(workTimeChangeLog);
             }
         }
@@ -27,9 +29,15 @@ export const formatLogs = (logs) => {
     return formattedLogs;
 }
 
-const createWorkTimeChangeLog = (changes) => {
+const calculateWorkTimeLogCreationDateTime = (prevHistoryLogCreationDate) => {
+    const date = moment(prevHistoryLogCreationDate).add(1, "seconds")
+    return date.format("YYYY-MM-DD HH:mm:ss")
+}
+
+const createWorkTimeChangeLog = (changes, created) => {
     return {
         id: uuidv4(),
-        hours: changes
+        hours: changes,
+        created: created
     }
 }

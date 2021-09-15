@@ -22,6 +22,12 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
             align: 'center',
             sort: true,
             style: {verticalAlign: 'middle'},
+            formatter: (cell, row) => {
+                if (typeof row.hours == 'string' && row.hours.toLowerCase().includes("etat")) {
+                    return ""
+                }
+                return cell;
+            },
             headerAttrs: {
                 hidden: isHidden
             },
