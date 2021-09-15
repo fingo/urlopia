@@ -12,27 +12,37 @@
   border: 1px solid $CALENDAR-BORDER-COLOR;
   font-size: 1.125rem;
 
-  button {
-    border: 1px solid $CALENDAR-BORDER-COLOR;
+  :global {
+    .rdrDay {
+      border: 1px solid $CALENDAR-BORDER-COLOR;
 
-    &:hover {
-      background-color: $CALENDAR-HOVER-COLOR;
-    }
+      .rdrDayNumber {
+        color: transparent;
+      }
 
-    span[class='rdrDayNumber'] {
-      color: $CALENDAR-HOVER-COLOR;
-    }
+      .rdrSelected {
+        border-radius: 0;
+        left: 0;
+        top: 0;
+        width: 101%;
+        height: 101%;
+      }
 
-    span[class='rdrSelected'] {
-      border-radius: 0;
-      left: 0;
-      top: 0;
-      width: 101%;
-      height: 101%;
-    }
+      .rdrSelected + .rdrDayNumber {
+        color: transparent;
+      }
 
-    span[class='rdrSelected'] + span[class='rdrDayNumber'] {
-      color: $BASE-COLOR;
+      &:hover {
+        background-color: $CALENDAR-HOVER-COLOR;
+      }
+
+      &:not(.rdrDayPassive) {
+        .rdrSelected ~ .rdrDayNumber {
+          span {
+            color: $CALENDAR-NUMBER-BLACK-COLOR;
+          }
+        }
+      }
     }
   }
 }
@@ -44,6 +54,7 @@
 
   &::after {
     bottom: 1rem !important;
+    background: $CALENDAR-CURRENT-DAY-INDICATOR-COLOR !important;
   }
 }
 

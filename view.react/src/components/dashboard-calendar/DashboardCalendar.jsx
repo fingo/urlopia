@@ -202,7 +202,7 @@ export const DashboardCalendar = () => {
                     date={selectedDate}
                     className={styles.calendar}
                     dayContentRenderer={customDayContent}
-                    color='deepskyblue'
+                    color="transparent"
                     showPreview={false}
                     showSelectionPreview={false}
                     disabledDay={day => shouldBeDisabled(day)}
