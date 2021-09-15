@@ -7,6 +7,7 @@ import {AcceptanceLoader} from "../acceptance-loader/AcceptanceLoader";
 import {Sidebar} from "../sidebar/Sidebar";
 import {TopBar} from "../topbar/TopBar";
 import {App} from "./App";
+import {AppInfoProvider} from "../../contexts/app-info-context/appInfoContext";
 
 jest.mock("../acceptance-loader/AcceptanceLoader")
 jest.mock("../../router/MainContentRouting")
@@ -33,7 +34,7 @@ describe("App", () => {
 
         // when
         act(() => {
-            render(<App/>)
+            render(<AppInfoProvider><App/></AppInfoProvider>)
         })
 
         // then
@@ -49,7 +50,7 @@ describe("App", () => {
 
         // when
         act(() => {
-            render(<App/>)
+            render(<AppInfoProvider><App/></AppInfoProvider>)
         })
 
         // then

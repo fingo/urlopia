@@ -5,6 +5,7 @@ import {USER_DATA_KEY} from "../../constants/session.keystorage";
 import {VacationDaysProvider} from "../../contexts/vacation-days-context/vacationDaysContext";
 import {mockLocalStorage} from "../../helpers/TestHelper";
 import {Sidebar} from "./Sidebar";
+import {AppInfoProvider} from "../../contexts/app-info-context/appInfoContext";
 
 jest.mock("../../contexts/vacation-days-context/actions/fetchPendingDays", () => {
     const originalModule = jest.requireActual("../../contexts/vacation-days-context/actions/fetchPendingDays");
@@ -41,7 +42,15 @@ describe("Sidebar", () => {
 
         // when
         act(() => {
-            render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
+            render(
+                <Router>
+                    <AppInfoProvider>
+                        <VacationDaysProvider>
+                            <Sidebar onClickLinkOrOutside={() => {}}/>
+                        </VacationDaysProvider>
+                    </AppInfoProvider>
+                </Router>
+            );
         })
 
         // then
@@ -62,7 +71,15 @@ describe("Sidebar", () => {
 
         // when
         act(() => {
-            render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
+            render(
+                <Router>
+                    <AppInfoProvider>
+                        <VacationDaysProvider>
+                            <Sidebar onClickLinkOrOutside={() => {}}/>
+                        </VacationDaysProvider>
+                    </AppInfoProvider>
+                </Router>
+            );
         })
 
         // then
@@ -83,7 +100,15 @@ describe("Sidebar", () => {
 
         // when
         act(() => {
-            render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
+            render(
+                <Router>
+                    <AppInfoProvider>
+                        <VacationDaysProvider>
+                            <Sidebar onClickLinkOrOutside={() => {}}/>
+                        </VacationDaysProvider>
+                    </AppInfoProvider>
+                </Router>
+            );
         })
 
         // then

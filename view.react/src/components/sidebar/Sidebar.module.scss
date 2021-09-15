@@ -53,6 +53,12 @@
   cursor: pointer;
 }
 
+.versionContainer {
+  font-size: 0.9rem;
+  color: $GREY-COLOR;
+  margin-top: auto;
+}
+
 @include media-breakpoint-up(lg) {
   .main {
     max-width: 25%;

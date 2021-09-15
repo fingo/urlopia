@@ -1,12 +1,10 @@
 import classNames from "classnames";
 import PropTypes from 'prop-types';
 import {useEffect, useState} from "react";
-import {
-    Container,
-    Nav
-} from 'react-bootstrap';
+import {Container, Nav} from 'react-bootstrap';
 
 import {getCurrentUser} from "../../api/services/session.service";
+import {useAppInfo} from "../../contexts/app-info-context/appInfoContext";
 import {fetchPendingDays} from "../../contexts/vacation-days-context/actions/fetchPendingDays";
 import {fetchVacationDays} from "../../contexts/vacation-days-context/actions/fetchVacationDays";
 import {useVacationDays} from "../../contexts/vacation-days-context/vacationDaysContext";
@@ -26,6 +24,9 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
     const [workTime, setWorkTime] = useState(8);
 
     const [vacationDaysState, vacationDaysDispatch] = useVacationDays();
+
+    const [appInfoState, ] = useAppInfo()
+    const {version, commitId} = appInfoState.appInfo
 
     useEffect(() => {
         fetchPendingDays(vacationDaysDispatch);
@@ -80,6 +81,10 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                             <Link to="/reports" onClick={onClickLinkOrOutside}>Raporty</Link>
                         </>
                     )}
+
+                    <div className={styles.versionContainer}>
+                        {`${version} ${commitId}`}
+                    </div>
                 </Nav>
             </Container>
 
