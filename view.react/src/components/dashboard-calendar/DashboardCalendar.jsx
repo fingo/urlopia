@@ -10,6 +10,8 @@ import Select from "react-select";
 
 import {getCurrentUser} from "../../api/services/session.service";
 import {usePresence} from "../../contexts/presence-context/presenceContext";
+import {getLastDayFromCalendarMonthView} from "../../helpers/CalendarEndDateHelper";
+import {getFirstDayFromCalendarMonthView} from "../../helpers/CalendarStartDateHelper";
 import {formatDate} from "../../helpers/DateFormatterHelper";
 import {filterAbsentUsers} from "../../helpers/FilterAbsentUsersBySelectedTeamsHelper";
 import {sendGetRequest} from "../../helpers/RequestHelper";
@@ -62,11 +64,10 @@ export const DashboardCalendar = () => {
 
     useEffect(() => {
         const formattedFirstDayOfCurrentMonth = formatDate(currentMonth);
+        const firstDayFromCalendarMonthView = getFirstDayFromCalendarMonthView(formattedFirstDayOfCurrentMonth)
         const formattedLastDayOfCurrentMonth = formatDate(lastDayOfMonth(currentMonth));
-
-        const startDateParam = `startDate=${formattedFirstDayOfCurrentMonth}`
-        const endDateParam = `endDate=${formattedLastDayOfCurrentMonth}`
-        sendGetRequest(`${ENDPOINT_PREFIX_URL}/calendar?${startDateParam}&${endDateParam}&filter=active:true`)
+        const lastDayFromCalendarMonthView = getLastDayFromCalendarMonthView(formattedLastDayOfCurrentMonth)
+        sendGetRequest(`${ENDPOINT_PREFIX_URL}/calendar?startDate=${firstDayFromCalendarMonthView}&endDate=${lastDayFromCalendarMonthView}&filter=active:true`)
             .then(data => {
                 setCalendarResponse(data.calendar);
             }).catch(error => error);
