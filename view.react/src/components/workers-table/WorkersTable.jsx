@@ -34,7 +34,6 @@ export const WorkersTable = ({isEC}) => {
     const {fetching} = isEC ? workersState.workers : workersState.associates;
 
     const [whichExpanded, setWhichExpanded] = useState([]);
-    const [usersIdWithUnspecifiedAbsences, setUsersIdWithUnspecifiedAbsences] = useState([]);
 
     useEffect(() => {
         if (selectedUser) {
@@ -68,9 +67,7 @@ export const WorkersTable = ({isEC}) => {
     });
 
     const withNotifyFormatter = (cell, row) => {
-        const usersKeys = Object.keys(unspecifiedAbsences);
-        setUsersIdWithUnspecifiedAbsences(usersKeys);
-        if (usersKeys.includes(row.userId.toString())) {
+        if (unspecifiedAbsences[row.userId] !== undefined) {
             return (
                 <div className={styles.notify}>
                     <div className={styles.dot}>
@@ -102,7 +99,7 @@ export const WorkersTable = ({isEC}) => {
         renderer: row => (
             <ExtendedWorker workTime={row.workTime}
                             userId={row.userId}
-                            isUnspecifiedAbsences={usersIdWithUnspecifiedAbsences.includes(row.userId.toString())}/>
+                            isUnspecifiedAbsences={unspecifiedAbsences[row.userId] !== undefined}/>
         )
     };
 

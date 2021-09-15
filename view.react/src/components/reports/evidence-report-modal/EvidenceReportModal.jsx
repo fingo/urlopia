@@ -32,7 +32,7 @@ export const EvidenceReportModal = ({show, onHide}) => {
     }
 
     useEffect(() => {
-        sendGetRequest(ALL_USERS_URL)
+        sendGetRequest(`${ALL_USERS_URL}?filter=active:true`)
             .then(users => {
                 setAllUsers(users)
             })

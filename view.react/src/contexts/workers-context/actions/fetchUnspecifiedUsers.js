@@ -1,7 +1,7 @@
 import {sendGetRequest} from "../../../helpers/RequestHelper";
 import {FETCH_UNSPECIFIED_USERS_ACTION_PREFIX, WORKERS_ENDPOINT} from "../constants";
 
-const FILTER = '?filter=b2b:FALSE,ec:FALSE';
+const FILTER = '?filter=b2b:FALSE,ec:FALSE,active:true';
 
 export const fetchUnspecifiedUsers = dispatch => {
     dispatch({type: `${FETCH_UNSPECIFIED_USERS_ACTION_PREFIX}_request`})

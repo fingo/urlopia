@@ -52,7 +52,7 @@ export const DashboardCalendar = () => {
     const [calendarResponse, setCalendarResponse] = useState(null);
 
     useEffect(() => {
-        sendGetRequest(`${ENDPOINT_PREFIX_URL}/users`)
+        sendGetRequest(`${ENDPOINT_PREFIX_URL}/users?filter=active:true`)
             .then(users => setUsersOptions(formatUsers(users)))
             .catch(error => error);
         sendGetRequest(`${ENDPOINT_PREFIX_URL}/teams`)
@@ -63,7 +63,10 @@ export const DashboardCalendar = () => {
     useEffect(() => {
         const formattedFirstDayOfCurrentMonth = formatDate(currentMonth);
         const formattedLastDayOfCurrentMonth = formatDate(lastDayOfMonth(currentMonth));
-        sendGetRequest(`${ENDPOINT_PREFIX_URL}/calendar?startDate=${formattedFirstDayOfCurrentMonth}&endDate=${formattedLastDayOfCurrentMonth}`)
+
+        const startDateParam = `startDate=${formattedFirstDayOfCurrentMonth}`
+        const endDateParam = `endDate=${formattedLastDayOfCurrentMonth}`
+        sendGetRequest(`${ENDPOINT_PREFIX_URL}/calendar?${startDateParam}&${endDateParam}&filter=active:true`)
             .then(data => {
                 setCalendarResponse(data.calendar);
             }).catch(error => error);
