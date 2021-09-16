@@ -3,6 +3,7 @@ import {Button, Form, FormControl} from "react-bootstrap";
 import {useHistory} from "react-router-dom";
 
 import {login} from "../../api/services/session.service"
+import {useAppInfo} from "../../contexts/app-info-context/appInfoContext";
 import {pushSuccessNotification} from "../../helpers/notifications/Notifications";
 import styles from "./LoginForm.module.scss"
 
@@ -15,6 +16,9 @@ export const LoginForm = () => {
     const [mail, setMail] = useState("");
     const [password, setPassword] = useState("");
     const history = useHistory();
+
+    const [appInfoState,] = useAppInfo()
+    const {version, commitId} = appInfoState.appInfo
 
     const handleFormSubmit = event => {
         event.preventDefault();
@@ -47,6 +51,9 @@ export const LoginForm = () => {
                 </div>
                 <Button className={styles.button} type="submit" data-testid="login-btn">
                     {isLoading ? LOADING_MESSAGE : LOGIN_MESSAGE}</Button>
+                <span className={styles.versionContainer}>
+                    {`${version} ${commitId}`}
+                </span>
             </div>
         </Form>
     );

@@ -2,10 +2,10 @@ import {act, render, screen} from '@testing-library/react';
 import {BrowserRouter as Router} from "react-router-dom";
 
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
+import {AppInfoProvider} from "../../contexts/app-info-context/appInfoContext";
 import {VacationDaysProvider} from "../../contexts/vacation-days-context/vacationDaysContext";
 import {mockLocalStorage} from "../../helpers/TestHelper";
 import {Sidebar} from "./Sidebar";
-import {AppInfoProvider} from "../../contexts/app-info-context/appInfoContext";
 
 jest.mock("../../contexts/vacation-days-context/actions/fetchPendingDays", () => {
     const originalModule = jest.requireActual("../../contexts/vacation-days-context/actions/fetchPendingDays");

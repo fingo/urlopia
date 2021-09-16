@@ -1,13 +1,13 @@
 import {act, render, screen} from "@testing-library/react";
 
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
+import {AppInfoProvider} from "../../contexts/app-info-context/appInfoContext";
 import {mockLocalStorage} from "../../helpers/TestHelper";
 import {MainContentRouting} from "../../router/MainContentRouting";
 import {AcceptanceLoader} from "../acceptance-loader/AcceptanceLoader";
 import {Sidebar} from "../sidebar/Sidebar";
 import {TopBar} from "../topbar/TopBar";
 import {App} from "./App";
-import {AppInfoProvider} from "../../contexts/app-info-context/appInfoContext";
 
 jest.mock("../acceptance-loader/AcceptanceLoader")
 jest.mock("../../router/MainContentRouting")
