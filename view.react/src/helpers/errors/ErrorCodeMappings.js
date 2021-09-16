@@ -19,12 +19,17 @@ const requestsErrorCodeMappings = {
     "REQUEST_OVERLAPPING": "Wybrany termin pokrywa się z terminem jednej z wcześniej utworzonych okoliczności",
 }
 
+const reportsErrorCodeMappings = {
+    "UNABLE_TO_GENERATE_EVIDENCE_REPORT_FOR_ALL_USERS": "Generowanie raportów nie powiodło się",
+}
+
 export const ERROR_CODE_MAPPINGS = {
     "NO_RESPONSE": "Brak odpowiedzi",
     ...presenceConfirmationErrorCodeMappings,
     ...holidaysErrorCodeMappings,
     ...loginErrorCodeMappings,
     ...requestsErrorCodeMappings,
+    ...reportsErrorCodeMappings
 }
 
 export const ERROR_CODE_PREFIX_MAPPINGS = {
