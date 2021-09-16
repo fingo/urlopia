@@ -45,7 +45,7 @@ export const EvidenceReportModal = ({show, onHide}) => {
 
     const getFormattedUsers = (users) => {
         const formattedUsers = users.map(user => ({value: user.userId, label: user.fullName}));
-        return sortedUsers(formattedUsers)
+        return sortedUsers(formattedUsers, "label")
     }
 
     const handleChecking = () => {

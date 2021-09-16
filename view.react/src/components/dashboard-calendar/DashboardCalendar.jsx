@@ -147,7 +147,7 @@ export const DashboardCalendar = () => {
                 label: user.fullName,
             }
         });
-        return sortedUsers(formattedUsers)
+        return sortedUsers(formattedUsers, "label")
     }
 
     const formatTeams = (teams) => {
@@ -220,7 +220,8 @@ export const DashboardCalendar = () => {
                     show={show}
                     onHide={() => setShow(false)}
                     date={formatDate(selectedDate)}
-                    absentUsers={filteredAbsentUsers(calendarResponse[formatDate(selectedDate)].absentUsers)}
+                    absentUsers={sortedUsers(filteredAbsentUsers(calendarResponse[formatDate(selectedDate)].absentUsers),
+                        "userName")}
                 />
             }
         </>

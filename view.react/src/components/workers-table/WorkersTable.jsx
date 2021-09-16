@@ -17,6 +17,7 @@ import {spinner} from "../../global-styles/loading-spinner.module.scss";
 import {AttentionIcon, TextWithIcon} from "../../helpers/icons/Icons";
 import {textAsArrayFormatter} from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
 import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
+import {sortedUsers} from "../../helpers/sorts/UsersSortHelper";
 import {ExtendedWorker} from "../extended-worker/ExtendedWorker";
 import styles from './WorkersTable.module.scss';
 
@@ -55,7 +56,7 @@ export const WorkersTable = ({isEC}) => {
         }
     }, [workersDispatch, isEC, presenceDispatcher]);
 
-    const formattedWorkers = workers.map(worker => {
+    const formattedWorkers = sortedUsers(workers, "fullName").map(worker => {
         const workTime = `${worker.workTime.numerator}/${worker.workTime.denominator}`;
         return {
             userId: worker.userId,

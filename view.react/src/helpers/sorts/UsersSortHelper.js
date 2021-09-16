@@ -1,7 +1,7 @@
-export const sortedUsers = (users) => {
+export const sortedUsers = (users, fieldToSortBy) => {
     const usersCompare = (userOne, userTwo) => {
-        const [userOneFirstName, userOneLastName] = userOne.label.split(" ")
-        const [userTwoFirstName, userTwoLastName] = userTwo.label.split(" ")
+        const [userOneFirstName, userOneLastName] = userOne[fieldToSortBy].split(" ")
+        const [userTwoFirstName, userTwoLastName] = userTwo[fieldToSortBy].split(" ")
         const compareByLastName = userOneLastName.localeCompare(userTwoLastName,"pl", {sensitivity:"base"})
         const compareByFirstName = userOneFirstName.localeCompare(userTwoFirstName,"pl",{sensitivity:"base"})
         return compareByLastName? compareByLastName : compareByFirstName

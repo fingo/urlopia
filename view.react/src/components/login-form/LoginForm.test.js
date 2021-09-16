@@ -1,7 +1,7 @@
 import {act, fireEvent, render, screen} from "@testing-library/react";
 
-import {LoginForm} from "./LoginForm";
 import {AppInfoProvider} from "../../contexts/app-info-context/appInfoContext";
+import {LoginForm} from "./LoginForm";
 
 test('shows Urlopia banner', () => {
     render(<AppInfoProvider><LoginForm /></AppInfoProvider>);
