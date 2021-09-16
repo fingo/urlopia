@@ -3,6 +3,7 @@ import {useCallback, useEffect, useState} from "react";
 import {Dropdown, DropdownButton} from "react-bootstrap";
 import {useLocation} from "react-router-dom";
 
+import {getCurrentUser} from "../../api/services/session.service";
 import {useAbsenceHistory} from "../../contexts/absence-history-context/absenceHistoryContext";
 import styles from "../../global-styles/AbsenceHistoryList.module.scss";
 import {formatLogs} from "../../helpers/AbsenceHistoryFormatterHelper";
@@ -11,6 +12,8 @@ import {AbsenceHistoryTab} from "./AbsenceHistoryTab";
 export const AbsenceHistoryList = ({fetchHistoryLogs}) => {
     const [state, absenceHistoryDispatch] = useAbsenceHistory()
     const {absenceHistory} = state;
+    const {ec: isUserEC} = getCurrentUser();
+
 
     const location = useLocation();
 
@@ -38,10 +41,12 @@ export const AbsenceHistoryList = ({fetchHistoryLogs}) => {
     }
 
     const formattedLog = formatLogs(absenceHistory);
+    let vacationTypeLabel = isUserEC ? "Pozostały urlop" : "Pozostała przerwa"
 
     let header = 'Historia użytkownika';
     if (location.state?.fullName && location.pathname !== '/history/me') {
         header = header.concat(` - ${location.state.fullName}`);
+        vacationTypeLabel = location.state.vacationTypeLabel;
     }
     return (
         <>
@@ -64,7 +69,7 @@ export const AbsenceHistoryList = ({fetchHistoryLogs}) => {
                     </DropdownButton>
                 </div>
             </div>
-            <AbsenceHistoryTab logs={formattedLog}/>
+            <AbsenceHistoryTab logs={formattedLog} vacationTypeLabel={vacationTypeLabel}/>
         </>
     );
 }

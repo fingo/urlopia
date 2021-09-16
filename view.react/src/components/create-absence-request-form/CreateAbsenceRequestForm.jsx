@@ -40,6 +40,7 @@ export const CreateAbsenceRequestForm = ({
             color: 'deepskyblue',
         }]
     );
+    const {ec: isUserEC} = getCurrentUser();
     const [workingDaysCounter, setWorkingDaysCounter] = useState(0);
     const [onChangeOption, setOnChangeOption] = useState(null);
     const [isNormal, setIsNormal] = useState(true);
@@ -159,6 +160,7 @@ export const CreateAbsenceRequestForm = ({
         setSelectedRange([newState]);
         setIsReadyToSubmit(false);
     }
+    const vacationTypeLabel = isUserEC ? "Pozostały urlop: " : "Pozostała przerwa: "
 
     const calendarClass = classNames(styles.calendar, {[styles.blur]: !isSelected});
     return (
@@ -214,12 +216,12 @@ export const CreateAbsenceRequestForm = ({
                     {
                         workTime === 8 ?
                             <>
-                                <h5>Pozostały urlop: <strong>{vacationDays-pendingDays} dni</strong> {vacationHours-pendingHours} godzin</h5>
+                                <h5>{vacationTypeLabel}<strong>{vacationDays-pendingDays} dni</strong> {vacationHours-pendingHours} godzin</h5>
                                 <h5>Złożone wnioski: <strong>{pendingDays} dni</strong> {pendingHours} godzin</h5>
                             </>
                         :
                             <>
-                                <h5>Pozostały urlop: <strong>{vacationHours-pendingHours} godzin</strong></h5>
+                                <h5>{vacationTypeLabel}: <strong>{vacationHours-pendingHours} godzin</strong></h5>
                                 <h5>Złożone wnioski: <strong>{pendingHours} godzin</strong></h5>
                             </>
                     }

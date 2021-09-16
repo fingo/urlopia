@@ -28,6 +28,7 @@ export const ExtendedWorker = ({workTime, userId, isUnspecifiedAbsences}) => {
     const {isEC} = workersState;
 
     const [, absenceHistoryDispatch] = useAbsenceHistory();
+    const vacationTypeLabel = isEC ? "Pozostały urlop:" : "Pozostała przerwa:"
 
     useEffect(() => {
         sendGetRequest(`${GET_AVAILABLE_YEARS_URL_PREFIX}${userId}${GET_AVAILABLE_YEARS_URL_POSTFIX}`)
@@ -66,12 +67,12 @@ export const ExtendedWorker = ({workTime, userId, isUnspecifiedAbsences}) => {
                         {
                             workTime === "1/1" ?
                                 <>
-                                    <h3>Pozostały urlop:</h3>
+                                    <h3>{vacationTypeLabel}</h3>
                                     <h3><strong>{remainingDays} dni</strong> {remainingHours} godzin</h3>
                                 </>
                                 :
                                 <>
-                                    <h3>Pozostały urlop:</h3>
+                                    <h3>{vacationTypeLabel}</h3>
                                     <h3><strong>{remainingHours} godzin</strong></h3>
                                 </>
                         }

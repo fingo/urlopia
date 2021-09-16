@@ -14,7 +14,8 @@ import {LinkGroup} from "./link-group/LinkGroup";
 import styles from './Sidebar.module.scss';
 
 export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
-    const {isAdmin: isUserAnAdmin} = getCurrentUser()
+    const {isAdmin: isUserAnAdmin} = getCurrentUser();
+    const {ec: isUserEC} = getCurrentUser();
     const overlayClass = classNames(styles.overlay, 'd-lg-none');
 
     const [vacationDays, setVacationDays] = useState(0);
@@ -66,7 +67,7 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                     <Link to="/calendar" onClick={onClickLinkOrOutside}>Kalendarz</Link>
                     <Link to="/requests" onClick={onClickLinkOrOutside}>
                         <TextWithIcon
-                            text={"Wnioski urlopowe"}
+                            text={isUserEC ? "Wnioski urlopowe" : "Wnioski o przerwę"}
                             icon={<AttentionIcon />}
                             showIcon={acceptancesPresent}
                         />

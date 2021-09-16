@@ -4,8 +4,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import {hoursChangeMapper} from "../../helpers/react-bootstrap-table2/HistoryLogMapperHelper";
 import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
 
-export const AbsenceHistoryTab = ({logs, isHidden}) => {
-
+export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel}) => {
     const columns = [
         {
             dataField: 'id',
@@ -71,7 +70,7 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
         },
         {
             dataField: "hoursRemaining",
-            text: 'Pozostały urlop',
+            text: vacationTypeLabel,
             headerAlign: 'center',
             align: 'center',
             style: {verticalAlign: 'middle'},
@@ -107,9 +106,11 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
 AbsenceHistoryTab.propTypes = {
     logs: PropTypes.array,
     isHidden: PropTypes.bool,
+    vacationTypeLabel: PropTypes.string
 }
 
 AbsenceHistoryTab.defaultProps = {
     logs: [],
     isHidden: false,
+    vacationTypeLabel: "Pozostały urlop"
 }

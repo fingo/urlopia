@@ -1,6 +1,8 @@
 import {render, screen} from "@testing-library/react";
 
 import {AbsenceHistoryTab} from "./AbsenceHistoryTab";
+import {USER_DATA_KEY} from "../../constants/session.keystorage";
+import {mockLocalStorage} from "../../helpers/TestHelper";
 
 
     const absenceHistory = [
@@ -17,8 +19,16 @@ import {AbsenceHistoryTab} from "./AbsenceHistoryTab";
         }
     ];
     const isHidden = false;
+    const sessionStorageMock = mockLocalStorage()
 
-    test('should show all headers of table if isHidden equals false', () => {
+
+test('should show all headers of table if isHidden equals false', () => {
+
+        sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
+            userRoles: ["ROLES_WORKER"],
+            ec: true,
+            admin: false
+        }))
         render(<AbsenceHistoryTab logs={absenceHistory} isHidden={isHidden}/>)
         const createdHeader = screen.getByText('Utworzono');
         const decidersHeader = screen.getByText('Rozpatrujący');

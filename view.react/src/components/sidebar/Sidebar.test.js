@@ -27,6 +27,7 @@ jest.mock("../../contexts/vacation-days-context/actions/fetchVacationDays", () =
     };
 })
 
+
 describe("Sidebar", () => {
     const sessionStorageMock = mockLocalStorage()
 
@@ -34,11 +35,14 @@ describe("Sidebar", () => {
         sessionStorageMock.clear()
     })
 
-    it("should show correct links when user is not an admin", () => {
+    it("should show correct links when user is not an admin and is EC", () => {
         // given
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
-            userRoles: ["ROLES_WORKER"]
+            userRoles: ["ROLES_WORKER"],
+            ec: true,
+            admin: false
         }))
+
 
         // when
         act(() => {
@@ -63,10 +67,12 @@ describe("Sidebar", () => {
         expect(screen.queryByText('Raporty')).not.toBeInTheDocument()
     })
 
-    it("should show correct links when user is an admin", () => {
+    it("should show correct links when user is an admin and is EC", () => {
         // given
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
-            userRoles: ["ROLES_WORKER", "ROLES_ADMIN"]
+            userRoles: ["ROLES_WORKER", "ROLES_ADMIN"],
+            ec: true,
+            admin: true
         }))
 
         // when
@@ -92,10 +98,12 @@ describe("Sidebar", () => {
         expect(screen.queryByText('Raporty')).toBeInTheDocument()
     })
 
-    it("should render links with correct routes", () => {
+    it("should render links with correct routes and is EC", () => {
         // given
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
-            userRoles: ["ROLES_WORKER", "ROLES_ADMIN"]
+            userRoles: ["ROLES_WORKER", "ROLES_ADMIN"],
+            ec: true,
+            admin: true
         }))
 
         // when
@@ -114,6 +122,75 @@ describe("Sidebar", () => {
         // then
         expect(screen.queryByText('Kalendarz').href).toMatch(/calendar/)
         expect(screen.queryByText(linkWithText('Wnioski urlopowe')).href).toMatch(/requests/)
+        expect(screen.queryByText('Historia użytkownika').href).toMatch(/history/)
+        expect(screen.queryByText('Pracownicy').href).toMatch(/workers/)
+        expect(screen.queryByText('Współpracownicy').href).toMatch(/associates/)
+        expect(screen.queryByText('Dni świąteczne').href).toMatch(/holidays/)
+        expect(screen.queryByText('Raporty').href).toMatch(/reports/)
+    })
+    it("should show correct links when user is not an admin and is not EC", () => {
+        // given
+        sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
+            userRoles: ["ROLES_WORKER"],
+            ec: false,
+            admin: false
+        }))
+
+
+        // when
+        act(() => {
+            render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
+        })
+
+        // then
+        expect(screen.queryByText('Kalendarz')).toBeInTheDocument()
+        expect(screen.queryByText('Wnioski o przerwę')).toBeInTheDocument()
+        expect(screen.queryByText('Historia użytkownika')).toBeInTheDocument()
+        expect(screen.queryByText('Pracownicy')).not.toBeInTheDocument()
+        expect(screen.queryByText('Współpracownicy')).not.toBeInTheDocument()
+        expect(screen.queryByText('Dni świąteczne')).not.toBeInTheDocument()
+        expect(screen.queryByText('Raporty')).not.toBeInTheDocument()
+    })
+
+    it("should show correct links when user is an admin and is not EC", () => {
+        // given
+        sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
+            userRoles: ["ROLES_WORKER", "ROLES_ADMIN"],
+            ec: false,
+            admin: true
+        }))
+
+        // when
+        act(() => {
+            render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
+        })
+
+        // then
+        expect(screen.queryByText('Kalendarz')).toBeInTheDocument()
+        expect(screen.queryByText('Wnioski o przerwę')).toBeInTheDocument()
+        expect(screen.queryByText('Historia użytkownika')).toBeInTheDocument()
+        expect(screen.queryByText('Pracownicy')).toBeInTheDocument()
+        expect(screen.queryByText('Współpracownicy')).toBeInTheDocument()
+        expect(screen.queryByText('Dni świąteczne')).toBeInTheDocument()
+        expect(screen.queryByText('Raporty')).toBeInTheDocument()
+    })
+
+    it("should render links with correct routes and is not EC", () => {
+        // given
+        sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
+            userRoles: ["ROLES_WORKER", "ROLES_ADMIN"],
+            ec: false,
+            admin: true
+        }))
+
+        // when
+        act(() => {
+            render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
+        })
+
+        // then
+        expect(screen.queryByText('Kalendarz').href).toMatch(/calendar/)
+        expect(screen.queryByText(linkWithText('Wnioski o przerwę')).href).toMatch(/requests/)
         expect(screen.queryByText('Historia użytkownika').href).toMatch(/history/)
         expect(screen.queryByText('Pracownicy').href).toMatch(/workers/)
         expect(screen.queryByText('Współpracownicy').href).toMatch(/associates/)
