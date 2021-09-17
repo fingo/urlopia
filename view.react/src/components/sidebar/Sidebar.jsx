@@ -52,6 +52,16 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
     return (
         <>
             <Container fluid className={styles.main}>
+                <div className={styles.days}>
+                    <p>Pozostały urlop: </p>
+                    {
+                        workTime === 8 ?
+                            <p><strong>{vacationDays-pendingDays}d</strong> {vacationHours-pendingHours}h
+                                (<strong>+{pendingDays}d</strong> {pendingHours}h)</p>
+                            :
+                            <p><strong>{vacationHours-pendingHours}h ({pendingHours}h)</strong></p>
+                    }
+                </div>
                 <Nav className={styles.nav}>
                     <Link to="/calendar" onClick={onClickLinkOrOutside}>Kalendarz</Link>
                     <Link to="/requests" onClick={onClickLinkOrOutside}>
@@ -60,15 +70,6 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                             icon={<AttentionIcon />}
                             showIcon={acceptancesPresent}
                         />
-                        <div className={styles.days}>
-                            <p>Pozostały urlop: </p>
-                            {
-                                workTime === 8 ?
-                                    <p><strong>{vacationDays-pendingDays}d</strong> {vacationHours-pendingHours}h (<strong>+{pendingDays}d</strong> {pendingHours}h)</p>
-                                    :
-                                    <p><strong>{vacationHours-pendingHours}h ({pendingHours}h)</strong></p>
-                            }
-                        </div>
                     </Link>
                     <Link to="/history" onClick={onClickLinkOrOutside}>Historia użytkownika</Link>
                     {isUserAnAdmin && (
