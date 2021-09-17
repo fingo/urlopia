@@ -4,6 +4,7 @@ import info.fingo.urlopia.api.v2.calendar.unspecifiedabsence.UnspecifiedAbsenceS
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmation
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
 import info.fingo.urlopia.config.persistance.filter.Filter
+import info.fingo.urlopia.config.persistance.filter.Operator
 import info.fingo.urlopia.holidays.Holiday
 import info.fingo.urlopia.holidays.HolidayService
 import info.fingo.urlopia.request.Request
@@ -32,7 +33,7 @@ class CalendarServiceSpec extends Specification {
 
     def unspecifiedAbsenceService = new UnspecifiedAbsenceService(requestService, presenceConfirmationService, userService, holidayService)
     def calendarOutputProvider = new CalendarOutputProvider(holidayService, userService, presenceConfirmationService, unspecifiedAbsenceService)
-    def calendarService = new CalendarService(calendarOutputProvider)
+    def calendarService = new CalendarService(calendarOutputProvider, unspecifiedAbsenceService)
 
     def "getCalendarInfo() WHEN normal day SHOULD return calendar output"() {
         given:
@@ -149,5 +150,61 @@ class CalendarServiceSpec extends Specification {
 
         then:
         output == expectedCalendarOutput
+    }
+
+    def "getUsersVacations() WHEN accepted requests are present SHOULD return correct response"() {
+        given: "some reference date"
+        def date = LocalDate.of(2021, 9, 25)
+
+        and: "some users"
+        def user1 = Mock(User) {getId() >> 10L}
+        def user2 = Mock(User) {getId() >> 11L}
+        def user3 = Mock(User) {getId() >> 12L}
+
+        and: "some requests"
+        def sampleRequests = [
+                new Request(user1, date.minusDays(0), date.plusDays(1), 2, RequestType.NORMAL, null, Request.Status.ACCEPTED),
+                new Request(user2, date.minusDays(0), date.plusDays(1), 2, RequestType.OCCASIONAL, null, Request.Status.ACCEPTED),
+                new Request(user3, date.minusDays(1), date.plusDays(2), 4, RequestType.NORMAL, null, Request.Status.ACCEPTED)
+        ]
+        requestService.getAll(sampleVacationDaysFilterFor(user1.getId())) >> [sampleRequests[0]]
+        requestService.getAll(sampleVacationDaysFilterFor(user2.getId())) >> [sampleRequests[1]]
+        requestService.getAll(sampleVacationDaysFilterFor(user3.getId())) >> [sampleRequests[2]]
+
+        when:
+        def result1 = calendarService.getUserVacationsOf(user1.getId())
+        def result2 = calendarService.getUserVacationsOf(user2.getId())
+        def result3 = calendarService.getUserVacationsOf(user3.getId())
+
+        then:
+        result1.usersVacations().size() == 2
+        result1.usersVacations().get(date.minusDays(0)).size() == 1
+        result1.usersVacations().get(date.minusDays(0)).contains(user1.getId())
+        result1.usersVacations().get(date.plusDays(1)).size() == 1
+        result1.usersVacations().get(date.plusDays(1)).contains(user1.getId())
+
+        result2.usersVacations().size() == 2
+        result2.usersVacations().get(date.minusDays(0)).size() == 1
+        result2.usersVacations().get(date.minusDays(0)).contains(user2.getId())
+        result2.usersVacations().get(date.plusDays(1)).size() == 1
+        result2.usersVacations().get(date.plusDays(1)).contains(user2.getId())
+
+        result3.usersVacations().size() == 4
+        result3.usersVacations().get(date.minusDays(1)).size() == 1
+        result3.usersVacations().get(date.minusDays(1)).contains(user3.getId())
+        result3.usersVacations().get(date.minusDays(0)).size() == 1
+        result3.usersVacations().get(date.minusDays(0)).contains(user3.getId())
+        result3.usersVacations().get(date.plusDays(1)).size() == 1
+        result3.usersVacations().get(date.plusDays(1)).contains(user3.getId())
+        result3.usersVacations().get(date.plusDays(2)).size() == 1
+        result3.usersVacations().get(date.plusDays(2)).contains(user3.getId())
+    }
+
+    static def sampleVacationDaysFilterFor(Long userId) {
+        return Filter.newBuilder()
+                .and("requester.active", Operator.EQUAL, "true")
+                .and("requester.id", Operator.EQUAL, userId.toString())
+                .and("status", Operator.EQUAL, Request.Status.ACCEPTED.toString())
+                .build();
     }
 }

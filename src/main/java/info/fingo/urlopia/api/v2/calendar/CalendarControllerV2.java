@@ -36,4 +36,10 @@ public class CalendarControllerV2 {
     public UnspecifiedAbsenceOutput getUsersWithUnspecifiedAbsences() {
         return unspecifiedAbsenceService.getEmployeesWithUnspecifiedAbsences();
     }
+
+    @RolesAllowed({"ROLES_WORKER", "ROLES_ADMIN"})
+    @GetMapping(path = "/users/{userId}/vacations", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UsersVacationDaysOutput getUserVacations(@PathVariable Long userId) {
+        return calendarService.getUserVacationsOf(userId);
+    }
 }

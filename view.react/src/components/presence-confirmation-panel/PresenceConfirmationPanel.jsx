@@ -5,6 +5,8 @@ import {getCurrentUser} from "../../api/services/session.service";
 import {addPresenceConfirmation} from "../../contexts/presence-context/actions/addPresenceConfirmation";
 import {fetchMyPresenceConfirmations} from "../../contexts/presence-context/actions/fetchMyPresenceConfirmations";
 import {usePresence} from "../../contexts/presence-context/presenceContext";
+import {fetchUsersVacations} from "../../contexts/users-vacations-context/actions/fetchUsersVacations";
+import {useUsersVacations} from "../../contexts/users-vacations-context/usersVacationsContext";
 import {formattedDate, formattedTime} from "../../helpers/DateHelper";
 import {DatePicker} from "../date-picker/DatePicker";
 import {TimePicker} from "../time-picker/TimePicker";
@@ -18,10 +20,16 @@ const getTime = (hours, minutes) => {
 }
 
 export const PresenceConfirmationPanel = ({userId, onConfirmation}) => {
-    const [state, presenceDispatcher] = usePresence()
-    const {confirmations: myConfirmations} = state.myConfirmations
-    const {confirmations: usersConfirmations} = state.usersConfirmations
-    const {fetching} = userId ? state.usersConfirmations : state.myConfirmations
+    const ownPresence = userId === undefined
+    const currentUser = getCurrentUser()
+
+    const [presenceState, presenceDispatcher] = usePresence()
+    const {confirmations: myConfirmations} = presenceState.myConfirmations
+    const {confirmations: usersConfirmations} = presenceState.usersConfirmations
+    const {fetching} = ownPresence ? presenceState.myConfirmations : presenceState.usersConfirmations
+
+    const [usersVacationsState, usersVacationsDispatcher] = useUsersVacations()
+    const {usersVacations} = usersVacationsState
 
     const TODAY = new Date();
     const [chosenDate, setChosenDate] = useState(TODAY)
@@ -30,15 +38,17 @@ export const PresenceConfirmationPanel = ({userId, onConfirmation}) => {
 
     useEffect(() => {
         fetchMyPresenceConfirmations(presenceDispatcher)
-    }, [presenceDispatcher])
+        fetchUsersVacations(usersVacationsDispatcher, {
+            userId: ownPresence ? currentUser.userId : userId
+        })
+    }, [presenceDispatcher, usersVacationsDispatcher, ownPresence, currentUser.userId, userId])
 
     const handlePresenceConfirmation = () => {
-        const currentUser = getCurrentUser()
         addPresenceConfirmation(presenceDispatcher, {
             date: formattedDate(chosenDate),
             startTime: formattedTime(chosenStartTime),
             endTime: formattedTime(chosenEndTime),
-            userId: userId || currentUser.userId
+            userId: ownPresence ? currentUser.userId : userId
         })
         onConfirmation(formattedDate(chosenDate));
     }
@@ -58,10 +68,16 @@ export const PresenceConfirmationPanel = ({userId, onConfirmation}) => {
     const LineBreak = () => <div className={styles.lineBreak}/>
 
     const getConfirmation = (date) => {
-        if (userId) {
-            return usersConfirmations[userId] && usersConfirmations[userId][formattedDate(date)]
+        if (ownPresence) {
+            return myConfirmations[formattedDate(date)]
         }
-        return myConfirmations[formattedDate(date)]
+        return usersConfirmations[userId] && usersConfirmations[userId][formattedDate(date)]
+    }
+
+    const isUserOnVacation = () => {
+        const formatted = formattedDate(chosenDate)
+        const id = ownPresence ? currentUser.userId : userId
+        return usersVacations[formatted] && usersVacations[formatted].includes(id) !== undefined
     }
 
     return (
@@ -108,7 +124,8 @@ export const PresenceConfirmationPanel = ({userId, onConfirmation}) => {
             <ConfirmationLabel
                 fetching={fetching}
                 confirmation={getConfirmation(chosenDate)}
-                isOwnPresence={userId === undefined}
+                isOwnPresence={ownPresence}
+                isOnVacation={isUserOnVacation()}
             />
         </div>
     )

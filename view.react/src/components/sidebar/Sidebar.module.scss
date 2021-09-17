@@ -56,7 +56,8 @@
 .versionContainer {
   font-size: 0.9rem;
   color: #cccccc;
-  margin-top: auto;
+  position: absolute;
+  bottom: 10%;
 }
 
 @include media-breakpoint-up(lg) {
