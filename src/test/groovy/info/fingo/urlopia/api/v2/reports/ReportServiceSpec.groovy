@@ -43,11 +43,11 @@ class ReportServiceSpec extends Specification{
         model.put("user.firstName",userFirstName)
         def evidenceReportModel = new EvidenceReportModel(model)
 
-        and: "mock for evidenceReportModelFactory that return our EbidenceReportModel"
+        and: "mock for evidenceReportModelFactory that return our EvidenceReportModel"
         def user = Mock(User)
         def year = Integer.valueOf(reportDateYear)
         userService.get(_ as Long) >> user
-        evidenceReportModelFactory.create(user, year) >> evidenceReportModel
+        evidenceReportModelFactory.generateModelForFileName(user, year) >> evidenceReportModel
 
 
         and: "every valid string prefix and suffix"

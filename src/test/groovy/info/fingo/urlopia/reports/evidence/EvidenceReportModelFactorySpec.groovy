@@ -23,16 +23,15 @@ class EvidenceReportModelFactorySpec extends Specification {
         getId() >> 5
     }
 
-    def "create WHEN called with year SHOULD use all resolvers to build a model representing this year "(){
-        given:
-        def START_TIME_PREFIX = "startTime";
-        def REPORT_DATE_PREFIX = "reportDate";
-        def END_TIME_PREFIX = "endTime";
-        def USER_METADATA_PREFIX = "user";
-        def VACATION_LEAVE_PREFIX = "vacationLeave";
-        def DAY_STATUS_PREFIX = "day";
-        def USED_TIME_PREFIX = "usedTime";
+    def START_TIME_PREFIX = "startTime";
+    def REPORT_DATE_PREFIX = "reportDate";
+    def END_TIME_PREFIX = "endTime";
+    def USER_METADATA_PREFIX = "user";
+    def VACATION_LEAVE_PREFIX = "vacationLeave";
+    def DAY_STATUS_PREFIX = "day";
+    def USED_TIME_PREFIX = "usedTime";
 
+    def "create WHEN called with year SHOULD resolve all prefixes to build a model representing this year "(){
         when:
         def result = evidenceReportModelFactory.create(user, year)
 
@@ -44,6 +43,20 @@ class EvidenceReportModelFactorySpec extends Specification {
         containsKeyStartsWith(result.getModel(),VACATION_LEAVE_PREFIX)
         containsKeyStartsWith(result.getModel(),DAY_STATUS_PREFIX)
         containsKeyStartsWith(result.getModel(),USED_TIME_PREFIX)
+    }
+
+    def "generateModelForFileName WHEN called with year SHOULD resolve only prefixes needed to build a model representing fileName "(){
+        when:
+        def result = evidenceReportModelFactory.generateModelForFileName(user, year)
+
+        then:
+        !containsKeyStartsWith(result.getModel(),START_TIME_PREFIX)
+        containsKeyStartsWith(result.getModel(),REPORT_DATE_PREFIX)
+        !containsKeyStartsWith(result.getModel(),END_TIME_PREFIX)
+        containsKeyStartsWith(result.getModel(),USER_METADATA_PREFIX)
+        !containsKeyStartsWith(result.getModel(),VACATION_LEAVE_PREFIX)
+        !containsKeyStartsWith(result.getModel(),DAY_STATUS_PREFIX)
+        !containsKeyStartsWith(result.getModel(),USED_TIME_PREFIX)
     }
 
 

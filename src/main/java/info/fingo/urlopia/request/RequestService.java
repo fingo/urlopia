@@ -7,7 +7,9 @@ import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
 import info.fingo.urlopia.config.authentication.WebTokenService;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
+import info.fingo.urlopia.history.HistoryLog;
 import info.fingo.urlopia.history.HistoryLogService;
+import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.request.absence.BaseRequestInput;
 import info.fingo.urlopia.request.absence.SpecialAbsenceRequestService;
 import info.fingo.urlopia.request.normal.RequestTooFarInThePastException;
@@ -27,6 +29,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,18 +40,23 @@ public class RequestService {
     private final HistoryLogService historyLogService;
     private final UserService userService;
     private final WebTokenService webTokenService;
+    private final HolidayService holidayService;
     private final PresenceConfirmationService presenceConfirmationService;
+
+    private static final String REQUEST_NOT_EXIST_MESSAGE = "Request with id: {} does not exist";
 
     @Autowired
     public RequestService(RequestRepository requestRepository,
                           HistoryLogService historyLogService,
                           UserService userService,
                           WebTokenService webTokenService,
+                          HolidayService holidayService,
                           @Lazy PresenceConfirmationService presenceConfirmationService) {
         this.requestRepository = requestRepository;
         this.historyLogService = historyLogService;
         this.userService = userService;
         this.webTokenService = webTokenService;
+        this.holidayService = holidayService;
         this.presenceConfirmationService = presenceConfirmationService;
     }
 
@@ -89,7 +97,7 @@ public class RequestService {
         return requestRepository
                 .findById(requestId)
                 .orElseThrow(() -> {
-                    log.error("Request with id: {} does not exist", requestId);
+                    log.error(REQUEST_NOT_EXIST_MESSAGE, requestId);
                     return new NoSuchElementException();
                 });
     }
@@ -129,6 +137,65 @@ public class RequestService {
                 .map(date -> createVacationDay(teammates, date))
                 .collect(Collectors.toList());
     }
+
+    public double countTheHoursUsedDuringTheYear(Long userId,
+                                                 int year){
+        return requestRepository.findByRequesterIdAndYear(userId,year)
+                        .stream()
+                        .filter(request -> request.getType() == RequestType.NORMAL)
+                        .filter(request -> request.getStatus() == Request.Status.ACCEPTED)
+                        .mapToDouble(request -> countUsedHoursFromYearAndRequest(year,request))
+                        .sum();
+    }
+
+    private double countUsedHoursFromYearAndRequest(int year,
+                                                    Request request){
+        if (requestOverlappingOnLeft(request, year)) {
+            return countUsedHoursInOverlappingRequest(year, request,true);
+        } else if (requestOverlappingOnRight(request, year)) {
+            return countUsedHoursInOverlappingRequest(year, request,false);
+        } else {
+            return request.getWorkingHours();
+        }
+    }
+
+    private boolean requestOverlappingOnLeft(Request request, int year) {
+        var yearStart = LocalDate.of(year, 1, 1);
+        return request.getStartDate().isBefore(yearStart) && !request.getEndDate().isBefore(yearStart);
+    }
+
+    private boolean requestOverlappingOnRight(Request request, int year) {
+        var yearEnd = LocalDate.of(year, 12, 31);
+        return !request.getStartDate().isAfter(yearEnd) && request.getEndDate().isAfter(yearEnd);
+    }
+
+    private double countUsedHoursInOverlappingRequest(int year,
+                                                      Request request,
+                                                      boolean overlappedOnLeft) {
+        var requestStartDate = request.getStartDate();
+        var requestEndDate = request.getEndDate();
+        var yearStart = LocalDate.of(year, 1, 1);
+        var yearEnd = LocalDate.of(year, 12, 31);
+
+        Predicate<LocalDate> filter = overlappedOnLeft ? day -> !day.isBefore(yearStart) : day -> !day.isAfter(yearEnd);
+
+        var workingDays = requestStartDate.datesUntil(requestEndDate.plusDays(1))
+                .filter(holidayService::isWorkingDay)
+                .toList();
+
+        var numOfWorkingDaysBeforeNextYear = workingDays.stream()
+                .filter(filter)
+                .count();
+        var numOfWorkingDays = workingDays.size();
+
+        if (numOfWorkingDays == 0) {
+            return 0;
+        }
+
+        var hoursUsedPerDay = request.getWorkingHours() / numOfWorkingDays;
+        return hoursUsedPerDay * numOfWorkingDaysBeforeNextYear;
+    }
+
 
     private void ensureRequestIsNotTooFarInThePast(LocalDate startDate) {
         if (startDate.isBefore(LocalDate.now().minusMonths(1))) {
@@ -186,7 +253,7 @@ public class RequestService {
         var request = requestRepository
                 .findById(requestId)
                 .orElseThrow(() -> {
-                    log.error("Request with id: {} does not exist", requestId);
+                    log.error(REQUEST_NOT_EXIST_MESSAGE, requestId);
                     return new NoSuchElementException();
                 });
         var service = request.getType().getService();
@@ -215,7 +282,7 @@ public class RequestService {
         var request = requestRepository
                 .findById(requestId)
                 .orElseThrow(() -> {
-                    log.error("Request with id: {} does not exist", requestId);
+                    log.error(REQUEST_NOT_EXIST_MESSAGE, requestId);
                     return new NoSuchElementException();
                 });
         var service = request.getType().getService();
@@ -227,7 +294,7 @@ public class RequestService {
         var request = requestRepository
                 .findById(requestId)
                 .orElseThrow(() -> {
-                    log.error("Request with id: {} does not exist", requestId);
+                    log.error(REQUEST_NOT_EXIST_MESSAGE, requestId);
                     return new NoSuchElementException();
                 });
         var requesterId = request.getRequester().getId();

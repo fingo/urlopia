@@ -2,6 +2,7 @@ package info.fingo.urlopia.reports.evidence.params.resolver;
 
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.reports.ParamResolver;
+import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.user.User;
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +19,7 @@ public class EvidenceReportUsedTimeDuringTheYearParamsResolver implements ParamR
     private final User user;
     private final int year;
     private final HistoryLogService historyLogService;
+    private final RequestService requestService;
 
     @Override
     public Map<String, String> resolve() {
@@ -26,7 +28,7 @@ public class EvidenceReportUsedTimeDuringTheYearParamsResolver implements ParamR
     }
 
     private String resolveUsedTimeDuringYear() {
-        var usedHours = historyLogService.countTheHoursUsedDuringTheYear(user.getId(), year);
+        var usedHours = requestService.countTheHoursUsedDuringTheYear(user.getId(), year);
         if (historyLogService.checkIfWorkedFullTimeForTheWholeYear(user.getId(), year)) {
             return DECIMAL_FORMAT.format(usedHours / FULL_TIME_DIVIDER);
         } else {

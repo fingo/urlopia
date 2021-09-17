@@ -86,7 +86,7 @@ public class ReportService {
                                                 int year) {
         var user = this.userService.get(userId);
         var report = new EvidenceReport();
-        var model = this.evidenceReportModelFactory.create(user, year);
+        var model = this.evidenceReportModelFactory.generateModelForFileName(user,year);
         return "attachment; filename=%s".formatted(report.fileName(model));
     }
 
