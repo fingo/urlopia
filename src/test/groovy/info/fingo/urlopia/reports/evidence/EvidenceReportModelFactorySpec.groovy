@@ -21,6 +21,7 @@ class EvidenceReportModelFactorySpec extends Specification {
     def year = 2021
     def user = Mock(User){
         getId() >> 5
+        getEc() >> true
     }
 
     def START_TIME_PREFIX = "startTime";

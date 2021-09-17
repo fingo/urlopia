@@ -7,13 +7,14 @@ import info.fingo.urlopia.user.User;
 import lombok.RequiredArgsConstructor;
 
 import java.text.DecimalFormat;
-import java.util.Collections;
 import java.util.Map;
 
 @RequiredArgsConstructor
 public class EvidenceReportVacationLeaveParamsResolver implements ParamResolver {
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(); // uses default JVM locale
     private static final double FULL_TIME_DIVIDER = 8.0f;
+    private static final String EC_LABEL = "urlop";
+    private static final String B2B_LABEL = "przerwa";
 
     private final User user;
     private final int year;
@@ -21,7 +22,15 @@ public class EvidenceReportVacationLeaveParamsResolver implements ParamResolver 
 
     @Override
     public Map<String, String> resolve() {
-        return Collections.singletonMap("remainingTimeAtYearStart", resolveRemainingHoursAtYearStart());
+        return Map.of("remainingTimeAtYearStart", resolveRemainingHoursAtYearStart(),
+                      "label",resolveLabel());
+    }
+
+    private String resolveLabel(){
+        if (user.getEc()){
+            return EC_LABEL;
+        }
+        return B2B_LABEL;
     }
 
     private String resolveRemainingHoursAtYearStart() {
