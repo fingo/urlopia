@@ -15,7 +15,7 @@ export const Page404 = () => {
             <div className={styles.container}>
                 <img src={img} alt="404"/>
                 <h3>Wygląda na to, że znajdujesz się w niewłaściwym miejscu...</h3>
-                <Button className={styles.btnClass} onClick={() => history.push("/")} data-testid="return-btn">Powrót</Button>
+                <Button className={styles.btnClass} onClick={() => history.push("/")} data-testid="return-btn">Powrót do kalendarza</Button>
             </div>
         </>
     );
