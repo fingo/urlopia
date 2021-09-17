@@ -5,6 +5,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 
 import {saveHolidays} from "../../contexts/holidays-context/actions/saveHolidays";
 import {useHolidays} from "../../contexts/holidays-context/holidaysContext";
+import {AttentionIcon, TextWithIcon} from "../../helpers/icons/Icons";
 import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
 import {ConfirmRemoveHolidayModal} from "./confirm-remove-holiday-modal/ConfirmRemoveHolidayModal";
 import {HolidaySettingsModal} from "./holidays-settings-modal/HolidaySettingsModal";
@@ -42,6 +43,26 @@ export const HolidaysConfigTab = ({holidays, year}) => {
         saveHolidays(dispatchHolidays, newHolidays);
         setModalsShow({...modalsShow, [id]: false});
     }
+    const withNotifyFormatter = (cell, row) => {
+        if (specificDayFormatter(row.date) === "Sobota") {
+            return (
+                <div className={styles.notify}>
+                    <div className={styles.dot}>
+                        <TextWithIcon
+                            text=''
+                            icon={<AttentionIcon/>}
+                            showIcon={true}
+                        />
+                    </div>
+                    {cell}
+                </div>
+            );
+        } else {
+            return cell;
+        }
+
+    }
+
 
     const actionFormatter = (cell, row) => {
 
@@ -73,8 +94,8 @@ export const HolidaysConfigTab = ({holidays, year}) => {
                 key={holiday.id}
                 show={modalsShow[holiday.id]}
                 onHide={() => setModalsShow({...modalsShow, [holiday.id]: false})}
-                year = {year}
-                holiday = {holiday}
+                year={year}
+                holiday={holiday}
             />
         )
     })
@@ -95,7 +116,8 @@ export const HolidaysConfigTab = ({holidays, year}) => {
             text: 'Święto',
             headerAlign: 'center',
             align: 'center',
-            style: {verticalAlign: 'middle'}
+            style: {verticalAlign: 'middle'},
+            formatter: (cell, row) => withNotifyFormatter(cell, row),
         },
         {
             dataField: 'date',

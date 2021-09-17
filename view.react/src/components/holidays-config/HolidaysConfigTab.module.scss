@@ -29,3 +29,14 @@
     color: $REJECT-HOVER-COLOR;
   }
 }
+
+.notify {
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.dot {
+  position: absolute;
+  left: 0;
+}
