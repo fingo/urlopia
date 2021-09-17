@@ -6,6 +6,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import {saveHolidays} from "../../contexts/holidays-context/actions/saveHolidays";
 import {useHolidays} from "../../contexts/holidays-context/holidaysContext";
 import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
+import {ConfirmRemoveHolidayModal} from "./confirm-remove-holiday-modal/ConfirmRemoveHolidayModal";
 import {HolidaySettingsModal} from "./holidays-settings-modal/HolidaySettingsModal";
 import styles from './HolidaysConfigTab.module.scss';
 
@@ -14,6 +15,9 @@ export const HolidaysConfigTab = ({holidays, year}) => {
     const [, dispatchHolidays] = useHolidays();
 
     const [modalsShow, setModalsShow] = useState({});
+    const [showConfirmRemoveHolidayModal, setShowConfirmRemoveHolidayModal] = useState(false)
+    const [rowId, setRowId] = useState(0);
+
 
     const lastDay = new Date(year, 11, 31);
     const firstDay = new Date(year, 0, 1);
@@ -52,7 +56,10 @@ export const HolidaysConfigTab = ({holidays, year}) => {
                     }>
                         <GearIcon className={styles.settingsButton} size={20}/>
                     </button>
-                    <button onClick={() => handleRemovingHoliday(row.id)}>
+                    <button onClick={() => {
+                        setRowId(row.id);
+                        setShowConfirmRemoveHolidayModal(true);
+                    }}>
                         <TrashIcon className={styles.removeButton} size={20}/>
                     </button>
                 </div>
@@ -128,6 +135,10 @@ export const HolidaysConfigTab = ({holidays, year}) => {
                 bordered={false}
                 hover
             />
+            <ConfirmRemoveHolidayModal show={showConfirmRemoveHolidayModal}
+                                       onHide={() => setShowConfirmRemoveHolidayModal(false)}
+                                       rowId={rowId}
+                                       removeHoliday={handleRemovingHoliday}/>
         </>
     );
 
