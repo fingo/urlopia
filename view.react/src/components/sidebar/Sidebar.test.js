@@ -139,7 +139,15 @@ describe("Sidebar", () => {
 
         // when
         act(() => {
-            render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
+            render(
+                <Router>
+                    <AppInfoProvider>
+                        <VacationDaysProvider>
+                            <Sidebar onClickLinkOrOutside={() => {}}/>
+                        </VacationDaysProvider>
+                    </AppInfoProvider>
+                </Router>
+            );
         })
 
         // then
@@ -162,7 +170,15 @@ describe("Sidebar", () => {
 
         // when
         act(() => {
-            render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
+            render(
+                <Router>
+                    <AppInfoProvider>
+                        <VacationDaysProvider>
+                            <Sidebar onClickLinkOrOutside={() => {}}/>
+                        </VacationDaysProvider>
+                    </AppInfoProvider>
+                </Router>
+            );
         })
 
         // then
@@ -185,7 +201,15 @@ describe("Sidebar", () => {
 
         // when
         act(() => {
-            render(<Router><VacationDaysProvider><Sidebar onClickLinkOrOutside={() => {}}/></VacationDaysProvider></Router>);
+            render(
+                <Router>
+                    <AppInfoProvider>
+                        <VacationDaysProvider>
+                            <Sidebar onClickLinkOrOutside={() => {}}/>
+                        </VacationDaysProvider>
+                    </AppInfoProvider>
+                </Router>
+            );
         })
 
         // then

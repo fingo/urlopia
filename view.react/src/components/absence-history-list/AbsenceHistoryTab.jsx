@@ -82,6 +82,7 @@ export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel}) => {
             text: 'Komentarz',
             headerAlign: 'center',
             align: 'center',
+            sort: 'true',
             style: {verticalAlign: 'middle'},
             headerAttrs: {
                 hidden: isHidden
