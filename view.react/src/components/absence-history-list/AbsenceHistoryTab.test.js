@@ -1,8 +1,8 @@
 import {render, screen} from "@testing-library/react";
 
-import {AbsenceHistoryTab} from "./AbsenceHistoryTab";
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
 import {mockLocalStorage} from "../../helpers/TestHelper";
+import {AbsenceHistoryTab} from "./AbsenceHistoryTab";
 
 
     const absenceHistory = [
