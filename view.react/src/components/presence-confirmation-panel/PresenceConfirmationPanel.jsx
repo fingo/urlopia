@@ -1,3 +1,4 @@
+import moment from "moment";
 import PropTypes from "prop-types";
 import {forwardRef, useEffect, useState} from "react";
 
@@ -5,6 +6,7 @@ import {getCurrentUser} from "../../api/services/session.service";
 import {addPresenceConfirmation} from "../../contexts/presence-context/actions/addPresenceConfirmation";
 import {fetchMyPresenceConfirmations} from "../../contexts/presence-context/actions/fetchMyPresenceConfirmations";
 import {usePresence} from "../../contexts/presence-context/presenceContext";
+import {useUserPreferences} from "../../contexts/user-preferences-context/userPreferencesContext";
 import {fetchUsersVacations} from "../../contexts/users-vacations-context/actions/fetchUsersVacations";
 import {useUsersVacations} from "../../contexts/users-vacations-context/usersVacationsContext";
 import {formattedDate, formattedTime} from "../../helpers/DateHelper";
@@ -19,6 +21,29 @@ const getTime = (hours, minutes) => {
     return date
 }
 
+const getStartTimeValue = (preferences, date) => {
+    const userPreferences = preferences.dayPreferences
+    return userPreferences ? moment(userPreferences[date.getDay()].startTime, "HH:mm").toDate() : getTime(8, 0);
+}
+
+const getEndTimeValue = (preferences, date) => {
+    const userPreferences = preferences.dayPreferences
+    return userPreferences ? moment(userPreferences[date.getDay()].endTime, "HH:mm").toDate() : getTime(16, 0);
+}
+
+const isNotWorking = (preferences, chosenDate) => {
+    const userPreferences = preferences.dayPreferences
+    if (userPreferences) {
+        const preferenceChangeDate = moment(preferences.changeDate, "YYYY-MM-DD").toDate()
+        return userPreferences[chosenDate.getDay()].nonWorking && preferenceChangeDate < chosenDate
+    }
+    return false;
+}
+
+const UNDEFINED_PREFERENCES = {
+    dayPreferences: undefined
+}
+
 export const PresenceConfirmationPanel = ({userId, onConfirmation}) => {
     const ownPresence = userId === undefined
     const currentUser = getCurrentUser()
@@ -31,10 +56,19 @@ export const PresenceConfirmationPanel = ({userId, onConfirmation}) => {
     const [usersVacationsState, usersVacationsDispatcher] = useUsersVacations()
     const {usersVacations} = usersVacationsState
 
+    const [preferencesState,] = useUserPreferences()
+    const {workingHours} = preferencesState
+    const userPreferences = workingHours.preferences[ownPresence ? currentUser.userId : userId] || UNDEFINED_PREFERENCES
+
     const TODAY = new Date();
     const [chosenDate, setChosenDate] = useState(TODAY)
-    const [chosenStartTime, setChosenStartTime] = useState(getTime(8, 0))
-    const [chosenEndTime, setChosenEndTime] = useState(getTime(16, 0))
+    const [chosenStartTime, setChosenStartTime] = useState(() => getStartTimeValue(userPreferences, chosenDate))
+    const [chosenEndTime, setChosenEndTime] = useState(() => getEndTimeValue(userPreferences, chosenDate))
+    
+    useEffect(() => {
+        setChosenStartTime(() => getStartTimeValue(userPreferences, chosenDate))
+        setChosenEndTime(() => getEndTimeValue(userPreferences, chosenDate))
+    }, [chosenDate, userPreferences])
 
     useEffect(() => {
         fetchMyPresenceConfirmations(presenceDispatcher)
@@ -126,6 +160,7 @@ export const PresenceConfirmationPanel = ({userId, onConfirmation}) => {
                 confirmation={getConfirmation(chosenDate)}
                 isOwnPresence={ownPresence}
                 isOnVacation={isUserOnVacation()}
+                isNotWorking={isNotWorking(userPreferences, chosenDate)}
             />
         </div>
     )

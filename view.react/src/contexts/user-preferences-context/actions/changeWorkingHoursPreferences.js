@@ -1,3 +1,4 @@
+import {pushSuccessNotification} from "../../../helpers/notifications/Notifications";
 import {sendPutRequest} from "../../../helpers/RequestHelper";
 import {
     CHANGE_USER_WORKING_HOURS_PREFERENCES_ACTION_PREFIX,
@@ -9,10 +10,13 @@ export const changeWorkingHoursPreferences = (dispatch, newPreferences) => {
     sendPutRequest(`${CHANGE_USER_WORKING_HOURS_PREFERENCES_URL}`, {
         dayPreferences: newPreferences
     })
-        .then(data => dispatch({
-            type: `${CHANGE_USER_WORKING_HOURS_PREFERENCES_ACTION_PREFIX}_success`,
-            response: data
-        }))
+        .then(data => {
+            dispatch({
+                type: `${CHANGE_USER_WORKING_HOURS_PREFERENCES_ACTION_PREFIX}_success`,
+                response: data
+            })
+            pushSuccessNotification("Pomyślnie zmieniono preferencje godzin pracy")
+        })
         .catch(errorMsg => dispatch({
             type: `${CHANGE_USER_WORKING_HOURS_PREFERENCES_ACTION_PREFIX}_failure`,
             error: errorMsg

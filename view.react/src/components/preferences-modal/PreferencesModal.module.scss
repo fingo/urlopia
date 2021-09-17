@@ -1,0 +1,59 @@
+@import "src/global-styles/color-variables";
+@import "src/global-styles/bootstrap-breakpoints";
+
+p {
+  font-size: 20px;
+  justify-content: center;
+}
+
+.flexContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+  margin: 0 10px;
+}
+
+.timePickersContainer {
+  display: flex;
+}
+
+.dash {
+  border: 1px solid black;
+  width: 1.5rem;
+  transform: translateY(0.8rem);
+  background-color: black;
+}
+
+.dateTimePickerInput {
+  width: 7rem;
+  background-color: white;
+  color: black;
+  border: 1px solid grey;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: $WHITESMOKE_COLOR;
+  }
+}
+
+.warningLabelContainer {
+  display: flex;
+  background: $LIGHTGREY-COLOR;
+  padding: 0.5rem;
+  border-radius: 0.3rem;
+}
+
+.warningLabelTextContainer {
+  padding-left: 0.6rem;
+  color: black;
+}
+
+.button {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}

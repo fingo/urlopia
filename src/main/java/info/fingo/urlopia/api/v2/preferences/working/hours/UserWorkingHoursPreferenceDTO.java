@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import java.util.Optional;
 @NoArgsConstructor // Required for jackson
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserWorkingHoursPreferenceDTO {
+    private LocalDate changeDate;
     private Long userId;
     private Map<Integer, SingleDayHourPreferenceDTO> dayPreferences;
 
@@ -25,7 +27,8 @@ public class UserWorkingHoursPreferenceDTO {
         dayPreferences.put(3, dayHoursDtoFrom(workingHoursPreference.getWednesdayPreference()));
         dayPreferences.put(4, dayHoursDtoFrom(workingHoursPreference.getThursdayPreference()));
         dayPreferences.put(5, dayHoursDtoFrom(workingHoursPreference.getFridayPreference()));
-        return new UserWorkingHoursPreferenceDTO(userId, dayPreferences);
+        var changeDate = workingHoursPreference.getChanged().toLocalDate();
+        return new UserWorkingHoursPreferenceDTO(changeDate, userId, dayPreferences);
     }
 
     private static SingleDayHourPreferenceDTO dayHoursDtoFrom(SingleDayHourPreference workingDayPreference) {

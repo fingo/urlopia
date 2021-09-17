@@ -1,21 +1,28 @@
 import styles from './ConfirmationLabel.module.scss'
 
-export const ConfirmationLabel = ({fetching, confirmation, isOwnPresence, isOnVacation}) => {
-    const label = getLabel(confirmation, isOwnPresence, isOnVacation)
+export const ConfirmationLabel = ({fetching, confirmation, isOwnPresence, isOnVacation, isNotWorking}) => {
+    const label = getLabel(confirmation, isOwnPresence, isOnVacation, isNotWorking)
 
     return (
-        <div className={`${styles.label} ${confirmation || isOnVacation ? styles.green : styles.red}`}>
+        <div className={`${styles.label} ${confirmation || isOnVacation || isNotWorking ? styles.green : styles.red}`}>
             {!fetching && label}
         </div>
     )
 }
 
-const getLabel = (confirmation, isOwnPresence, isOnVacation) => {
+const getLabel = (confirmation, isOwnPresence, isOnVacation, isNotWorking) => {
     if (isOnVacation) {
         if (isOwnPresence) {
             return "W tym dniu byłeś nieobecny lub na urlopie"
         }
         return "W tym dniu pracownik był nieobecny lub na urlopie"
+    }
+
+    if (isNotWorking) {
+        if (isOwnPresence) {
+            return "W tym dniu nie pracujesz"
+        }
+        return "W tym dniu pracownik nie pracuje"
     }
 
     if (confirmation) {
