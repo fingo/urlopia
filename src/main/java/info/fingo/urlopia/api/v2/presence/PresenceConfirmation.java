@@ -38,6 +38,10 @@ public class PresenceConfirmation {
         this.endTime = endTime;
     }
 
+    public static PresenceConfirmation empty(User user, LocalDate date) {
+        return new PresenceConfirmation(user, date, LocalTime.MIN, LocalTime.MIN);
+    }
+
     public LocalDate getDate() {
         return presenceConfirmationId.getDate();
     }

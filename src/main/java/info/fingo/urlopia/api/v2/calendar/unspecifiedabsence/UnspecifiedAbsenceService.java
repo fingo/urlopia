@@ -1,9 +1,9 @@
 package info.fingo.urlopia.api.v2.calendar.unspecifiedabsence;
 
 import info.fingo.urlopia.UrlopiaApplication;
+import info.fingo.urlopia.api.v2.preferences.UserPreferencesService;
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmation;
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
-import info.fingo.urlopia.api.v2.request.RequestStatus;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.holidays.Holiday;
@@ -28,6 +28,7 @@ public class UnspecifiedAbsenceService {
     private final PresenceConfirmationService presenceConfirmationService;
     private final UserService userService;
     private final HolidayService holidayService;
+    private final UserPreferencesService userPreferencesService;
 
     public UnspecifiedAbsenceOutput getEmployeesWithUnspecifiedAbsences() {
         Map<Long, List<LocalDate>> usersWithUnspecifiedAbsences = new HashMap<>();
@@ -99,6 +100,20 @@ public class UnspecifiedAbsenceService {
                     .toList();
             usersIdentifiedDays.add(userId, dates);
         });
+
+        for (var userId : groupedPresenceConfirmations.keySet()) {
+            var userWorkingHoursPreference = userPreferencesService.getWorkingHoursPreferenceOf(userId);
+            var changeDate = userWorkingHoursPreference.getChanged().toLocalDate();
+            var today = LocalDate.now();
+            // To be consistent with calendar output, i.e. new preference is valid from next day on
+            var startDate = changeDate.plusDays(1);
+            if (startDate.isBefore(today)) {
+                startDate.datesUntil(today)
+                        .filter(day -> !usersIdentifiedDays.isIdentified(userId, day))
+                        .filter(day -> userWorkingHoursPreference.isNonWorkingOn(day.getDayOfWeek()))
+                        .forEach(day -> usersIdentifiedDays.add(userId, day));
+            }
+        }
 
         return usersIdentifiedDays;
     }

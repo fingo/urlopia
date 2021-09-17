@@ -2,6 +2,8 @@ package info.fingo.urlopia.api.v2.calendar;
 
 import info.fingo.urlopia.api.v2.calendar.unspecifiedabsence.UnspecifiedAbsenceService;
 import info.fingo.urlopia.api.v2.calendar.unspecifiedabsence.UsersIdentifiedDays;
+import info.fingo.urlopia.api.v2.preferences.UserPreferencesService;
+import info.fingo.urlopia.api.v2.preferences.working.hours.UserWorkingHoursPreference;
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmation;
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
 import info.fingo.urlopia.config.persistance.filter.Filter;
@@ -23,6 +25,7 @@ public class CalendarOutputProvider {
     private final UserService userService;
     private final PresenceConfirmationService presenceConfirmationService;
     private final UnspecifiedAbsenceService unspecifiedAbsenceService;
+    private final UserPreferencesService userPreferencesService;
 
     public CalendarOutput getCalendarOutputFor(Long userId, LocalDate startDate, LocalDate endDate, Filter userFilter) {
         var user = userService.get(userId);
@@ -30,8 +33,9 @@ public class CalendarOutputProvider {
         return CalendarOutputBuilder.of(user, startDate, endDate)
                 .withHolidays(getAllHolidaysBetween(startDate, endDate))
                 .withUsersVacationDays(getUsersVacationDaysBetween(startDate, endDate))
-                .withUserPresenceConfirmations(getUserPresenceConfirmationsBetween(user, startDate, endDate))
+                .withUserPresenceConfirmations(getUserPresenceConfirmations(user, startDate, endDate))
                 .withUsers(userService.get(userFilter))
+                .withUserWorkingHoursPreference(userPreferencesService.getWorkingHoursPreferenceOf(userId))
                 .build();
     }
 
@@ -70,6 +74,13 @@ public class CalendarOutputProvider {
         return unspecifiedAbsenceService.getUsersVacationDays(fullyIncludedFilter)
                 .mergeWith(unspecifiedAbsenceService.getUsersVacationDays(overlappingOnLeftFilter))
                 .mergeWith(unspecifiedAbsenceService.getUsersVacationDays(overlappingOnRightFilter));
+    }
+
+    private List<PresenceConfirmation> getUserPresenceConfirmations(User user, LocalDate startDate, LocalDate endDate) {
+        var confirmations = getUserPresenceConfirmationsBetween(user, startDate, endDate);
+        var userId = user.getId();
+        presenceConfirmationService.getFirstUserConfirmation(userId).ifPresent(confirmations::add);
+        return confirmations;
     }
 
     private List<PresenceConfirmation> getUserPresenceConfirmationsBetween(User user, LocalDate startDate, LocalDate endDate) {

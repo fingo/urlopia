@@ -1,6 +1,8 @@
 package info.fingo.urlopia.api.v2.calendar
 
 import info.fingo.urlopia.api.v2.calendar.unspecifiedabsence.UnspecifiedAbsenceService
+import info.fingo.urlopia.api.v2.preferences.UserPreferencesService
+import info.fingo.urlopia.api.v2.preferences.working.hours.UserWorkingHoursPreference
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmation
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
 import info.fingo.urlopia.config.persistance.filter.Filter
@@ -16,6 +18,7 @@ import info.fingo.urlopia.user.UserService
 import spock.lang.Specification
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 class CalendarServiceSpec extends Specification {
@@ -30,9 +33,12 @@ class CalendarServiceSpec extends Specification {
     def requestService = Mock(RequestService)
     def userService = Mock(UserService)
     def presenceConfirmationService = Mock(PresenceConfirmationService)
+    def userPreferencesService = Mock(UserPreferencesService)
 
-    def unspecifiedAbsenceService = new UnspecifiedAbsenceService(requestService, presenceConfirmationService, userService, holidayService)
-    def calendarOutputProvider = new CalendarOutputProvider(holidayService, userService, presenceConfirmationService, unspecifiedAbsenceService)
+    def unspecifiedAbsenceService = new UnspecifiedAbsenceService(requestService, presenceConfirmationService, userService,
+                                                                  holidayService, userPreferencesService)
+    def calendarOutputProvider = new CalendarOutputProvider(holidayService, userService, presenceConfirmationService,
+                                                            unspecifiedAbsenceService, userPreferencesService)
     def calendarService = new CalendarService(calendarOutputProvider, unspecifiedAbsenceService)
 
     def "getCalendarInfo() WHEN normal day SHOULD return calendar output"() {
@@ -83,6 +89,8 @@ class CalendarServiceSpec extends Specification {
         holidayService.getAll(_ as Filter) >> []
         requestService.getAll(_ as Filter) >> [new Request(absentUser, startDate, endDate, 1, RequestType.NORMAL, null, Request.Status.ACCEPTED)]
         presenceConfirmationService.getAll(_ as Filter) >> [presenceConfirmation]
+        presenceConfirmationService.getFirstUserConfirmation(userId) >> Optional.of(presenceConfirmation)
+        userPreferencesService.getWorkingHoursPreferenceOf(userId) >> UserWorkingHoursPreference.getDefault(userId)
 
         when:
         def output = calendarService.getCalendarInfo(userId, startDate, endDate, filter)
@@ -144,6 +152,11 @@ class CalendarServiceSpec extends Specification {
         userService.get(_ as Filter) >> [user]
         requestService.getAll(_ as Filter) >> []
         presenceConfirmationService.getAll(_ as Filter) >> [firstUserConfirmation]
+        def preference = Spy(UserWorkingHoursPreference.getDefault(userId)) {
+            getChanged() >> LocalDateTime.now()
+        }
+        userPreferencesService.getWorkingHoursPreferenceOf(userId) >> preference
+        presenceConfirmationService.getFirstUserConfirmation(userId) >> Optional.of(firstUserConfirmation)
 
         when:
         def output = calendarService.getCalendarInfo(userId, startDate, endDate, filter)

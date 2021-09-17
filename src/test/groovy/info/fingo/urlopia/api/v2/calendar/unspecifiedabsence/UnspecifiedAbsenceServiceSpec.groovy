@@ -1,5 +1,7 @@
 package info.fingo.urlopia.api.v2.calendar.unspecifiedabsence
 
+import info.fingo.urlopia.api.v2.preferences.UserPreferencesService
+import info.fingo.urlopia.api.v2.preferences.working.hours.UserWorkingHoursPreference
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmation
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
 import info.fingo.urlopia.config.persistance.filter.Filter
@@ -18,10 +20,12 @@ class UnspecifiedAbsenceServiceSpec extends Specification {
     def presenceConfirmationService = Mock(PresenceConfirmationService)
     def userService = Mock(UserService)
     def holidayService = Spy(HolidayService)
+    def userPreferencesService = Mock(UserPreferencesService)
     def unspecifiedAbsenceService = new UnspecifiedAbsenceService(requestService,
                                                                   presenceConfirmationService,
                                                                   userService,
-                                                                  holidayService)
+                                                                  holidayService,
+                                                                  userPreferencesService)
 
     def TODAY = LocalDate.now()
 
@@ -89,6 +93,9 @@ class UnspecifiedAbsenceServiceSpec extends Specification {
         ]
         presenceConfirmationService.getFirstUserConfirmation(_ as Long) >> {Long userId -> usersFirstConfirmations.get(userId)}
 
+        and:
+        userPreferencesService.getWorkingHoursPreferenceOf(1L) >> UserWorkingHoursPreference.getDefault(1L)
+
         when:
         def result = unspecifiedAbsenceService.getEmployeesWithUnspecifiedAbsences()
 
@@ -126,6 +133,9 @@ class UnspecifiedAbsenceServiceSpec extends Specification {
                 1L: Optional.of(samplePresenceConfirmations[0])
         ]
         presenceConfirmationService.getFirstUserConfirmation(_ as Long) >> {Long userId -> usersFirstConfirmations.get(userId)}
+
+        and:
+        userPreferencesService.getWorkingHoursPreferenceOf(1L) >> UserWorkingHoursPreference.getDefault(1L)
 
         when:
         def result = unspecifiedAbsenceService.getEmployeesWithUnspecifiedAbsences()
@@ -182,6 +192,11 @@ class UnspecifiedAbsenceServiceSpec extends Specification {
                 3L: Optional.of(samplePresenceConfirmations[1]),
         ]
         presenceConfirmationService.getFirstUserConfirmation(_ as Long) >> {Long userId -> usersFirstConfirmations.get(userId)}
+
+        and:
+        userPreferencesService.getWorkingHoursPreferenceOf(1L) >> UserWorkingHoursPreference.getDefault(1L)
+        userPreferencesService.getWorkingHoursPreferenceOf(2L) >> UserWorkingHoursPreference.getDefault(2L)
+        userPreferencesService.getWorkingHoursPreferenceOf(3L) >> UserWorkingHoursPreference.getDefault(3L)
 
         when:
         def result = unspecifiedAbsenceService.getEmployeesWithUnspecifiedAbsences()

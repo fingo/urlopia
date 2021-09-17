@@ -1,6 +1,8 @@
 package info.fingo.urlopia.api.v2.calendar;
 
 import info.fingo.urlopia.api.v2.calendar.unspecifiedabsence.UsersIdentifiedDays;
+import info.fingo.urlopia.api.v2.preferences.working.hours.SingleDayHourPreference;
+import info.fingo.urlopia.api.v2.preferences.working.hours.UserWorkingHoursPreference;
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmation;
 import info.fingo.urlopia.holidays.Holiday;
 import info.fingo.urlopia.request.absence.InvalidDatesOrderException;
@@ -20,6 +22,7 @@ class CalendarOutputBuilder {
     private Map<LocalDate, PresenceConfirmation> userPresenceConfirmationsDays;
     private LocalDate userFirstPresenceConfirmationDate;
     private List<User> users;
+    private UserWorkingHoursPreference userWorkingHoursPreference;
 
     private CalendarOutputBuilder(User currentUser, LocalDate startDate, LocalDate endDate) {
         this.currentUser = currentUser;
@@ -62,6 +65,11 @@ class CalendarOutputBuilder {
         return this;
     }
 
+    public CalendarOutputBuilder withUserWorkingHoursPreference(UserWorkingHoursPreference userWorkingHoursPreference) {
+        this.userWorkingHoursPreference = userWorkingHoursPreference;
+        return this;
+    }
+
     public CalendarOutput build() {
         var output = buildCalendarOutput();
         reset();
@@ -74,6 +82,7 @@ class CalendarOutputBuilder {
         userPresenceConfirmationsDays = new HashMap<>();
         userFirstPresenceConfirmationDate = LocalDate.MAX;
         users = new LinkedList<>();
+        userWorkingHoursPreference = null;
     }
 
     private CalendarOutput buildCalendarOutput() {
@@ -84,7 +93,7 @@ class CalendarOutputBuilder {
         }
 
         startDate.datesUntil(endDate.plusDays(1))
-                .forEach(date -> calendarOutput.put(date, buildSingleDayOutput(date)));
+                             .forEach(date -> calendarOutput.put(date, buildSingleDayOutput(date)));
 
         return new CalendarOutput(calendarOutput);
     }
@@ -110,8 +119,8 @@ class CalendarOutputBuilder {
     private List<String> holidaysNamesFor(LocalDate date) {
         if (holidayDays.containsKey(date)) {
             return holidayDays.get(date).stream()
-                    .map(Holiday::getName)
-                    .toList();
+                                        .map(Holiday::getName)
+                                        .toList();
         }
 
         return Collections.emptyList();
@@ -119,9 +128,10 @@ class CalendarOutputBuilder {
 
     private List<AbsentUserOutput> absentUsersIn(LocalDate date) {
         return users.stream()
-                .filter(user -> usersVacationDays.isIdentified(user.getId(), date))
-                .map(AbsentUserOutput::of)
-                .toList();
+                    .filter(user -> usersVacationDays.isIdentified(user.getId(), date))
+                    .map(AbsentUserOutput::of)
+                    .toList();
+
     }
 
     private CurrentUserInformationOutput buildCurrentUserInformation(LocalDate date) {
@@ -140,6 +150,11 @@ class CalendarOutputBuilder {
             return PresenceConfirmationOutput.fromPresenceConfirmation(userPresenceConfirmationsDays.get(date));
         }
 
+        var userWorkingHoursPreferenceChangeDate = userWorkingHoursPreference.getChanged().toLocalDate();
+        if (isDayNonWorkingForUser(userWorkingHoursPreferenceChangeDate, date)) {
+            return PresenceConfirmationOutput.unspecified();
+        }
+
         if (userFirstPresenceConfirmationDate != LocalDate.MAX) {
             if (date.isBefore(userFirstPresenceConfirmationDate)) {
                 return PresenceConfirmationOutput.unspecified();
@@ -148,5 +163,12 @@ class CalendarOutputBuilder {
         }
 
         return PresenceConfirmationOutput.unspecified();
+    }
+
+    private boolean isDayNonWorkingForUser(LocalDate preferenceChangeDate, LocalDate date) {
+        var isPreferenceRelevant = preferenceChangeDate.isBefore(date);
+        return isPreferenceRelevant && userWorkingHoursPreference.getDayPreferenceBy(date.getDayOfWeek())
+                .map(SingleDayHourPreference::getNonWorking)
+                .orElse(false);
     }
 }
