@@ -16,37 +16,44 @@ const getTime = (hours, minutes) => {
     return date
 }
 
-const startTimesValues = (preferences) => {
-    const userPreferences = preferences.dayPreferences
-    return {
-        1: userPreferences ? moment(userPreferences[1].startTime, "HH:mm").toDate() : getTime(8, 0),
-        2: userPreferences ? moment(userPreferences[2].startTime, "HH:mm").toDate() : getTime(8, 0),
-        3: userPreferences ? moment(userPreferences[3].startTime, "HH:mm").toDate() : getTime(8, 0),
-        4: userPreferences ? moment(userPreferences[4].startTime, "HH:mm").toDate() : getTime(8, 0),
-        5: userPreferences ? moment(userPreferences[5].startTime, "HH:mm").toDate() : getTime(8, 0),
+const mapPreferences = (dayPreferences, produceValue, produceDefaultValue) => {
+    const values = {}
+
+    if (dayPreferences) {
+        for (let dayOfWeek = 1; dayOfWeek <= 7; dayOfWeek++) {
+            values[dayOfWeek] = dayPreferences[dayOfWeek] ? produceValue(dayOfWeek) : produceDefaultValue()
+        }
+    } else {
+        for (let dayOfWeek = 1; dayOfWeek <= 7; dayOfWeek++) {
+            values[dayOfWeek] = produceDefaultValue()
+        }
     }
+
+    return values;
+}
+
+const startTimesValues = (preferences) => {
+    const dayPreferences = preferences.dayPreferences
+    const produceValue = dayOfWeek => moment(dayPreferences[dayOfWeek].startTime, "HH:mm").toDate()
+    const produceDefaultValue = () => getTime(8, 0)
+
+    return mapPreferences(dayPreferences, produceValue, produceDefaultValue)
 }
 
 const endTimesValues = (preferences) => {
-    const userPreferences = preferences.dayPreferences
-    return {
-        1: userPreferences ? moment(userPreferences[1].endTime, "HH:mm").toDate() : getTime(16, 0),
-        2: userPreferences ? moment(userPreferences[2].endTime, "HH:mm").toDate() : getTime(16, 0),
-        3: userPreferences ? moment(userPreferences[3].endTime, "HH:mm").toDate() : getTime(16, 0),
-        4: userPreferences ? moment(userPreferences[4].endTime, "HH:mm").toDate() : getTime(16, 0),
-        5: userPreferences ? moment(userPreferences[5].endTime, "HH:mm").toDate() : getTime(16, 0),
-    }
+    const dayPreferences = preferences.dayPreferences
+    const produceValue = dayOfWeek => moment(dayPreferences[dayOfWeek].endTime, "HH:mm").toDate()
+    const produceDefaultValue = () => getTime(16, 0)
+
+    return mapPreferences(dayPreferences, produceValue, produceDefaultValue)
 }
 
 const nonWorkingValues = (preferences) => {
-    const userPreferences = preferences.dayPreferences
-    return {
-        1: userPreferences ? userPreferences[1].nonWorking : false,
-        2: userPreferences ? userPreferences[2].nonWorking : false,
-        3: userPreferences ? userPreferences[3].nonWorking : false,
-        4: userPreferences ? userPreferences[4].nonWorking : false,
-        5: userPreferences ? userPreferences[5].nonWorking : false,
-    }
+    const dayPreferences = preferences.dayPreferences
+    const produceValue = dayOfWeek => dayPreferences[dayOfWeek].nonWorking
+    const produceDefaultValue = () => false
+
+    return mapPreferences(dayPreferences, produceValue, produceDefaultValue)
 }
 
 const UNDEFINED_PREFERENCES = {

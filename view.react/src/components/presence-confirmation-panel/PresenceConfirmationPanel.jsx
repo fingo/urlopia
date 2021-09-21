@@ -21,23 +21,35 @@ const getTime = (hours, minutes) => {
     return date
 }
 
-const getStartTimeValue = (preferences, date) => {
-    const userPreferences = preferences.dayPreferences
-    return userPreferences ? moment(userPreferences[date.getDay()].startTime, "HH:mm").toDate() : getTime(8, 0);
+const getPreference = (dayPreferences, chosenDate, produceValue, produceDefaultValue) => {
+    const dayOfWeek = chosenDate.getDay()
+    return dayPreferences && dayPreferences[dayOfWeek] ? produceValue(dayOfWeek) : produceDefaultValue()
 }
 
-const getEndTimeValue = (preferences, date) => {
-    const userPreferences = preferences.dayPreferences
-    return userPreferences ? moment(userPreferences[date.getDay()].endTime, "HH:mm").toDate() : getTime(16, 0);
+const getStartTimeValue = (preferences, chosenDate) => {
+    const dayPreferences = preferences.dayPreferences
+    const produceValue = dayOfWeek => moment(dayPreferences[dayOfWeek].startTime, "HH:mm").toDate()
+    const produceDefaultValue = () => getTime(8, 0)
+
+    return getPreference(dayPreferences, chosenDate, produceValue, produceDefaultValue)
+}
+
+const getEndTimeValue = (preferences, chosenDate) => {
+    const dayPreferences = preferences.dayPreferences
+    const produceValue = dayOfWeek => moment(dayPreferences[dayOfWeek].endTime, "HH:mm").toDate()
+    const produceDefaultValue = () => getTime(16, 0)
+
+    return getPreference(dayPreferences, chosenDate, produceValue, produceDefaultValue)
 }
 
 const isNotWorking = (preferences, chosenDate) => {
-    const userPreferences = preferences.dayPreferences
-    if (userPreferences) {
-        const preferenceChangeDate = moment(preferences.changeDate, "YYYY-MM-DD").toDate()
-        return userPreferences[chosenDate.getDay()].nonWorking && preferenceChangeDate < chosenDate
-    }
-    return false;
+    const dayPreferences = preferences.dayPreferences
+    const produceValue = dayOfWeek => dayPreferences[dayOfWeek].nonWorking
+    const produceDefaultValue = () => false
+
+    const isNonWorking = getPreference(dayPreferences, chosenDate, produceValue, produceDefaultValue)
+    const preferenceChangeDate = moment(preferences.changeDate, "YYYY-MM-DD").toDate()
+    return isNonWorking && preferenceChangeDate < chosenDate
 }
 
 const UNDEFINED_PREFERENCES = {
