@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import PropTypes from "prop-types";
+import {useState} from "react";
 import {CheckSquareFill as AcceptIcon, XSquareFill as XIcon} from "react-bootstrap-icons";
 import BootstrapTable from "react-bootstrap-table-next";
 import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
@@ -9,10 +10,13 @@ import {ACCEPTED, PENDING} from "../../../../constants/statuses";
 import {spinner} from '../../../../global-styles/loading-spinner.module.scss';
 import {actionBtn, actions} from '../../../../global-styles/table-styles.module.scss';
 import {
+    requestPeriodFormatter,
     requestStatusMapper, requestTypeMapper,
     statusFormatter,
-    textAsArrayFormatter} from "../../../../helpers/react-bootstrap-table2/RequestMapperHelper";
+    textAsArrayFormatter
+} from "../../../../helpers/react-bootstrap-table2/RequestMapperHelper";
 import {tableClass} from "../../../../helpers/react-bootstrap-table2/tableClass";
+import {AcceptancesModal} from "../../../user-requests-list/AcceptancesModal";
 import styles from './WorkerRequestsHistoryTable.module.scss';
 
 export const WorkerRequestsHistoryTable = ({
@@ -22,6 +26,8 @@ export const WorkerRequestsHistoryTable = ({
     rejectRequest,
     isFetching,
 }) => {
+    const [modalsShow, setModalsShow] = useState({})
+
     const actionFormatter = (cell, row) => {
         const acceptBtnClass = classNames(actionBtn, 'text-success');
         const cancelBtnClass = classNames(actionBtn, 'text-warning');
@@ -60,6 +66,28 @@ export const WorkerRequestsHistoryTable = ({
             );
         }
     }
+
+    const showModal = requestId => setModalsShow({...modalsShow, [requestId]: true})
+    const hideModal = requestId => setModalsShow({...modalsShow, [requestId]: false})
+
+    const modals = requests.map(req => (
+        <AcceptancesModal
+            key={req.id}
+            request={req}
+            show={modalsShow[req.id]}
+            onHide={() => hideModal(req.id)}
+        />
+    ))
+
+    const formattedRequests = requests.map(req => {
+        return {
+            id: req.id,
+            period: requestPeriodFormatter(req),
+            examiner: req.acceptances.map(acc => acc.leaderName),
+            type: req.type,
+            status: req.status,
+        }
+    })
 
     const columns = [
         {
@@ -108,7 +136,7 @@ export const WorkerRequestsHistoryTable = ({
             text: 'Status',
             headerAlign: 'center',
             align: 'center',
-            formatter: statusFormatter,
+            formatter: (cell, row) => statusFormatter(cell, row, requests, showModal),
             filter: textFilter({
                 id: 'statusWorkerRequestsHistoryTableFilter',
                 placeholder: 'Filtruj...',
@@ -133,17 +161,20 @@ export const WorkerRequestsHistoryTable = ({
         <>
             {
                 !isFetching ?
-                    <BootstrapTable
-                        bootstrap4
-                        keyField='id'
-                        data={requests}
-                        wrapperClasses={tableWrapperClass}
-                        columns={columns}
-                        filter={filterFactory()}
-                        filterPosition='top'
-                        bordered={false}
-                        hover
-                    />
+                    <>
+                        {modals}
+                        <BootstrapTable
+                            bootstrap4
+                            keyField='id'
+                            data={formattedRequests}
+                            wrapperClasses={tableWrapperClass}
+                            columns={columns}
+                            filter={filterFactory()}
+                            filterPosition='top'
+                            bordered={false}
+                            hover
+                        />
+                    </>
                     :
                     <div className={spinner}>
                         <BeatLoader color='deepskyblue' size={50}/>

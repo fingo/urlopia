@@ -29,7 +29,7 @@ const requestReducersMappings = {
         reducer: fetchWorkerRequestsHistoryReducer,
     },
     [`${FETCH_ACCEPTANCES_ACTION_PREFIX}`]: {
-        slicePath: "teamRequests",
+        slicePath: "acceptances",
         reducer: fetchAcceptancesReducer,
     },
     [`${CHANGE_REQUEST_STATUS_ACTION_PREFIX}`]: changeRequestStatusReducer,

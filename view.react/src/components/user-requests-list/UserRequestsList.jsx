@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import PropTypes from 'prop-types'
+import {useState} from "react";
 import {XSquareFill as XIcon} from "react-bootstrap-icons";
 import BootstrapTable from "react-bootstrap-table-next";
 import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
@@ -17,12 +18,14 @@ import {
 } from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
 import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
 import {updateVacationDays} from "../../helpers/updateVacationDays";
+import {AcceptancesModal} from "./AcceptancesModal";
 
 export const UserRequestsList = ({
     requests,
     cancelRequest,
     isFetching,
 }) => {
+    const [modalsShow, setModalsShow] = useState({});
 
     const [, vacationDaysDispatch] = useVacationDays();
 
@@ -43,6 +46,18 @@ export const UserRequestsList = ({
             );
         }
     }
+
+    const showModal = requestId => setModalsShow({...modalsShow, [requestId]: true})
+    const hideModal = requestId => setModalsShow({...modalsShow, [requestId]: false})
+
+    const modals = requests.map(req => (
+        <AcceptancesModal
+            key={req.id}
+            request={req}
+            show={modalsShow[req.id]}
+            onHide={() => hideModal(req.id)}
+        />
+    ))
 
     const columns = [
         {
@@ -76,7 +91,7 @@ export const UserRequestsList = ({
             headerAlign: 'center',
             align: 'center',
             style: {verticalAlign: 'middle'},
-            formatter: statusFormatter,
+            formatter: (cell, row) => statusFormatter(cell, row, requests, showModal),
             filter: textFilter({
                 id: 'statusUserRequestsListFilter',
                 placeholder: 'Filtruj...',
@@ -101,17 +116,20 @@ export const UserRequestsList = ({
         <>
             {
                 !isFetching ?
-                    <BootstrapTable
-                        bootstrap4
-                        keyField='id'
-                        data={formattedRequests}
-                        wrapperClasses={tableClass}
-                        columns={columns}
-                        filter={filterFactory()}
-                        filterPosition='top'
-                        bordered={false}
-                        hover
-                    />
+                    <>
+                        {modals}
+                        <BootstrapTable
+                            bootstrap4
+                            keyField='id'
+                            data={formattedRequests}
+                            wrapperClasses={tableClass}
+                            columns={columns}
+                            filter={filterFactory()}
+                            filterPosition='top'
+                            bordered={false}
+                            hover
+                        />
+                    </>
                     :
                     <div className={spinner}>
                         <BeatLoader color='deepskyblue' size={50}/>

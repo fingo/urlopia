@@ -10,7 +10,6 @@ import {
 import {fetchWorkerRequestsHistory} from "../../../contexts/request-context/actions/fetchWorkerRequestsHistory";
 import {useRequests} from "../../../contexts/request-context/requestContext";
 import {btnClass} from "../../../global-styles/btn.module.scss";
-import {requestPeriodFormatter} from "../../../helpers/react-bootstrap-table2/RequestMapperHelper";
 import {WorkerRequestsHistoryTable} from "./worker-requests-history-table/WorkerRequestsHistoryTable";
 import styles from './WorkerRequestsHistory.module.scss';
 
@@ -23,16 +22,6 @@ export const WorkerRequestsHistory = ({show, onHide, fullName}) => {
         const lastName = fullName?.split(' ')[1];
         fetchWorkerRequestsHistory(requestsDispatch, firstName, lastName);
     }, [requestsDispatch, fullName]);
-
-    const formattedRequests = requests.map(req => {
-        return {
-            id: req.id,
-            period: requestPeriodFormatter(req),
-            examiner: req.acceptances.map(acc => acc.leaderName),
-            type: req.type,
-            status: req.status,
-        }
-    })
 
     return (
         <Modal
@@ -50,7 +39,7 @@ export const WorkerRequestsHistory = ({show, onHide, fullName}) => {
             </Modal.Header>
             <Modal.Body>
                 <WorkerRequestsHistoryTable
-                    requests={formattedRequests}
+                    requests={requests}
                     acceptRequest={(requestId) => acceptRequest(requestsDispatch, {requestId})}
                     cancelRequest={(requestId) => cancelRequest(requestsDispatch, {requestId})}
                     rejectRequest={(requestId) => rejectRequest(requestsDispatch, {requestId})}

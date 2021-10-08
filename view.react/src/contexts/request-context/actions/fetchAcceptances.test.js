@@ -5,7 +5,7 @@ describe('fetchAcceptancesReducer', () => {
     const sampleState = {
         fetching: false,
         error: null,
-        requests: []
+        pending: []
     }
 
     it('should set fetching flag to true and reset error on request', () => {
@@ -69,7 +69,7 @@ describe('fetchAcceptancesReducer', () => {
         const expectedState = {
             ...sampleState,
             fetching: false,
-            requests: sampleAcceptances
+            pending: sampleAcceptances
         }
 
         const newState = fetchAcceptancesReducer(state, action)

@@ -31,7 +31,7 @@ export const fetchAcceptancesReducer = (state, action) => {
             return {
                 ...state,
                 fetching: false,
-                requests: action.response.content,
+                pending: action.response.content,
             }
         }
         case `${FETCH_ACCEPTANCES_ACTION_PREFIX}_failure`: {

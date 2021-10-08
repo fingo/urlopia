@@ -1,6 +1,7 @@
 import {Badge} from "react-bootstrap";
 
-import {ACCEPTED, CANCELED, PENDING, REJECTED} from "../../constants/statuses";
+import {ClickablePill} from "../../components/clickable-badge/ClickablePill";
+import {ACCEPTED, CANCELED, EXPIRED, PENDING, REJECTED} from "../../constants/statuses";
 
 export const requestStatusMapper = (cell) => {
     switch (cell) {
@@ -21,7 +22,7 @@ export const requestStatusMapper = (cell) => {
     }
 }
 
-export const statusFormatter = (cell) => {
+export const statusFormatter = (cell, row, requests, showModal) => {
     let color;
     switch (cell) {
         case ACCEPTED:
@@ -43,7 +44,30 @@ export const statusFormatter = (cell) => {
         default:
             color = 'primary';
     }
-    return <Badge pill bg={color}>{cell}</Badge>
+
+    const request = requests.find(req => req.id === row.id)
+
+    return (
+        <div style={{display: "flex", justifyContent: "center"}}>
+            <Badge pill bg={color}>{cell}</Badge>
+            {acceptancesButtonFor(request, showModal)}
+        </div>
+    )
+}
+
+const acceptancesButtonFor = (request, showModal) => {
+    if (!request) {
+        return null;
+    }
+
+    const numberOfLeaders = request.acceptances.length
+    const numberOfExamined = request.acceptances.filter(acc => acc.status !== PENDING && acc.status !== EXPIRED).length
+
+    return (
+        <ClickablePill onClick={() => showModal(request.id)}>
+            {`(${numberOfExamined}/${numberOfLeaders})`}
+        </ClickablePill>
+    )
 }
 
 export const requestTypeMapper = (cell) => {

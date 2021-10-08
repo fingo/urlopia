@@ -10,10 +10,10 @@ const initialState = {
         error: null,
         requests: [],
     },
-    teamRequests: {
+    acceptances: {
         fetching: false,
         error: null,
-        requests: [],
+        pending: [],
     },
     companyRequests: {
         fetching: false,

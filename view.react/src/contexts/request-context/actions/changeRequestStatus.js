@@ -55,9 +55,9 @@ export const changeRequestStatusReducer = (state, action) => {
                     ...state.myRequests,
                     requests: handleMyRequestsStatusChange(state.myRequests.requests, changedStatusRequestId, newStatus)
                 },
-                teamRequests: {
-                    ...state.teamRequests,
-                    requests: handleTeamRequestsStatusChange(state.teamRequests.requests, changedStatusRequestId, newStatus)
+                acceptances: {
+                    ...state.acceptances,
+                    pending: handleTeamRequestsStatusChange(state.acceptances.pending, changedStatusRequestId, newStatus)
                 },
                 companyRequests: {
                     ...state.companyRequests,
