@@ -35,7 +35,7 @@ export const AcceptancesModal = ({request, show, onHide}) => {
     );
 }
 
-const getAcceptanceBadgeFor = (status) => {
+export const getAcceptanceBadgeFor = (status) => {
     let color;
     let text;
 

@@ -23,36 +23,42 @@ export const requestStatusMapper = (cell) => {
 }
 
 export const statusFormatter = (cell, row, requests, showModal) => {
+    const request = requests.find(req => req.id === row.id)
+
+    return (
+        <div style={{display: "flex", justifyContent: "center"}}>
+            {formatRequestBadge(cell)}
+            {acceptancesButtonFor(request, showModal)}
+        </div>
+    )
+}
+
+export const formatRequestBadge = (status) => {
     let color;
-    switch (cell) {
+    let text;
+
+    switch (status) {
         case ACCEPTED:
-            cell = 'Zatwierdzony';
+            text = 'Zatwierdzony';
             color = 'success';
             break;
         case CANCELED:
-            cell = 'Anulowany';
+            text = 'Anulowany';
             color = 'secondary';
             break;
         case PENDING:
-            cell = 'Oczekujący';
+            text = 'Oczekujący';
             color = 'warning';
             break;
         case REJECTED:
-            cell = 'Odrzucony';
+            text = 'Odrzucony';
             color = 'danger';
             break;
         default:
             color = 'primary';
     }
 
-    const request = requests.find(req => req.id === row.id)
-
-    return (
-        <div style={{display: "flex", justifyContent: "center"}}>
-            <Badge pill bg={color}>{cell}</Badge>
-            {acceptancesButtonFor(request, showModal)}
-        </div>
-    )
+    return <Badge pill bg={color}>{text}</Badge>
 }
 
 const acceptancesButtonFor = (request, showModal) => {

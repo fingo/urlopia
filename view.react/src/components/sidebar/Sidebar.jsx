@@ -14,7 +14,7 @@ import {LinkGroup} from "./link-group/LinkGroup";
 import styles from './Sidebar.module.scss';
 
 export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
-    const {isAdmin: isUserAnAdmin} = getCurrentUser();
+    const {isAdmin: isUserAnAdmin, isLeader: isUserALeader} = getCurrentUser();
     const {ec: isUserEC} = getCurrentUser();
     const overlayClass = classNames(styles.overlay, 'd-lg-none');
 
@@ -73,6 +73,9 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                         />
                     </Link>
                     <Link to="/history" onClick={onClickLinkOrOutside}>Historia użytkownika</Link>
+                    {isUserALeader &&
+                        <Link to="/acceptances/history" onClick={onClickLinkOrOutside}>Historia akceptacji</Link>
+                    }
                     {isUserAnAdmin && (
                         <>
                             <LinkGroup name="Konfiguracja aplikacji">

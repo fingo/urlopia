@@ -14,6 +14,7 @@ const initialState = {
         fetching: false,
         error: null,
         pending: [],
+        history: [],
     },
     companyRequests: {
         fetching: false,

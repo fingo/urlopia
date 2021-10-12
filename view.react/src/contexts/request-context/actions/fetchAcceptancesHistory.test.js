@@ -1,7 +1,7 @@
-import {FETCH_ACCEPTANCES_PENDING_ACTION_PREFIX} from "../constants";
-import {fetchAcceptancesReducer} from "./fetchAcceptances";
+import {FETCH_ACCEPTANCES_HISTORY_ACTION_PREFIX} from "../constants";
+import {fetchAcceptancesHistoryReducer} from "./fetchAcceptancesHistory";
 
-describe('fetchAcceptancesReducer', () => {
+describe('fetchAcceptancesHistoryReducer', () => {
     const sampleState = {
         fetching: false,
         error: null,
@@ -12,7 +12,7 @@ describe('fetchAcceptancesReducer', () => {
     it('should set fetching flag to true and reset error on request', () => {
         // given
         const action = {
-            type: `${FETCH_ACCEPTANCES_PENDING_ACTION_PREFIX}_request`
+            type: `${FETCH_ACCEPTANCES_HISTORY_ACTION_PREFIX}_request`
         }
 
         const state = {
@@ -27,7 +27,7 @@ describe('fetchAcceptancesReducer', () => {
             error: null
         }
 
-        const newState = fetchAcceptancesReducer(state, action)
+        const newState = fetchAcceptancesHistoryReducer(state, action)
 
         // then
         return expect(newState).toEqual(expectedState)
@@ -37,25 +37,22 @@ describe('fetchAcceptancesReducer', () => {
         // given
         const sampleAcceptances = [
             {
-                "id": 1,
-                "requesterName": "Jan Kowalski",
-                "status": "PENDING",
-                "endDate": "2021-08-13",
-                "startDate": "2021-08-12",
-                "workingDays": 2,
-            },
-            {
                 "id": 2,
-                "requesterName": "Adam Nowak",
-                "status": "PENDING",
-                "endDate": "2021-08-18",
-                "startDate": "2021-08-16",
-                "workingDays": 3,
+                "requestId": 11,
+                "requesterName": "Adam Mickiewicz",
+                "startDate": "2021-10-19",
+                "endDate": "2021-10-25",
+                "workingDays": 5,
+                "status": "ACCEPTED",
+                "leadersAcceptances": {
+                    "Mary Smith": "PENDING",
+                    "Radek Marek": "ACCEPTED"
+                }
             }
         ]
 
         const action = {
-            type: `${FETCH_ACCEPTANCES_PENDING_ACTION_PREFIX}_success`,
+            type: `${FETCH_ACCEPTANCES_HISTORY_ACTION_PREFIX}_success`,
             response: {
                 content: sampleAcceptances
             }
@@ -70,10 +67,10 @@ describe('fetchAcceptancesReducer', () => {
         const expectedState = {
             ...sampleState,
             fetching: false,
-            pending: sampleAcceptances
+            history: sampleAcceptances
         }
 
-        const newState = fetchAcceptancesReducer(state, action)
+        const newState = fetchAcceptancesHistoryReducer(state, action)
 
         // then
         return expect(newState).toEqual(expectedState)
@@ -82,7 +79,7 @@ describe('fetchAcceptancesReducer', () => {
     it('should set fetching flag to false and set an error message on failure', () => {
         // given
         const action = {
-            type: `${FETCH_ACCEPTANCES_PENDING_ACTION_PREFIX}_failure`,
+            type: `${FETCH_ACCEPTANCES_HISTORY_ACTION_PREFIX}_failure`,
             error: "Some error message"
         }
 
@@ -98,7 +95,7 @@ describe('fetchAcceptancesReducer', () => {
             error: "Some error message"
         }
 
-        const newState = fetchAcceptancesReducer(state, action)
+        const newState = fetchAcceptancesHistoryReducer(state, action)
 
         // then
         return expect(newState).toEqual(expectedState)

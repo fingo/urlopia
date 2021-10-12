@@ -1,11 +1,17 @@
 package info.fingo.urlopia.acceptance
 
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException
+import info.fingo.urlopia.config.persistance.filter.Filter
 import info.fingo.urlopia.request.Request
 import info.fingo.urlopia.request.RequestService
 import info.fingo.urlopia.user.User
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import spock.lang.Specification
+
+import java.time.LocalDate
 
 class AcceptanceServiceSpec extends Specification {
     def leaderId = 1L
@@ -112,5 +118,78 @@ class AcceptanceServiceSpec extends Specification {
 
         then:
         !result
+    }
+
+    def "getHistory() SHOULD return acceptances mapped to acceptance history output"() {
+        given:
+        def leader1Id = 11L
+        def leader1FullName = "Jan Kowalski"
+
+        def leader2Id = 22L
+        def leader2FullName = "Adam Nowak"
+
+        def requesterId = 33L
+        def requesterFullName = "John Doe"
+
+        def requestStartDate = LocalDate.of(2021, 10, 7)
+        def requestEndDate = LocalDate.of(2021, 10, 8)
+        def workingDays = 2
+
+        def filter = Filter.empty()
+        def pageable = Pageable.unpaged()
+
+        and:
+        def requester = Mock(User) {
+            getId() >> requesterId
+            getFullName() >> requesterFullName
+        }
+
+        and:
+        def leader1 = Mock(User) {
+            getId() >> leader1Id
+            getFullName() >> leader1FullName
+        }
+        def acceptance1 = new Acceptance(null, leader1)
+        acceptance1.setStatus(Acceptance.Status.ACCEPTED)
+
+        def leader2 = Mock(User) {
+            getId() >> leader2Id
+            getFullName() >> leader2FullName
+        }
+        def acceptance2 = new Acceptance(null, leader2)
+        acceptance2.setStatus(Acceptance.Status.REJECTED)
+
+        def request = Mock(Request) {
+            getRequester() >> requester
+            getAcceptances() >> [acceptance1, acceptance2]
+            getStartDate() >> requestStartDate
+            getEndDate() >> requestEndDate
+            getWorkingDays() >> workingDays
+            getStatus() >> Request.Status.REJECTED
+        }
+        acceptance1.setRequest(request)
+        acceptance2.setRequest(request)
+
+        and:
+        acceptanceRepository.findAll(_ as Filter, _ as Pageable) >> new PageImpl<Acceptance>([acceptance1])
+
+        when:
+        def acceptanceHistoryPage = acceptanceService.getHistory(leader1Id, filter, pageable)
+
+        then:
+        acceptanceHistoryPage.size() == 1
+        def acceptanceHistory = acceptanceHistoryPage.getContent().get(0)
+        acceptanceHistory.getId() == null
+        acceptanceHistory.getRequestId() == null
+        acceptanceHistory.getRequesterName() == requesterFullName
+        acceptanceHistory.getStartDate() == requestStartDate
+        acceptanceHistory.getEndDate() == requestEndDate
+        acceptanceHistory.getWorkingDays() == workingDays
+        acceptanceHistory.getStatus() == Acceptance.Status.ACCEPTED
+        acceptanceHistory.getRequestStatus() == Request.Status.REJECTED
+        acceptanceHistory.getLeadersAcceptances() == [
+                "Jan Kowalski": Acceptance.Status.ACCEPTED,
+                "Adam Nowak": Acceptance.Status.REJECTED
+        ]
     }
 }
