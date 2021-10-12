@@ -124,6 +124,10 @@ public class AcceptanceService {
         }
     }
 
+    public boolean hasActiveAcceptances(User user){
+        return acceptanceRepository.checkIsExistActiveAcceptanceByLeaderId(user);
+    }
+
     private void validateStatus(Acceptance.Status status,
                                 Acceptance.Status... supportedStatuses) {
         var supported = Arrays.asList(supportedStatuses);

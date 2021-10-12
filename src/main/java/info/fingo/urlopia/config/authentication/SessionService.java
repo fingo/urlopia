@@ -1,7 +1,7 @@
 package info.fingo.urlopia.config.authentication;
 
+import info.fingo.urlopia.acceptance.AcceptanceService;
 import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
-import info.fingo.urlopia.team.TeamService;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
 import info.fingo.urlopia.user.UserService;
@@ -32,6 +32,8 @@ public class SessionService {
     private final GitProperties gitProperties;
 
     private final UserService userService;
+
+    private final AcceptanceService acceptanceService;
 
     public UserData authenticate(Credentials credentials) {
         if (ldapConnectionService.authenticate(credentials)) {
@@ -65,7 +67,7 @@ public class SessionService {
     private List<String> pickRoles(User user) {
         List<String> roles = new ArrayList<>();
         roles.add(User.Role.WORKER.toString());
-        if (user.getLeader()) {
+        if (user.getLeader() || acceptanceService.hasActiveAcceptances(user)) {
             roles.add(User.Role.LEADER.toString());
         }
         if (user.getAdmin()) {

@@ -89,4 +89,28 @@ class AcceptanceServiceSpec extends Specification {
         then:
         acceptances == [acceptance]
     }
+
+    def "checkIsExistActiveAcceptanceByLeaderId WHEN called with user that has active acceptance SHOULD return true"(){
+        given:
+        User user = Mock(User)
+        acceptanceRepository.checkIsExistActiveAcceptanceByLeaderId(user) >> true
+
+        when:
+        def result = acceptanceService.hasActiveAcceptances(user)
+
+        then:
+        result
+    }
+
+    def "checkIsExistActiveAcceptanceByLeaderId WHEN called with user that hasn't active acceptance SHOULD return true"(){
+        given:
+        User user = Mock(User)
+        acceptanceRepository.checkIsExistActiveAcceptanceByLeaderId(user) >> false
+
+        when:
+        def result = acceptanceService.hasActiveAcceptances(user)
+
+        then:
+        !result
+    }
 }
