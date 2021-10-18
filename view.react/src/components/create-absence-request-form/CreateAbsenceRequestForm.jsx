@@ -40,6 +40,7 @@ export const CreateAbsenceRequestForm = ({
             color: 'deepskyblue',
         }]
     );
+    const {ec: isUserEC} = getCurrentUser();
     const [workingDaysCounter, setWorkingDaysCounter] = useState(0);
     const [onChangeOption, setOnChangeOption] = useState(null);
     const [isNormal, setIsNormal] = useState(true);
@@ -53,19 +54,21 @@ export const CreateAbsenceRequestForm = ({
     const [vacationHours, setVacationHours] = useState(0);
     const [pendingDays, setPendingDays] = useState(0);
     const [pendingHours, setPendingHours] = useState(0);
+    const [workTime, setWorkTime] = useState(8);
 
     const [vacationDaysState, vacationDaysDispatch] = useVacationDays();
 
     useEffect(() => {
-        const {days, hours} = vacationDaysState.pendingDays;
-        setPendingDays(days);
-        setPendingHours(hours);
+        const {pendingDays, pendingHours} = vacationDaysState.pendingDays;
+        setPendingDays(pendingDays);
+        setPendingHours(pendingHours);
     }, [vacationDaysState.pendingDays]);
 
     useEffect(() => {
-        const {remainingDays, remainingHours} = vacationDaysState.vacationDays;
+        const {remainingDays, remainingHours, workTime} = vacationDaysState.vacationDays;
         setVacationDays(remainingDays);
         setVacationHours(remainingHours);
+        setWorkTime(workTime);
     }, [vacationDaysState.vacationDays]);
 
     const handleRequestsTypeChange = e => {
@@ -157,6 +160,7 @@ export const CreateAbsenceRequestForm = ({
         setSelectedRange([newState]);
         setIsReadyToSubmit(false);
     }
+    const vacationTypeLabel = isUserEC ? "Pozostały urlop: " : "Pozostała przerwa: "
 
     const calendarClass = classNames(styles.calendar, {[styles.blur]: !isSelected});
     return (
@@ -209,8 +213,18 @@ export const CreateAbsenceRequestForm = ({
                     <p className={styles.additionalInfo}>{occasionalTypeInfoMapperHelper(occasionalType)}</p>
 
                     <h5>Liczba dni roboczych: <strong>{workingDaysCounter}</strong></h5>
-                    <h5>Pozostały urlop: <strong>{vacationDays-pendingDays} dni</strong> {vacationHours-pendingHours} godzin</h5>
-                    <h5>Złożone wnioski: <strong>{pendingDays} dni</strong> {pendingHours} godzin</h5>
+                    {
+                        workTime === 8 ?
+                            <>
+                                <h5>{vacationTypeLabel}<strong>{vacationDays-pendingDays} dni</strong> {vacationHours-pendingHours} godzin</h5>
+                                <h5>Złożone wnioski: <strong>{pendingDays} dni</strong> {pendingHours} godzin</h5>
+                            </>
+                        :
+                            <>
+                                <h5>{vacationTypeLabel}: <strong>{vacationHours-pendingHours} godzin</strong></h5>
+                                <h5>Złożone wnioski: <strong>{pendingHours} godzin</strong></h5>
+                            </>
+                    }
                 </Col>
 
                 <Col xs={12} xl={8} className={styles.calendarColumn}>

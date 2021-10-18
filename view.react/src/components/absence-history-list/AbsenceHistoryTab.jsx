@@ -4,8 +4,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import {hoursChangeMapper} from "../../helpers/react-bootstrap-table2/HistoryLogMapperHelper";
 import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
 
-export const AbsenceHistoryTab = ({logs, isHidden}) => {
-
+export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel}) => {
     const columns = [
         {
             dataField: 'id',
@@ -22,6 +21,12 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
             align: 'center',
             sort: true,
             style: {verticalAlign: 'middle'},
+            formatter: (cell, row) => {
+                if (typeof row.hours == 'string' && row.hours.toLowerCase().includes("etat")) {
+                    return ""
+                }
+                return cell;
+            },
             headerAttrs: {
                 hidden: isHidden
             },
@@ -65,7 +70,7 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
         },
         {
             dataField: "hoursRemaining",
-            text: 'Pozostały urlop',
+            text: vacationTypeLabel,
             headerAlign: 'center',
             align: 'center',
             style: {verticalAlign: 'middle'},
@@ -77,6 +82,7 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
             text: 'Komentarz',
             headerAlign: 'center',
             align: 'center',
+            sort: 'true',
             style: {verticalAlign: 'middle'},
             headerAttrs: {
                 hidden: isHidden
@@ -101,9 +107,11 @@ export const AbsenceHistoryTab = ({logs, isHidden}) => {
 AbsenceHistoryTab.propTypes = {
     logs: PropTypes.array,
     isHidden: PropTypes.bool,
+    vacationTypeLabel: PropTypes.string
 }
 
 AbsenceHistoryTab.defaultProps = {
     logs: [],
     isHidden: false,
+    vacationTypeLabel: "Pozostały urlop"
 }

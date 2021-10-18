@@ -5,7 +5,7 @@ import {CreateAbsenceRequestFormWrapper} from "../../components/create-absence-r
 import {TeamRequestsListWrapper} from "../../components/team-requests-list/team-requests-list-wrapper/TeamRequestsListWrapper";
 import {UserRequestsListWrapper} from "../../components/user-requests-list/user-requests-list-wrapper/UserRequestsListWrapper";
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
-import {mockSessionStorage} from "../../helpers/TestHelper";
+import {mockLocalStorage} from "../../helpers/TestHelper";
 import {AbsenceRequestsPage} from "./AbsenceRequestsPage";
 
 jest.mock("../../components/user-requests-list/user-requests-list-wrapper/UserRequestsListWrapper")
@@ -14,7 +14,7 @@ jest.mock("../../components/company-requests-list/company-requests-list-wrapper/
 jest.mock("../../components/create-absence-request-form/create-absence-request-form-wrapper/CreateAbsenceRequestFormWrapper")
 
 describe("AbsenceRequestPage", () => {
-    const sessionStorageMock = mockSessionStorage()
+    const sessionStorageMock = mockLocalStorage()
 
     beforeEach(() => {
         sessionStorageMock.clear()

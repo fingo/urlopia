@@ -20,9 +20,9 @@ class StorageMock {
     }
 }
 
-export const mockSessionStorage = () => {
+export const mockLocalStorage = () => {
     const storageMock = new StorageMock()
-    Object.defineProperty(window, 'sessionStorage', {
+    Object.defineProperty(window, 'localStorage', {
         value: storageMock
     })
     return storageMock

@@ -34,7 +34,7 @@ public class ReportControllerV2 {
                                                                                 @RequestParam int year) {
 
         var fileName = reportService.getWorkTimeEvidenceReportName(userId, year);
-        var anonymizedFileName = Anonymizer.anonymizeYearlyReportFileName(fileName);
+        var anonymizeFileName = Anonymizer.anonymizeYearlyReportFileName(fileName);
         try {
             var workTimeEvidenceReport = reportService.generateWorkTimeEvidenceReport(userId, year);
             var headers = getFileContentHeaders(fileName);
@@ -42,8 +42,8 @@ public class ReportControllerV2 {
                     .headers(headers)
                     .body(workTimeEvidenceReport::write);
         } catch (IOException ioException){
-            log.error("Could not generate report with name: {}", anonymizedFileName);
-            throw GenerateWorkTimeEvidenceReportException.fromIOException(anonymizedFileName);
+            log.error("Could not generate report with name: {}", anonymizeFileName);
+            throw GenerateWorkTimeEvidenceReportException.fromIOException(anonymizeFileName);
         }
     }
 

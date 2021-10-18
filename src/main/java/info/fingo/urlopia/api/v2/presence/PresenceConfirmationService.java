@@ -1,6 +1,7 @@
 package info.fingo.urlopia.api.v2.presence;
 
 import info.fingo.urlopia.UrlopiaApplication;
+import info.fingo.urlopia.api.v2.preferences.UserPreferencesService;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.holidays.HolidayService;
@@ -23,13 +24,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class PresenceConfirmationService {
-    private static final String USER_ID_FROM_PRESENCE = "presenceConfirmationId.userId";
-    private static final String DATE_FROM_PRESENCE = "presenceConfirmationId.date";
+    public static final String USER_ID_FROM_PRESENCE = "presenceConfirmationId.userId";
+    public static final String DATE_FROM_PRESENCE = "presenceConfirmationId.date";
 
     private final PresenceConfirmationRepository presenceConfirmationRepository;
     private final RequestService requestService;
     private final HolidayService holidayService;
     private final UserService userService;
+    private final UserPreferencesService userPreferencesService;
 
     public List<PresenceConfirmation> getPresenceConfirmations(Long authenticatedUserId, String[] filters) {
         var authenticatedUser = userService.get(authenticatedUserId);
@@ -130,6 +132,13 @@ public class PresenceConfirmationService {
         if (requestService.isVacationing(confirmationUser, date)) {
             log.error("Could not confirm presence for user with id: {} because user is on vacation", confirmationUser.getId());
             throw PresenceConfirmationException.userOnVacation();
+        }
+
+        var userWorkingHoursPreference = userPreferencesService.getWorkingHoursPreferenceOf(confirmationUser.getId());
+        if (userWorkingHoursPreference.isNonWorkingOn(date.getDayOfWeek())) {
+            log.error("Could not confirm presence for user with id: {} on date: {} because user is not working on: {}",
+                      confirmationUser.getId(), date, date.getDayOfWeek());
+            throw PresenceConfirmationException.userNonWorkingDay();
         }
     }
 

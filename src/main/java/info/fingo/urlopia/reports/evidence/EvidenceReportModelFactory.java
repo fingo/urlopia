@@ -29,11 +29,20 @@ public class EvidenceReportModelFactory {
     private final RequestService requestService;
     private final HistoryLogService historyLogService;
 
+    public EvidenceReportModel generateModelForFileName(User user,
+                                                        int year){
+        var model = new HashMap<String,String>();
+        var resolvers = getFileNameResolvers(user,year);
+        resolvers.forEach((prefix, resolver) -> putAllWithPrefix(resolver.resolve(), model, prefix));
+        return new EvidenceReportModel(model);
+    }
+
     public EvidenceReportModel create(User user,
                                       int year) {
         var resolvers = getResolvers(user,year);
         Map<String, String> model = new HashMap<>();
         resolvers.forEach((prefix, resolver) -> putAllWithPrefix(resolver.resolve(), model, prefix));
+        addPresenceConfirmationResolveToModel(user,year,model);
         return new EvidenceReportModel(model);
     }
 
@@ -46,19 +55,34 @@ public class EvidenceReportModelFactory {
     private Map<String, ParamResolver> getResolvers(User user,
                               int year){
         Map<String, ParamResolver> resolvers = new HashMap<>();
-        resolvers.put(START_TIME_PREFIX, EvidenceReportPresenceConfirmationTimeParamResolver.ofStartTime(user, year,
-                                                                            presenceConfirmationService, holidayService));
-        resolvers.put(END_TIME_PREFIX, EvidenceReportPresenceConfirmationTimeParamResolver.ofEndTime(user, year,
-                presenceConfirmationService, holidayService));
         resolvers.put(REPORT_DATE_PREFIX, new EvidenceReportDateParamsResolver(year));
         resolvers.put(USER_METADATA_PREFIX, new EvidenceReportUserParamsResolver(user));
         resolvers.put(USED_TIME_PREFIX, new EvidenceReportUsedTimeDuringTheYearParamsResolver(user, year,
-                                                                                              historyLogService));
+                                                                                              historyLogService,
+                                                                                                requestService));
         resolvers.put(VACATION_LEAVE_PREFIX, new EvidenceReportVacationLeaveParamsResolver(user, year,
                                                                                             historyLogService));
         resolvers.put(DAY_STATUS_PREFIX, new EvidenceReportDayParamsResolver(user, year, holidayService,
                 requestService, presenceConfirmationService));
         return resolvers;
 
+    }
+
+    private Map<String, ParamResolver> getFileNameResolvers(User user,
+                                                            int year){
+        Map<String, ParamResolver> resolvers = new HashMap<>();
+        resolvers.put(USER_METADATA_PREFIX, new EvidenceReportUserParamsResolver(user));
+        resolvers.put(REPORT_DATE_PREFIX, new EvidenceReportDateParamsResolver(year));
+        return resolvers;
+    }
+
+    private void addPresenceConfirmationResolveToModel(User user,
+                                                       int year,
+                                                       Map<String,String> model){
+        var presenceConfirmationResolver = new EvidenceReportPresenceConfirmationTimeParamResolver(user,year,
+                presenceConfirmationService,holidayService);
+        var presenceConfirmationResolve = presenceConfirmationResolver.resolve();
+        putAllWithPrefix(presenceConfirmationResolve.startTimeResolve(),model,START_TIME_PREFIX);
+        putAllWithPrefix(presenceConfirmationResolve.endTimeResolve(),model,END_TIME_PREFIX);
     }
 }

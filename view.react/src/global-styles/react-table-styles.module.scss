@@ -1,0 +1,8 @@
+.react-bootstrap-table th .order-4:before,
+.react-bootstrap-table th .caret-4-desc:before,
+.react-bootstrap-table th .order-4:after,
+.react-bootstrap-table th .caret-4-asc:after
+{
+  position: relative;
+  z-index: -1;
+}

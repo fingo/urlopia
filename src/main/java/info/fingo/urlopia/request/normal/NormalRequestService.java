@@ -2,6 +2,8 @@ package info.fingo.urlopia.request.normal;
 
 import info.fingo.urlopia.acceptance.AcceptanceService;
 import info.fingo.urlopia.acceptance.StatusNotSupportedException;
+import info.fingo.urlopia.api.v2.user.PendingDaysOutput;
+import info.fingo.urlopia.api.v2.user.VacationDaysOutput;
 import info.fingo.urlopia.request.absence.BaseRequestInput;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
@@ -11,9 +13,11 @@ import info.fingo.urlopia.request.normal.events.NormalRequestAccepted;
 import info.fingo.urlopia.request.normal.events.NormalRequestCanceled;
 import info.fingo.urlopia.request.normal.events.NormalRequestCreated;
 import info.fingo.urlopia.request.normal.events.NormalRequestRejected;
+import info.fingo.urlopia.team.TeamService;
 import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
+import info.fingo.urlopia.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -43,6 +47,8 @@ public class NormalRequestService implements RequestTypeService {
     private final ApplicationEventPublisher publisher;
 
     private final AcceptanceService acceptanceService;
+
+    private final UserService userService;
 
 
     @Override
@@ -101,15 +107,31 @@ public class NormalRequestService implements RequestTypeService {
     }
 
     public DayHourTime getPendingRequestsTime(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> {
-            log.error("Could not get pending requests time for a non-existent user with id: {}", userId);
-            return NoSuchUserException.invalidId();
-        });
+        var user = getUserById(userId);
         double pendingRequestsHours = countPendingRequestsHours(user);
         float userWorkTime = user.getWorkTime();
         int days = (int) Math.floor(pendingRequestsHours / userWorkTime);
         double hours =  Math.round((pendingRequestsHours % userWorkTime) * 100.0) / 100.0;
         return DayHourTime.of(days, hours);
+    }
+
+    public PendingDaysOutput getPendingRequestsTimeV2(Long userId) {
+        var user = getUserById(userId);
+        double pendingRequestsHours = countPendingRequestsHours(user);
+        float userWorkTime = user.getWorkTime();
+        int days = (int) Math.floor(pendingRequestsHours / userWorkTime);
+        double hours =  Math.round((pendingRequestsHours % userWorkTime) * 100.0) / 100.0;
+        if (userWorkTime == 8) {
+            return new PendingDaysOutput(days, hours);
+        }
+        return new PendingDaysOutput(0, pendingRequestsHours);
+    }
+
+    private User getUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> {
+            log.error("Could not get pending requests time for a non-existent user with id: {}", userId);
+            return NoSuchUserException.invalidId();
+        });
     }
 
     private Request createRequestObject(User user, BaseRequestInput requestInput, int workingDays) {
@@ -145,8 +167,9 @@ public class NormalRequestService implements RequestTypeService {
     }
 
     private void createAcceptances(User user, Request request) {
+        var allUsersLeader = userService.getAllUsersLeader();
         user.getTeams().stream()
-                .map(team -> user.equals(team.getLeader()) ? team.getBusinessPartLeader() : team.getLeader())
+                .map(team -> user.equals(team.getLeader()) ? allUsersLeader : team.getLeader())
                 .filter(Objects::nonNull)
                 .distinct()
                 .forEach(leader -> this.acceptanceService.create(request, leader));

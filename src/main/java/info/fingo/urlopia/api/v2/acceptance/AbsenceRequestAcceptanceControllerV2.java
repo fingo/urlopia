@@ -44,6 +44,16 @@ public class AbsenceRequestAcceptanceControllerV2 {
     }
 
     @RolesAllowed("ROLES_LEADER")
+    @GetMapping(value = "/history", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Page<AcceptanceHistoryOutput> getAcceptancesHistory(@RequestParam(name = "filter", defaultValue = "") String[] filters,
+                                                               Pageable pageable,
+                                                               HttpServletRequest httpRequest) {
+        var authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        var filter = Filter.from(filters);
+        return acceptanceService.getHistory(authenticatedId, filter, pageable);
+    }
+
+    @RolesAllowed("ROLES_LEADER")
     @PatchMapping(value = "/{acceptanceId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public AcceptanceStatus updateAcceptanceStatus(@PathVariable Long acceptanceId,
                                                    @RequestBody AcceptanceStatus status,

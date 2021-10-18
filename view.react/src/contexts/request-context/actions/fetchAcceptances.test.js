@@ -1,17 +1,18 @@
-import {FETCH_ACCEPTANCES_ACTION_PREFIX} from "../constants";
+import {FETCH_ACCEPTANCES_PENDING_ACTION_PREFIX} from "../constants";
 import {fetchAcceptancesReducer} from "./fetchAcceptances";
 
 describe('fetchAcceptancesReducer', () => {
     const sampleState = {
         fetching: false,
         error: null,
-        requests: []
+        pending: [],
+        history: []
     }
 
     it('should set fetching flag to true and reset error on request', () => {
         // given
         const action = {
-            type: `${FETCH_ACCEPTANCES_ACTION_PREFIX}_request`
+            type: `${FETCH_ACCEPTANCES_PENDING_ACTION_PREFIX}_request`
         }
 
         const state = {
@@ -54,7 +55,7 @@ describe('fetchAcceptancesReducer', () => {
         ]
 
         const action = {
-            type: `${FETCH_ACCEPTANCES_ACTION_PREFIX}_success`,
+            type: `${FETCH_ACCEPTANCES_PENDING_ACTION_PREFIX}_success`,
             response: {
                 content: sampleAcceptances
             }
@@ -69,7 +70,7 @@ describe('fetchAcceptancesReducer', () => {
         const expectedState = {
             ...sampleState,
             fetching: false,
-            requests: sampleAcceptances
+            pending: sampleAcceptances
         }
 
         const newState = fetchAcceptancesReducer(state, action)
@@ -81,7 +82,7 @@ describe('fetchAcceptancesReducer', () => {
     it('should set fetching flag to false and set an error message on failure', () => {
         // given
         const action = {
-            type: `${FETCH_ACCEPTANCES_ACTION_PREFIX}_failure`,
+            type: `${FETCH_ACCEPTANCES_PENDING_ACTION_PREFIX}_failure`,
             error: "Some error message"
         }
 

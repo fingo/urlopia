@@ -28,6 +28,7 @@ export const ExtendedWorker = ({workTime, userId, isUnspecifiedAbsences}) => {
     const {isEC} = workersState;
 
     const [, absenceHistoryDispatch] = useAbsenceHistory();
+    const vacationTypeLabel = isEC ? "Pozostały urlop:" : "Pozostała przerwa:"
 
     useEffect(() => {
         sendGetRequest(`${GET_AVAILABLE_YEARS_URL_PREFIX}${userId}${GET_AVAILABLE_YEARS_URL_POSTFIX}`)
@@ -43,7 +44,7 @@ export const ExtendedWorker = ({workTime, userId, isUnspecifiedAbsences}) => {
     useEffect(() => {
         workersDispatch(changeSelectedUser(userId));
         fetchRemainingDays(workersDispatch, userId);
-    }, [workersDispatch, userId]);
+    }, [workersDispatch, userId, workTime]);
 
     useEffect(() => {
         const {remainingDays, remainingHours} = isEC
@@ -63,8 +64,18 @@ export const ExtendedWorker = ({workTime, userId, isUnspecifiedAbsences}) => {
             <Row>
                 <Col lg={5}>
                     <div className={styles.holidayDaysInfo}>
-                        <h3>{isEC ? 'Pozostały urlop' : 'Pozostała przerwa w świadczeniu usług'}:</h3>
-                        <h3><strong>{remainingDays} dni</strong> {remainingHours} godzin</h3>
+                        {
+                            workTime === "1/1" ?
+                                <>
+                                    <h3>{vacationTypeLabel}</h3>
+                                    <h3><strong>{remainingDays} dni</strong> {remainingHours} godzin</h3>
+                                </>
+                                :
+                                <>
+                                    <h3>{vacationTypeLabel}</h3>
+                                    <h3><strong>{remainingHours} godzin</strong></h3>
+                                </>
+                        }
                     </div>
 
                     <ChangeDaysPoolAndWorkTimeSection workTime={workTime} />

@@ -3,6 +3,7 @@ package info.fingo.urlopia.acceptance;
 import info.fingo.urlopia.acceptance.events.AcceptanceAccepted;
 import info.fingo.urlopia.acceptance.events.AcceptanceCreated;
 import info.fingo.urlopia.acceptance.events.AcceptanceRejected;
+import info.fingo.urlopia.api.v2.acceptance.AcceptanceHistoryOutput;
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
@@ -23,7 +24,6 @@ import java.util.List;
 @Transactional
 @Slf4j
 public class AcceptanceService {
-
     private final AcceptanceRepository acceptanceRepository;
     private final RequestService requestService;
     private final ApplicationEventPublisher publisher;
@@ -43,6 +43,16 @@ public class AcceptanceService {
                 .and("leader.id", Operator.EQUAL, userId.toString())
                 .build();
         return acceptanceRepository.findAll(filterWithRestrictions, pageable, AcceptanceExcerptProjection.class);
+    }
+
+    public Page<AcceptanceHistoryOutput> getHistory(Long userId,
+                                                    Filter filter,
+                                                    Pageable pageable) {
+        filter = filter.toBuilder()
+                .and("leader.id", Operator.EQUAL, userId.toString())
+                .build();
+        var acceptancesPage = acceptanceRepository.findAll(filter, pageable);
+        return acceptancesPage.map(AcceptanceHistoryOutput::from);
     }
 
     public void create(Request request,
@@ -122,6 +132,10 @@ public class AcceptanceService {
                     .formatted(acceptanceId);
             log.info(loggerInfo);
         }
+    }
+
+    public boolean hasActiveAcceptances(User user){
+        return acceptanceRepository.checkIsExistActiveAcceptanceByLeaderId(user);
     }
 
     private void validateStatus(Acceptance.Status status,

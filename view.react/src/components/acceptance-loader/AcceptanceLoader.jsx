@@ -6,7 +6,7 @@ import {useRequests} from "../../contexts/request-context/requestContext";
 export const AcceptanceLoader = ({setAcceptancesPresent}) => {
     const [requestsState, requestsDispatch] = useRequests()
     const [acceptancesFetched, setAcceptancesFetched] = useState(false)
-    const {fetching: fetchingAcceptances, requests: acceptances} = requestsState.teamRequests
+    const {fetching: fetchingAcceptances, pending: acceptances} = requestsState.acceptances
 
     useEffect(() => {
         fetchAcceptances(requestsDispatch)

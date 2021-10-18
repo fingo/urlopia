@@ -2,11 +2,12 @@ import {act, fireEvent, render, screen} from "@testing-library/react";
 import {BrowserRouter as Router} from "react-router-dom";
 
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
-import {mockSessionStorage} from "../../helpers/TestHelper";
+import {UserPreferencesProvider} from "../../contexts/user-preferences-context/userPreferencesContext";
+import {mockLocalStorage} from "../../helpers/TestHelper";
 import {TopBar} from "./TopBar";
 
 describe("TopBar", () => {
-    const sessionStorageMock = mockSessionStorage()
+    const sessionStorageMock = mockLocalStorage()
     const sampleFullName = 'Kacper Bartek'
     const sampleTeams = [
         {name: 'ABC', leader: 'Piotr Nowak'},
@@ -23,19 +24,19 @@ describe("TopBar", () => {
     })
 
     it('should show logo',() => {
-        render(<Router><TopBar onHamburgerClick={() => null}/></Router>);
+        render(<Router><UserPreferencesProvider><TopBar onHamburgerClick={() => null}/></UserPreferencesProvider></Router>);
         const displayedImage = document.querySelector("img");
         expect((displayedImage.src)).toContain('logo.png');
     });
 
     it('should show correct user name', () => {
-        render(<TopBar onHamburgerClick={() => null}/>);
+        render(<UserPreferencesProvider><TopBar onHamburgerClick={() => null}/></UserPreferencesProvider>);
         const userName = screen.getByText(sampleFullName);
         expect(userName).toBeInTheDocument();
     });
 
     it('should show teams dropdown after clicking on user name', async () => {
-        render(<TopBar onHamburgerClick={() => null}/>);
+        render(<UserPreferencesProvider><TopBar onHamburgerClick={() => null}/></UserPreferencesProvider>);
 
         const userNameLabel = screen.getByText(sampleFullName);
         expect(userNameLabel).toBeInTheDocument();
@@ -52,7 +53,7 @@ describe("TopBar", () => {
     });
 
     it('should show "Urlopia" banner', () => {
-        render(<TopBar onHamburgerClick={() => null}/>);
+        render(<UserPreferencesProvider><TopBar onHamburgerClick={() => null}/></UserPreferencesProvider>);
         const urlopiaBanner = screen.getByText('Urlopia');
         expect(urlopiaBanner).toBeInTheDocument();
     });

@@ -6,6 +6,7 @@ import {HolidaysProvider} from "../contexts/holidays-context/holidaysContext";
 import {PresenceProvider} from "../contexts/presence-context/presenceContext";
 import {WorkersProvider} from "../contexts/workers-context/workersContext";
 import {AbsenceRequestsPage, URL as VacationRequestsURL} from '../pages/absence-requests-page/AbsenceRequestsPage';
+import {AcceptanceHistoryPage, URL as AcceptanceHistoryURL} from "../pages/acceptance-history-page/AcceptanceHistoryPage";
 import {AssociatesPage, URL as AssociatesURL} from '../pages/associates-page/AssociatesPage';
 import {CalendarPage, URL as CalendarURL} from '../pages/calendar-page/CalendarPage';
 import {HistoryPage, URL as HistoryURL} from '../pages/history-page/HistoryPage';
@@ -15,7 +16,7 @@ import {ReportsPage, URL as ReportsURL} from '../pages/reports-page/ReportsPage'
 import {URL as WorkersURL, WorkersPage} from '../pages/workers-page/WorkersPage';
 
 export const MainContentRouting = ({acceptancesPresent}) => {
-    const {isAdmin: isUserAnAdmin} = getCurrentUser()
+    const {isAdmin: isUserAnAdmin, isLeader: isUserALeader} = getCurrentUser()
     return (
         <PresenceProvider>
             <HolidaysProvider>
@@ -44,6 +45,12 @@ export const MainContentRouting = ({acceptancesPresent}) => {
                             <Route path={`${HistoryURL}/:userId`} exact>
                                 <HistoryPage isAdmin={isUserAnAdmin}/>
                             </Route>
+
+                            {isUserALeader &&
+                            <Route path={AcceptanceHistoryURL} exact>
+                                <AcceptanceHistoryPage />
+                            </Route>
+                            }
 
                             {isUserAnAdmin &&
                             <Route path={WorkersURL} exact>

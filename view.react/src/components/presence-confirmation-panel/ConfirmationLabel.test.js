@@ -30,11 +30,21 @@ describe("ConfirmationLabel", () => {
 
     it("should render correct label when confirmation is not present and it's user presence", () => {
         render(<ConfirmationLabel fetching={false}  isOwnPresence={true}/>)
-        expect(screen.queryByText("W tym dniu nie zgłosiłeś jeszcze swojej obecności")).toBeInTheDocument()
+        expect(screen.queryByText("W tym dniu nie zgłosiłeś swojej obecności")).toBeInTheDocument()
     })
 
     it("should render correct label when confirmation is not present and it's not user presence", () => {
         render(<ConfirmationLabel fetching={false}  isOwnPresence={false}/>)
         expect(screen.queryByText("W tym dniu pracownik nie zgłosił swojej obecności")).toBeInTheDocument()
+    })
+
+    it("should render correct label when confirmation is not present, it's user absence", () => {
+        render(<ConfirmationLabel fetching={false}  isOwnPresence={true} isOnVacation={true}/>)
+        expect(screen.queryByText("W tym dniu byłeś nieobecny lub na urlopie")).toBeInTheDocument()
+    })
+
+    it("should render correct label when confirmation is not present and it's not user absence", () => {
+        render(<ConfirmationLabel fetching={false}  isOwnPresence={false} isOnVacation={true}/>)
+        expect(screen.queryByText("W tym dniu pracownik był nieobecny lub na urlopie")).toBeInTheDocument()
     })
 })

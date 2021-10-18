@@ -16,12 +16,12 @@ export const AbsenceHistorySection = () => {
     const [workersState] = useWorkers();
     const {isEC} = workersState;
     const {userId, fullName} = isEC ? workersState.workers.selectedWorker : workersState.associates.selectedAssociate;
-
+    const vacationTypeLabel =  isEC ? "Pozostały urlop" : "Pozostała przerwa"
     const handleShowMoreClick = (e) => {
         e.currentTarget.blur();
         history.push({
             pathname: `/history/${userId}`,
-            state: {fullName},
+            state: {fullName,vacationTypeLabel},
         });
     }
 
@@ -30,7 +30,7 @@ export const AbsenceHistorySection = () => {
     return (
         <div>
             <Form.Label><strong>Historia użytkownika</strong></Form.Label>
-            <AbsenceHistoryTab logs={formattedRecentUserHistory} isHidden={true}/>
+            <AbsenceHistoryTab logs={formattedRecentUserHistory} isHidden={true} vacationTypeLabel={vacationTypeLabel}/>
             <Button className={btnClass}
                     onClick={(e) => handleShowMoreClick(e)}
             >

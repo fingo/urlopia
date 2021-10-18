@@ -13,6 +13,7 @@ import info.fingo.urlopia.request.normal.NormalRequestService
 import info.fingo.urlopia.team.Team
 import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserRepository
+import info.fingo.urlopia.user.UserService
 import org.springframework.context.ApplicationEventPublisher
 import spock.lang.Specification
 
@@ -33,6 +34,8 @@ class NormalRequestServiceSpec extends Specification{
 
     private NormalRequestService normalRequestService
 
+    private UserService userService
+
     void setup(){
         requestRepository = Mock(RequestRepository)
         userRepository = Mock(UserRepository)
@@ -40,8 +43,9 @@ class NormalRequestServiceSpec extends Specification{
         workingDaysCalculator = Mock(WorkingDaysCalculator)
         publisher = Mock(ApplicationEventPublisher)
         acceptanceService = Mock(AcceptanceService)
+        userService = Mock(UserService)
         normalRequestService = new NormalRequestService(requestRepository, userRepository,historyLogService,
-                                                        workingDaysCalculator,publisher,acceptanceService)
+                                                        workingDaysCalculator,publisher,acceptanceService, userService)
 
     }
 

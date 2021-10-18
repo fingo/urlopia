@@ -20,26 +20,25 @@ class EvidenceReportPresenceConfirmationTimeParamResolverSpec extends Specificat
         getId() >> exampleId
     }
 
-
     def "resolve() WHEN called with year in future, SHOULD return model that contains prefix and and empty string as value"() {
         given: "year from future"
         def year = LocalDate.now().plusYears(2).getYear()
         def day = 1
         def month = 1
 
-        def evidenceReportPresenceConfirmationTimeParamResolver =
-                EvidenceReportPresenceConfirmationTimeParamResolver.ofStartTime(user,
-                                                                              year,
-                                                                              presenceConfirmationService,
-                                                                              holidayService)
+        def evidenceReportPresenceConfirmationTimeParamResolver =new EvidenceReportPresenceConfirmationTimeParamResolver(
+                user,year,presenceConfirmationService,holidayService
+        )
         def key = String.format(EvidenceReportModel.DATE_FORMATTING, month, day)
 
         when:
         def result = evidenceReportPresenceConfirmationTimeParamResolver.resolve()
 
         then:
-        result.containsKey(key)
-        result.get(key) == ""
+        result.startTimeResolve().containsKey(key)
+        result.startTimeResolve().get(key) == ""
+        result.endTimeResolve().containsKey(key)
+        result.endTimeResolve().get(key) == ""
     }
 
     def "resolve() WHEN called with not existing date SHOULD return model that contains prefix and - as value"() {
@@ -48,11 +47,9 @@ class EvidenceReportPresenceConfirmationTimeParamResolverSpec extends Specificat
         def day = 31
         def month = 02
 
-        def evidenceReportPresenceConfirmationTimeParamResolver =
-                EvidenceReportPresenceConfirmationTimeParamResolver.ofStartTime(user,
-                        year,
-                        presenceConfirmationService,
-                        holidayService)
+        def evidenceReportPresenceConfirmationTimeParamResolver =new EvidenceReportPresenceConfirmationTimeParamResolver(
+                user,year,presenceConfirmationService,holidayService
+        )
 
         def key = String.format(EvidenceReportModel.DATE_FORMATTING, month, day)
 
@@ -60,8 +57,10 @@ class EvidenceReportPresenceConfirmationTimeParamResolverSpec extends Specificat
         def result =  evidenceReportPresenceConfirmationTimeParamResolver.resolve()
 
         then:
-        result.containsKey(key)
-        result.get(key) == "-"
+        result.startTimeResolve().containsKey(key)
+        result.startTimeResolve().get(key) == "-"
+        result.endTimeResolve().containsKey(key)
+        result.endTimeResolve().get(key) == "-"
     }
 
     def "resolve() WHEN called with not working day SHOULD return model that contains prefix and - as value "() {
@@ -71,11 +70,9 @@ class EvidenceReportPresenceConfirmationTimeParamResolverSpec extends Specificat
         def year = 2021
         def date = LocalDate.of(year, month, day)
 
-        def evidenceReportPresenceConfirmationTimeParamResolver =
-                EvidenceReportPresenceConfirmationTimeParamResolver.ofStartTime(user,
-                        year,
-                        presenceConfirmationService,
-                        holidayService)
+        def evidenceReportPresenceConfirmationTimeParamResolver =new EvidenceReportPresenceConfirmationTimeParamResolver(
+                user,year,presenceConfirmationService,holidayService
+        )
         def key = String.format(EvidenceReportModel.DATE_FORMATTING, month, day)
 
 
@@ -86,11 +83,13 @@ class EvidenceReportPresenceConfirmationTimeParamResolverSpec extends Specificat
         def result =evidenceReportPresenceConfirmationTimeParamResolver.resolve()
 
         then:
-        result.containsKey(key)
-        result.get(key) == "-"
+        result.startTimeResolve().containsKey(key)
+        result.startTimeResolve().get(key) == "-"
+        result.endTimeResolve().containsKey(key)
+        result.endTimeResolve().get(key) == "-"
     }
 
-    def "resolve() WHEN called with date with presenceConfirmation and startTime factor method SHOULD return model that contains prefix and formatted startTime as value"() {
+    def "resolve() WHEN called with date with presenceConfirmation SHOULD return model that contains prefix and formatted startTime and endTime as value"() {
         given: "valid date from past"
         def day = 1
         def month = 1
@@ -98,12 +97,11 @@ class EvidenceReportPresenceConfirmationTimeParamResolverSpec extends Specificat
         def date = LocalDate.of(year, month, day)
 
 
-        def time = LocalTime.now();
-        def evidenceReportPresenceConfirmationTimeParamResolver =
-                EvidenceReportPresenceConfirmationTimeParamResolver.ofStartTime(user,
-                        year,
-                        presenceConfirmationService,
-                        holidayService)
+        def startTime = LocalTime.now()
+        def endTime = startTime.plusHours(2)
+        def evidenceReportPresenceConfirmationTimeParamResolver =new EvidenceReportPresenceConfirmationTimeParamResolver(
+                user,year,presenceConfirmationService,holidayService
+        )
         def key = String.format(EvidenceReportModel.DATE_FORMATTING, month, day)
 
         and: "holidayService mock that say example date is not working day"
@@ -111,7 +109,8 @@ class EvidenceReportPresenceConfirmationTimeParamResolverSpec extends Specificat
 
         and: "presenceConfirmationService mock that return date without presenceConfirmation"
         def presence = Mock(PresenceConfirmation) {
-            getStartTime() >> time
+            getStartTime() >> startTime
+            getEndTime() >> endTime
         }
         presenceConfirmationService.getByUserAndDate(_ as Long, _ as LocalDate) >> [presence]
 
@@ -119,55 +118,22 @@ class EvidenceReportPresenceConfirmationTimeParamResolverSpec extends Specificat
         def result = evidenceReportPresenceConfirmationTimeParamResolver.resolve()
 
         then:
-        result.containsKey(key)
-        result.get(key) == dateTimeFormatter.format(time)
+        result.startTimeResolve().containsKey(key)
+        result.startTimeResolve().get(key) == dateTimeFormatter.format(startTime)
+        result.endTimeResolve().containsKey(key)
+        result.endTimeResolve().get(key) == dateTimeFormatter.format(endTime)
     }
 
-    def "resolve() WHEN called with date with presenceConfirmation and endTime factor method SHOULD return model that contains prefix and formatted endTime as value"() {
+
+    def "resolve() WHEN called with date without presenceConfirmation SHOULD return model that contains prefix and  - as value"() {
         given: "valid date from past"
         def day = 1
         def month = 1
         def year = 2021
         def date = LocalDate.of(year, month, day)
 
-
-        def time = LocalTime.now();
-        def evidenceReportPresenceConfirmationTimeParamResolver =
-                EvidenceReportPresenceConfirmationTimeParamResolver.ofEndTime(user,
-                        year,
-                        presenceConfirmationService,
-                        holidayService)
-        def key = String.format(EvidenceReportModel.DATE_FORMATTING, month, day)
-
-        and: "holidayService mock that say example date is not working day"
-        holidayService.isWorkingDay(date) >> true
-
-        and: "presenceConfirmationService mock that return date without presenceConfirmation"
-        def presence = Mock(PresenceConfirmation) {
-            getEndTime() >> time
-        }
-        presenceConfirmationService.getByUserAndDate(_ as Long, _ as LocalDate) >> [presence]
-
-        when:
-        def result = evidenceReportPresenceConfirmationTimeParamResolver.resolve()
-
-        then:
-        result.containsKey(key)
-        result.get(key) == dateTimeFormatter.format(time)
-    }
-
-    def "resolve() WHEN called with date with presenceConfirmation SHOULD return model that contains prefix and  - as value"() {
-        given: "valid date from past"
-        def day = 1
-        def month = 1
-        def year = 2021
-        def date = LocalDate.of(year, month, day)
-
-        def evidenceReportPresenceConfirmationTimeParamResolver =
-                EvidenceReportPresenceConfirmationTimeParamResolver.ofStartTime(user,
-                        year,
-                        presenceConfirmationService,
-                        holidayService)
+        def evidenceReportPresenceConfirmationTimeParamResolver =new EvidenceReportPresenceConfirmationTimeParamResolver(
+                user,year,presenceConfirmationService,holidayService)
         def key = String.format(EvidenceReportModel.DATE_FORMATTING, month, day)
 
 
@@ -181,8 +147,10 @@ class EvidenceReportPresenceConfirmationTimeParamResolverSpec extends Specificat
         def result = evidenceReportPresenceConfirmationTimeParamResolver.resolve()
 
         then:
-        result.containsKey(key)
-        result.get(key) == "-"
+        result.startTimeResolve().containsKey(key)
+        result.startTimeResolve().get(key) == "-"
+        result.endTimeResolve().containsKey(key)
+        result.endTimeResolve().get(key) == "-"
     }
 
 }

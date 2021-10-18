@@ -17,6 +17,7 @@ import {spinner} from "../../global-styles/loading-spinner.module.scss";
 import {AttentionIcon, TextWithIcon} from "../../helpers/icons/Icons";
 import {textAsArrayFormatter} from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
 import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
+import {sortedUsers} from "../../helpers/sorts/UsersSortHelper";
 import {ExtendedWorker} from "../extended-worker/ExtendedWorker";
 import styles from './WorkersTable.module.scss';
 
@@ -34,7 +35,6 @@ export const WorkersTable = ({isEC}) => {
     const {fetching} = isEC ? workersState.workers : workersState.associates;
 
     const [whichExpanded, setWhichExpanded] = useState([]);
-    const [usersIdWithUnspecifiedAbsences, setUsersIdWithUnspecifiedAbsences] = useState([]);
 
     useEffect(() => {
         if (selectedUser) {
@@ -56,7 +56,7 @@ export const WorkersTable = ({isEC}) => {
         }
     }, [workersDispatch, isEC, presenceDispatcher]);
 
-    const formattedWorkers = workers.map(worker => {
+    const formattedWorkers = sortedUsers(workers, "fullName").map(worker => {
         const workTime = `${worker.workTime.numerator}/${worker.workTime.denominator}`;
         return {
             userId: worker.userId,
@@ -68,9 +68,7 @@ export const WorkersTable = ({isEC}) => {
     });
 
     const withNotifyFormatter = (cell, row) => {
-        const usersKeys = Object.keys(unspecifiedAbsences);
-        setUsersIdWithUnspecifiedAbsences(usersKeys);
-        if (usersKeys.includes(row.userId.toString())) {
+        if (unspecifiedAbsences[row.userId] !== undefined) {
             return (
                 <div className={styles.notify}>
                     <div className={styles.dot}>
@@ -102,7 +100,7 @@ export const WorkersTable = ({isEC}) => {
         renderer: row => (
             <ExtendedWorker workTime={row.workTime}
                             userId={row.userId}
-                            isUnspecifiedAbsences={usersIdWithUnspecifiedAbsences.includes(row.userId.toString())}/>
+                            isUnspecifiedAbsences={unspecifiedAbsences[row.userId] !== undefined}/>
         )
     };
 

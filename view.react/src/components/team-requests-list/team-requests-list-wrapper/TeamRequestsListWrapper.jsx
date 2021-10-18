@@ -5,9 +5,9 @@ import {TeamRequestsList} from "../TeamRequestsList";
 
 export const TeamRequestsListWrapper = () => {
     const [state, requestsDispatch] = useRequests()
-    const {requests} = state.teamRequests
+    const {pending: pendingAcceptances} = state.acceptances
 
-    const formattedRequests = requests.map(req => {
+    const formattedRequests = pendingAcceptances.map(req => {
         return {
             id: req.id,
             requester: req.requesterName,

@@ -8,11 +8,11 @@ plugins {
     id "io.freefair.lombok" version "6.1.0-m3"
 }
 
-project.ext.set("mainViewModule", project(":view.angular"))
+project.ext.set("mainViewModule", project(":view.react"))
 
 
 allprojects {
-    project.version = "1.2.2"
+    project.version = "2.3.0"
 }
 
 java {
@@ -85,12 +85,12 @@ test {
 
 bootJar {
     archivesBaseName = 'urlopia'
-    from("${mainViewModule.projectDir}/public") {
+    from("${mainViewModule.projectDir}/build") {
         into "public"
     }
 }
 
-springBoot  {
+springBoot {
     buildInfo()
 }
 

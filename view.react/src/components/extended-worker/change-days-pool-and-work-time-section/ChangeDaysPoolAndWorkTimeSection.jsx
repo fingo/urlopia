@@ -60,6 +60,7 @@ export const ChangeDaysPoolAndWorkTimeSection = ({workTime}) => {
                                  className={styles.workingHoursSelection}
                                  defaultValue={workTime}
                                  onChange={e => handleChangeWorkTime(e)}
+                                 data-testid="selector"
                     >
                         <option value='1/1'>pełny etat</option>
                         <option value='1/2'>1/2 etatu</option>

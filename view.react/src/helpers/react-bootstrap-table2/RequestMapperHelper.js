@@ -1,6 +1,7 @@
 import {Badge} from "react-bootstrap";
 
-import {ACCEPTED, CANCELED, PENDING, REJECTED} from "../../constants/statuses";
+import {ClickablePill} from "../../components/clickable-badge/ClickablePill";
+import {ACCEPTED, CANCELED, EXPIRED, PENDING, REJECTED} from "../../constants/statuses";
 
 export const requestStatusMapper = (cell) => {
     switch (cell) {
@@ -21,29 +22,58 @@ export const requestStatusMapper = (cell) => {
     }
 }
 
-export const statusFormatter = (cell) => {
+export const statusFormatter = (cell, row, requests, showModal) => {
+    const request = requests.find(req => req.id === row.id)
+
+    return (
+        <div style={{display: "flex", justifyContent: "center"}}>
+            {formatRequestBadge(cell)}
+            {acceptancesButtonFor(request, showModal)}
+        </div>
+    )
+}
+
+export const formatRequestBadge = (status) => {
     let color;
-    switch (cell) {
+    let text;
+
+    switch (status) {
         case ACCEPTED:
-            cell = 'Zatwierdzony';
+            text = 'Zatwierdzony';
             color = 'success';
             break;
         case CANCELED:
-            cell = 'Anulowany';
+            text = 'Anulowany';
             color = 'secondary';
             break;
         case PENDING:
-            cell = 'Oczekujący';
+            text = 'Oczekujący';
             color = 'warning';
             break;
         case REJECTED:
-            cell = 'Odrzucony';
+            text = 'Odrzucony';
             color = 'danger';
             break;
         default:
             color = 'primary';
     }
-    return <Badge pill bg={color}>{cell}</Badge>
+
+    return <Badge pill bg={color}>{text}</Badge>
+}
+
+const acceptancesButtonFor = (request, showModal) => {
+    if (!request) {
+        return null;
+    }
+
+    const numberOfLeaders = request.acceptances.length
+    const numberOfExamined = request.acceptances.filter(acc => acc.status !== PENDING && acc.status !== EXPIRED).length
+
+    return (
+        <ClickablePill onClick={() => showModal(request.id)}>
+            {`(${numberOfExamined}/${numberOfLeaders})`}
+        </ClickablePill>
+    )
 }
 
 export const requestTypeMapper = (cell) => {

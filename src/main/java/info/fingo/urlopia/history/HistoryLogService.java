@@ -21,7 +21,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 @Service
 @Transactional
@@ -32,7 +31,8 @@ public class HistoryLogService {
     private final HistoryLogRepository historyLogRepository;
     private final UserRepository userRepository;
     private final WorkingDaysCalculator workingDaysCalculator;
-    private final HolidayService holidayService;
+
+    private static final String CREATED_FILTER = "created";
 
 
     public List<HistoryLogExcerptProjection> get(Filter filter) {
@@ -51,8 +51,8 @@ public class HistoryLogService {
         var formattedEndOfDay = formatter.format(endOfDay);
         var filter = Filter.newBuilder()
                 .and("user.id", Operator.EQUAL, String.valueOf(userId))
-                .and("created", Operator.GREATER_OR_EQUAL, formattedStartOfDay)
-                .and("created", Operator.LESS_OR_EQUAL, formattedEndOfDay)
+                .and(CREATED_FILTER, Operator.GREATER_OR_EQUAL, formattedStartOfDay)
+                .and(CREATED_FILTER, Operator.LESS_OR_EQUAL, formattedEndOfDay)
                 .build();
         return historyLogRepository.findAll(filter, HistoryLogExcerptProjection.class);
     }
@@ -76,8 +76,8 @@ public class HistoryLogService {
 
         Filter filterWithRestrictions = filter.toBuilder()
                 .and("user.id", Operator.EQUAL, userId.toString())
-                .and("created", Operator.GREATER_OR_EQUAL, yearStart)
-                .and("created", Operator.LESS_OR_EQUAL, yearEnd)
+                .and(CREATED_FILTER, Operator.GREATER_OR_EQUAL, yearStart)
+                .and(CREATED_FILTER, Operator.LESS_OR_EQUAL, yearEnd)
                 .build();
         return get(filterWithRestrictions, pageable);
     }
@@ -215,84 +215,5 @@ public class HistoryLogService {
         var historyLogFromYear = getFromYear(userId, year);
         return historyLogFromYear.stream()
                 .allMatch(historyLog -> historyLog.getUserWorkTime() == 8.0);
-    }
-
-    public double countTheHoursUsedDuringTheYear(Long userId,
-                                                 int year) {
-        var historyLogs = historyLogRepository.findLogsByUserId(userId).stream()
-                .filter(historyLog -> historyLog.getRequest() != null)
-                .filter(historyLog -> historyLog.getHours() < 0)
-                .toList();
-
-        double usedHours = 0.0;
-        for (var historyLog : historyLogs) {
-            var request = historyLog.getRequest();
-            if (isRequestActiveInYear(request, year)) {
-                usedHours += countUsedHoursFromYearAndRequest(year, request, historyLog);
-            }
-        }
-
-        return usedHours;
-    }
-
-    private boolean isRequestActiveInYear(Request request, int year) {
-        var yearStart = LocalDate.of(year, 1, 1);
-        var yearEnd = LocalDate.of(year, 12, 31);
-
-        var overlappingOnLeft = requestOverlappingOnLeft(request, year);
-        var isFullyIncluded = !request.getStartDate().isBefore(yearStart) && !request.getEndDate().isAfter(yearEnd);
-        var overlappingOnRight = requestOverlappingOnRight(request, year);
-
-        return overlappingOnLeft || isFullyIncluded || overlappingOnRight;
-    }
-
-    private boolean requestOverlappingOnLeft(Request request, int year) {
-        var yearStart = LocalDate.of(year, 1, 1);
-        return request.getStartDate().isBefore(yearStart) && !request.getEndDate().isBefore(yearStart);
-    }
-
-    private boolean requestOverlappingOnRight(Request request, int year) {
-        var yearEnd = LocalDate.of(year, 12, 31);
-        return !request.getStartDate().isAfter(yearEnd) && request.getEndDate().isAfter(yearEnd);
-    }
-
-    private double countUsedHoursFromYearAndRequest(int year,
-                                                    Request request,
-                                                    HistoryLog historyLog){
-        if (requestOverlappingOnLeft(request, year)) {
-            return -countUsedHoursInOverlappingRequest(year, request, historyLog, true);
-        } else if (requestOverlappingOnRight(request, year)) {
-            return -countUsedHoursInOverlappingRequest(year, request, historyLog, false);
-        } else {
-            return -historyLog.getHours();
-        }
-    }
-
-    private double countUsedHoursInOverlappingRequest(int year,
-                                                      Request request,
-                                                      HistoryLog historyLog,
-                                                      boolean overlappedOnLeft) {
-        var requestStartDate = request.getStartDate();
-        var requestEndDate = request.getEndDate();
-        var yearStart = LocalDate.of(year, 1, 1);
-        var yearEnd = LocalDate.of(year, 12, 31);
-
-        Predicate<LocalDate> filter = overlappedOnLeft ? day -> !day.isBefore(yearStart) : day -> !day.isAfter(yearEnd);
-
-        var workingDays = requestStartDate.datesUntil(requestEndDate.plusDays(1))
-                .filter(holidayService::isWorkingDay)
-                .toList();
-
-        var numOfWorkingDaysBeforeNextYear = workingDays.stream()
-                .filter(filter)
-                .count();
-        var numOfWorkingDays = workingDays.size();
-
-        if (numOfWorkingDays == 0) {
-            return 0;
-        }
-
-        var hoursUsedPerDay = (historyLog.getHours()) / numOfWorkingDays;
-        return hoursUsedPerDay * numOfWorkingDaysBeforeNextYear;
     }
 }

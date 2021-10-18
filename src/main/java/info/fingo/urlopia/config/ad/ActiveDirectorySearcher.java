@@ -49,6 +49,12 @@ public class ActiveDirectorySearcher {
         return this;
     }
 
+    public ActiveDirectorySearcher distinguishedName(String distinguishedName) {
+        var value = String.format("(distinguishedName=%s)", distinguishedName);
+        filter.append(value);
+        return this;
+    }
+
     public List<SearchResult> search() {
         var filter = this.filter.append(")").toString();
         List<SearchResult> result = new LinkedList<>();

@@ -31,10 +31,10 @@ describe('changeRequestStatusReducer', () => {
             error: null,
             requests: sampleRequests
         },
-        teamRequests: {
+        acceptances: {
             fetching: false,
             error: null,
-            requests: sampleRequests
+            pending: sampleRequests
         },
         companyRequests: {
             fetching: false,
@@ -91,17 +91,13 @@ describe('changeRequestStatusReducer', () => {
                 ...sampleState.myRequests,
                 requests: [
                     {
-                        ...sampleRequests[0],
-                        status: "CANCELED"
-                    },
-                    {
                         ...sampleRequests[1],
                     }
                 ]
             },
-            teamRequests: {
-                ...sampleState.teamRequests,
-                requests: [
+            acceptances: {
+                ...sampleState.acceptances,
+                pending: [
                     {
                         ...sampleRequests[1],
                     }
@@ -146,16 +142,12 @@ describe('changeRequestStatusReducer', () => {
                 requests: [
                     {
                         ...sampleRequests[0]
-                    },
-                    {
-                        ...sampleRequests[1],
-                        status: "ACCEPTED"
                     }
                 ]
             },
-            teamRequests: {
-                ...sampleState.teamRequests,
-                requests: [
+            acceptances: {
+                ...sampleState.acceptances,
+                pending: [
                     {
                         ...sampleRequests[0],
                     }
@@ -200,16 +192,12 @@ describe('changeRequestStatusReducer', () => {
                 requests: [
                     {
                         ...sampleRequests[0]
-                    },
-                    {
-                        ...sampleRequests[1],
-                        status: "REJECTED"
                     }
                 ]
             },
-            teamRequests: {
-                ...sampleState.teamRequests,
-                requests: [
+            acceptances: {
+                ...sampleState.acceptances,
+                pending: [
                     {
                         ...sampleRequests[0],
                     }

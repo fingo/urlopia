@@ -1,13 +1,18 @@
 package info.fingo.urlopia.api.v2.calendar
 
+import info.fingo.urlopia.api.v2.calendar.unspecifiedabsence.UnspecifiedAbsenceService
+import info.fingo.urlopia.api.v2.preferences.UserPreferencesService
+import info.fingo.urlopia.api.v2.preferences.working.hours.UserWorkingHoursPreference
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmation
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
 import info.fingo.urlopia.config.persistance.filter.Filter
-import info.fingo.urlopia.history.HistoryLogExcerptProjection
-import info.fingo.urlopia.history.HistoryLogService
+import info.fingo.urlopia.config.persistance.filter.Operator
 import info.fingo.urlopia.holidays.Holiday
 import info.fingo.urlopia.holidays.HolidayService
+import info.fingo.urlopia.request.Request
 import info.fingo.urlopia.request.RequestService
+import info.fingo.urlopia.request.RequestType
+import info.fingo.urlopia.team.Team
 import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserService
 import spock.lang.Specification
@@ -24,13 +29,17 @@ class CalendarServiceSpec extends Specification {
 
     def filter = Filter.from("")
 
-    def historyLogService = Mock(HistoryLogService)
     def holidayService = Mock(HolidayService)
     def requestService = Mock(RequestService)
     def userService = Mock(UserService)
     def presenceConfirmationService = Mock(PresenceConfirmationService)
+    def userPreferencesService = Mock(UserPreferencesService)
 
-    def calendarService = new CalendarService(historyLogService, holidayService, requestService, userService, presenceConfirmationService)
+    def unspecifiedAbsenceService = new UnspecifiedAbsenceService(requestService, presenceConfirmationService, userService,
+                                                                  holidayService, userPreferencesService)
+    def calendarOutputProvider = new CalendarOutputProvider(holidayService, userService, presenceConfirmationService,
+                                                            unspecifiedAbsenceService, userPreferencesService)
+    def calendarService = new CalendarService(calendarOutputProvider, unspecifiedAbsenceService)
 
     def "getCalendarInfo() WHEN normal day SHOULD return calendar output"() {
         given:
@@ -38,27 +47,24 @@ class CalendarServiceSpec extends Specification {
         def endDate = startDate
         def startTime = LocalTime.of(8, 0)
         def endTime = startTime.plusHours(8)
-        def created = LocalDateTime.of(2021, 8, 26, 12, 0)
-
-        and: "Expected history logs"
-        def historyLogExcerptProjections = [Mock(HistoryLogExcerptProjection) {
-            getCreated() >> created
-        }]
-        def vacationHourModification = new VacationHoursModificationOutput()
-        vacationHourModification.setTime(created.toLocalTime())
 
         and: "Expected absent user output"
-        def userName = "Jan Kowalski"
-        def teams = ["ZPH"]
-        def absentUserOutputs = [new AbsentUserOutput(userName, teams)]
+        def absentUser = Mock(User) {
+            getId() >> 2L
+            getFullName() >> "Jan Kowalski"
+            getTeams() >> [Mock(Team) {
+                getName() >> "ZPH"
+            }]
+        }
 
         and: "Expected current user information"
         def presenceConfirmation = Mock(PresenceConfirmation) {
+            getDate() >> startDate
             getStartTime() >> startTime
             getEndTime() >> endTime
         }
         def presenceConfirmationOutput = new PresenceConfirmationOutput(true, startTime, endTime)
-        def vacationHoursModifications = [vacationHourModification]
+        def vacationHoursModifications = []
 
         def currentUserInformation = new CurrentUserInformationOutput()
         currentUserInformation.setAbsent(false)
@@ -69,7 +75,7 @@ class CalendarServiceSpec extends Specification {
         def singleDayOutput = new SingleDayOutput()
         singleDayOutput.setWorkingDay(true)
         singleDayOutput.setHolidays([])
-        singleDayOutput.setAbsentUsers(absentUserOutputs)
+        singleDayOutput.setAbsentUsers([AbsentUserOutput.of(absentUser)])
         singleDayOutput.setCurrentUserInformation(currentUserInformation)
 
         and: "Expected calendar output"
@@ -78,12 +84,13 @@ class CalendarServiceSpec extends Specification {
         def expectedCalendarOutput = new CalendarOutput(expectedCalendarMap)
 
         and: "Working services"
-        holidayService.isWorkingDay(startDate) >> true
-        holidayService.getByDate(startDate) >> []
-        requestService.getVacations(startDate, filter) >> absentUserOutputs
         userService.get(userId) >> user
-        presenceConfirmationService.getPresenceConfirmation(userId, startDate) >> Optional.of(presenceConfirmation)
-        historyLogService.get(startDate, userId) >> historyLogExcerptProjections
+        userService.get(_ as Filter) >> [user, absentUser]
+        holidayService.getAll(_ as Filter) >> []
+        requestService.getAll(_ as Filter) >> [new Request(absentUser, startDate, endDate, 1, RequestType.NORMAL, null, Request.Status.ACCEPTED)]
+        presenceConfirmationService.getAll(_ as Filter) >> [presenceConfirmation]
+        presenceConfirmationService.getFirstUserConfirmation(userId) >> Optional.of(presenceConfirmation)
+        userPreferencesService.getWorkingHoursPreferenceOf(userId) >> UserWorkingHoursPreference.getDefault(userId)
 
         when:
         def output = calendarService.getCalendarInfo(userId, startDate, endDate, filter)
@@ -101,41 +108,116 @@ class CalendarServiceSpec extends Specification {
         def holidayName = "Boże narodzenie"
         def holiday = Mock(Holiday) {
             getName() >> holidayName
+            getDate() >> startDate
         }
         def holidays = [holiday]
 
         and: "Expected current user information"
-        def presenceConfirmationOutput = new PresenceConfirmationOutput(false, null, null)
-        def currentUserInformation = new CurrentUserInformationOutput()
-        currentUserInformation.setAbsent(false)
-        currentUserInformation.setPresenceConfirmation(presenceConfirmationOutput)
-        currentUserInformation.setVacationHoursModifications([])
+        def presenceConfirmationOutput1 = new PresenceConfirmationOutput(true, null, null)
+        def currentUserInformation1 = new CurrentUserInformationOutput()
+        currentUserInformation1.setAbsent(false)
+        currentUserInformation1.setPresenceConfirmation(presenceConfirmationOutput1)
+        currentUserInformation1.setVacationHoursModifications([])
 
-        def singleDayOutput = new SingleDayOutput()
-        singleDayOutput.setWorkingDay(false)
-        singleDayOutput.setHolidays([holidayName])
-        singleDayOutput.setCurrentUserInformation(currentUserInformation)
+        def singleDayOutput1 = new SingleDayOutput()
+        singleDayOutput1.setWorkingDay(false)
+        singleDayOutput1.setAbsentUsers([])
+        singleDayOutput1.setHolidays([holidayName])
+        singleDayOutput1.setCurrentUserInformation(currentUserInformation1)
+
+        def presenceConfirmationOutput2 = new PresenceConfirmationOutput(false, null, null)
+        def currentUserInformation2 = new CurrentUserInformationOutput()
+        currentUserInformation2.setAbsent(false)
+        currentUserInformation2.setPresenceConfirmation(presenceConfirmationOutput2)
+        currentUserInformation2.setVacationHoursModifications([])
+
+        def singleDayOutput2 = new SingleDayOutput()
+        singleDayOutput2.setWorkingDay(false)
+        singleDayOutput2.setAbsentUsers([])
+        singleDayOutput2.setHolidays([])
+        singleDayOutput2.setCurrentUserInformation(currentUserInformation2)
 
         and: "Expected calendar output"
         def expectedCalendarMap = new HashMap<LocalDate, SingleDayOutput>()
-        expectedCalendarMap.put(startDate, singleDayOutput)
-        expectedCalendarMap.put(endDate, singleDayOutput)
+        expectedCalendarMap.put(startDate, singleDayOutput1)
+        expectedCalendarMap.put(endDate, singleDayOutput2)
         def expectedCalendarOutput = new CalendarOutput(expectedCalendarMap)
 
+        and: "Expected first user presence confirmation"
+        def firstUserConfirmation = new PresenceConfirmation(user, startDate, null, null)
+
         and: "Working services"
-        holidayService.isWorkingDay(startDate) >> false
-        holidayService.isWorkingDay(endDate) >> false
-        holidayService.getByDate(startDate) >> holidays
-        holidayService.getByDate(endDate) >> holidays
+        holidayService.getAll(_ as Filter) >> holidays
         userService.get(userId) >> user
-        presenceConfirmationService.getPresenceConfirmation(userId, _ as LocalDate) >> Optional.empty()
-        historyLogService.get(startDate, userId) >> []
-        historyLogService.get(endDate, userId) >> []
+        userService.get(_ as Filter) >> [user]
+        requestService.getAll(_ as Filter) >> []
+        presenceConfirmationService.getAll(_ as Filter) >> [firstUserConfirmation]
+        def preference = Spy(UserWorkingHoursPreference.getDefault(userId)) {
+            getChanged() >> LocalDateTime.now()
+        }
+        userPreferencesService.getWorkingHoursPreferenceOf(userId) >> preference
+        presenceConfirmationService.getFirstUserConfirmation(userId) >> Optional.of(firstUserConfirmation)
 
         when:
         def output = calendarService.getCalendarInfo(userId, startDate, endDate, filter)
 
         then:
         output == expectedCalendarOutput
+    }
+
+    def "getUsersVacations() WHEN accepted requests are present SHOULD return correct response"() {
+        given: "some reference date"
+        def date = LocalDate.of(2021, 9, 25)
+
+        and: "some users"
+        def user1 = Mock(User) {getId() >> 10L}
+        def user2 = Mock(User) {getId() >> 11L}
+        def user3 = Mock(User) {getId() >> 12L}
+
+        and: "some requests"
+        def sampleRequests = [
+                new Request(user1, date.minusDays(0), date.plusDays(1), 2, RequestType.NORMAL, null, Request.Status.ACCEPTED),
+                new Request(user2, date.minusDays(0), date.plusDays(1), 2, RequestType.OCCASIONAL, null, Request.Status.ACCEPTED),
+                new Request(user3, date.minusDays(1), date.plusDays(2), 4, RequestType.NORMAL, null, Request.Status.ACCEPTED)
+        ]
+        requestService.getAll(sampleVacationDaysFilterFor(user1.getId())) >> [sampleRequests[0]]
+        requestService.getAll(sampleVacationDaysFilterFor(user2.getId())) >> [sampleRequests[1]]
+        requestService.getAll(sampleVacationDaysFilterFor(user3.getId())) >> [sampleRequests[2]]
+
+        when:
+        def result1 = calendarService.getUserVacationsOf(user1.getId())
+        def result2 = calendarService.getUserVacationsOf(user2.getId())
+        def result3 = calendarService.getUserVacationsOf(user3.getId())
+
+        then:
+        result1.usersVacations().size() == 2
+        result1.usersVacations().get(date.minusDays(0)).size() == 1
+        result1.usersVacations().get(date.minusDays(0)).contains(user1.getId())
+        result1.usersVacations().get(date.plusDays(1)).size() == 1
+        result1.usersVacations().get(date.plusDays(1)).contains(user1.getId())
+
+        result2.usersVacations().size() == 2
+        result2.usersVacations().get(date.minusDays(0)).size() == 1
+        result2.usersVacations().get(date.minusDays(0)).contains(user2.getId())
+        result2.usersVacations().get(date.plusDays(1)).size() == 1
+        result2.usersVacations().get(date.plusDays(1)).contains(user2.getId())
+
+        result3.usersVacations().size() == 4
+        result3.usersVacations().get(date.minusDays(1)).size() == 1
+        result3.usersVacations().get(date.minusDays(1)).contains(user3.getId())
+        result3.usersVacations().get(date.minusDays(0)).size() == 1
+        result3.usersVacations().get(date.minusDays(0)).contains(user3.getId())
+        result3.usersVacations().get(date.plusDays(1)).size() == 1
+        result3.usersVacations().get(date.plusDays(1)).contains(user3.getId())
+        result3.usersVacations().get(date.plusDays(2)).size() == 1
+        result3.usersVacations().get(date.plusDays(2)).contains(user3.getId())
+    }
+
+    static def sampleVacationDaysFilterFor(Long userId) {
+        return Filter.newBuilder()
+                .and("requester.active", Operator.EQUAL, "true")
+                .and("requester.id", Operator.EQUAL, userId.toString())
+                .and("status", Operator.EQUAL, Request.Status.ACCEPTED.toString())
+                .build();
     }
 }

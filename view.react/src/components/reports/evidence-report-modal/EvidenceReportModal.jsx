@@ -6,6 +6,7 @@ import Select from 'react-select';
 
 import {formatReportFileName} from "../../../helpers/formatReportFileNameHelper";
 import {getXlsxFromResponse, getZipFromResponse, sendGetRequest} from "../../../helpers/RequestHelper";
+import {sortedUsers} from "../../../helpers/sorts/UsersSortHelper";
 import styles from '../Reports.module.scss';
 
 
@@ -31,7 +32,7 @@ export const EvidenceReportModal = ({show, onHide}) => {
     }
 
     useEffect(() => {
-        sendGetRequest(ALL_USERS_URL)
+        sendGetRequest(`${ALL_USERS_URL}?filter=active:true`)
             .then(users => {
                 setAllUsers(users)
             })
@@ -43,7 +44,8 @@ export const EvidenceReportModal = ({show, onHide}) => {
     }
 
     const getFormattedUsers = (users) => {
-        return users.map(user => ({value: user.userId, label: user.fullName}));
+        const formattedUsers = users.map(user => ({value: user.userId, label: user.fullName}));
+        return sortedUsers(formattedUsers, "label")
     }
 
     const handleChecking = () => {

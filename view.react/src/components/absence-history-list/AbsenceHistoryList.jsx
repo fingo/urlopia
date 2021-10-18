@@ -1,8 +1,9 @@
 import PropTypes from "prop-types";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {Dropdown, DropdownButton} from "react-bootstrap";
 import {useLocation} from "react-router-dom";
 
+import {getCurrentUser} from "../../api/services/session.service";
 import {useAbsenceHistory} from "../../contexts/absence-history-context/absenceHistoryContext";
 import styles from "../../global-styles/AbsenceHistoryList.module.scss";
 import {formatLogs} from "../../helpers/AbsenceHistoryFormatterHelper";
@@ -11,6 +12,8 @@ import {AbsenceHistoryTab} from "./AbsenceHistoryTab";
 export const AbsenceHistoryList = ({fetchHistoryLogs}) => {
     const [state, absenceHistoryDispatch] = useAbsenceHistory()
     const {absenceHistory} = state;
+    const {ec: isUserEC} = getCurrentUser();
+
 
     const location = useLocation();
 
@@ -19,29 +22,31 @@ export const AbsenceHistoryList = ({fetchHistoryLogs}) => {
     const [selectedYear, setSelectedYear] = useState(currentYear);
     const [availableYears, setAvailableYears] = useState([]);
 
-    useEffect(() => {
-        getAvailableYears();
-        fetchHistoryLogs(absenceHistoryDispatch, {selectedYear})
-    }, [absenceHistoryDispatch, selectedYear, fetchHistoryLogs]);
-
-    const getAvailableYears = () => {
+    const getAvailableYears = useCallback(() => {
         const startYear = FIRST_AVAILABLE_YEAR;
         const years = [];
         for (let i = currentYear; i >= startYear; i--) {
             years.push(i);
         }
         setAvailableYears(years);
-    };
+    }, [currentYear]);
+
+    useEffect(() => {
+        getAvailableYears();
+        fetchHistoryLogs(absenceHistoryDispatch, {selectedYear})
+    }, [absenceHistoryDispatch, selectedYear, fetchHistoryLogs, getAvailableYears]);
 
     const handleYearChange = (newYear) => {
         setSelectedYear(newYear);
     }
 
     const formattedLog = formatLogs(absenceHistory);
+    let vacationTypeLabel = isUserEC ? "Pozostały urlop" : "Pozostała przerwa"
 
     let header = 'Historia użytkownika';
     if (location.state?.fullName && location.pathname !== '/history/me') {
         header = header.concat(` - ${location.state.fullName}`);
+        vacationTypeLabel = location.state.vacationTypeLabel;
     }
     return (
         <>
@@ -64,7 +69,7 @@ export const AbsenceHistoryList = ({fetchHistoryLogs}) => {
                     </DropdownButton>
                 </div>
             </div>
-            <AbsenceHistoryTab logs={formattedLog} />
+            <AbsenceHistoryTab logs={formattedLog} vacationTypeLabel={vacationTypeLabel}/>
         </>
     );
 }

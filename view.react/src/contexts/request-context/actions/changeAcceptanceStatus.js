@@ -48,9 +48,9 @@ export const changeAcceptanceStatusReducer = (state, action) => {
             const changedStatusAcceptanceId = action.payload.acceptanceId
             return {
                 ...state,
-                teamRequests: {
-                    ...state.teamRequests,
-                    requests: state.teamRequests.requests.filter(req => req.id !== changedStatusAcceptanceId)
+                acceptances: {
+                    ...state.acceptances,
+                    pending: state.acceptances.pending.filter(req => req.id !== changedStatusAcceptanceId)
                 }
             }
         }

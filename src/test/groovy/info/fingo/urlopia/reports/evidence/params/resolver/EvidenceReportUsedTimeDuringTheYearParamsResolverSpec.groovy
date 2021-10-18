@@ -1,6 +1,7 @@
 package info.fingo.urlopia.reports.evidence.params.resolver
 
 import info.fingo.urlopia.history.HistoryLogService
+import info.fingo.urlopia.request.RequestService
 import info.fingo.urlopia.user.User
 import spock.lang.Specification
 
@@ -8,6 +9,7 @@ import java.text.DecimalFormat
 
 class EvidenceReportUsedTimeDuringTheYearParamsResolverSpec extends Specification{
         def historyLogService= Mock(HistoryLogService)
+        def requestService = Mock(RequestService)
         def DECIMAL_FORMAT = new DecimalFormat()
         def FULL_TIME_DIVIDER =8.0f
         def userId = 5L
@@ -17,7 +19,8 @@ class EvidenceReportUsedTimeDuringTheYearParamsResolverSpec extends Specificatio
         def year = 2021
         def evidenceReportUsedTimeDuringTheYearParamsResolver = new EvidenceReportUsedTimeDuringTheYearParamsResolver(user,
                                                                                                                       year,
-                                                                                                                      historyLogService)
+                                                                                                                      historyLogService,
+                                                                                                                      requestService)
         def usedTimeModelPrefix = "usedTimeDuringTheYear"
         def timeUnitModelPrefix = "timeUnit"
         def PART_TIME_WORKER_SYMBOL = "godz"
@@ -29,7 +32,7 @@ class EvidenceReportUsedTimeDuringTheYearParamsResolverSpec extends Specificatio
     def "resolve WHEN called with use who work on fullTime all time in year SHOULD return model that contains prefix and his hours divide by 8 as value"(){
             given:
             def usedHours = 8d
-            historyLogService.countTheHoursUsedDuringTheYear(userId, year) >> usedHours
+            requestService.countTheHoursUsedDuringTheYear(userId, year) >> usedHours
             historyLogService.checkIfWorkedFullTimeForTheWholeYear(_ as Long, _ as Integer) >> true
 
             when:
@@ -44,7 +47,7 @@ class EvidenceReportUsedTimeDuringTheYearParamsResolverSpec extends Specificatio
         def "resolve WHEN called with use who not work on fullTime all time in year SHOULD return model that contains prefix and his hours as value"(){
             given:
             def usedHours = 8
-            historyLogService.countTheHoursUsedDuringTheYear(_ as Long, _ as Integer) >> usedHours;
+            requestService.countTheHoursUsedDuringTheYear(_ as Long, _ as Integer) >> usedHours;
             historyLogService.checkIfWorkedFullTimeForTheWholeYear(_ as Long, _ as Integer) >> false
 
             when:

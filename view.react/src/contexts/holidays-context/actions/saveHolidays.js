@@ -1,3 +1,4 @@
+import {pushSuccessNotification} from "../../../helpers/notifications/Notifications";
 import {sendPutRequest} from "../../../helpers/RequestHelper";
 import {HOLIDAYS_ENDPOINT_URL,SAVE_HOLIDAYS_ACTION_PREFIX} from "../constants";
 
@@ -9,6 +10,7 @@ export const saveHolidays = (dispatch, holidays) => {
               type: `${SAVE_HOLIDAYS_ACTION_PREFIX}_success`,
               response: data,
             })
+            pushSuccessNotification("Pomyślnie zaktualizowano święta");
         })
         .catch(errorMessage => dispatch({
             type: `${SAVE_HOLIDAYS_ACTION_PREFIX}_failure`,

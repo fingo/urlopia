@@ -20,4 +20,8 @@ public class PresenceConfirmationOutput {
     public static PresenceConfirmationOutput empty() {
         return new PresenceConfirmationOutput(false, null, null);
     }
+
+    public static PresenceConfirmationOutput unspecified() {
+        return new PresenceConfirmationOutput(true, null, null);
+    }
 }

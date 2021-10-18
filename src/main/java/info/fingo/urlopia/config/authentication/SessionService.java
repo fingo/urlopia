@@ -1,12 +1,13 @@
 package info.fingo.urlopia.config.authentication;
 
+import info.fingo.urlopia.acceptance.AcceptanceService;
 import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
-import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
+import info.fingo.urlopia.user.UserService;
 import info.fingo.urlopia.user.WrongCredentialsException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.*;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class SessionService {
 
     private final LDAPConnectionService ldapConnectionService;
@@ -29,18 +31,9 @@ public class SessionService {
 
     private final GitProperties gitProperties;
 
-    @Autowired
-    public SessionService(LDAPConnectionService ldapConnectionService,
-                          UserRepository userRepository,
-                          WebTokenService webTokenService,
-                          BuildProperties buildProperties,
-                          GitProperties gitProperties) {
-        this.ldapConnectionService = ldapConnectionService;
-        this.userRepository = userRepository;
-        this.webTokenService = webTokenService;
-        this.buildProperties = buildProperties;
-        this.gitProperties = gitProperties;
-    }
+    private final UserService userService;
+
+    private final AcceptanceService acceptanceService;
 
     public UserData authenticate(Credentials credentials) {
         if (ldapConnectionService.authenticate(credentials)) {
@@ -74,7 +67,7 @@ public class SessionService {
     private List<String> pickRoles(User user) {
         List<String> roles = new ArrayList<>();
         roles.add(User.Role.WORKER.toString());
-        if (user.getLeader()) {
+        if (user.getLeader() || acceptanceService.hasActiveAcceptances(user)) {
             roles.add(User.Role.LEADER.toString());
         }
         if (user.getAdmin()) {
@@ -87,7 +80,8 @@ public class SessionService {
         Set<Map<String, String>> teams = new HashSet<>();
         for (var team : user.getTeams()) {
             var teamName = team.getName();
-            var leader = user.equals(team.getLeader()) ? team.getBusinessPartLeader() : team.getLeader();
+            var allUsersLeader = userService.getAllUsersLeader();
+            var leader = user.equals(team.getLeader()) ? allUsersLeader : team.getLeader();
 
             if (leader != null) {
                 Map<String, String> teamInfo = new HashMap<>();

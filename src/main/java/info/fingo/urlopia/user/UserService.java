@@ -1,27 +1,37 @@
 package info.fingo.urlopia.user;
 
 import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
+import info.fingo.urlopia.config.ad.ActiveDirectory;
+import info.fingo.urlopia.config.ad.ActiveDirectoryObjectClass;
+import info.fingo.urlopia.config.ad.ActiveDirectoryUtils;
+import info.fingo.urlopia.config.ad.Attribute;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.team.Team;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ActiveDirectory activeDirectory;
+
     private static final String NO_USER_WITH_ID_MESSAGE = "There is no user with id: {}";
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    @Value("${ad.groups.users}")
+    private String usersGroup;
 
     public List<UserExcerptProjection> get(Filter filter,
                                            Sort sort) {
@@ -39,7 +49,7 @@ public class UserService {
     public User get(Long userId) {
         return userRepository
                 .findById(userId)
-                .orElseThrow(() ->{
+                .orElseThrow(() -> {
                     log.error(NO_USER_WITH_ID_MESSAGE, userId);
                     return NoSuchUserException.invalidId();
                 });
@@ -52,6 +62,19 @@ public class UserService {
                     log.error("There is no user with email: {}", Anonymizer.anonymizeMail(userMail));
                     return NoSuchUserException.invalidEmail();
                 });
+    }
+
+    public User getAllUsersLeader() {
+        var groups = activeDirectory.newSearch()
+                .objectClass(ActiveDirectoryObjectClass.Group)
+                .distinguishedName(usersGroup)
+                .search();
+
+        return groups.stream()
+                .map(group -> ActiveDirectoryUtils.pickAttribute(group, Attribute.MANAGED_BY))
+                .findFirst()
+                .flatMap(userRepository::findFirstByAdName)
+                .orElse(null);
     }
 
     // *** ACTIONS ***
@@ -86,7 +109,7 @@ public class UserService {
 
 
     public void setWorkTime(Long userId,
-                     String workTimeString) {
+                            String workTimeString) {
         var fullTimeInHours = 8f;
         var workTime = fullTimeInHours * Arrays.stream(workTimeString.split("/"))
                 .map(Float::parseFloat)

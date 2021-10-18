@@ -7,18 +7,18 @@ export const login = (body) => {
     return sendPostRequest(URL, body)
         .then(data => {
             if (data.token) {
-                sessionStorage.setItem(USER_DATA_KEY, JSON.stringify(data));
+                localStorage.setItem(USER_DATA_KEY, JSON.stringify(data));
             }
             return data;
         })
 }
 
 export const logout = () => {
-    sessionStorage.removeItem(USER_DATA_KEY);
+    localStorage.removeItem(USER_DATA_KEY);
 }
 
 export const getCurrentUser = () => {
-    const user = JSON.parse(sessionStorage.getItem(USER_DATA_KEY)) || {userRoles: []}
+    const user = JSON.parse(localStorage.getItem(USER_DATA_KEY)) || {userRoles: []}
     return {
         ...user,
         isLeader: user.userRoles.includes("ROLES_LEADER"),

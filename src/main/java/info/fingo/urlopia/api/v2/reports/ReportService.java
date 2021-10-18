@@ -6,6 +6,7 @@ import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReport;
 import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReportFactory;
 import info.fingo.urlopia.api.v2.reports.holidays.UserHolidaysReportFactory;
 import info.fingo.urlopia.config.persistance.filter.Filter;
+import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.reports.ReportTemplateLoader;
 import info.fingo.urlopia.reports.XlsxTemplateResolver;
 import info.fingo.urlopia.reports.evidence.EvidenceReport;
@@ -85,15 +86,18 @@ public class ReportService {
                                                 int year) {
         var user = this.userService.get(userId);
         var report = new EvidenceReport();
-        var model = this.evidenceReportModelFactory.create(user, year);
+        var model = this.evidenceReportModelFactory.generateModelForFileName(user,year);
         return "attachment; filename=%s".formatted(report.fileName(model));
     }
 
     public List<Workbook> generateAttendanceList(Integer year,
                                                  Integer month) throws IOException {
-        var filter = Filter.from("");
+        var filter = Filter.newBuilder()
+                .and("active", Operator.EQUAL, "true")
+                .and("ec", Operator.EQUAL, "true")
+                .build();
+
         var employees = userService.get(filter).stream()
-                .filter(User::getEc)
                 .sorted((u1, u2) -> u1.getLastName().compareToIgnoreCase(u2.getLastName()))
                 .toList();
 

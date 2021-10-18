@@ -40,7 +40,7 @@ export const MonthPicker = ({ range, chosenMonth, setChosenMonth}) => {
         <div className="MonthYearPicker">
             <Button
                 className={styles.btnClass}
-                onClick={showMonthPicker}
+                onClick={(e) => showMonthPicker(e)}
                 data-testid={"monthButton"}
             >
                 {getMonthValue()}
@@ -50,8 +50,8 @@ export const MonthPicker = ({ range, chosenMonth, setChosenMonth}) => {
                 lang={availableMonths}
                 years={range}
                 value={chosenMonth}
-                onChange={handleOnChange}
-                onDismiss={handleOnDismiss}
+                onChange={(year, month) => handleOnChange(year, month)}
+                onDismiss={() => handleOnDismiss()}
                 data-testid={"monthPicker"}
             />
         </div>

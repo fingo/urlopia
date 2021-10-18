@@ -1,15 +1,16 @@
-import {act, fireEvent, render, screen} from "@testing-library/react";
+import {act, fireEvent, render, screen, waitFor} from "@testing-library/react";
 import axios from "axios";
 
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
+import {PresenceProvider} from "../../contexts/presence-context/presenceContext";
 import {WorkersProvider} from "../../contexts/workers-context/workersContext";
-import {mockSessionStorage} from "../../helpers/TestHelper";
+import {mockLocalStorage} from "../../helpers/TestHelper";
 import {WorkersTable} from "./WorkersTable";
 
 jest.mock('axios');
 
 describe('WorkersTable', () => {
-    const sessionStorageMock = mockSessionStorage()
+    const sessionStorageMock = mockLocalStorage()
 
     beforeAll(() => {
         sessionStorageMock.clear()
@@ -22,25 +23,29 @@ describe('WorkersTable', () => {
     it('should show headers of table for employees', async () => {
         axios.get.mockResolvedValue({data: []})
         await act(async () => {
-            await render(<WorkersProvider><WorkersTable/></WorkersProvider>);
-            const fullNameHeader = screen.getByText('Imię i nazwisko');
-            const emailHeader = screen.getByText('E-mail');
-            const teamHeader = screen.getByText('Zespół');
-            const workTimeHeader = screen.getByText('Etat');
-            expect(fullNameHeader).toBeInTheDocument();
-            expect(emailHeader).toBeInTheDocument();
-            expect(teamHeader).toBeInTheDocument();
-            expect(workTimeHeader).toBeInTheDocument();
+            await render(<PresenceProvider><WorkersProvider><WorkersTable/></WorkersProvider></PresenceProvider>);
+
+            await waitFor(() => {
+                const fullNameHeader = screen.getByText('Imię i nazwisko');
+                const emailHeader = screen.getByText('E-mail');
+                const teamHeader = screen.getByText('Zespoły');
+                const workTimeHeader = screen.getByText('Etat');
+                expect(fullNameHeader).toBeInTheDocument();
+                expect(emailHeader).toBeInTheDocument();
+                expect(teamHeader).toBeInTheDocument();
+                expect(workTimeHeader).toBeInTheDocument();
+            })
+
         })
     })
 
     it('should show headers of table for associates', async () => {
         axios.get.mockResolvedValue({data: []});
         await act(async () => {
-            await render(<WorkersProvider><WorkersTable isEC={false}/></WorkersProvider>);
+            await render(<PresenceProvider><WorkersProvider><WorkersTable isEC={false}/></WorkersProvider></PresenceProvider>);
             const fullNameHeader = screen.getByText('Imię i nazwisko');
             const emailHeader = screen.getByText('E-mail');
-            const teamHeader = screen.getByText('Zespół');
+            const teamHeader = screen.getByText('Zespoły');
             expect(fullNameHeader).toBeInTheDocument();
             expect(emailHeader).toBeInTheDocument();
             expect(teamHeader).toBeInTheDocument();
@@ -50,7 +55,7 @@ describe('WorkersTable', () => {
     it('should show title "Pracownicy" for employees', async () => {
         axios.get.mockResolvedValue({data: []});
         await act(async () => {
-            await render(<WorkersProvider><WorkersTable/></WorkersProvider>);
+            await render(<PresenceProvider><WorkersProvider><WorkersTable/></WorkersProvider></PresenceProvider>);
             const title = screen.getByText('Pracownicy');
             expect(title).toBeInTheDocument();
         })
@@ -59,25 +64,32 @@ describe('WorkersTable', () => {
     it('shows title "Współpracownicy" for associates', async () => {
         axios.get.mockResolvedValue({data: []});
         await act(async () => {
-            await render(<WorkersProvider><WorkersTable isEC={false}/></WorkersProvider>);
+            await render(<PresenceProvider><WorkersProvider><WorkersTable isEC={false}/></WorkersProvider></PresenceProvider>);
             const title = screen.getByText('Współpracownicy');
             expect(title).toBeInTheDocument();
         })
     })
 
-    it('should show filter inputs', async () => {
+    it('should show filter inputs for workers', async () => {
         axios.get.mockResolvedValue({data: []});
         await act(async () => {
-            await render(<WorkersProvider><WorkersTable/></WorkersProvider>);
-            const inputs = screen.queryAllByPlaceholderText('Filtruj...');
-            expect(inputs.length).toBe(4);
+            await render(<PresenceProvider><WorkersProvider><WorkersTable isEC={true}/></WorkersProvider></PresenceProvider>);
+            await waitFor(() => expect(screen.queryAllByPlaceholderText('Filtruj...').length).toBe(4));
+        })
+    })
+
+    it('should show filter inputs for associates', async () => {
+        axios.get.mockResolvedValue({data: []});
+        await act(async () => {
+            await render(<PresenceProvider><WorkersProvider><WorkersTable isEC={false}/></WorkersProvider></PresenceProvider>);
+            await waitFor(() => expect(screen.queryAllByPlaceholderText('Filtruj...').length).toBe(3));
         })
     })
 
     it('filter inputs should keep what the user enters', async () => {
         axios.get.mockResolvedValue({data: []});
         await act(async () => {
-            await render(<WorkersProvider><WorkersTable/></WorkersProvider>);
+            await render(<PresenceProvider><WorkersProvider><WorkersTable/></WorkersProvider></PresenceProvider>);
         })
         const [fullNameInput, emailInput, teamInput, workTimeInput] = screen.queryAllByPlaceholderText('Filtruj...');
         fireEvent.change(fullNameInput, {target: {value: 'Jan Kowalski'}});
@@ -89,4 +101,4 @@ describe('WorkersTable', () => {
         expect(teamInput).toHaveValue('dl');
         expect(workTimeInput).toHaveValue('1/1');
     });
-})
+});

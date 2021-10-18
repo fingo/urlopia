@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import PropTypes from "prop-types";
+import {useState} from "react";
 import {CheckSquareFill as AcceptIcon, XSquareFill as XIcon} from "react-bootstrap-icons";
 import BootstrapTable from "react-bootstrap-table-next";
 import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
@@ -9,6 +10,7 @@ import {spinner} from '../../global-styles/loading-spinner.module.scss';
 import {actionBtn, actions} from '../../global-styles/table-styles.module.scss'
 import {textAsArrayFormatter} from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
 import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
+import {ConfirmRejectModal} from "../../pages/absence-requests-page/confirm-reject-modal/ConfirmRejectModal";
 
 export const CompanyRequestsList = ({
     requests,
@@ -16,6 +18,9 @@ export const CompanyRequestsList = ({
     acceptRequest,
     isFetching,
 }) => {
+    const [showConfirmRejectModal, setShowConfirmRejectModal] = useState(false);
+    const [rowId, setRowId] = useState(0);
+
     const actionFormatter = (cell, row) => {
         const acceptBtnClass = classNames(actionBtn, 'text-success');
         const cancelBtnClass = classNames(actionBtn, 'text-danger');
@@ -32,7 +37,10 @@ export const CompanyRequestsList = ({
                 <button
                     title='Odrzuć wniosek'
                     className={cancelBtnClass}
-                    onClick={() => rejectRequest(row.id)}
+                    onClick={() => {
+                        setRowId(row.id);
+                        setShowConfirmRejectModal(true);
+                    }}
                 >
                     <XIcon/>
                 </button>
@@ -95,17 +103,25 @@ export const CompanyRequestsList = ({
         <>
             {
                 !isFetching ?
-                    <BootstrapTable
-                        bootstrap4
-                        keyField='id'
-                        data={requests}
-                        wrapperClasses={tableClass}
-                        columns={columns}
-                        filter={filterFactory()}
-                        filterPosition='top'
-                        bordered={false}
-                        hover
-                    />
+                    <>
+                        <BootstrapTable
+                            bootstrap4
+                            keyField='id'
+                            data={requests}
+                            wrapperClasses={tableClass}
+                            columns={columns}
+                            filter={filterFactory()}
+                            filterPosition='top'
+                            bordered={false}
+                            hover
+                        />
+                        <ConfirmRejectModal
+                            show = {showConfirmRejectModal}
+                            onHide = {() => setShowConfirmRejectModal(false)}
+                            rowId = {rowId}
+                            rejectRequest = {rejectRequest}
+                        />
+                    </>
                     :
                     <div className={spinner}>
                         <BeatLoader color='deepskyblue' size={50}/>
