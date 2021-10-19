@@ -1,51 +1,55 @@
 import {useState} from "react";
 
+import {getCurrentUser} from "../../api/services/session.service";
 import {CollapsableArea} from '../../components/collapsable-area/CollapsableArea';
-import {CompanyRequestsList} from "../../components/company-requests-list/CompanyRequestsList";
-import {CreateAbsenceRequestFormWrapper} from "../../components/create-absence-request-form/CreateAbsenceRequestFormWrapper";
-import {TeamRequestsList} from "../../components/team-requests-list/TeamRequestsList";
-import {UserRequestsList} from "../../components/user-requests-list/UserRequestsList";
-import {HolidaysProvider} from "../../contexts/holidays-context/holidaysContext";
+import {CompanyRequestsListWrapper} from "../../components/company-requests-list/company-requests-list-wrapper/CompanyRequestsListWrapper";
+import {CreateAbsenceRequestFormWrapper} from "../../components/create-absence-request-form/create-absence-request-form-wrapper/CreateAbsenceRequestFormWrapper";
+import {TeamRequestsListWrapper} from "../../components/team-requests-list/team-requests-list-wrapper/TeamRequestsListWrapper";
+import {UserRequestsListWrapper} from "../../components/user-requests-list/user-requests-list-wrapper/UserRequestsListWrapper";
 import {AttentionIcon, TextWithIcon} from "../../helpers/icons/Icons";
 import styles from './AbsenceRequestsPage.module.scss';
 
 export const URL = '/requests';
 
-export const AbsenceRequestsPage = ({newAcceptancesPresent, setNewAcceptancesPresent}) => {
+export const AbsenceRequestsPage = ({acceptancesPresent}) => {
+    const {isAdmin: isUserAnAdmin, isLeader: isUserALeader} = getCurrentUser()
     const [shouldFetchHolidays, setShouldFetchHolidays] = useState(false)
-    const [shouldFetchUserRequests, setShouldFetchUserRequests] = useState(false)
+    const [shouldFetchUserRequests, setShouldFetchUserRequests] = useState(true)
     const [shouldFetchCompanyRequests, setShouldFetchCompanyRequests] = useState(false)
 
     const teamRequestsListTitle = <TextWithIcon
         text={"Wnioski zespołu do rozpatrzenia"}
         icon={<AttentionIcon/>}
-        showIcon={newAcceptancesPresent}
+        showIcon={acceptancesPresent}
     />
 
     const handleAbsenceRequestFormWrapperOpen = () => setShouldFetchHolidays(true)
     const handleUserRequestsListOpen = () => setShouldFetchUserRequests(true)
-    const handleTeamRequestsListOpen = () => setNewAcceptancesPresent(false)
     const handleCompanyRequestsListOpen = () => setShouldFetchCompanyRequests(true)
 
     return (
         <div className={styles.main}>
             <CollapsableArea title='Złóż wniosek' onOpen={handleAbsenceRequestFormWrapperOpen}>
-                <HolidaysProvider>
-                    <CreateAbsenceRequestFormWrapper shouldFetchHolidays={shouldFetchHolidays}/>
-                </HolidaysProvider>
+
+                <CreateAbsenceRequestFormWrapper shouldFetchHolidays={shouldFetchHolidays}/>
+
             </CollapsableArea>
 
-            <CollapsableArea title='Moje wnioski' onOpen={handleUserRequestsListOpen}>
-                <UserRequestsList shouldFetchUserRequests={shouldFetchUserRequests}/>
+            <CollapsableArea title='Moje wnioski' onOpen={handleUserRequestsListOpen} shouldBeCollapsed={false}>
+                <UserRequestsListWrapper shouldFetchUserRequests={shouldFetchUserRequests}/>
             </CollapsableArea>
 
-            <CollapsableArea title={teamRequestsListTitle} onOpen={handleTeamRequestsListOpen}>
-                <TeamRequestsList/>
-            </CollapsableArea>
+            {isUserALeader && (
+                <CollapsableArea title={teamRequestsListTitle}>
+                    <TeamRequestsListWrapper/>
+                </CollapsableArea>
+            )}
 
-            <CollapsableArea title='Aktywne wnioski firmowe' onOpen={handleCompanyRequestsListOpen}>
-                <CompanyRequestsList shouldFetchCompanyRequests={shouldFetchCompanyRequests}/>
-            </CollapsableArea>
+            {isUserAnAdmin && (
+                <CollapsableArea title='Aktywne wnioski firmowe' onOpen={handleCompanyRequestsListOpen}>
+                    <CompanyRequestsListWrapper shouldFetchCompanyRequests={shouldFetchCompanyRequests}/>
+                </CollapsableArea>
+            )}
         </div>
     );
 };

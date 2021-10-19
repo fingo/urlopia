@@ -31,10 +31,10 @@ describe('createRequestReducer', () => {
             error: null,
             requests: sampleRequests
         },
-        teamRequests: {
+        acceptances: {
             fetching: false,
             error: null,
-            requests: sampleRequests
+            pending: sampleRequests
         },
         companyRequests: {
             fetching: false,

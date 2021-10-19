@@ -1,5 +1,7 @@
 package info.fingo.urlopia.api.v2.reports
 
+import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReportFactory
+import info.fingo.urlopia.api.v2.reports.holidays.UserHolidaysReportFactory
 import info.fingo.urlopia.reports.ReportTemplateLoader
 import info.fingo.urlopia.reports.XlsxTemplateResolver
 import info.fingo.urlopia.reports.evidence.EvidenceReportModel
@@ -13,7 +15,9 @@ class ReportServiceSpec extends Specification{
     private UserService userService;
     private ReportTemplateLoader reportTemplateLoader;
     private XlsxTemplateResolver xlsxTemplateResolver;
-    private EvidenceReportModelFactory evidenceReportModelFactory;
+    private EvidenceReportModelFactory evidenceReportModelFactory
+    private MonthlyAttendanceListReportFactory monthlyPresenceReportFactory
+    private UserHolidaysReportFactory userHolidaysReportFactory
     private ReportService reportService
 
     void setup(){
@@ -21,8 +25,13 @@ class ReportServiceSpec extends Specification{
         reportTemplateLoader = Mock(ReportTemplateLoader)
         xlsxTemplateResolver = Mock(XlsxTemplateResolver)
         evidenceReportModelFactory = Mock(EvidenceReportModelFactory)
-        reportService = new ReportService(userService,reportTemplateLoader,
-                                            xlsxTemplateResolver,evidenceReportModelFactory)
+        userHolidaysReportFactory = Mock(UserHolidaysReportFactory)
+        reportService = new ReportService(userService,
+                                          reportTemplateLoader,
+                                          xlsxTemplateResolver,
+                                          evidenceReportModelFactory,
+                                          monthlyPresenceReportFactory,
+                                          userHolidaysReportFactory)
     }
 
     def "getWorkTimeEvidenceReportName() WHEN called with id and year SHOULD return formatted file name string"(){
@@ -34,11 +43,11 @@ class ReportServiceSpec extends Specification{
         model.put("user.firstName",userFirstName)
         def evidenceReportModel = new EvidenceReportModel(model)
 
-        and: "mock for evidenceReportModelFactory that return our EbidenceReportModel"
+        and: "mock for evidenceReportModelFactory that return our EvidenceReportModel"
         def user = Mock(User)
         def year = Integer.valueOf(reportDateYear)
         userService.get(_ as Long) >> user
-        evidenceReportModelFactory.create(user, year) >> evidenceReportModel
+        evidenceReportModelFactory.generateModelForFileName(user, year) >> evidenceReportModel
 
 
         and: "every valid string prefix and suffix"

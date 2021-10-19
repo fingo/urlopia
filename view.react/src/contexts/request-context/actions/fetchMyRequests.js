@@ -2,18 +2,18 @@ import {sendGetRequest} from "../../../helpers/RequestHelper";
 import {FETCH_MY_REQUESTS_ACTION_PREFIX, FETCH_MY_REQUESTS_URL} from "../constants";
 
 const TODAY = new Date().toJSON().slice(0, 10)
-const ACCEPTED_FILTER = `filter=status:ACCEPTED,${TODAY}<:endDate`
-const PENDING_FILTER = "filter=status:PENDING"
-const CANCELED_FILTER = `filter=status:CANCELED,${TODAY}<:endDate`
-const FILTER = `?${PENDING_FILTER}?${ACCEPTED_FILTER}?${CANCELED_FILTER}`
+const PARAMS = new URLSearchParams()
+PARAMS.append("filter", `endDate>:${TODAY}|status:PENDING`)
+PARAMS.append("sort", "id,DESC")
 
 export const fetchMyRequests = dispatch => {
     dispatch({type: `${FETCH_MY_REQUESTS_ACTION_PREFIX}_request`})
-    sendGetRequest(`${FETCH_MY_REQUESTS_URL}${FILTER}`)
+    sendGetRequest(`${FETCH_MY_REQUESTS_URL}`, PARAMS)
         .then(data => dispatch({
-            type: `${FETCH_MY_REQUESTS_ACTION_PREFIX}_success`,
-            response: data
-        }))
+                type: `${FETCH_MY_REQUESTS_ACTION_PREFIX}_success`,
+                response: data
+            })
+        )
         .catch(errorMsg => dispatch({
             type: `${FETCH_MY_REQUESTS_ACTION_PREFIX}_failure`,
             error: errorMsg

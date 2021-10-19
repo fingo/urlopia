@@ -5,9 +5,11 @@ import java.util.Map;
 
 public class EvidenceReportModel {
 
+    public static final String DATE_FORMATTING = "%02d_%02d";
+
     private Map<String, String> model;
 
-    EvidenceReportModel(Map<String, String> model) {
+    public EvidenceReportModel(Map<String, String> model) {
         this.model = Collections.unmodifiableMap(model);
     }
 

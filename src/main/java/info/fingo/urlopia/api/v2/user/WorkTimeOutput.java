@@ -9,4 +9,8 @@ public record WorkTimeOutput(int numerator,
         return new WorkTimeOutput(workTimeResponse.getWorkTimeA(),
                 workTimeResponse.getWorkTimeB());
     }
+
+    public static WorkTimeOutput fromWorkTime(float workTime) {
+        return fromWorkTimeResponse(new WorkTimeResponse(workTime, 0));
+    }
 }

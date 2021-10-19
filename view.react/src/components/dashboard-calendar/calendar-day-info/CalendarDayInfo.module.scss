@@ -1,0 +1,22 @@
+@import '../../../global-styles/color-variables';
+
+.list {
+  list-style-type: none;
+  padding: 0;
+  max-height: 60vh;
+  overflow-y: auto;
+
+  li {
+    font-size: 1.5rem;
+    padding: 0.5rem 0;
+  }
+
+  li + li {
+    border-top: 1px $DIVIDER-COLOR solid;
+  }
+
+  .muted {
+    font-size: 1.3rem;
+    color: $GREY-COLOR;
+  }
+}

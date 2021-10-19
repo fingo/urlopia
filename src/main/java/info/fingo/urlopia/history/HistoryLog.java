@@ -1,10 +1,12 @@
 package info.fingo.urlopia.history;
 
 import info.fingo.urlopia.request.Request;
+import info.fingo.urlopia.request.RequestType;
 import info.fingo.urlopia.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Entity
@@ -86,6 +88,19 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
 
     public Long getId() {
         return id;
+    }
+
+    public List<String> getDeciderFullName() {
+        if (checkIsDecidersFromRequest()){
+            return request.getDeciders().stream()
+                    .sorted()
+                    .toList();
+        }
+        return List.of(decider.getFullName());
+    }
+
+    private boolean checkIsDecidersFromRequest(){
+        return request != null && request.getType() != RequestType.SPECIAL;
     }
 
     public LocalDateTime getCreated() {

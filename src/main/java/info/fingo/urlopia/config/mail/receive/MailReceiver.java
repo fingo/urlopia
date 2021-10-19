@@ -1,6 +1,7 @@
 package info.fingo.urlopia.config.mail.receive;
 
 import com.sun.mail.imap.IMAPFolder;
+import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
 import info.fingo.urlopia.config.mail.Mail;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -46,7 +47,6 @@ public class MailReceiver extends Thread {
 
     private Store store;
     private IMAPFolder inbox;
-    private int currentMessageCount;
 
     @Autowired
     public MailReceiver(MailDecider mailDecider) {
@@ -98,13 +98,6 @@ public class MailReceiver extends Thread {
         connect();
         inbox = (IMAPFolder) getInbox();
 
-        // Getting starting message count
-        try {
-            currentMessageCount = inbox.getMessageCount();
-        } catch (MessagingException e) {
-            log.error("MessagingException while trying to get message count", e);
-        }
-
         // Listening for new messages
         inbox.addMessageCountListener(new InboxMessageCountListener());
 
@@ -134,6 +127,7 @@ public class MailReceiver extends Thread {
             try {
                 inbox.idle();
             } catch (MessagingException e) {
+                log.error("Something went wrong while watching at inbox");
                 performConfiguration();
             }
         }
@@ -175,31 +169,21 @@ public class MailReceiver extends Thread {
 
         @Override
         public void messagesAdded(MessageCountEvent ex) {
-            try {
-                var newMessageCount = inbox.getMessageCount();
-                for (int messageId = currentMessageCount + 1; messageId <= newMessageCount; messageId++) {
-                    var message = inbox.getMessage(messageId);
-                    var mail = new MessageConverter(message).toMail();
-                    var loggerInfo = "New email sent by %s %n Subject: %s %n Content: %s"
-                            .formatted(mail.getSenderAddress(),
-                                    mail.getSubject(), mail.getContent());
-                    log.info(loggerInfo);
-                    mailDecider.resolve(mail);
-                }
-                currentMessageCount = newMessageCount;
-            } catch (MessagingException e) {
-                log.error("MessagingException while trying to get last message", e);
+            for (var addedMessage : ex.getMessages()) {
+                var mail = new MessageConverter(addedMessage).toMail();
+                var loggerInfo = "New email sent by %s %n Subject: %s".formatted(
+                        Anonymizer.anonymizeMail(mail.getSenderAddress()),
+                        Anonymizer.anonymizeSubject(mail.getSubject()));
+                log.info(loggerInfo);
+                mailDecider.resolve(mail);
             }
         }
 
         // Update the current message count
         @Override
         public void messagesRemoved(MessageCountEvent ex) {
-            try {
-                currentMessageCount = inbox.getMessageCount();
-            } catch (MessagingException e) {
-                log.error("MessagingException while trying to update currentMessageCount during messageRemoved", e);
-            }
+            var removedMessages = ex.getMessages();
+            log.info("{} messages were removed from inbox", removedMessages.length);
         }
     }
 

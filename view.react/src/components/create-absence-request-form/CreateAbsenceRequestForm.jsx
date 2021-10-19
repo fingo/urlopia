@@ -1,9 +1,10 @@
 import classNames from "classnames";
 import {addDays, isWeekend} from 'date-fns';
 import PropTypes from "prop-types";
-import {useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
 
+import {getCurrentUser} from "../../api/services/session.service";
 import {
     D1_FUNERAL,
     D1_WEDDING,
@@ -14,10 +15,12 @@ import {
     OCCASIONAL,
     PLACEHOLDER
 } from "../../constants/requestsTypes";
+import {useVacationDays} from "../../contexts/vacation-days-context/vacationDaysContext";
 import {countWorkingDays} from "../../helpers/CountWorkingDaysHelper";
 import {formatDate} from "../../helpers/DateFormatterHelper";
 import {isHoliday} from "../../helpers/IsHolidayHelper";
 import {occasionalTypeInfoMapperHelper} from "../../helpers/OccasionalTypeInfoMapperHelper";
+import {updateVacationDays} from "../../helpers/updateVacationDays";
 import {Calendar} from "./calendar/Calendar";
 import styles from './CreateAbsenceRequestForm.module.scss';
 import {InfoOverlay} from "./info-overlay/InfoOverlay";
@@ -37,6 +40,7 @@ export const CreateAbsenceRequestForm = ({
             color: 'deepskyblue',
         }]
     );
+    const {ec: isUserEC} = getCurrentUser();
     const [workingDaysCounter, setWorkingDaysCounter] = useState(0);
     const [onChangeOption, setOnChangeOption] = useState(null);
     const [isNormal, setIsNormal] = useState(true);
@@ -45,6 +49,27 @@ export const CreateAbsenceRequestForm = ({
     const [occasionalType, setOccasionalType] = useState(null);
     const formRef = useRef(null);
     const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
+
+    const [vacationDays, setVacationDays] = useState(0);
+    const [vacationHours, setVacationHours] = useState(0);
+    const [pendingDays, setPendingDays] = useState(0);
+    const [pendingHours, setPendingHours] = useState(0);
+    const [workTime, setWorkTime] = useState(8);
+
+    const [vacationDaysState, vacationDaysDispatch] = useVacationDays();
+
+    useEffect(() => {
+        const {pendingDays, pendingHours} = vacationDaysState.pendingDays;
+        setPendingDays(pendingDays);
+        setPendingHours(pendingHours);
+    }, [vacationDaysState.pendingDays]);
+
+    useEffect(() => {
+        const {remainingDays, remainingHours, workTime} = vacationDaysState.vacationDays;
+        setVacationDays(remainingDays);
+        setVacationHours(remainingHours);
+        setWorkTime(workTime);
+    }, [vacationDaysState.vacationDays]);
 
     const handleRequestsTypeChange = e => {
         setInitialSelectedRange();
@@ -113,7 +138,7 @@ export const CreateAbsenceRequestForm = ({
         setIsReadyToSubmit(true);
     }
 
-    const handleSendRequest = e => {
+    const handleSendRequest = async e => {
         const startDate = formatDate(selectedRange[0].startDate);
         const endDate = formatDate(selectedRange[0].endDate);
         const body = {
@@ -123,7 +148,9 @@ export const CreateAbsenceRequestForm = ({
             occasionalType,
         }
 
-        createRequest(body);
+        const isAdmin = getCurrentUser().userRoles.includes('ROLES_ADMIN');
+        await createRequest(body, isAdmin);
+        updateVacationDays(vacationDaysDispatch);
     }
 
     const setInitialSelectedRange = () => {
@@ -133,6 +160,7 @@ export const CreateAbsenceRequestForm = ({
         setSelectedRange([newState]);
         setIsReadyToSubmit(false);
     }
+    const vacationTypeLabel = isUserEC ? "Pozostały urlop: " : "Pozostała przerwa: "
 
     const calendarClass = classNames(styles.calendar, {[styles.blur]: !isSelected});
     return (
@@ -141,28 +169,29 @@ export const CreateAbsenceRequestForm = ({
                 <Col xs={12} xl={4}>
                     <Form>
                         <div className={styles.labelAndInfo}>
-
                             <Form.Label>
                                 Typ wniosku:
                             </Form.Label>
-                            <InfoOverlay/>
                         </div>
-                        <Form.Select defaultValue={PLACEHOLDER}
-                                     className={styles.formSelect}
-                                     onChange={e => handleRequestsTypeChange(e)}
-                                     data-testid='selector'
-                        >
-                            <option value={PLACEHOLDER} hidden>Wybierz typ wniosku...</option>
-                            <option value={NORMAL} data-testid='select-option'>Wypoczynkowy</option>
-                            <option value={OCCASIONAL} data-testid='select-option'>Okolicznościowy</option>
-                        </Form.Select>
+                        <div className='d-flex'>
+                            <Form.Select defaultValue={PLACEHOLDER}
+                                         className={styles.formSelect}
+                                         onChange={e => handleRequestsTypeChange(e)}
+                                         data-testid='selector'
+                            >
+                                <option value={PLACEHOLDER} hidden>Wybierz typ wniosku...</option>
+                                <option value={NORMAL} data-testid='select-option'>Wypoczynkowy</option>
+                                <option value={OCCASIONAL} data-testid='select-option'>Okolicznościowy</option>
+                            </Form.Select>
+                            <div className='invisible'>
+                                <InfoOverlay/>
+                            </div>
+                        </div>
                     </Form>
-
-                    <Form ref={formRef}>
+                    <Form ref={formRef} className={type === OCCASIONAL ? "d-flex" : "d-none"}>
                         <Form.Select defaultValue={PLACEHOLDER}
                                      className={styles.formSelect}
                                      onChange={e => handleOccasionalTypeChange(e)}
-                                     disabled={type !== OCCASIONAL}
                                      data-testid='selector'
                         >
                             <option value={PLACEHOLDER} hidden>Wybierz okoliczność...</option>
@@ -176,11 +205,26 @@ export const CreateAbsenceRequestForm = ({
                                 <option value={D1_WEDDING}>Ślub dziecka</option>
                             </optgroup>
                         </Form.Select>
+                        <div>
+                            <InfoOverlay/>
+                        </div>
                     </Form>
 
                     <p className={styles.additionalInfo}>{occasionalTypeInfoMapperHelper(occasionalType)}</p>
 
                     <h5>Liczba dni roboczych: <strong>{workingDaysCounter}</strong></h5>
+                    {
+                        workTime === 8 ?
+                            <>
+                                <h5>{vacationTypeLabel}<strong>{vacationDays-pendingDays} dni</strong> {vacationHours-pendingHours} godzin</h5>
+                                <h5>Złożone wnioski: <strong>{pendingDays} dni</strong> {pendingHours} godzin</h5>
+                            </>
+                        :
+                            <>
+                                <h5>{vacationTypeLabel}: <strong>{vacationHours-pendingHours} godzin</strong></h5>
+                                <h5>Złożone wnioski: <strong>{pendingHours} godzin</strong></h5>
+                            </>
+                    }
                 </Col>
 
                 <Col xs={12} xl={8} className={styles.calendarColumn}>

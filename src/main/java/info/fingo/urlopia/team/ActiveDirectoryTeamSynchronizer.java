@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import javax.naming.directory.SearchResult;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,10 +23,7 @@ public class ActiveDirectoryTeamSynchronizer {
     private String usersGroup;
 
     @Value("${ad.identifiers.team}")
-    private String teamIdentifier;
-
-    @Value("${ad.identifiers.business-part}")
-    private String businessPartIdentifier;
+    private List<String> teamIdentifiers;
 
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
@@ -44,56 +42,56 @@ public class ActiveDirectoryTeamSynchronizer {
 
     public void addNewTeams() {
         var dbTeams = teamRepository.findAllAdNames();
-        pickBusinessPartsFromAD().forEach(adBusinessPart ->
-                pickTeamsFromAD(adBusinessPart).stream()
-                        .filter(adTeam ->
-                                !ActiveDirectoryUtils.pickAttribute(
-                                        adTeam, Attribute.DISTINGUISHED_NAME).equals(usersGroup))
-                        .filter(adTeam ->
-                                !dbTeams.contains(
-                                        ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.DISTINGUISHED_NAME)))
-                        .map(adTeam -> teamMapper.mapToTeam(adTeam, adBusinessPart))
-                        .forEach(teamRepository::save));
+        pickTeamsFromAD().stream()
+                .filter(adTeam ->
+                        !isTeamAUsersGroup(
+                                adTeam))
+                .filter(adTeam ->
+                        !dbTeams.contains(
+                                adNameOf(adTeam)))
+                .map(adTeam -> teamMapper.mapToTeam(adTeam))
+                .forEach(teamRepository::save);
         LOGGER.info("Synchronisation succeed: find new teams");
     }
 
+    private boolean isTeamAUsersGroup(SearchResult adTeam) {
+        return adNameOf(adTeam).equals(usersGroup);
+    }
+
+    private String adNameOf(SearchResult searchResult) {
+        return ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.DISTINGUISHED_NAME);
+    }
+
     public void removeDeletedTeams() {
-        var adTeams = pickBusinessPartsFromAD().stream()
-                .map(this::pickTeamsFromAD)
-                .flatMap(Collection::stream)
-                .map(team ->
-                        ActiveDirectoryUtils.pickAttribute(team, Attribute.DISTINGUISHED_NAME))
-                .collect(Collectors.toList());
+        var adTeams = pickTeamsFromAD().stream()
+                .map(this::adNameOf)
+                .toList();
 
         teamRepository.findAll().stream()
-                .filter(team ->
-                        !adTeams.contains(team.getAdName()))
+                .filter(team -> !adTeams.contains(team.getAdName()))
                 .forEach(teamRepository::delete);
         LOGGER.info("Synchronisation succeed: remove deleted teams");
     }
 
     public void synchronize() {
-        pickBusinessPartsFromAD().forEach(adBusinessPart ->
-                pickTeamsFromAD(adBusinessPart).forEach(adTeam -> {
-                    var adName = ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.DISTINGUISHED_NAME);
-                    var optionalTeam = teamRepository.findFirstByAdName(adName);
-                    optionalTeam.ifPresent(team -> teamRepository.save(
-                            teamMapper.mapToTeam(adTeam, team, adBusinessPart)
-                    ));
-                })
-        );
+        pickTeamsFromAD().forEach(adTeam -> {
+            var adName = adNameOf(adTeam);
+            teamRepository.findFirstByAdName(adName).ifPresent(team -> {
+                var updatedTeam = teamMapper.mapToTeam(adTeam, team);
+                teamRepository.save(updatedTeam);
+            });
+        });
         LOGGER.info("Synchronisation succeed: update all teams");
     }
 
     public void assignUsersToTeams() {
         this.pickTeamsFromAD().forEach(adTeam -> {
-            var adName = ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.DISTINGUISHED_NAME);
-            var optionalTeam = teamRepository.findFirstByAdName(adName);
-            optionalTeam.ifPresent(team -> {
-               var membersAsString = ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.MEMBER);
-               var members = splitMembers(membersAsString);
-               team.setUsers(members);
-               teamRepository.save(team);
+            var adName = adNameOf(adTeam);
+            teamRepository.findFirstByAdName(adName).ifPresent(team -> {
+                var membersAsString = ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.MEMBER);
+                var members = splitMembers(membersAsString);
+                team.setUsers(members);
+                teamRepository.save(team);
             });
         });
         LOGGER.info("Synchronisation succeed: assign users to teams");
@@ -105,30 +103,20 @@ public class ActiveDirectoryTeamSynchronizer {
                 .map(userRepository::findFirstByAdName)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toUnmodifiableSet());
+                .collect(Collectors.toSet());
     }
 
     private List<SearchResult> pickTeamsFromAD() {
+        return teamIdentifiers.stream()
+                .map(this::pickTeamsFromAD)
+                .flatMap(Collection::stream)
+                .toList();
+    }
+
+    private List<SearchResult> pickTeamsFromAD(String teamIdentifier) {
         return activeDirectory.newSearch()
                 .objectClass(ActiveDirectoryObjectClass.Group)
                 .name(String.format("*%s", teamIdentifier))
                 .search();
     }
-
-    private List<SearchResult> pickTeamsFromAD(SearchResult adBusinessPart) {
-        var businessPartAdName = ActiveDirectoryUtils.pickAttribute(adBusinessPart, Attribute.DISTINGUISHED_NAME);
-        return activeDirectory.newSearch()
-                .objectClass(ActiveDirectoryObjectClass.Group)
-                .name("*" + this.teamIdentifier)
-                .memberOf(businessPartAdName)
-                .search();
-    }
-
-    private List<SearchResult> pickBusinessPartsFromAD() {
-        return activeDirectory.newSearch()
-                .objectClass(ActiveDirectoryObjectClass.Group)
-                .name("*" + this.businessPartIdentifier)
-                .search();
-    }
-
 }

@@ -6,6 +6,7 @@
   margin: 0 5% 5%;
   width: 350px;
   height: 450px;
+  position: relative;
 }
 
 .formContainer {
@@ -52,4 +53,11 @@
   text-align: center;
   font-size: 1.3rem;
   color: red;
+}
+
+.versionContainer {
+  font-size: 0.9rem;
+  color: #cccccc;
+  position: absolute;
+  bottom: 1rem;
 }

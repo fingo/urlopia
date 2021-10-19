@@ -36,11 +36,13 @@ class UserOutputSpec extends Specification{
         userExcerptProjection.getWorkTime() >> workTime
 
         and: "valid expected value"
+        def numerator = workTime.toInteger()
         def correctUserOutput = new UserOutput(fullName,
                                                 id,
                                                 mail,
                                                 List.of(team1Name,team2Name),
-                                                workTime)
+                                                workTime,
+                                                new WorkTimeOutput(numerator, 8))
 
         when:
         def result = UserOutput.fromUserExcerptProjection(userExcerptProjection)
@@ -50,6 +52,7 @@ class UserOutputSpec extends Specification{
         result.userId() == correctUserOutput.userId()
         result.mailAddress() == correctUserOutput.mailAddress()
         result.workingHours() == correctUserOutput.workingHours()
+        result.workTime() == correctUserOutput.workTime()
         correctUserOutput.teams().containsAll(listName)
 
         where:

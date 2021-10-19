@@ -1,16 +1,22 @@
 package info.fingo.urlopia.request;
 
 import info.fingo.urlopia.UrlopiaApplication;
+import info.fingo.urlopia.api.v2.calendar.AbsentUserOutput;
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
 import info.fingo.urlopia.config.authentication.WebTokenService;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
+import info.fingo.urlopia.history.HistoryLog;
 import info.fingo.urlopia.history.HistoryLogService;
+import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.request.absence.BaseRequestInput;
 import info.fingo.urlopia.request.absence.SpecialAbsenceRequestService;
+import info.fingo.urlopia.request.normal.RequestTooFarInThePastException;
+import info.fingo.urlopia.team.Team;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -22,27 +28,35 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 public class RequestService {
     private final RequestRepository requestRepository;
     private final HistoryLogService historyLogService;
     private final UserService userService;
     private final WebTokenService webTokenService;
+    private final HolidayService holidayService;
     private final PresenceConfirmationService presenceConfirmationService;
+
+    private static final String REQUEST_NOT_EXIST_MESSAGE = "Request with id: {} does not exist";
 
     @Autowired
     public RequestService(RequestRepository requestRepository,
                           HistoryLogService historyLogService,
                           UserService userService,
                           WebTokenService webTokenService,
+                          HolidayService holidayService,
                           @Lazy PresenceConfirmationService presenceConfirmationService) {
         this.requestRepository = requestRepository;
         this.historyLogService = historyLogService;
         this.userService = userService;
         this.webTokenService = webTokenService;
+        this.holidayService = holidayService;
         this.presenceConfirmationService = presenceConfirmationService;
     }
 
@@ -55,6 +69,10 @@ public class RequestService {
 
     public Page<RequestExcerptProjection> get(Filter filter, Pageable pageable) {
         return requestRepository.findAll(filter, pageable, RequestExcerptProjection.class);
+    }
+
+    public List<Request> getAll(Filter filter) {
+        return requestRepository.findAll(filter);
     }
 
     public List<Request> getByUserAndDate(Long userId, LocalDate date) {
@@ -76,12 +94,31 @@ public class RequestService {
     }
 
     public Request getById(Long requestId) {
-        return requestRepository.findById(requestId).orElseThrow();
+        return requestRepository
+                .findById(requestId)
+                .orElseThrow(() -> {
+                    log.error(REQUEST_NOT_EXIST_MESSAGE, requestId);
+                    return new NoSuchElementException();
+                });
     }
 
     public Request create(Long userId, BaseRequestInput requestInput) {
-        RequestTypeService service = requestInput.getType().getService();
+        var type = requestInput.getType();
+
+        if (type != RequestType.SPECIAL) {
+            ensureRequestIsNotTooFarInThePast(requestInput.getStartDate());
+        }
+
+        RequestTypeService service = type.getService();
         return service.create(userId, requestInput);
+    }
+
+    public List<AbsentUserOutput> getVacations(LocalDate date, Filter filter) {
+        var users = userService.get(filter);
+        return users.stream()
+                .filter(user -> isVacationing(user, date))
+                .map(this::createAbsentUserOutput)
+                .toList();
     }
 
     public List<VacationDay> getTeammatesVacationsForNextTwoWeeks(Long userId) {
@@ -99,6 +136,80 @@ public class RequestService {
                 .filter(date -> !isWeekend(date))
                 .map(date -> createVacationDay(teammates, date))
                 .collect(Collectors.toList());
+    }
+
+    public double countTheHoursUsedDuringTheYear(Long userId,
+                                                 int year){
+        return requestRepository.findByRequesterIdAndYear(userId,year)
+                        .stream()
+                        .filter(request -> request.getType() == RequestType.NORMAL)
+                        .filter(request -> request.getStatus() == Request.Status.ACCEPTED)
+                        .mapToDouble(request -> countUsedHoursFromYearAndRequest(year,request))
+                        .sum();
+    }
+
+    private double countUsedHoursFromYearAndRequest(int year,
+                                                    Request request){
+        if (requestOverlappingOnLeft(request, year)) {
+            return countUsedHoursInOverlappingRequest(year, request,true);
+        } else if (requestOverlappingOnRight(request, year)) {
+            return countUsedHoursInOverlappingRequest(year, request,false);
+        } else {
+            return request.getWorkingHours();
+        }
+    }
+
+    private boolean requestOverlappingOnLeft(Request request, int year) {
+        var yearStart = LocalDate.of(year, 1, 1);
+        return request.getStartDate().isBefore(yearStart) && !request.getEndDate().isBefore(yearStart);
+    }
+
+    private boolean requestOverlappingOnRight(Request request, int year) {
+        var yearEnd = LocalDate.of(year, 12, 31);
+        return !request.getStartDate().isAfter(yearEnd) && request.getEndDate().isAfter(yearEnd);
+    }
+
+    private double countUsedHoursInOverlappingRequest(int year,
+                                                      Request request,
+                                                      boolean overlappedOnLeft) {
+        var requestStartDate = request.getStartDate();
+        var requestEndDate = request.getEndDate();
+        var yearStart = LocalDate.of(year, 1, 1);
+        var yearEnd = LocalDate.of(year, 12, 31);
+
+        Predicate<LocalDate> filter = overlappedOnLeft ? day -> !day.isBefore(yearStart) : day -> !day.isAfter(yearEnd);
+
+        var workingDays = requestStartDate.datesUntil(requestEndDate.plusDays(1))
+                .filter(holidayService::isWorkingDay)
+                .toList();
+
+        var numOfWorkingDaysBeforeNextYear = workingDays.stream()
+                .filter(filter)
+                .count();
+        var numOfWorkingDays = workingDays.size();
+
+        if (numOfWorkingDays == 0) {
+            return 0;
+        }
+
+        var hoursUsedPerDay = request.getWorkingHours() / numOfWorkingDays;
+        return hoursUsedPerDay * numOfWorkingDaysBeforeNextYear;
+    }
+
+
+    private void ensureRequestIsNotTooFarInThePast(LocalDate startDate) {
+        if (startDate.isBefore(LocalDate.now().minusMonths(1))) {
+            log.error("Request that starts on {} could not be created, because it's too far in the past.", startDate);
+            throw RequestTooFarInThePastException.requestTooFarInThePast();
+        }
+    }
+
+    private AbsentUserOutput createAbsentUserOutput(User user){
+        var userName = user.getFullName();
+        var teams = user.getTeams().stream()
+                .map(Team::getName)
+                .toList();
+        return new AbsentUserOutput(userName, teams);
     }
 
     private VacationDay createVacationDay(List<User> users, 
@@ -122,8 +233,8 @@ public class RequestService {
         return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
     }
 
-    private boolean isVacationing(User user, 
-                                  LocalDate date) {
+    public boolean isVacationing(User user,
+                                 LocalDate date) {
         return this.getByUserAndDate(user.getId(), date).stream()
                 .anyMatch(request -> request.getStatus() == Request.Status.ACCEPTED);
     }
@@ -139,7 +250,12 @@ public class RequestService {
 
     public void accept(Long requestId,
                        Long deciderId) {
-        var request = requestRepository.findById(requestId).orElseThrow();
+        var request = requestRepository
+                .findById(requestId)
+                .orElseThrow(() -> {
+                    log.error(REQUEST_NOT_EXIST_MESSAGE, requestId);
+                    return new NoSuchElementException();
+                });
         var service = request.getType().getService();
         service.accept(request);
 
@@ -163,21 +279,33 @@ public class RequestService {
     }
 
     public void reject(Long requestId) {
-        var request = requestRepository.findById(requestId).orElseThrow();
+        var request = requestRepository
+                .findById(requestId)
+                .orElseThrow(() -> {
+                    log.error(REQUEST_NOT_EXIST_MESSAGE, requestId);
+                    return new NoSuchElementException();
+                });
         var service = request.getType().getService();
         service.reject(request);
     }
 
     public void cancel(Long requestId, 
                        Long deciderId) {
-        var request = requestRepository.findById(requestId).orElseThrow();
-        var isRequester = request.getRequester().getId()
-                .equals(deciderId);
+        var request = requestRepository
+                .findById(requestId)
+                .orElseThrow(() -> {
+                    log.error(REQUEST_NOT_EXIST_MESSAGE, requestId);
+                    return new NoSuchElementException();
+                });
+        var requesterId = request.getRequester().getId();
+        var isRequester = requesterId.equals(deciderId);
 
         try {
             webTokenService.ensureAdmin();
         } catch (UnauthorizedException exception) {
             if (!isRequester) {
+                log.error("User with id: {} has no permissions to cancel request with id: {}",
+                        requesterId, requestId);
                 throw UnauthorizedException.unauthorized();
             }
         }

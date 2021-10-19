@@ -1,8 +1,10 @@
 import {useState} from "react";
 import {Button, Form, FormControl} from "react-bootstrap";
-import { useHistory } from "react-router-dom";
+import {useHistory} from "react-router-dom";
 
 import {login} from "../../api/services/session.service"
+import {useAppInfo} from "../../contexts/app-info-context/appInfoContext";
+import {pushSuccessNotification} from "../../helpers/notifications/Notifications";
 import styles from "./LoginForm.module.scss"
 
 const LOADING_MESSAGE = "...";
@@ -11,15 +13,15 @@ const LOGIN_MESSAGE = "Zaloguj się";
 export const LoginForm = () => {
 
     const [isLoading, setLoading] = useState(false);
-    const [showAlert, setShowAlert] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
     const [mail, setMail] = useState("");
     const [password, setPassword] = useState("");
     const history = useHistory();
 
+    const [appInfoState,] = useAppInfo()
+    const {version, commitId} = appInfoState.appInfo
+
     const handleFormSubmit = event => {
         event.preventDefault();
-        setShowAlert(false);
         setLoading(true);
         const credentials = {
             mail,
@@ -27,12 +29,11 @@ export const LoginForm = () => {
         }
         login(credentials).then(
             () => {
+                pushSuccessNotification("Logowanie zakończone sukcesem")
                 history.push("/");
                 history.go(0);
             },
-            error => {
-                setErrorMessage(error.message)
-                setShowAlert(true);
+            () => {
                 setLoading(false);
             }
         );
@@ -50,9 +51,9 @@ export const LoginForm = () => {
                 </div>
                 <Button className={styles.button} type="submit" data-testid="login-btn">
                     {isLoading ? LOADING_MESSAGE : LOGIN_MESSAGE}</Button>
-            </div>
-            <div className={styles.alertContainer}>
-                <strong data-testid="error-msg">{showAlert && errorMessage}</strong>
+                <span className={styles.versionContainer}>
+                    {`${version} ${commitId}`}
+                </span>
             </div>
         </Form>
     );

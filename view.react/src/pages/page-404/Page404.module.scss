@@ -1,0 +1,19 @@
+@import 'src/global-styles/color-variables';
+@import 'src/global-styles/btn.module';
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10%;
+
+  h3 {
+    margin: 5% 0;
+  }
+
+  img {
+    display: block;
+    margin: 0 auto;
+  }
+}
+

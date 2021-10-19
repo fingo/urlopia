@@ -1,0 +1,29 @@
+.actionButtonsContainer {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  flex-direction: row;
+  justify-items: center;
+
+  button {
+    background: none;
+    border: none;
+    margin: 0 1em;
+  }
+}
+
+.rejectButton {
+  color: red;
+
+  :hover {
+    color: darkred;
+  }
+}
+
+.acceptButton {
+  color: rgb(79, 222, 35);
+
+  :hover {
+    color: darkgreen;
+  }
+}

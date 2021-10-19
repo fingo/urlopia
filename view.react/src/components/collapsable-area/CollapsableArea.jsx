@@ -8,9 +8,10 @@ import styles from './CollapsableArea.module.scss';
 export const CollapsableArea = ({
     title,
     children,
-    onOpen
+    onOpen,
+    shouldBeCollapsed
 }) => {
-    const [isCollapsed, setIsCollapsed] = useState(true);
+    const [isCollapsed, setIsCollapsed] = useState(shouldBeCollapsed);
 
     const handleCollapse = () => {
         if (isCollapsed) {
@@ -20,7 +21,7 @@ export const CollapsableArea = ({
     }
 
     return (
-        <Accordion>
+        <Accordion defaultActiveKey={shouldBeCollapsed ? "" : "0"}>
             <Card className={styles.main}>
                 <CollapsableAreaHeader
                     eventKey="0"
@@ -40,8 +41,10 @@ export const CollapsableArea = ({
 CollapsableArea.propTypes = {
     title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
     onOpen: PropTypes.func,
+    shouldBeCollapsed: PropTypes.bool
 }
 
 CollapsableArea.defaultProps = {
     onOpen: () => {},
+    shouldBeCollapsed: true
 }

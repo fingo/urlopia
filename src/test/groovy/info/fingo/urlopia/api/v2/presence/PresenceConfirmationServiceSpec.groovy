@@ -1,13 +1,15 @@
 package info.fingo.urlopia.api.v2.presence
 
+import info.fingo.urlopia.api.v2.preferences.UserPreferencesService
+import info.fingo.urlopia.api.v2.preferences.working.hours.UserWorkingHoursPreference
 import info.fingo.urlopia.config.persistance.filter.Filter
 import info.fingo.urlopia.holidays.HolidayService
-import info.fingo.urlopia.request.Request
 import info.fingo.urlopia.request.RequestService
 import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserService
 import spock.lang.Specification
 
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -18,11 +20,16 @@ class PresenceConfirmationServiceSpec extends Specification {
     def requestService = Mock(RequestService)
     def holidayService = Mock(HolidayService)
     def userService = Mock(UserService)
-    def presenceConfirmationService = new PresenceConfirmationService(presenceConfirmationRepository, requestService, holidayService, userService)
+    def userPreferencesService = Mock(UserPreferencesService)
+    def presenceConfirmationService = new PresenceConfirmationService(presenceConfirmationRepository,
+                                                                      requestService,
+                                                                      holidayService,
+                                                                      userService,
+                                                                      userPreferencesService)
 
     def authenticatedUserId = 1L
     def userWhomPresenceIsAddedId = 999L
-    def sampleDate = LocalDate.of(2021, 8, 10)
+    def sampleDate = LocalDate.now()
     def sampleStartTime = LocalTime.of(8, 0)
     def sampleEndTime = LocalTime.of(16, 0)
 
@@ -45,6 +52,26 @@ class PresenceConfirmationServiceSpec extends Specification {
         def user = Mock(User) { getId() >> userId }
         return new PresenceConfirmation(user, date, sampleStartTime, sampleEndTime)
     }
+
+
+    def "getByUserAndDate() WHEN called SHOULD return only filtered authenticated user confirmations"() {
+        given: "a presence confirmation repository that returns user confirmations"
+        def userPresenceConfirmations = [
+                samplePresenceConfirmation(authenticatedUserId, sampleDate.plusDays(1)),
+                samplePresenceConfirmation(authenticatedUserId, sampleDate.plusDays(2))
+        ]
+        1 * presenceConfirmationRepository.findAll(_ as Filter) >> userPresenceConfirmations
+
+        and: "userId and day from what we want get confirmations "
+        def userId = 5
+
+        when:
+        def confirmations = presenceConfirmationService.getByUserAndDate(userId, sampleDate)
+
+        then:
+        confirmations == userPresenceConfirmations
+    }
+
 
     def "getPresenceConfirmations() WHEN user is not admin SHOULD return only authenticated user confirmations"() {
         given: "any filters"
@@ -115,6 +142,9 @@ class PresenceConfirmationServiceSpec extends Specification {
         and: "a request service that returns no requests"
         requestService.getByUserAndDate(authenticatedUserId, sampleDate) >> []
 
+        and: "a user preference service that returns default preference"
+        userPreferencesService.getWorkingHoursPreferenceOf(authenticatedUserId) >> UserWorkingHoursPreference.getDefault(authenticatedUserId)
+
         when: "user tries to confirm his presence"
         def presenceConfirmation = presenceConfirmationService.confirmPresence(authenticatedUserId, dto)
 
@@ -158,6 +188,9 @@ class PresenceConfirmationServiceSpec extends Specification {
         and: "a request service that returns no requests"
         requestService.getByUserAndDate(authenticatedUserId, sampleDate) >> []
 
+        and: "a user preference service that returns default preference"
+        userPreferencesService.getWorkingHoursPreferenceOf(authenticatedUserId) >> UserWorkingHoursPreference.getDefault(authenticatedUserId)
+
         when: "user tries to confirm his presence"
         def presenceConfirmation = presenceConfirmationService.confirmPresence(authenticatedUserId, dto)
 
@@ -186,6 +219,9 @@ class PresenceConfirmationServiceSpec extends Specification {
 
         and: "a request service that returns no requests"
         requestService.getByUserAndDate(userWhomPresenceIsAddedId, sampleDate) >> []
+
+        and: "a user preference service that returns default preference"
+        userPreferencesService.getWorkingHoursPreferenceOf(userWhomPresenceIsAddedId) >> UserWorkingHoursPreference.getDefault(userWhomPresenceIsAddedId)
 
         when: "user tries to confirm presence of someone else"
         def presenceConfirmation = presenceConfirmationService.confirmPresence(authenticatedUserId, dto)
@@ -216,7 +252,8 @@ class PresenceConfirmationServiceSpec extends Specification {
         presenceConfirmationService.confirmPresence(authenticatedUserId, dto)
 
         then: "an exception is thrown"
-        thrown(PresenceConfirmationException)
+        PresenceConfirmationException ex = thrown()
+        ex.getMessage() == PresenceConfirmationException.nonWorkingDay().getMessage()
     }
 
     def "confirmPresence() WHEN user is on vacation on a given day SHOULD throw an exception"() {
@@ -233,14 +270,46 @@ class PresenceConfirmationServiceSpec extends Specification {
         and: "a holiday service that tells that every day is working day"
         holidayService.isWorkingDay(_ as LocalDate) >> true
 
-        and: "a request service that returns some requests"
-        requestService.getByUserAndDate(authenticatedUserId, sampleDate) >> [new Request()]
+        and: "a request service that tells that user is vacationing"
+        requestService.isVacationing(authenticatedUser, dto.getDate()) >> true
 
         when: "user tries to confirm his presence"
         presenceConfirmationService.confirmPresence(authenticatedUserId, dto)
 
         then: "an exception is thrown"
-        thrown(PresenceConfirmationException)
+        PresenceConfirmationException ex = thrown()
+        ex.getMessage() == PresenceConfirmationException.userOnVacation().getMessage()
+    }
+
+    def "confirmPresence() WHEN user is on not working on a given day SHOULD throw an exception"() {
+        given: "a valid dto"
+        def dto = samplePresenceConfirmationDTO(authenticatedUserId)
+
+        and: "a user service that returns authenticated user"
+        def authenticatedUser = Mock(User) {
+            isAdmin() >> false
+            getId() >> authenticatedUserId
+        }
+        userService.get(authenticatedUserId) >> authenticatedUser
+
+        and: "a holiday service that tells that every day is working day"
+        holidayService.isWorkingDay(_ as LocalDate) >> true
+
+        and: "a request service that tells that user is vacationing"
+        requestService.isVacationing(authenticatedUser, dto.getDate()) >> false
+
+        and: "a user preference service that returns default preference"
+        def samplePreference = Spy(UserWorkingHoursPreference.getDefault(authenticatedUserId)) {
+            isNonWorkingOn(_ as DayOfWeek) >> true
+        }
+        userPreferencesService.getWorkingHoursPreferenceOf(authenticatedUserId) >> samplePreference
+
+        when: "user tries to confirm his presence"
+        presenceConfirmationService.confirmPresence(authenticatedUserId, dto)
+
+        then: "an exception is thrown"
+        PresenceConfirmationException ex = thrown()
+        ex.getMessage() == PresenceConfirmationException.userNonWorkingDay().getMessage()
     }
 
     def "confirmPresence() WHEN date is in the future SHOULD throw an exception"() {
@@ -259,7 +328,56 @@ class PresenceConfirmationServiceSpec extends Specification {
         presenceConfirmationService.confirmPresence(authenticatedUserId, dto)
 
         then: "an exception is thrown"
-        thrown(PresenceConfirmationException)
+        PresenceConfirmationException ex = thrown()
+        ex.getMessage() == PresenceConfirmationException.confirmationInFuture().getMessage()
+    }
+
+    def "confirmPresence() WHEN date is in the past and authenticated user is not an admin SHOULD throw an exception"() {
+        given: "an invalid dto"
+        def dto = samplePresenceConfirmationDTO(authenticatedUserId)
+        dto.setDate(LocalDate.now().minusWeeks(2).minusDays(1))
+
+        and: "a user service that returns authenticated user"
+        def authenticatedUser = Mock(User) {
+            isAdmin() >> false
+            getId() >> authenticatedUserId
+        }
+        userService.get(authenticatedUserId) >> authenticatedUser
+
+        when: "user tries to confirm his presence"
+        presenceConfirmationService.confirmPresence(authenticatedUserId, dto)
+
+        then: "an exception is thrown"
+        PresenceConfirmationException ex = thrown()
+        ex.getMessage() == PresenceConfirmationException.confirmationInPast().getMessage()
+    }
+
+    def "confirmPresence() WHEN date is in the past and authenticated user is an admin SHOULD not throw an exception"() {
+        given: "an invalid dto"
+        def dto = samplePresenceConfirmationDTO(authenticatedUserId)
+        dto.setDate(LocalDate.now().minusWeeks(2).minusDays(1))
+
+        and: "a user service that returns authenticated user"
+        def authenticatedUser = Mock(User) {
+            isAdmin() >> true
+            getId() >> authenticatedUserId
+        }
+        userService.get(authenticatedUserId) >> authenticatedUser
+
+        and: "a holiday service that tells that every day is working day"
+        holidayService.isWorkingDay(_ as LocalDate) >> true
+
+        and: "a request service that tells that user is not vacationing"
+        requestService.isVacationing(authenticatedUser, dto.getDate()) >> false
+
+        and: "a user preference service that returns default preference"
+        userPreferencesService.getWorkingHoursPreferenceOf(authenticatedUserId) >> UserWorkingHoursPreference.getDefault(authenticatedUserId)
+
+        when: "user tries to confirm his presence"
+        presenceConfirmationService.confirmPresence(authenticatedUserId, dto)
+
+        then: "an exception is not thrown"
+        notThrown(PresenceConfirmationException)
     }
 
     def "deletePresenceConfirmations() SHOULD delete presence confirmation in a given date range"() {
@@ -279,5 +397,46 @@ class PresenceConfirmationServiceSpec extends Specification {
 
         then: "the presence confirmation are deleted"
         1 * presenceConfirmationRepository.deleteAll(userPresenceConfirmations)
+    }
+
+    def "getPresenceConfirmation() WHEN presence confirmation exists SHOULD return optional of it"() {
+        given:
+        def userId = 1L
+        def date = LocalDate.now()
+        def presenceConfirmation = samplePresenceConfirmation(userId, date)
+
+        presenceConfirmationRepository.findAll(_ as Filter) >> [presenceConfirmation]
+
+        def presenceConfirmationService = new PresenceConfirmationService(presenceConfirmationRepository,
+                                                                          requestService,
+                                                                          holidayService,
+                                                                          userService,
+                                                                          userPreferencesService)
+
+        when:
+        def output = presenceConfirmationService.getPresenceConfirmation(userId, date)
+
+        then:
+        output == Optional.of(presenceConfirmation)
+    }
+
+    def "getPresenceConfirmation() WHEN does not exist SHOULD return empty optional"() {
+        given:
+        def userId = 1L
+        def date = LocalDate.now()
+
+        presenceConfirmationRepository.findAll(_ as Filter) >> []
+
+        def presenceConfirmationService = new PresenceConfirmationService(presenceConfirmationRepository,
+                                                                          requestService,
+                                                                          holidayService,
+                                                                          userService,
+                                                                          userPreferencesService)
+
+        when:
+        def output = presenceConfirmationService.getPresenceConfirmation(userId, date)
+
+        then:
+        output == Optional.empty()
     }
 }

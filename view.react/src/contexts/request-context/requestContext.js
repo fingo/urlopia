@@ -10,12 +10,18 @@ const initialState = {
         error: null,
         requests: [],
     },
-    teamRequests: {
+    acceptances: {
+        fetching: false,
+        error: null,
+        pending: [],
+        history: [],
+    },
+    companyRequests: {
         fetching: false,
         error: null,
         requests: [],
     },
-    companyRequests: {
+    workerRequestsHistory: {
         fetching: false,
         error: null,
         requests: [],

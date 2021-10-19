@@ -35,7 +35,11 @@ public class SpecialAbsenceRequestService implements RequestTypeService {
     public Request create(Long userId,
                           BaseRequestInput input) {
         var user = userService.get(userId);
-        if (!ensureAdmin()) throw UnauthorizedException.unauthorized();
+        if (!ensureAdmin()) {
+            log.error(("Could not create new special absence for user with id: {} because user who tried to perform" +
+                    " this action has no role ADMIN"), userId);
+            throw UnauthorizedException.unauthorized();
+        }
         var adminId = (Long) webTokenService.getUserId();
         var workingDays = workingDaysCalculator.calculate(input.getStartDate(), input.getEndDate());
         var request = mapToRequest(user, input, workingDays);
@@ -48,7 +52,9 @@ public class SpecialAbsenceRequestService implements RequestTypeService {
         requestRepository.save(request);
         log.info("New request with id: {} has been saved", request.getId());
         publisher.publishEvent(new SpecialAbsenceRequestCreated(request));
-        var message = request.getRequestDescription();
+        var requestReason = request.getSpecialTypeInfo();
+        var messageReason = SpecialAbsenceReason.valueOf(requestReason).getTranslatedReason();
+        var message = "%s (%s)".formatted(request.getTerm(), messageReason);
         historyLogService.create(request, 0f, message, userId, adminId);
 
         return request;
@@ -56,7 +62,11 @@ public class SpecialAbsenceRequestService implements RequestTypeService {
 
     @Override
     public void cancel(Request request) {
-        if (!ensureAdmin()) throw UnauthorizedException.unauthorized();
+        if (!ensureAdmin()) {
+            log.error(("Could not cancel special absence request with id: {} because user who tried to perform this" +
+                    "action has no role ADMIN"), request.getId());
+            throw UnauthorizedException.unauthorized();
+        }
         request.setStatus(Request.Status.CANCELED);
         requestRepository.save(request);
         publisher.publishEvent(new SpecialAbsenceRequestCanceled(request));
@@ -65,11 +75,13 @@ public class SpecialAbsenceRequestService implements RequestTypeService {
 
     @Override
     public void accept(Request request) {
+        log.error("Special absence request can not be accepted");
         throw OperationNotSupportedException.operationNotSupported();
     }
 
     @Override
     public void reject(Request request) {
+        log.error("Special absence request can not be rejected");
         throw OperationNotSupportedException.operationNotSupported();
     }
 
@@ -80,24 +92,29 @@ public class SpecialAbsenceRequestService implements RequestTypeService {
     public Request mapToRequest(User user,
                                 BaseRequestInput input,
                                 int workingDays){
-        var typeInfo = SpecialAbsenceReason.WRONG.toString();
+        var typeInfo = SpecialAbsenceReason.WRONG;
         if (input instanceof SpecialAbsenceRequestInput specialInput) {
-          typeInfo = specialInput.getReason().toString();
+          typeInfo = specialInput.getReason();
         }
         return new Request(
                 user,
                 input.getStartDate(),
                 input.getEndDate(),
                 workingDays,
-                typeInfo
+                typeInfo.toString()
         );
     }
 
     private void validateRequest(Request request) {
+        var requesterId = request.getRequester().getId();
         if (isEndBeforeStart(request)) {
+            log.error("Could not create special absence request for user with id: {} because dates are in invalid order",
+                    requesterId);
             throw InvalidDatesOrderException.invalidDatesOrder();
         }
         if (isOverlapping(request)) {
+            log.error(("Could not create special absence request for user with id: {} " +
+                            "because it is overlapping other requests"), requesterId);
             throw new RequestOverlappingException();
         }
     }

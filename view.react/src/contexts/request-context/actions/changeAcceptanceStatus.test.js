@@ -27,10 +27,10 @@ describe('changeAcceptanceStatusReducer', () => {
             error: null,
             requests: []
         },
-        teamRequests: {
+        acceptances: {
             fetching: false,
             error: null,
-            requests: sampleAcceptances
+            pending: sampleAcceptances
         },
         companyRequests: {
             fetching: false,
@@ -78,9 +78,9 @@ describe('changeAcceptanceStatusReducer', () => {
         // when
         const expectedState = {
             ...sampleState,
-            teamRequests: {
-                ...sampleState.teamRequests,
-                requests: [
+            acceptances: {
+                ...sampleState.acceptances,
+                pending: [
                     {
                         ...sampleAcceptances[1],
                     }
@@ -109,9 +109,9 @@ describe('changeAcceptanceStatusReducer', () => {
         // when
         const expectedState = {
             ...sampleState,
-            teamRequests: {
-                ...sampleState.teamRequests,
-                requests: [
+            acceptances: {
+                ...sampleState.acceptances,
+                pending: [
                     {
                         ...sampleAcceptances[1],
                     }

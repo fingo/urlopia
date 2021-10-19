@@ -8,11 +8,11 @@ plugins {
     id "io.freefair.lombok" version "6.1.0-m3"
 }
 
-project.ext.set("mainViewModule", project(":view.angular"))
+project.ext.set("mainViewModule", project(":view.react"))
 
 
 allprojects {
-    project.version = "1.2.1"
+    project.version = "2.3.0"
 }
 
 java {
@@ -69,6 +69,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.1')
     implementation('org.modelmapper:modelmapper:2.1.1')
+    implementation('com.itextpdf:itextpdf:5.5.13.2')
+    implementation("com.slack.api:bolt:1.12.1")
+    implementation("com.slack.api:bolt-servlet:1.12.1")
+
     runtimeOnly('org.postgresql:postgresql')
 
     testImplementation('org.spockframework:spock-core:2.0-groovy-3.0')
@@ -81,12 +85,12 @@ test {
 
 bootJar {
     archivesBaseName = 'urlopia'
-    from("${mainViewModule.projectDir}/public") {
+    from("${mainViewModule.projectDir}/build") {
         into "public"
     }
 }
 
-springBoot  {
+springBoot {
     buildInfo()
 }
 

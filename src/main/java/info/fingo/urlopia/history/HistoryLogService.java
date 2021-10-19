@@ -3,16 +3,21 @@ package info.fingo.urlopia.history;
 import info.fingo.urlopia.UrlopiaApplication;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
+import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.Request;
+import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -20,30 +25,50 @@ import java.util.Optional;
 @Service
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class HistoryLogService {
 
     private final HistoryLogRepository historyLogRepository;
     private final UserRepository userRepository;
     private final WorkingDaysCalculator workingDaysCalculator;
 
-    @Autowired
-    public HistoryLogService(HistoryLogRepository historyLogRepository,
-                             UserRepository userRepository,
-                             WorkingDaysCalculator workingDaysCalculator) {
-        this.historyLogRepository = historyLogRepository;
-        this.userRepository = userRepository;
-        this.workingDaysCalculator = workingDaysCalculator;
-    }
+    private static final String CREATED_FILTER = "created";
+
 
     public List<HistoryLogExcerptProjection> get(Filter filter) {
+        return historyLogRepository.findAll(filter, HistoryLogExcerptProjection.class);
+    }
+
+    public Page<HistoryLogExcerptProjection> get(Filter filter, Pageable pageable) {
+        return historyLogRepository.findAll(filter, pageable, HistoryLogExcerptProjection.class);
+    }
+
+    public List<HistoryLogExcerptProjection> get(LocalDate date, Long userId) {
+        var startOfDay = LocalDateTime.of(date, LocalTime.MIN);
+        var endOfDay = LocalDateTime.of(date, LocalTime.MAX);
+        var formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_TIME_FORMAT);
+        var formattedStartOfDay = formatter.format(startOfDay);
+        var formattedEndOfDay = formatter.format(endOfDay);
+        var filter = Filter.newBuilder()
+                .and("user.id", Operator.EQUAL, String.valueOf(userId))
+                .and(CREATED_FILTER, Operator.GREATER_OR_EQUAL, formattedStartOfDay)
+                .and(CREATED_FILTER, Operator.LESS_OR_EQUAL, formattedEndOfDay)
+                .build();
         return historyLogRepository.findAll(filter, HistoryLogExcerptProjection.class);
     }
 
     public List<HistoryLogExcerptProjection> get(Long userId,
                                                  Integer year,
                                                  Filter filter) {
+        return get(userId, year, filter, Pageable.unpaged()).getContent();
+    }
+
+    public Page<HistoryLogExcerptProjection> get(Long userId,
+                                                 Integer year,
+                                                 Filter filter,
+                                                 Pageable pageable) {
         if (year == null) {
-            return historyLogRepository.findByUserId(userId);
+            return historyLogRepository.findByUserId(userId, pageable);
         }
         var formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_TIME_FORMAT);
         var yearStart = LocalDateTime.of(year, 1, 1, 0, 0).format(formatter);
@@ -51,10 +76,10 @@ public class HistoryLogService {
 
         Filter filterWithRestrictions = filter.toBuilder()
                 .and("user.id", Operator.EQUAL, userId.toString())
-                .and("created", Operator.GREATER_OR_EQUAL, yearStart)
-                .and("created", Operator.LESS_OR_EQUAL, yearEnd)
+                .and(CREATED_FILTER, Operator.GREATER_OR_EQUAL, yearStart)
+                .and(CREATED_FILTER, Operator.LESS_OR_EQUAL, yearEnd)
                 .build();
-        return this.get(filterWithRestrictions);
+        return get(filterWithRestrictions, pageable);
     }
 
     public List<HistoryLog> getFromYear(Long userId,
@@ -67,8 +92,19 @@ public class HistoryLogService {
     public void create(HistoryLogInput historyLog,
                        Long targetUserId,
                        Long deciderId) {
-        var targetUser = userRepository.findById(targetUserId).orElseThrow();
-        var decider = userRepository.findById(deciderId).orElseThrow();
+        var targetUser = userRepository
+                .findById(targetUserId)
+                .orElseThrow(() -> {
+                    log.error("Could not create new history log for nonexistent user with id: {}", targetUserId);
+                    return NoSuchUserException.invalidId();
+                });
+        var decider = userRepository
+                .findById(deciderId)
+                .orElseThrow(() -> {
+                    log.error(("Could not create new history log for user with id: {}" +
+                            " because decider with id: {} does not exist"), targetUserId, deciderId);
+                    return NoSuchUserException.invalidId();
+                });
         var prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByIdDesc(targetUserId);
         var hoursChange = historyLog.getHours();
         var comment = Optional.ofNullable(historyLog.getComment()).orElse("");
@@ -96,8 +132,20 @@ public class HistoryLogService {
                        String comment,
                        Long targetUserId,
                        Long deciderId) {
-        var targetUser = userRepository.findById(targetUserId).orElseThrow();
-        var decider = userRepository.findById(deciderId).orElseThrow();
+        var targetUser = userRepository
+                .findById(targetUserId)
+                .orElseThrow(() -> {
+                    log.error("Could not create new history log for nonexistent user with id: {}", targetUserId);
+                    return NoSuchUserException.invalidId();
+                });
+        var decider = userRepository
+                .findById(deciderId)
+                .orElseThrow(() -> {
+                    log.error(("Could not create new history log for user with id: {}" +
+                            " because decider with id: {} does not exist"), targetUserId, deciderId);
+                    return NoSuchUserException.invalidId();
+                });
+
         var prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByIdDesc(targetUserId);
         var historyLog = new HistoryLog(request, targetUser, decider, hours, comment, prevHistoryLog);
         historyLogRepository.save(historyLog);
@@ -129,7 +177,7 @@ public class HistoryLogService {
                     hours += log.getHours();
                 }
             } else if (request.isNormal()) {
-                hours = countRemainingHoursFromNormalRequest(request,year,log,hours);
+                hours = countRemainingHoursFromNormalRequest(request, year, log, hours);
             }
         }
         return hours;
@@ -138,7 +186,7 @@ public class HistoryLogService {
     private float countRemainingHoursFromNormalRequest(Request request,
                                                        Integer year,
                                                        HistoryLog log,
-                                                       float hours){
+                                                       float hours) {
         var startDate = request.getStartDate();
         var endDate = request.getEndDate();
         if (startDate.getYear() <= year && endDate.getYear() <= year) {
@@ -162,4 +210,10 @@ public class HistoryLogService {
         return firstDate.getYear();
     }
 
+    public boolean checkIfWorkedFullTimeForTheWholeYear(Long userId,
+                                                        int year) {
+        var historyLogFromYear = getFromYear(userId, year);
+        return historyLogFromYear.stream()
+                .allMatch(historyLog -> historyLog.getUserWorkTime() == 8.0);
+    }
 }

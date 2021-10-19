@@ -1,0 +1,50 @@
+@import "src/global-styles/color-variables.scss";
+
+.configButton {
+  color: white;
+  background-color: $BASE-COLOR;
+  border-radius: 4px;
+  border-style: none;
+}
+
+.configButton:focus, .configButton:hover{
+  background-color: $HOVER-COLOR;
+}
+
+.panel {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.actionButtonsContainer {
+  display: flex;
+  width: 100%;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  justify-content: center;
+  flex-direction: row;
+  justify-items: center;
+
+  button {
+    background: none;
+    border: none;
+    margin: 0 1em;
+  }
+}
+
+.additionBtn {
+  color: $ADDITION-COLOR;
+}
+
+.additionBtn:hover {
+  color: $ADDITION-HOVER-COLOR;
+}
+
+.defaultBtn {
+  color: $DEFAULT-COLOR;
+}
+
+.defaultBtn:hover {
+  color: $DEFAULT-HOVER-COLOR;
+}
+

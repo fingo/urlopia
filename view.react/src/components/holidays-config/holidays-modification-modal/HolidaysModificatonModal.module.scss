@@ -1,0 +1,33 @@
+@import "src/global-styles/color-variables";
+
+.inputContainer {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+
+}
+
+.modal {
+  max-width: 24%;
+}
+
+.inputStyling {
+  width: 16rem;
+  height: 2rem;
+  border: 1px solid grey;
+  border-radius: 4px;
+  background-color: white;
+  text-align: left;
+}
+
+.buttonsContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+  flex-direction: row;
+}
+
+.leftButton {
+  margin-right: 10%;
+}

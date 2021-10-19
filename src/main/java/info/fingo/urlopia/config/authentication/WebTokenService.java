@@ -1,6 +1,7 @@
 package info.fingo.urlopia.config.authentication;
 
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @RequestScope
 @Service
+@Slf4j
 public class WebTokenService {
 
     static final long SESSION_DURATION = 24 * 60 * 60 * (long) 1000; // 1 day in milliseconds
@@ -46,6 +48,7 @@ public class WebTokenService {
         var isAdmin = roles.contains("ROLES_ADMIN");
 
         if (!isAdmin) {
+            log.error("This action could not be performed because user has no role ADMIN");
             throw UnauthorizedException.unauthorized();
         }
     }

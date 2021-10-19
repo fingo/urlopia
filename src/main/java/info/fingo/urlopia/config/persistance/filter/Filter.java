@@ -1,11 +1,13 @@
 package info.fingo.urlopia.config.persistance.filter;
 
+import lombok.EqualsAndHashCode;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@EqualsAndHashCode
 public class Filter {
 
     private final List<List<FilterComponent>> components;
@@ -14,8 +16,16 @@ public class Filter {
         this.components = components;
     }
 
+    public static Filter empty() {
+        return new Filter(Collections.emptyList());
+    }
+
     public Builder toBuilder() {
         return new Builder(components);
+    }
+
+    public boolean isEmpty() {
+        return components.isEmpty();
     }
 
     public <E> Specification<E> generateSpecification() {

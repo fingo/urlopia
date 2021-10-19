@@ -1,10 +1,9 @@
+import {WorkersTable} from "../../components/workers-table/WorkersTable";
+
 export const URL = '/associates';
 
 export const AssociatesPage = () => {
     return (
-        <>
-            <h1>Associates Page</h1>
-            <p>/associates</p>
-        </>
+        <WorkersTable isEC={false}/>
     );
 };

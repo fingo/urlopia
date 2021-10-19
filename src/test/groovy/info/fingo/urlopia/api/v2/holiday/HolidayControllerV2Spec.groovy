@@ -40,13 +40,13 @@ class HolidayControllerV2Spec extends Specification{
 
     }
 
-    def "getAll() WHEN called with empty Filter SHOULD called service one time and map returned data"(){
+    def "getAll() WHEN called with empty Filter SHOULD call service one time and map returned data"(){
         given:
         1 * holidayService.getAll(_ as Filter) >> holidaysData
 
 
         when:
-        def result = holidayControllerV2.getAll(_ as String)
+        def result = holidayControllerV2.getAll(_ as String as String[], null)
 
         then:
         result.containsAll(holidayOutputData)

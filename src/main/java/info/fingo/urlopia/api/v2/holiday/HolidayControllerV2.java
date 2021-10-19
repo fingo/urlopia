@@ -3,6 +3,8 @@ import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.holidays.Holiday;
 import info.fingo.urlopia.holidays.HolidayService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,15 +15,18 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api/v2/holidays")
 @RequiredArgsConstructor
+@Slf4j
 public class HolidayControllerV2 {
 
     private final HolidayService holidayService;
 
     @RolesAllowed({"ROLES_ADMIN", "ROLES_LEADER", "ROLES_WORKER"})
     @GetMapping(produces= MediaType.APPLICATION_JSON_VALUE)
-    public List<HolidayOutput> getAll(@RequestParam(name = "filter", defaultValue = "") String[] filters) {
+    public List<HolidayOutput> getAll(@RequestParam(name = "filter", defaultValue = "") String[] filters,
+                                      @RequestParam(required = false) Integer year) {
         var filter = Filter.from(filters);
-        var holidays =  holidayService.getAll(filter);
+        var holidays = year == null ?
+                holidayService.getAll(filter) : holidayService.getAllHolidaysByYear(year);
         return mapHolidaysListToHolidayOutputList(holidays);
     }
 
@@ -34,9 +39,9 @@ public class HolidayControllerV2 {
         return mapHolidaysListToHolidayOutputList(holidays);
     }
 
-
     @RolesAllowed("ROLES_ADMIN")
     @PutMapping(produces= MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
     public List<HolidayOutput> save(@RequestBody HolidayInput holidaysInput) {
         var startDate = holidaysInput.startDate();
         var endDate = holidaysInput.endDate();
@@ -45,6 +50,7 @@ public class HolidayControllerV2 {
             var holidayDate = holiday.getDate();
             var isWithinRange = isWithinRange(holidayDate,startDate,endDate);
             if(!isWithinRange){
+                log.error("Holidays are not in specified time period");
                 throw HolidayOutsideSpecifiedRange.holidaysOutsideTimePeriod();
             }
         }

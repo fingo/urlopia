@@ -1,6 +1,7 @@
 package info.fingo.urlopia.config.persistance.filter;
 
 import info.fingo.urlopia.UrlopiaApplication;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 public enum Operator {
     EQUAL(":") {
         @Override
@@ -35,6 +37,7 @@ public enum Operator {
                 String format = "Type `%s` for `LIKE` operation is not supported.";
                 String valueClassName = value.getClass().getCanonicalName();
                 String exceptionMessage = String.format(format, valueClassName);
+                log.error(exceptionMessage);
                 throw new UnsupportedOperationException(exceptionMessage);
             }
 
@@ -113,6 +116,7 @@ public enum Operator {
             }
 
             String exceptionMessage = String.format("Type `%s` is not supported", type.getCanonicalName());
+            log.error(exceptionMessage);
             throw new UnsupportedOperationException(exceptionMessage);
         };
     }

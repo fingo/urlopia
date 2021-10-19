@@ -19,7 +19,7 @@ export const HolidaysProvider = ({children}) => {
 export const useHolidays = () => {
     const context = useContext(HolidaysContext);
     if (context === undefined) {
-        throw new Error("useRequests() must be used within a RequestProvider")
+        throw new Error("useHolidays() must be used within a HolidaysProvider")
     }
     return context;
 }

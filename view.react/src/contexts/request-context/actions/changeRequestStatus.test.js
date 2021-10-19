@@ -31,15 +31,20 @@ describe('changeRequestStatusReducer', () => {
             error: null,
             requests: sampleRequests
         },
-        teamRequests: {
+        acceptances: {
             fetching: false,
             error: null,
-            requests: sampleRequests
+            pending: sampleRequests
         },
         companyRequests: {
             fetching: false,
             error: null,
             requests: sampleRequests
+        },
+        workerRequestsHistory: {
+            fetching: false,
+            error: null,
+            requests: []
         },
         contextError: null
     }
@@ -86,17 +91,13 @@ describe('changeRequestStatusReducer', () => {
                 ...sampleState.myRequests,
                 requests: [
                     {
-                        ...sampleRequests[0],
-                        status: "CANCELED"
-                    },
-                    {
                         ...sampleRequests[1],
                     }
                 ]
             },
-            teamRequests: {
-                ...sampleState.teamRequests,
-                requests: [
+            acceptances: {
+                ...sampleState.acceptances,
+                pending: [
                     {
                         ...sampleRequests[1],
                     }
@@ -109,7 +110,10 @@ describe('changeRequestStatusReducer', () => {
                         ...sampleRequests[1],
                     }
                 ]
-            }
+            },
+            workerRequestsHistory: {
+                ...sampleState.workerRequestsHistory,
+            },
         }
 
         const newState = changeRequestStatusReducer(sampleState, action)
@@ -138,16 +142,12 @@ describe('changeRequestStatusReducer', () => {
                 requests: [
                     {
                         ...sampleRequests[0]
-                    },
-                    {
-                        ...sampleRequests[1],
-                        status: "ACCEPTED"
                     }
                 ]
             },
-            teamRequests: {
-                ...sampleState.teamRequests,
-                requests: [
+            acceptances: {
+                ...sampleState.acceptances,
+                pending: [
                     {
                         ...sampleRequests[0],
                     }
@@ -160,7 +160,10 @@ describe('changeRequestStatusReducer', () => {
                         ...sampleRequests[0],
                     }
                 ]
-            }
+            },
+            workerRequestsHistory: {
+                ...sampleState.workerRequestsHistory,
+            },
         }
 
         const newState = changeRequestStatusReducer(sampleState, action)
@@ -189,16 +192,12 @@ describe('changeRequestStatusReducer', () => {
                 requests: [
                     {
                         ...sampleRequests[0]
-                    },
-                    {
-                        ...sampleRequests[1],
-                        status: "REJECTED"
                     }
                 ]
             },
-            teamRequests: {
-                ...sampleState.teamRequests,
-                requests: [
+            acceptances: {
+                ...sampleState.acceptances,
+                pending: [
                     {
                         ...sampleRequests[0],
                     }
@@ -211,7 +210,10 @@ describe('changeRequestStatusReducer', () => {
                         ...sampleRequests[0],
                     }
                 ]
-            }
+            },
+            workerRequestsHistory: {
+                ...sampleState.workerRequestsHistory,
+            },
         }
 
         const newState = changeRequestStatusReducer(sampleState, action)

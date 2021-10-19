@@ -1,17 +1,19 @@
 package info.fingo.urlopia.reports;
 
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Component
 public class XlsxTemplateResolver {
-
-    private static final String TAG_PREFIX = "\\{";
-    private static final String TAG_POSTFIX = "}";
-
+    private static final Pattern PARAMS_PATTERN = Pattern.compile("\\{[^{]*}");
+    private static final Pattern NUMERIC_PATTERN = Pattern.compile("-?\\d+([.,]\\d+)?");
     public void resolve(Workbook template,
                         Map<String, String> model) {
         template.forEach(sheet -> this.resolveSheet(sheet, model));
@@ -35,11 +37,7 @@ public class XlsxTemplateResolver {
         }
 
         String value = cellValue.get();
-        for (Map.Entry<String, String> tag : model.entrySet()) {
-            var tagName = tag.getKey();
-            String tagValue = tag.getValue();
-            value = value.replaceAll(TAG_PREFIX + tagName + TAG_POSTFIX, tagValue);
-        }
+        value = getValueWithResolveParams(value,model);
         this.setCellValue(cell, value);
     }
 
@@ -64,7 +62,22 @@ public class XlsxTemplateResolver {
     }
 
     public boolean isNumeric(String strNum) {
-        return strNum.matches("-?\\d+([.,]\\d+)?");
+        var matcher = NUMERIC_PATTERN.matcher(strNum);
+        return matcher.matches();
     }
 
+
+    private String getValueWithResolveParams(String value, Map<String, String> model){
+        var matcher = PARAMS_PATTERN.matcher(value);
+        int start = 0;
+        while (matcher.find(start)) {
+            var param = matcher.group();
+            var paramWithoutParentheses  = param.substring(1,param.length()-1);
+            start = matcher.start() + 1;
+            if (model.containsKey(paramWithoutParentheses)){
+                value = value.replace(param,model.get(paramWithoutParentheses));
+            }
+        }
+        return value;
+    }
 }

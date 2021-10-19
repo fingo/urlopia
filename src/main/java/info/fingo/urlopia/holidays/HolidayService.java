@@ -45,14 +45,23 @@ public class HolidayService {
         return result;
     }
 
+    public List<Holiday> getAllHolidaysByYear(int year) {
+        var startDate = LocalDate.of(year, 1, 1);
+        var endDate = LocalDate.of(year, 12, 31);
+        return holidayRepository.findByDateBetween(startDate, endDate);
+    }
+
     public List<Holiday> getAll(Filter filter){
         return holidayRepository.findAll(filter);
     }
 
-    public List<Holiday> saveHolidays(List<Holiday> holidays){
-        return holidayRepository.saveAll(holidays);
+    public List<Holiday> getByDate(LocalDate date) {
+        return holidayRepository.findByDate(date);
     }
 
+    public List<Holiday> saveHolidays(List<Holiday> holidays) {
+        return holidayRepository.saveAll(holidays);
+    }
 
 
     public void addHoliday(HolidayResponse holidayResponse) {
@@ -93,8 +102,8 @@ public class HolidayService {
         log.info("The list of past holidays has been deleted");
     }
 
-    public void deleteBetweenDates(LocalDate startDate, LocalDate endDate){
-        var holidaysToDelete = holidayRepository.findByDateBetween(startDate,endDate);
+    public void deleteBetweenDates(LocalDate startDate, LocalDate endDate) {
+        var holidaysToDelete = holidayRepository.findByDateBetween(startDate, endDate);
         holidayRepository.deleteAll(holidaysToDelete);
         var loggerInfo = "Holidays between:  %s and %s has been deleted"
                 .formatted(startDate, endDate);
@@ -106,26 +115,26 @@ public class HolidayService {
         List<Holiday> holidays = new ArrayList<>(13);
 
         //loop for this and next year
-            holidays.add(new Holiday("Nowy Rok", LocalDate.of(year, 1, 1)));
-            holidays.add(new Holiday("Trzech Króli", LocalDate.of(year, 1, 6)));
-            holidays.add(new Holiday("Święto Pracy", LocalDate.of(year, 5, 1)));
-            holidays.add(new Holiday("Święto Konstytucji 3 Maja", LocalDate.of(year, 5, 3)));
-            holidays.add(new Holiday("Święto Wojska Polskiego", LocalDate.of(year, 8, 15)));
-            holidays.add(new Holiday("Wszystkich Świętych", LocalDate.of(year, 11, 1)));
-            holidays.add(new Holiday("Święto Niepodległości", LocalDate.of(year, 11, 11)));
-            holidays.add(new Holiday("Boże Narodzenie", LocalDate.of(year, 12, 25)));
-            holidays.add(new Holiday("Boże Narodzenie", LocalDate.of(year, 12, 26)));
+        holidays.add(new Holiday("Nowy Rok", LocalDate.of(year, 1, 1)));
+        holidays.add(new Holiday("Trzech Króli", LocalDate.of(year, 1, 6)));
+        holidays.add(new Holiday("Święto Pracy", LocalDate.of(year, 5, 1)));
+        holidays.add(new Holiday("Święto Konstytucji 3 Maja", LocalDate.of(year, 5, 3)));
+        holidays.add(new Holiday("Święto Wojska Polskiego", LocalDate.of(year, 8, 15)));
+        holidays.add(new Holiday("Wszystkich Świętych", LocalDate.of(year, 11, 1)));
+        holidays.add(new Holiday("Święto Niepodległości", LocalDate.of(year, 11, 11)));
+        holidays.add(new Holiday("Boże Narodzenie", LocalDate.of(year, 12, 25)));
+        holidays.add(new Holiday("Boże Narodzenie", LocalDate.of(year, 12, 26)));
 
-            LocalDate easter = getEaster(year);
+        LocalDate easter = getEaster(year);
 
-            holidays.add(new Holiday("Wielkanoc", easter));
-            holidays.add(new Holiday("Poniedziałek Wielkanocny", easter.plusDays(1)));
-            holidays.add(new Holiday("Zesłanie Ducha Świętego", easter.plusDays(49)));
-            holidays.add(new Holiday("Boże Ciało", easter.plusDays(60)));
+        holidays.add(new Holiday("Wielkanoc", easter));
+        holidays.add(new Holiday("Poniedziałek Wielkanocny", easter.plusDays(1)));
+        holidays.add(new Holiday("Zesłanie Ducha Świętego", easter.plusDays(49)));
+        holidays.add(new Holiday("Boże Ciało", easter.plusDays(60)));
         return holidays;
     }
 
-// https://stackoverflow.com/questions/26022233/calculate-the-date-of-easter-sunday
+    // https://stackoverflow.com/questions/26022233/calculate-the-date-of-easter-sunday
     private LocalDate getEaster(int year) {
         var a = year % 19;
         var b = year / 100;
@@ -155,5 +164,9 @@ public class HolidayService {
 
     public boolean isHoliday(LocalDate date) {
         return holidayRepository.existsByDate(date);
+    }
+
+    public Holiday getHolidayByDate(LocalDate date) {
+        return holidayRepository.findFirstByDate(date);
     }
 }

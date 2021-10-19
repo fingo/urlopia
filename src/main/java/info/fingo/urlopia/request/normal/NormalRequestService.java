@@ -2,6 +2,8 @@ package info.fingo.urlopia.request.normal;
 
 import info.fingo.urlopia.acceptance.AcceptanceService;
 import info.fingo.urlopia.acceptance.StatusNotSupportedException;
+import info.fingo.urlopia.api.v2.user.PendingDaysOutput;
+import info.fingo.urlopia.api.v2.user.VacationDaysOutput;
 import info.fingo.urlopia.request.absence.BaseRequestInput;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
@@ -11,8 +13,11 @@ import info.fingo.urlopia.request.normal.events.NormalRequestAccepted;
 import info.fingo.urlopia.request.normal.events.NormalRequestCanceled;
 import info.fingo.urlopia.request.normal.events.NormalRequestCreated;
 import info.fingo.urlopia.request.normal.events.NormalRequestRejected;
+import info.fingo.urlopia.team.TeamService;
+import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
+import info.fingo.urlopia.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -21,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.DoubleStream;
 
@@ -42,10 +48,17 @@ public class NormalRequestService implements RequestTypeService {
 
     private final AcceptanceService acceptanceService;
 
+    private final UserService userService;
+
 
     @Override
     public Request create(Long userId, BaseRequestInput requestInput) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository
+                .findById(userId)
+                .orElseThrow(() -> {
+                    log.error("Could not create new normal request: user with id: {} does not exist", userId);
+                    return NoSuchUserException.invalidId();
+                });
         int workingDays = workingDaysCalculator.calculate(requestInput.getStartDate(), requestInput.getEndDate());
         float workingHours =  workingDays * user.getWorkTime();
 
@@ -61,10 +74,14 @@ public class NormalRequestService implements RequestTypeService {
         var loggerInfo = "New normal request with id: %d has been created"
                 .formatted(request.getId());
         log.info(loggerInfo);
+        var requestId = request.getId();
 
-        return requestRepository.findById(request.getId())
-                .orElseThrow();
-
+        return requestRepository
+                .findById(requestId)
+                .orElseThrow(() -> {
+                    log.error("Request with id: {} does not exist", requestId);
+                    return new NoSuchElementException();
+                });
     }
 
     private void ensureUserOwnRequiredHoursNumber(User user, float requiredHours) {
@@ -73,6 +90,8 @@ public class NormalRequestService implements RequestTypeService {
         boolean userOwnRequiredHoursNumber =
                 (hoursRemaining - pendingRequestsHours) >= requiredHours;
         if (!userOwnRequiredHoursNumber) {
+            var userId = user.getId();
+            log.error("New normal request could not be created for user with id: {}. Reason: not enough days", userId);
             throw new NotEnoughDaysException();
         }
     }
@@ -88,12 +107,31 @@ public class NormalRequestService implements RequestTypeService {
     }
 
     public DayHourTime getPendingRequestsTime(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+        var user = getUserById(userId);
         double pendingRequestsHours = countPendingRequestsHours(user);
         float userWorkTime = user.getWorkTime();
         int days = (int) Math.floor(pendingRequestsHours / userWorkTime);
         double hours =  Math.round((pendingRequestsHours % userWorkTime) * 100.0) / 100.0;
         return DayHourTime.of(days, hours);
+    }
+
+    public PendingDaysOutput getPendingRequestsTimeV2(Long userId) {
+        var user = getUserById(userId);
+        double pendingRequestsHours = countPendingRequestsHours(user);
+        float userWorkTime = user.getWorkTime();
+        int days = (int) Math.floor(pendingRequestsHours / userWorkTime);
+        double hours =  Math.round((pendingRequestsHours % userWorkTime) * 100.0) / 100.0;
+        if (userWorkTime == 8) {
+            return new PendingDaysOutput(days, hours);
+        }
+        return new PendingDaysOutput(0, pendingRequestsHours);
+    }
+
+    private User getUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> {
+            log.error("Could not get pending requests time for a non-existent user with id: {}", userId);
+            return NoSuchUserException.invalidId();
+        });
     }
 
     private Request createRequestObject(User user, BaseRequestInput requestInput, int workingDays) {
@@ -107,10 +145,15 @@ public class NormalRequestService implements RequestTypeService {
     }
 
     private void validateRequest(Request request) {
+        var requesterId = request.getRequester().getId();
         if (request.getEndDate().isBefore(request.getStartDate())) {
+            log.error("Could not create new normal request for user with id: {} because dates are in invalid order",
+                    requesterId);
             throw InvalidDatesOrderException.invalidDatesOrder();
         }
         if (isOverlapping(request)) {
+            log.error("Could not create normal request for user with id: {} because it is overlapping other requests",
+                    requesterId);
             throw new RequestOverlappingException();
         }
     }
@@ -124,8 +167,9 @@ public class NormalRequestService implements RequestTypeService {
     }
 
     private void createAcceptances(User user, Request request) {
+        var allUsersLeader = userService.getAllUsersLeader();
         user.getTeams().stream()
-                .map(team -> user.equals(team.getLeader()) ? team.getBusinessPartLeader() : team.getLeader())
+                .map(team -> user.equals(team.getLeader()) ? allUsersLeader : team.getLeader())
                 .filter(Objects::nonNull)
                 .distinct()
                 .forEach(leader -> this.acceptanceService.create(request, leader));
@@ -165,6 +209,7 @@ public class NormalRequestService implements RequestTypeService {
     private void validateStatus(Request.Status status, Request.Status... supportedStatuses) {
         List<Request.Status> supported = Arrays.asList(supportedStatuses);
         if (!supported.contains(status)) {
+            log.error("Status: {} does not exist", status.toString());
             throw StatusNotSupportedException.invalidStatus(status.toString());
         }
     }

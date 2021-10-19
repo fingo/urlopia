@@ -1,5 +1,6 @@
 package info.fingo.urlopia.config.mail.receive;
 
+import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
 import info.fingo.urlopia.config.mail.Mail;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -48,8 +49,8 @@ public class MailParser {
         }
 
         if (correct && !checkDate(startDate, endDate)) {
-            var loggerInfo = "Could not parse content of mail sent from: %s. Content: %s"
-                    .formatted(mail.getSenderAddress(), mail.getContent());
+            var loggerInfo = "Could not parse content of mail sent from: %s."
+                    .formatted(Anonymizer.anonymizeMail(mail.getSenderAddress()));
             log.warn(loggerInfo);
             return false;
         }
@@ -84,10 +85,6 @@ public class MailParser {
     public void parseReply(Mail mail) {
         var emailLines = splitByLines(mail.getContent());
         reply = emailLines[0];
-        var loggerInfo = "First line of mail sent from :%s to: %s is: %s"
-                .formatted(mail.getSenderAddress(),
-                        mail.getRecipientAddress(), reply);
-        log.info(loggerInfo);
     }
 
     private void convertDate() {

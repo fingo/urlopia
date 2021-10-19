@@ -39,6 +39,7 @@ class UserControllerV2Spec extends Specification{
         def firstId = 5L
         def firstMail = "mail@some_domain"
         def firstWorkTime = 7.0
+        def firstWorkTimeOutput = new WorkTimeOutput(7, 8)
         def firstUserExcerptProjection = Mock(UserExcerptProjection){
             getName() >> firstFullName
             getId() >> firstId
@@ -53,6 +54,7 @@ class UserControllerV2Spec extends Specification{
         def secondId = 6L
         def secondMail = "m@some_domain"
         def secondWorkTime = 6.0
+        def secondWorkTimeOutput = new WorkTimeOutput(3, 4)
         def secondUserExcerptProjection = Mock(UserExcerptProjection){
             getName() >> secondFullName
             getId() >> secondId
@@ -64,15 +66,17 @@ class UserControllerV2Spec extends Specification{
         usersData= List.of(firstUserExcerptProjection,secondUserExcerptProjection)
 
         def firstUserOutput = new UserOutput(firstFullName,
-                                            firstId,
-                                            firstMail,
-                                            List.of(team1Name),
-                                            firstWorkTime)
+                                             firstId,
+                                             firstMail,
+                                             List.of(team1Name),
+                                             firstWorkTime,
+                                             firstWorkTimeOutput)
         def secondUserOutput = new UserOutput(secondFullName,
-                secondId,
-                secondMail,
-                List.of(team1Name),
-                secondWorkTime)
+                                              secondId,
+                                              secondMail,
+                                              List.of(team1Name),
+                                              secondWorkTime,
+                                              secondWorkTimeOutput)
         userOutputs = List.of(firstUserOutput,secondUserOutput)
     }
 
@@ -97,16 +101,16 @@ class UserControllerV2Spec extends Specification{
         and: "valid DayHourTime object"
         def days = 3
         def hours = 3
-        def dayHour = DayHourTime.of(days,hours)
-        1 * normalRequestService.getPendingRequestsTime(authId) >> dayHour
+        def dayHour = new PendingDaysOutput(days, hours)
+        normalRequestService.getPendingRequestsTimeV2(authId) >> dayHour
 
 
         when:
         def result = userControllerV2.getPendingDays(httpRequest)
 
         then:
-        result.getHours() == hours
-        result.getDays() == days
+        result.pendingHours() == hours
+        result.pendingDays() == days
 
     }
 
@@ -119,12 +123,14 @@ class UserControllerV2Spec extends Specification{
         and: "valid WorkTimeResponse mock"
         def days = 3
         def hours = 3
+        def workTime = 8
         def workTimeResponse = Mock(WorkTimeResponse){
             getDays() >> days
             getHours() >> hours
+            getWorkTime() >> workTime
         }
         and: "valid VacationDaysOutput mapped from WorkTimeResponse"
-        def vacationDaysOutput = new VacationDaysOutput(days,hours)
+        def vacationDaysOutput = new VacationDaysOutput(days, hours, workTime)
         1 * historyLogService.countRemainingDays(authId) >> workTimeResponse
 
         when:
@@ -179,20 +185,22 @@ class UserControllerV2Spec extends Specification{
         then:
         result == workTimeOutput
     }
-    def "getVacationDays() WHEN called SHOULD called service and return saved value"() {
+    def "getVacationDays() WHEN called SHOULD call service and return saved value"() {
         given: "userID"
         def userId = 5
 
         and: "valid WorkTimeResponse mock"
         def days = 3
         def hours = 3d
+        def workTime = 8
         def workTimeResponse = Mock(WorkTimeResponse){
             getDays() >> days
             getHours() >> hours
+            getWorkTime() >> workTime
         }
 
         and: "valid VacationDaysOutput mapped from WorkTimeResponse"
-        def vacationDaysOutput = new VacationDaysOutput(days,hours)
+        def vacationDaysOutput = new VacationDaysOutput(days, hours, workTime)
         1 * historyLogService.countRemainingDays(userId) >> workTimeResponse;
 
         when:

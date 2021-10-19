@@ -1,10 +1,13 @@
+import {Reports} from "../../components/reports/Reports";
+import styles from './ReportsPage.module.scss';
+
 export const URL = '/reports';
 
 export const ReportsPage = () => {
     return (
         <>
-            <h1>Reports Page</h1>
-            <p>/reports</p>
+            <h1 className={styles.title}>Raporty</h1>
+            <Reports/>
         </>
     );
 };

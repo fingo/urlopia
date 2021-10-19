@@ -1,0 +1,46 @@
+@import "src/global-styles/color-variables";
+
+.dropItem {
+    text-align: center;
+}
+
+.panelFooter {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+
+    div {
+        position: absolute;
+        right: 0;
+        top: 50%; transform: translateY(-50%);
+    }
+
+    h3 {
+        padding: 0 1.25rem;
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    .panelFooter {
+        text-align: left;
+    }
+}
+
+@media only screen and (max-width: 320px) {
+    .panelFooter {
+        font-size: 75%;
+    }
+}
+
+.datesDropdown {
+    color: white;
+    background-color: $BASE-COLOR;
+    border-color: $BASE_COLOR;
+    border-radius: 3px;
+    border-style: none;
+
+    button {
+        outline: none;
+    }
+}
+

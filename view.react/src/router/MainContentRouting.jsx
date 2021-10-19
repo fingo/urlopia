@@ -1,6 +1,12 @@
 import {Redirect, Route, Switch} from "react-router-dom";
 
+import {getCurrentUser} from "../api/services/session.service";
+import {AbsenceHistoryProvider} from "../contexts/absence-history-context/absenceHistoryContext";
+import {HolidaysProvider} from "../contexts/holidays-context/holidaysContext";
+import {PresenceProvider} from "../contexts/presence-context/presenceContext";
+import {WorkersProvider} from "../contexts/workers-context/workersContext";
 import {AbsenceRequestsPage, URL as VacationRequestsURL} from '../pages/absence-requests-page/AbsenceRequestsPage';
+import {AcceptanceHistoryPage, URL as AcceptanceHistoryURL} from "../pages/acceptance-history-page/AcceptanceHistoryPage";
 import {AssociatesPage, URL as AssociatesURL} from '../pages/associates-page/AssociatesPage';
 import {CalendarPage, URL as CalendarURL} from '../pages/calendar-page/CalendarPage';
 import {HistoryPage, URL as HistoryURL} from '../pages/history-page/HistoryPage';
@@ -9,47 +15,76 @@ import {Page404} from '../pages/page-404/Page404';
 import {ReportsPage, URL as ReportsURL} from '../pages/reports-page/ReportsPage';
 import {URL as WorkersURL, WorkersPage} from '../pages/workers-page/WorkersPage';
 
-export const MainContentRouting = ({newAcceptancesPresent, setNewAcceptancesPresent}) => {
+export const MainContentRouting = ({acceptancesPresent}) => {
+    const {isAdmin: isUserAnAdmin, isLeader: isUserALeader} = getCurrentUser()
     return (
-        <Switch>
-            <Route path="/" exact>
-                <Redirect to={CalendarURL}/>
-            </Route>
+        <PresenceProvider>
+            <HolidaysProvider>
+                <WorkersProvider>
+                    <AbsenceHistoryProvider>
 
-            <Route path={CalendarURL} exact>
-                <CalendarPage/>
-            </Route>
+                        <Switch>
+                            <Route path="/" exact>
+                                <Redirect to={CalendarURL}/>
+                            </Route>
 
-            <Route path={VacationRequestsURL} exact>
-                    <AbsenceRequestsPage
-                        newAcceptancesPresent={newAcceptancesPresent}
-                        setNewAcceptancesPresent={setNewAcceptancesPresent}
-                    />
-            </Route>
+                            <Route path={CalendarURL} exact>
+                                <CalendarPage/>
+                            </Route>
 
-            <Route path={HistoryURL} exact>
-                <HistoryPage/>
-            </Route>
+                             <Route path={VacationRequestsURL} exact>
+                                 <AbsenceRequestsPage
+                                     acceptancesPresent={acceptancesPresent}
+                                 />
+                            </Route>
 
-            <Route path={WorkersURL} exact>
-                <WorkersPage/>
-            </Route>
+                            <Route path={HistoryURL} exact>
+                                <Redirect to={`${HistoryURL}/me`}/>
+                            </Route>
 
-            <Route path={AssociatesURL} exact>
-                <AssociatesPage/>
-            </Route>
+                            <Route path={`${HistoryURL}/:userId`} exact>
+                                <HistoryPage isAdmin={isUserAnAdmin}/>
+                            </Route>
 
-            <Route path={HolidaysURL} exact>
-                <HolidaysPage/>
-            </Route>
+                            {isUserALeader &&
+                            <Route path={AcceptanceHistoryURL} exact>
+                                <AcceptanceHistoryPage />
+                            </Route>
+                            }
 
-            <Route path={ReportsURL} exact>
-                <ReportsPage/>
-            </Route>
+                            {isUserAnAdmin &&
+                            <Route path={WorkersURL} exact>
+                                <WorkersPage/>
+                            </Route>
+                            }
 
-            <Route path="*" >
-                <Page404/>
-            </Route>
-        </Switch>
+                            {isUserAnAdmin &&
+                            <Route path={AssociatesURL} exact>
+                                <AssociatesPage/>
+                            </Route>
+                            }
+
+                            {isUserAnAdmin &&
+                            <Route path={HolidaysURL} exact>
+                                <HolidaysPage/>
+                            </Route>
+                            }
+
+                            {isUserAnAdmin &&
+                            <Route path={ReportsURL} exact>
+                                <ReportsPage/>
+                            </Route>
+                            }
+
+                            <Route path="*">
+                                <Page404/>
+                            </Route>
+
+                        </Switch>
+
+                    </AbsenceHistoryProvider>
+                </WorkersProvider>
+            </HolidaysProvider>
+        </PresenceProvider>
     );
 }
