@@ -31,28 +31,24 @@ public class MonthlyAttendanceListReportDayHandler {
                          int dayOfMonth,
                          User user) {
         var currentDate = LocalDate.now();
-        var currentDateYear = currentDate.getYear();
-        var currentDateMonth = currentDate.getMonthValue();
-        var isDateInFuture = year > currentDateYear || year == currentDateYear && month >= currentDateMonth;
-
-        if (user == null || isDateInFuture) {
-            return "";
-        }
-
         try {
-            var date = LocalDate.of(year, month, dayOfMonth);
-            if (holidayService.isWorkingDay(date)) {
+            var handleDate = LocalDate.of(year,month,dayOfMonth);
+            var isDateInFuture = !handleDate.isBefore(currentDate);
+
+            if (user == null || isDateInFuture) {
+                return "";
+            }
+            if (holidayService.isWorkingDay(handleDate)) {
                 return requestService
-                        .getByUserAndDate(user.getId(), date).stream()
+                        .getByUserAndDate(user.getId(), handleDate).stream()
                         .filter(req -> req.getStatus() == Request.Status.ACCEPTED)
                         .map(this::handleRequest)
                         .findFirst()
-                        .orElse(handlePresence(date,user));
+                        .orElse(handlePresence(handleDate,user));
             }
         } catch (DateTimeException e) {
             // if day does not exist then default value
         }
-
         return "-";
     }
 
