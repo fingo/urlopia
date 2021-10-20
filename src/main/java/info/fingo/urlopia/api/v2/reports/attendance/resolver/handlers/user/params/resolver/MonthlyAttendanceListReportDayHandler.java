@@ -33,9 +33,9 @@ public class MonthlyAttendanceListReportDayHandler {
         var currentDate = LocalDate.now();
         try {
             var handleDate = LocalDate.of(year,month,dayOfMonth);
-            var isDateInFuture = !handleDate.isBefore(currentDate);
+            var isDateInPast = handleDate.isBefore(currentDate);
 
-            if (user == null || isDateInFuture) {
+            if (user == null || !isDateInPast) {
                 return "";
             }
             if (holidayService.isWorkingDay(handleDate)) {
