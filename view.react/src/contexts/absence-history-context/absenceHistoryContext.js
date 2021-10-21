@@ -8,6 +8,7 @@ const initialState = {
     fetching: false,
     error: null,
     absenceHistory: [],
+    absenceHistoryPage: {},
     recentUserHistory: [],
     contextError: null
 }

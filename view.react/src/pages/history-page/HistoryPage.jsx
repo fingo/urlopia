@@ -11,21 +11,24 @@ export const URL = '/history';
 export const HistoryPage = ({isAdmin}) => {
     const params = useParams();
     const location = useLocation();
+
+    const [pageNumber, setPageNumber] = useState(0)
     const [fetchHistoryAction, setFetchHistoryAction] = useState(() => () => {})
 
     useEffect(() => {
         setFetchHistoryAction(() => {
             if (isAdmin && location.pathname !== '/history/me') {
-                return (dispatch) => fetchUserAbsenceHistory(dispatch, params.userId, false)
+                return (dispatch) => fetchUserAbsenceHistory(dispatch, params.userId, pageNumber, false)
             }
-            return (dispatch, {selectedYear}) => fetchAbsenceHistory(dispatch, selectedYear)
+            return (dispatch, {selectedYear}) => fetchAbsenceHistory(dispatch, selectedYear, pageNumber)
         })
-    }, [isAdmin, params.userId, location.pathname])
+    }, [isAdmin, params.userId, location.pathname, pageNumber])
 
     return (
         <div className={styles.container}>
             <AbsenceHistoryList
                 fetchHistoryLogs={fetchHistoryAction}
+                setPageNumber={setPageNumber}
             />
         </div>
     );

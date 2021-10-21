@@ -3,7 +3,7 @@ import {Dropdown, DropdownButton} from "react-bootstrap";
 
 import {fetchAcceptancesHistory} from "../../contexts/request-context/actions/fetchAcceptancesHistory";
 import {useRequests} from "../../contexts/request-context/requestContext";
-import styles from "../../global-styles/AbsenceHistoryList.module.scss";
+import styles from "../absence-history-list/AbsenceHistoryList.module.scss";
 import {AcceptanceHistoryTab} from "./AcceptanceHistoryTab";
 
 export const AcceptanceHistoryList = () => {

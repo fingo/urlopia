@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import {Dropdown, DropdownButton} from "react-bootstrap";
 
-import styles from "../../../global-styles/AbsenceHistoryList.module.scss";
+import styles from "../../absence-history-list/AbsenceHistoryList.module.scss";
 
 export const YearPicker = ({availableYears, selectedYear, handleYearChange}) => {
 

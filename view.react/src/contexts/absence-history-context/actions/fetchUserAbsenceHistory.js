@@ -1,7 +1,7 @@
 import {sendGetRequest} from "../../../helpers/RequestHelper";
 import {FETCH_USER_RECENT_ABSENCE_HISTORY_ACTION_PREFIX, FETCH_USER_RECENT_ABSENCE_HISTORY_URL} from "../constants";
 
-export const fetchUserAbsenceHistory = (dispatch, userId, recent = true) => {
+export const fetchUserAbsenceHistory = (dispatch, userId, pageNumber, recent = true) => {
     const PAGING = recent ? "page=0&size=5&sort=id,desc" : "sort=id,desc"
     dispatch({type: `${FETCH_USER_RECENT_ABSENCE_HISTORY_ACTION_PREFIX}_absence-history`})
     sendGetRequest(`${FETCH_USER_RECENT_ABSENCE_HISTORY_URL}/${userId}?${PAGING}`)
