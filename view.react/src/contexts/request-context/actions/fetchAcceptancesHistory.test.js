@@ -67,7 +67,8 @@ describe('fetchAcceptancesHistoryReducer', () => {
         const expectedState = {
             ...sampleState,
             fetching: false,
-            history: sampleAcceptances
+            history: sampleAcceptances,
+            historyPage: action.response
         }
 
         const newState = fetchAcceptancesHistoryReducer(state, action)
