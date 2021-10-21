@@ -1,13 +1,15 @@
 import {sendGetRequest} from "../../../helpers/RequestHelper";
 import {FETCH_ACCEPTANCES_HISTORY_ACTION_PREFIX, FETCH_ACCEPTANCES_HISTORY_URL} from "../constants";
 
-export const fetchAcceptancesHistory = (dispatch, year) => {
+export const fetchAcceptancesHistory = (dispatch, year, pageNumber) => {
     const yearStart = `${year}-01-01`
     const yearEnd = `${year}-12-31`
     const filter = `?filter=request.endDate>:${yearStart}&filter=request.startDate<:${yearEnd}`
 
+    const pagination = `page=${pageNumber}`
+
     dispatch({type: `${FETCH_ACCEPTANCES_HISTORY_ACTION_PREFIX}_request`})
-    sendGetRequest(`${FETCH_ACCEPTANCES_HISTORY_URL}${filter}`)
+    sendGetRequest(`${FETCH_ACCEPTANCES_HISTORY_URL}${filter}&${pagination}`)
         .then(data => dispatch({
                 type: `${FETCH_ACCEPTANCES_HISTORY_ACTION_PREFIX}_success`,
                 response: data
@@ -33,6 +35,7 @@ export const fetchAcceptancesHistoryReducer = (state, action) => {
                 ...state,
                 fetching: false,
                 history: action.response.content,
+                historyPage: action.response,
             }
         }
         case `${FETCH_ACCEPTANCES_HISTORY_ACTION_PREFIX}_failure`: {

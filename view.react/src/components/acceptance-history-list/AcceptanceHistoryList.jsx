@@ -3,6 +3,7 @@ import {Dropdown, DropdownButton} from "react-bootstrap";
 
 import {fetchAcceptancesHistory} from "../../contexts/request-context/actions/fetchAcceptancesHistory";
 import {useRequests} from "../../contexts/request-context/requestContext";
+import {getPaginationForPage} from "../../helpers/pagination/PaginationHelper";
 import styles from "../absence-history-list/AbsenceHistoryList.module.scss";
 import {AcceptanceHistoryTab} from "./AcceptanceHistoryTab";
 
@@ -11,8 +12,9 @@ export const AcceptanceHistoryList = () => {
     const FIRST_AVAILABLE_YEAR = 2016;
     const currentYear = (new Date()).getFullYear()
 
+    const [pageNumber, setPageNumber] = useState(0)
     const [requestsState, requestsDispatch] = useRequests()
-    const {history: acceptancesHistory} = requestsState.acceptances
+    const {history: acceptancesHistory, historyPage} = requestsState.acceptances
 
     const [selectedYear, setSelectedYear] = useState(currentYear);
     const [availableYears, setAvailableYears] = useState([]);
@@ -27,13 +29,18 @@ export const AcceptanceHistoryList = () => {
     }, [currentYear]);
 
     useEffect(() => {
-        fetchAcceptancesHistory(requestsDispatch, selectedYear)
+        fetchAcceptancesHistory(requestsDispatch, selectedYear, pageNumber)
         getAvailableYears();
-    }, [getAvailableYears, requestsDispatch, selectedYear]);
+    }, [getAvailableYears, requestsDispatch, selectedYear, pageNumber]);
 
     const handleYearChange = (newYear) => {
         setSelectedYear(newYear);
     }
+
+    const pagination = getPaginationForPage({
+        page: historyPage,
+        onClick: setPageNumber
+    })
 
     return (
         <>
@@ -57,6 +64,7 @@ export const AcceptanceHistoryList = () => {
                 </div>
             </div>
             <AcceptanceHistoryTab acceptances={acceptancesHistory}/>
+            {pagination}
         </>
     );
 }
