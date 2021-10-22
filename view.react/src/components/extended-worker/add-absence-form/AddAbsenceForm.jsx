@@ -104,7 +104,7 @@ export const AddAbsenceForm = ({show, onHide, userId, fullName}) => {
                     <Calendar isNormal={true}
                               selectedRange={selectedRange}
                               onChangeOption={handleSelectingRange}
-                              holidays={holidays}
+                              withWeekends={true}
                     />
                 </div>
             </Modal.Body>

@@ -11,41 +11,25 @@ export const Calendar = ({
     onChangeOption,
     selectedRange,
     holidays,
+    withWeekends
 }) => {
     const shouldBeDisabled = day => {
-        return isWeekend(day) || isHoliday(day, holidays);
+        return (!withWeekends && isWeekend(day)) || isHoliday(day, holidays);
     };
 
-    if (isNormal) {
-        return (
-            <DateRange
-                className={calendarClass}
-                locale={pl}
-                onChange={onChangeOption}
-                showSelectionPreview={true}
-                showMonthAndYearPickers={false}
-                months={2}
-                ranges={selectedRange}
-                direction='horizontal'
-                disabledDay={day => shouldBeDisabled(day)}
-            />
-        );
-    }
-    else {
-        return (
-            <DateRange
-                className={calendarClass}
-                locale={pl}
-                onChange={onChangeOption}
-                showSelectionPreview={true}
-                showMonthAndYearPickers={false}
-                months={2}
-                ranges={selectedRange}
-                direction='horizontal'
-                disabledDay={day => shouldBeDisabled(day)}
-                focusedRange={[0, 0]}
-            />);
-    }
+    return (
+        <DateRange
+            className={calendarClass}
+            locale={pl}
+            onChange={onChangeOption}
+            showSelectionPreview={true}
+            showMonthAndYearPickers={false}
+            months={2}
+            ranges={selectedRange}
+            direction='horizontal'
+            disabledDay={day => shouldBeDisabled(day)}
+            focusedRange={isNormal ? undefined : [0, 0]}
+        />);
 }
 
 Calendar.propTypes = {
@@ -66,6 +50,7 @@ Calendar.propTypes = {
             name: PropTypes.string,
             date: PropTypes.string,
         })),
+    withWeekends: PropTypes.bool,
 }
 
 Calendar.defaultProps = {
@@ -73,4 +58,5 @@ Calendar.defaultProps = {
     calendarClass: '',
     onChangeOption: () => null,
     holidays: [],
+    withWeekends: false,
 }
