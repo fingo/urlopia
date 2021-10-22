@@ -3,11 +3,6 @@
 .topBar {
   background-color: $BASE-COLOR;
   width: 100%;
-
-  img {
-    width: 100px;
-    height: 45.5px;
-  }
 }
 
 .mobileRightSide {
@@ -49,4 +44,14 @@
   &:hover {
     color: $HOVER-COLOR;
   }
+}
+
+.brandLogo {
+  width: 100px;
+  height: 45.5px;
+}
+
+.appLogo {
+  filter: brightness(0) invert(1);
+  height: 40px;
 }

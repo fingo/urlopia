@@ -7,6 +7,7 @@ import {useHistory} from "react-router-dom";
 
 import {getFullUserName, getUserTeams, logout} from "../../api/services/session.service";
 import logoImg from '../../assets/logo.png';
+import UrlopiaLogo from '../../assets/logo-urlopia.png';
 import {fetchWorkingHoursPreferences} from "../../contexts/user-preferences-context/actions/fetchWorkingHoursPreferences";
 import {useUserPreferences} from "../../contexts/user-preferences-context/userPreferencesContext";
 import {PreferencesModal} from "../preferences-modal/PreferencesModal";
@@ -52,10 +53,10 @@ export const TopBar = ({onHamburgerClick}) => {
                     </button>
 
                     <Navbar.Brand href='/calendar' className="d-none d-lg-block">
-                        <img src={logoImg} alt="FINGO logo"/>
+                        <img src={logoImg} alt="FINGO logo" className={styles.brandLogo}/>
                     </Navbar.Brand>
 
-                    <h1 style={{color: 'white'}}>Urlopia</h1>
+                    <img src={UrlopiaLogo} alt={"Urlopia"} className={styles.appLogo}/>
                     <div className={styles.mobileRightSide}>
                         <button type="button" className={styles.settingsButton} onClick={() => setShowModal(true)}>
                             <GearIcon className={styles.settingsIcon} size={20}/>

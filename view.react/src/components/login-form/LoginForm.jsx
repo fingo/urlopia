@@ -41,7 +41,7 @@ export const LoginForm = () => {
     return (
         <Form className={styles.loginForm} onSubmit={event => handleFormSubmit(event)}>
             <div className={styles.formContainer}>
-                <img src={UrlopiaLogo} alt={"Urlopia"} />
+                <img src={UrlopiaLogo} alt={"Urlopia"} className={styles.logo} />
                 <div className={styles.inputContainer}>
                     <FormControl value={mail} onChange={event => setMail(event.target.value)}
                                  type="email" placeholder="Email" className={styles.input}/>
