@@ -1,0 +1,21 @@
+@import "src/global-styles/color-variables";
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+
+  li {
+    span {
+      background-color: $BASE-COLOR !important;
+      border-color: $BASE-COLOR !important;
+    }
+
+    a {
+      color: $BASE-COLOR !important;
+
+      span {
+        background-color: transparent !important;
+      }
+    }
+  }
+}

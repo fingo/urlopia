@@ -5,15 +5,15 @@ import {useLocation} from "react-router-dom";
 
 import {getCurrentUser} from "../../api/services/session.service";
 import {useAbsenceHistory} from "../../contexts/absence-history-context/absenceHistoryContext";
-import styles from "../../global-styles/AbsenceHistoryList.module.scss";
 import {formatLogs} from "../../helpers/AbsenceHistoryFormatterHelper";
+import {getPaginationForPage} from "../../helpers/pagination/PaginationHelper";
+import styles from "./AbsenceHistoryList.module.scss";
 import {AbsenceHistoryTab} from "./AbsenceHistoryTab";
 
-export const AbsenceHistoryList = ({fetchHistoryLogs}) => {
+export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
     const [state, absenceHistoryDispatch] = useAbsenceHistory()
-    const {absenceHistory} = state;
+    const {absenceHistory, absenceHistoryPage} = state;
     const {ec: isUserEC} = getCurrentUser();
-
 
     const location = useLocation();
 
@@ -48,6 +48,12 @@ export const AbsenceHistoryList = ({fetchHistoryLogs}) => {
         header = header.concat(` - ${location.state.fullName}`);
         vacationTypeLabel = location.state.vacationTypeLabel;
     }
+
+    const pagination = getPaginationForPage({
+        page: absenceHistoryPage,
+        onClick: pageNumber => setPageNumber(pageNumber)
+    })
+
     return (
         <>
             <div className={styles.panelFooter}>
@@ -70,6 +76,7 @@ export const AbsenceHistoryList = ({fetchHistoryLogs}) => {
                 </div>
             </div>
             <AbsenceHistoryTab logs={formattedLog} vacationTypeLabel={vacationTypeLabel}/>
+            {pagination}
         </>
     );
 }

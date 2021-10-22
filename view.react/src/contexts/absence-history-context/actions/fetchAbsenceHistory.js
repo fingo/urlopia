@@ -1,12 +1,9 @@
 import {sendGetRequest} from "../../../helpers/RequestHelper";
-import {
-    FETCH_ABSENCE_HISTORY_ACTION_PREFIX,
-    FETCH_ABSENCE_HISTORY_URL
-} from "../constants";
+import {FETCH_ABSENCE_HISTORY_ACTION_PREFIX, FETCH_ABSENCE_HISTORY_URL} from "../constants";
 
-const PAGING = "sort=id,desc"
+export const fetchAbsenceHistory = (dispatch, year, pageNumber) => {
+    const PAGING = `sort=id,desc&page=${pageNumber}`
 
-export const fetchAbsenceHistory = (dispatch, year) => {
     dispatch({type: `${FETCH_ABSENCE_HISTORY_ACTION_PREFIX}_absence-history`})
     sendGetRequest(`${FETCH_ABSENCE_HISTORY_URL}?year=${year}&${PAGING}`)
         .then(data => dispatch({
@@ -32,7 +29,8 @@ export const fetchAbsenceHistoryReducer = (state, action) => {
             return {
                 ...state,
                 fetching: false,
-                absenceHistory: action.response.content
+                absenceHistory: action.response.content,
+                absenceHistoryPage: action.response,
             }
         }
         case `${FETCH_ABSENCE_HISTORY_ACTION_PREFIX}_failure`: {
