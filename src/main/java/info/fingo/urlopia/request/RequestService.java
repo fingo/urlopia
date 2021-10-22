@@ -7,10 +7,10 @@ import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
 import info.fingo.urlopia.config.authentication.WebTokenService;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
-import info.fingo.urlopia.history.HistoryLog;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.request.absence.BaseRequestInput;
+import info.fingo.urlopia.request.absence.SpecialAbsenceReason;
 import info.fingo.urlopia.request.absence.SpecialAbsenceRequestService;
 import info.fingo.urlopia.request.normal.RequestTooFarInThePastException;
 import info.fingo.urlopia.team.Team;
@@ -30,7 +30,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -135,7 +134,7 @@ public class RequestService {
         return startDate.datesUntil(endDate)
                 .filter(date -> !isWeekend(date))
                 .map(date -> createVacationDay(teammates, date))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public double countTheHoursUsedDuringTheYear(Long userId,
@@ -217,7 +216,7 @@ public class RequestService {
         var namesOfVacationingUsers = users.stream()
                 .filter(user -> isVacationing(user, date))
                 .map(user -> user.getFirstName() + " " + user.getLastName())
-                .collect(Collectors.toList());
+                .toList();
         return new VacationDay(date, namesOfVacationingUsers);
     }
 
@@ -225,7 +224,7 @@ public class RequestService {
         return user.getTeams().stream()
                 .flatMap(team -> team.getUsers().stream())
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private boolean isWeekend(LocalDate date) {
@@ -321,8 +320,23 @@ public class RequestService {
         service.cancel(request);
 
         if (previousStatus == Request.Status.ACCEPTED) {
-            historyLogService.createReverse(request, "Anulowanie", deciderId);
+            historyLogService.createReverse(request, cancellationCommentFor(request), deciderId);
         }
     }
 
+    private String cancellationCommentFor(Request request) {
+        var startDate = request.getStartDate();
+        var endDate = request.getEndDate();
+
+        switch (request.getType()) {
+            case NORMAL, OCCASIONAL:
+                return "Anulowanie urlopu w dniach: %s - %s".formatted(startDate, endDate);
+            case SPECIAL:
+                var typeInfo = request.getSpecialTypeInfo();
+                var reason = SpecialAbsenceReason.valueOf(typeInfo).getTranslatedReason();
+                return "Anulowanie nieobecności w dniach %s - %s (%s)".formatted(startDate, endDate, reason);
+            default:
+                return "Anulowanie";
+        }
+    }
 }
