@@ -1,12 +1,12 @@
 import {sendGetRequest} from "../../../helpers/RequestHelper";
 import {FETCH_COMPANY_REQUESTS_ACTION_PREFIX, FETCH_COMPANY_REQUESTS_URL,} from "../constants";
 
-const SORT_FILTER = `&sort=id,DESC`
+const PAGING = `&sort=id,DESC&size=999`
 const FILTER = "?filter=status:PENDING"
 
 export const fetchCompanyRequests = dispatch => {
     dispatch({type: `${FETCH_COMPANY_REQUESTS_ACTION_PREFIX}_request`})
-    sendGetRequest(`${FETCH_COMPANY_REQUESTS_URL}${FILTER}${SORT_FILTER}`)
+    sendGetRequest(`${FETCH_COMPANY_REQUESTS_URL}${FILTER}${PAGING}`)
         .then(data => dispatch({
                 type: `${FETCH_COMPANY_REQUESTS_ACTION_PREFIX}_success`,
                 response: data
