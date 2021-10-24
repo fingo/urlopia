@@ -5,6 +5,7 @@ const TODAY = new Date().toJSON().slice(0, 10)
 const PARAMS = new URLSearchParams()
 PARAMS.append("filter", `endDate>:${TODAY}|status:PENDING`)
 PARAMS.append("sort", "id,DESC")
+PARAMS.append("size", "999")
 
 export const fetchMyRequests = dispatch => {
     dispatch({type: `${FETCH_MY_REQUESTS_ACTION_PREFIX}_request`})
