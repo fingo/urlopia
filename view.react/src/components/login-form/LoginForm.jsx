@@ -3,6 +3,7 @@ import {Button, Form, FormControl} from "react-bootstrap";
 import {useHistory} from "react-router-dom";
 
 import {login} from "../../api/services/session.service"
+import UrlopiaLogo from '../../assets/logo-urlopia.png'
 import {useAppInfo} from "../../contexts/app-info-context/appInfoContext";
 import styles from "./LoginForm.module.scss"
 
@@ -40,7 +41,7 @@ export const LoginForm = () => {
     return (
         <Form className={styles.loginForm} onSubmit={event => handleFormSubmit(event)}>
             <div className={styles.formContainer}>
-                <h2 className={styles.title}>Urlopia</h2>
+                <img src={UrlopiaLogo} alt={"Urlopia"} className={styles.logo} />
                 <div className={styles.inputContainer}>
                     <FormControl value={mail} onChange={event => setMail(event.target.value)}
                                  type="email" placeholder="Email" className={styles.input}/>
