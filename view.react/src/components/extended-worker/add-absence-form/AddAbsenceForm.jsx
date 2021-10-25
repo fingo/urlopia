@@ -20,8 +20,7 @@ const POST_ABSENCE_URL = '/api/v2/absence-requests/special-absence'
 export const AddAbsenceForm = ({show, onHide, userId, fullName}) => {
     const [, absenceHistoryDispatch] = useAbsenceHistory();
 
-    const [holidaysState, holidaysDispatch] = useHolidays();
-    const {holidays} = holidaysState;
+    const [, holidaysDispatch] = useHolidays();
 
     const [selectedRange, setSelectedRange] = useState([{
             startDate: new Date(),
