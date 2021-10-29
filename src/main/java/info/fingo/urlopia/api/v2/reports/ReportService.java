@@ -60,8 +60,10 @@ public class ReportService {
         return reportFile;
     }
 
-    public void generateZipWithReports(ZipOutputStream zipOut, int year) {
-        var users = userService.getAll();
+    public void generateZipWithReports(ZipOutputStream zipOut,
+                                       int year,
+                                       Filter filter) {
+        var users = userService.get(filter);
         var fileName = "";
 
         try {
