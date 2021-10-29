@@ -43,6 +43,10 @@ public class RequestService {
     private final PresenceConfirmationService presenceConfirmationService;
 
     private static final String REQUEST_NOT_EXIST_MESSAGE = "Request with id: {} does not exist";
+    private static final String REQUESTER_ID = "requester.id";
+    private static final String START_DATE = "startDate";
+    private static final String END_DATE = "endDate";
+    private static final String STATUS = "status";
 
     @Autowired
     public RequestService(RequestRepository requestRepository,
@@ -61,7 +65,7 @@ public class RequestService {
 
     public Page<RequestExcerptProjection> getFromUser(Long userId, Filter filter, Pageable pageable) {
         Filter filterWithRestrictions = filter.toBuilder()
-                .and("requester.id", Operator.EQUAL, userId.toString())
+                .and(REQUESTER_ID, Operator.EQUAL, userId.toString())
                 .build();
         return this.get(filterWithRestrictions, pageable);
     }
@@ -78,11 +82,26 @@ public class RequestService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_FORMAT);
         String formattedDate = formatter.format(date);
         Filter filter = Filter.newBuilder()
-                .and("requester.id", Operator.EQUAL, String.valueOf(userId))
-                .and("startDate", Operator.LESS_OR_EQUAL, formattedDate)
-                .and("endDate", Operator.GREATER_OR_EQUAL, formattedDate)
+                .and(REQUESTER_ID, Operator.EQUAL, String.valueOf(userId))
+                .and(START_DATE, Operator.LESS_OR_EQUAL, formattedDate)
+                .and(END_DATE, Operator.GREATER_OR_EQUAL, formattedDate)
                 .build();
         return this.requestRepository.findAll(filter);
+    }
+
+    public boolean hasAcceptedByDateIntervalAndUser(LocalDate startDate,
+                                                    LocalDate endDate,
+                                                    Long userId) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_FORMAT);
+        String formattedStartDate = formatter.format(startDate);
+        String formattedEndDate = formatter.format(endDate);
+        Filter filter = Filter.newBuilder()
+                .and(REQUESTER_ID, Operator.EQUAL, String.valueOf(userId))
+                .and(START_DATE, Operator.GREATER_OR_EQUAL, formattedStartDate)
+                .and(END_DATE, Operator.LESS_OR_EQUAL, formattedEndDate)
+                .and(STATUS,Operator.EQUAL, Request.Status.ACCEPTED.name())
+                .build();
+        return !requestRepository.findAll(filter).isEmpty();
     }
 
     public List<Request> get(Long userId, Integer year) {

@@ -1,24 +1,28 @@
 package info.fingo.urlopia.api.v2.reports
 
+import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
 import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReportFactory
 import info.fingo.urlopia.api.v2.reports.holidays.UserHolidaysReportFactory
 import info.fingo.urlopia.reports.ReportTemplateLoader
 import info.fingo.urlopia.reports.XlsxTemplateResolver
 import info.fingo.urlopia.reports.evidence.EvidenceReportModel
 import info.fingo.urlopia.reports.evidence.EvidenceReportModelFactory
+import info.fingo.urlopia.request.RequestService
 import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserService
 import spock.lang.Specification
 
 class ReportServiceSpec extends Specification{
 
-    private UserService userService;
-    private ReportTemplateLoader reportTemplateLoader;
-    private XlsxTemplateResolver xlsxTemplateResolver;
+    private UserService userService
+    private ReportTemplateLoader reportTemplateLoader
+    private XlsxTemplateResolver xlsxTemplateResolver
     private EvidenceReportModelFactory evidenceReportModelFactory
     private MonthlyAttendanceListReportFactory monthlyPresenceReportFactory
     private UserHolidaysReportFactory userHolidaysReportFactory
     private ReportService reportService
+    private RequestService requestService
+    private PresenceConfirmationService presenceConfirmationService
 
     void setup(){
         userService = Mock(UserService)
@@ -26,7 +30,11 @@ class ReportServiceSpec extends Specification{
         xlsxTemplateResolver = Mock(XlsxTemplateResolver)
         evidenceReportModelFactory = Mock(EvidenceReportModelFactory)
         userHolidaysReportFactory = Mock(UserHolidaysReportFactory)
+        requestService = Mock(RequestService)
+        presenceConfirmationService = Mock(PresenceConfirmationService)
         reportService = new ReportService(userService,
+                                          requestService,
+                                          presenceConfirmationService,
                                           reportTemplateLoader,
                                           xlsxTemplateResolver,
                                           evidenceReportModelFactory,

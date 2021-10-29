@@ -5,7 +5,6 @@ import info.fingo.urlopia.api.v2.preferences.UserPreferencesService;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.holidays.HolidayService;
-import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
@@ -32,6 +31,7 @@ public class PresenceConfirmationService {
     private final HolidayService holidayService;
     private final UserService userService;
     private final UserPreferencesService userPreferencesService;
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_FORMAT);
 
     public List<PresenceConfirmation> getPresenceConfirmations(Long authenticatedUserId, String[] filters) {
         var authenticatedUser = userService.get(authenticatedUserId);
@@ -46,7 +46,6 @@ public class PresenceConfirmationService {
 
         return getAll(filter);
     }
-
     public List<PresenceConfirmation> getAll(Filter filter) {
         return presenceConfirmationRepository.findAll(filter);
     }
@@ -61,13 +60,26 @@ public class PresenceConfirmationService {
     }
 
     public List<PresenceConfirmation> getByUserAndDate(Long userId, LocalDate date) {
-        var dateTimeFormatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_FORMAT);
         var formattedDate = dateTimeFormatter.format(date);
         var filter = Filter.newBuilder()
                 .and(USER_ID_FROM_PRESENCE, Operator.EQUAL, String.valueOf(userId))
                 .and(DATE_FROM_PRESENCE, Operator.EQUAL, formattedDate)
                 .build();
         return this.presenceConfirmationRepository.findAll(filter);
+    }
+
+    public boolean hasPresenceByUserAndDateInterval(LocalDate startDate,
+                                                    LocalDate endDate,
+                                                    Long userId) {
+        var formattedStartDate = dateTimeFormatter.format(startDate);
+        var formattedEndDate = dateTimeFormatter.format(endDate);
+        var filter = Filter.newBuilder()
+                .and(USER_ID_FROM_PRESENCE, Operator.EQUAL, String.valueOf(userId))
+                .and(DATE_FROM_PRESENCE, Operator.GREATER_OR_EQUAL, formattedStartDate)
+                .and(DATE_FROM_PRESENCE, Operator.LESS_OR_EQUAL, formattedEndDate)
+                .build();
+        var presenceConfirmations = presenceConfirmationRepository.findAll(filter);
+        return !presenceConfirmations.isEmpty();
     }
 
     private String[] convertFilters(String[] filters) {
