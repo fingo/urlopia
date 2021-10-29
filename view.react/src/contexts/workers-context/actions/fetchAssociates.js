@@ -1,11 +1,11 @@
 import {sendGetRequest} from "../../../helpers/RequestHelper";
 import {FETCH_ASSOCIATES_ACTION_PREFIX, WORKERS_ENDPOINT} from "../constants";
 
-const FILTER = '?filter=b2b:TRUE,ec:FALSE,active:true';
+const FILTER = '?filter=b2b:TRUE,ec:FALSE,active:';
 
-export const fetchAssociates = dispatch => {
+export const fetchAssociates = (dispatch,showActive)  => {
     dispatch({type: `${FETCH_ASSOCIATES_ACTION_PREFIX}_request`})
-    sendGetRequest(`${WORKERS_ENDPOINT}${FILTER}`)
+    sendGetRequest(`${WORKERS_ENDPOINT}${FILTER}${showActive}`)
         .then(data => {
             dispatch({
                 type: `${FETCH_ASSOCIATES_ACTION_PREFIX}_success`,
