@@ -103,12 +103,13 @@ public class ReportService {
                 .and("ec", Operator.EQUAL, "true")
                 .build();
 
-        var employees = userService.get(filter).stream()
-                .sorted((u1, u2) -> u1.getLastName().compareToIgnoreCase(u2.getLastName()))
-                .toList();
+        var employees = userService.get(filter);
         employees.addAll(findInactiveUsersNeededToBeInReport(year,month));
+        var sortedEmployees = employees.stream()
+                                        .sorted((u1, u2) -> u1.getLastName().compareToIgnoreCase(u2.getLastName()))
+                                        .collect(Collectors.toList());
 
-        return partitionUsersToPages(employees).stream()
+        return partitionUsersToPages(sortedEmployees).stream()
                 .map(page -> generateAttendanceListPage(year, month, page))
                 .toList();
     }
