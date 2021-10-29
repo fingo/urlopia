@@ -35,7 +35,6 @@ export const WorkersTable = ({isEC}) => {
     const {areUnspecifiedAbsencesFetched} = workersState.workers;
     const {fetching} = isEC ? workersState.workers : workersState.associates;
     const [showActive, setShowActive] = useState(true);
-    const buttonMessage = showActive ? `Pokaż nieaktywnych użytkowników`:`Pokaż aktywnych użytkowników`;
 
     const [whichExpanded, setWhichExpanded] = useState([]);
 
@@ -72,6 +71,12 @@ export const WorkersTable = ({isEC}) => {
 
     const handleClick = active => {
         setShowActive(!active)
+    }
+
+    const getButtonMessage = (EC,isActiveShowed) => {
+        const sufix = EC? "pracowników": "współpracowników"
+        return isActiveShowed? `Pokaż nieaktywnych ${sufix}`:`Pokaż aktywnych ${sufix}`;
+
     }
 
     const withNotifyFormatter = (cell, row) => {
@@ -202,7 +207,7 @@ export const WorkersTable = ({isEC}) => {
                     className={btnClass}
                     onClick={() => handleClick(showActive)}
                 >
-                    {buttonMessage}
+                    {getButtonMessage(isEC,showActive)}
                 </Button>
                 {
                     areUnspecifiedAbsencesFetched ?
@@ -250,7 +255,7 @@ export const WorkersTable = ({isEC}) => {
                 className={btnClass}
                 onClick={() => handleClick(showActive)}
             >
-                {buttonMessage}
+                {getButtonMessage(isEC,showActive)}
             </Button>
             <BootstrapTable
                 bootstrap4
