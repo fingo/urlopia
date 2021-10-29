@@ -1,6 +1,7 @@
 package info.fingo.urlopia.api.v2.reports;
 
 import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
+import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
 import info.fingo.urlopia.api.v2.reports.attendance.AttendanceListPage;
 import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReport;
 import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReportFactory;
@@ -11,6 +12,7 @@ import info.fingo.urlopia.reports.ReportTemplateLoader;
 import info.fingo.urlopia.reports.XlsxTemplateResolver;
 import info.fingo.urlopia.reports.evidence.EvidenceReport;
 import info.fingo.urlopia.reports.evidence.EvidenceReportModelFactory;
+import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +28,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -36,6 +40,8 @@ import java.util.zip.ZipOutputStream;
 @Service
 public class ReportService {
     private final UserService userService;
+    private final RequestService requestService;
+    private final PresenceConfirmationService presenceConfirmationService;
     private final ReportTemplateLoader reportTemplateLoader;
     private final XlsxTemplateResolver xlsxTemplateResolver;
     private final EvidenceReportModelFactory evidenceReportModelFactory;
@@ -100,11 +106,39 @@ public class ReportService {
         var employees = userService.get(filter).stream()
                 .sorted((u1, u2) -> u1.getLastName().compareToIgnoreCase(u2.getLastName()))
                 .toList();
+        employees.addAll(findInactiveUsersNeededToBeInReport(year,month));
 
         return partitionUsersToPages(employees).stream()
                 .map(page -> generateAttendanceListPage(year, month, page))
                 .toList();
     }
+
+    private List<User> findInactiveUsersNeededToBeInReport(Integer year,
+                                                           Integer month){
+        var filter = Filter.newBuilder()
+                .and("active", Operator.EQUAL, "false")
+                .and("ec", Operator.EQUAL, "true")
+                .build();
+        var employees = userService.get(filter);
+
+        var yearMonth = YearMonth.of(year,month);
+        var firstDayOfMonth = yearMonth.atDay(1);
+        var lastDayOfMonth = yearMonth.atEndOfMonth();
+        var usersWithAcceptedRequests= employees.stream()
+                .filter(user -> requestService.hasAcceptedByDateIntervalAndUser(firstDayOfMonth,
+                                                                                lastDayOfMonth,
+                                                                                user.getId()))
+                .collect(Collectors.toSet());
+        var usersWithPresenceConfirmations= employees.stream()
+                .filter(user -> presenceConfirmationService.hasPresenceByUserAndDateInterval(firstDayOfMonth,
+                                                                                            lastDayOfMonth,
+                                                                                            user.getId()))
+                .collect(Collectors.toSet());
+        usersWithAcceptedRequests.addAll(usersWithPresenceConfirmations);
+        return  usersWithAcceptedRequests.stream()
+                                         .toList();
+    }
+
 
     private List<AttendanceListPage> partitionUsersToPages(List<User> users) {
         List<AttendanceListPage> result = new LinkedList<>();
