@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import {useEffect, useState} from "react";
-import {Alert} from "react-bootstrap";
+import {Alert, Button} from "react-bootstrap";
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
 import {BeatLoader} from "react-spinners";
@@ -13,6 +13,7 @@ import {fetchNoActionWorkers} from "../../contexts/workers-context/actions/fetch
 import {fetchUnspecifiedUsers} from "../../contexts/workers-context/actions/fetchUnspecifiedUsers";
 import {fetchWorkers} from "../../contexts/workers-context/actions/fetchWorkers";
 import {useWorkers} from "../../contexts/workers-context/workersContext";
+import {btnClass} from "../../global-styles/btn.module.scss";
 import {spinner} from "../../global-styles/loading-spinner.module.scss";
 import {AttentionIcon, TextWithIcon} from "../../helpers/icons/Icons";
 import {textAsArrayFormatter} from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
@@ -33,6 +34,7 @@ export const WorkersTable = ({isEC}) => {
     const {unspecifiedUsers} = workersState;
     const {areUnspecifiedAbsencesFetched} = workersState.workers;
     const {fetching} = isEC ? workersState.workers : workersState.associates;
+    const [showActive, setShowActive] = useState(true);
 
     const [whichExpanded, setWhichExpanded] = useState([]);
 
@@ -46,15 +48,15 @@ export const WorkersTable = ({isEC}) => {
 
     useEffect(() => {
         workersDispatch(changeIsEC(isEC));
-        fetchUnspecifiedUsers(workersDispatch);
+        fetchUnspecifiedUsers(workersDispatch,showActive);
         fetchNoActionWorkers(workersDispatch);
         fetchUsersPresenceConfirmations(presenceDispatcher);
         if (isEC) {
-            fetchWorkers(workersDispatch);
+            fetchWorkers(workersDispatch,showActive);
         } else {
-            fetchAssociates(workersDispatch);
+            fetchAssociates(workersDispatch,showActive);
         }
-    }, [workersDispatch, isEC, presenceDispatcher]);
+    }, [workersDispatch, isEC, showActive, presenceDispatcher]);
 
     const formattedWorkers = sortedUsers(workers, "fullName").map(worker => {
         const workTime = `${worker.workTime.numerator}/${worker.workTime.denominator}`;
@@ -66,6 +68,16 @@ export const WorkersTable = ({isEC}) => {
             workTime,
         }
     });
+
+    const handleClick = active => {
+        setShowActive(!active)
+    }
+
+    const getButtonMessage = (EC,isActiveShowed) => {
+        const sufix = EC? "pracowników": "współpracowników"
+        return isActiveShowed? `Pokaż nieaktywnych ${sufix}`:`Pokaż aktywnych ${sufix}`;
+
+    }
 
     const withNotifyFormatter = (cell, row) => {
         if (unspecifiedAbsences[row.userId] !== undefined) {
@@ -191,6 +203,12 @@ export const WorkersTable = ({isEC}) => {
                     </Alert>
                 }
                 <h1 className='text-center'>Pracownicy</h1>
+                <Button
+                    className={btnClass}
+                    onClick={() => handleClick(showActive)}
+                >
+                    {getButtonMessage(isEC,showActive)}
+                </Button>
                 {
                     areUnspecifiedAbsencesFetched ?
                         <BootstrapTable
@@ -233,6 +251,12 @@ export const WorkersTable = ({isEC}) => {
                 </Alert>
             }
             <h1 className='text-center'>Współpracownicy</h1>
+            <Button
+                className={btnClass}
+                onClick={() => handleClick(showActive)}
+            >
+                {getButtonMessage(isEC,showActive)}
+            </Button>
             <BootstrapTable
                 bootstrap4
                 keyField='userId'

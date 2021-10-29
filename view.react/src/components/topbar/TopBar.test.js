@@ -52,9 +52,5 @@ describe("TopBar", () => {
         expect(teamLeader).toBeInTheDocument();
     });
 
-    it('should show "Urlopia" banner', () => {
-        render(<UserPreferencesProvider><TopBar onHamburgerClick={() => null}/></UserPreferencesProvider>);
-        const urlopiaBanner = screen.getByText('Urlopia');
-        expect(urlopiaBanner).toBeInTheDocument();
-    });
+
 })

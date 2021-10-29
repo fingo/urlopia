@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.naming.directory.SearchResult;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,7 +24,6 @@ public class ActiveDirectoryUserSynchronizer {
     private final UserRepository userRepository;
     private final ActiveDirectory activeDirectory;
     private final ActiveDirectoryUserMapper userMapper;
-    private LocalDateTime lastModificationsCheck;
 
     public ActiveDirectoryUserSynchronizer(UserRepository userRepository,
                                            ActiveDirectory activeDirectory,
@@ -33,7 +31,6 @@ public class ActiveDirectoryUserSynchronizer {
         this.userRepository = userRepository;
         this.activeDirectory = activeDirectory;
         this.userMapper = userMapper;
-        this.lastModificationsCheck = LocalDateTime.now();
     }
 
     public void addNewUsers() {
@@ -58,18 +55,6 @@ public class ActiveDirectoryUserSynchronizer {
                     userRepository.save(user);
                 });
         LOGGER.info("Synchronisation succeed: deactivate deleted users");
-    }
-
-    public void synchronizeIncremental() {
-        var usersToSynchronize = pickUsersFromActiveDirectory().stream()
-                .filter(user -> {
-                    var changed = ActiveDirectoryUtils.pickAttribute(user, Attribute.CHANGED_TIME);
-                    var changedTime = ActiveDirectoryUtils.convertToLocalDateTime(changed);
-                    return changedTime.isAfter(lastModificationsCheck);
-                });
-        synchronize(usersToSynchronize);
-        lastModificationsCheck = LocalDateTime.now();
-        LOGGER.info("Synchronisation succeed: last modified users");
     }
 
     public void synchronizeFull() {
