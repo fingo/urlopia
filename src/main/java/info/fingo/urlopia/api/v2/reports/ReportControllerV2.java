@@ -49,15 +49,17 @@ public class ReportControllerV2 {
 
     @RolesAllowed("ROLES_ADMIN")
     @GetMapping(path = "/work-time-evidence", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<StreamingResponseBody> generateWorkTimeEvidenceForAllUsers(@RequestParam int year) {
+    public ResponseEntity<StreamingResponseBody> generateWorkTimeEvidenceForAllUsers(@RequestParam int year,
+                                                                                     @RequestParam(name = "filter", defaultValue = "") String[] filters) {
 
+        var filter = Filter.from(filters);
         return ResponseEntity
                 .ok()
                 .header("Content-Disposition",
                         "attachment;filename=EwidencjaCzasuPracy%d.zip".formatted(year))
                 .body(outputStream -> {
                     try(ZipOutputStream zipOut = new ZipOutputStream(outputStream)) {
-                        reportService.generateZipWithReports(zipOut, year);
+                        reportService.generateZipWithReports(zipOut, year,filter);
                     }
                     catch (IOException e) {
                         log.error("Something went wrong while generating work time evidences for all users");

@@ -32,7 +32,7 @@ export const EvidenceReportModal = ({show, onHide}) => {
     }
 
     useEffect(() => {
-        sendGetRequest(`${ALL_USERS_URL}?filter=active:true`)
+        sendGetRequest(`${ALL_USERS_URL}`)
             .then(users => {
                 setAllUsers(users)
             })
@@ -55,7 +55,7 @@ export const EvidenceReportModal = ({show, onHide}) => {
 
     const handleAllUsersGenerating = async () => {
         setIsLoading(true);
-        await getZipFromResponse(`${GET_EVIDENCE_REPORT_URL}?year=${chosenYear.value}`,
+        await getZipFromResponse(`${GET_EVIDENCE_REPORT_URL}?year=${chosenYear.value}&filter=active:true`,
             `EwidencjaCzasuPracy_${chosenYear.value}`)
             .then(() => {
                 setIsLoading(false);
