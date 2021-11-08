@@ -96,6 +96,7 @@ export const AddAbsenceForm = ({show, onHide, userId, fullName}) => {
                     <option value='EXCUSED_UNPAID'>Nieobecność usprawiedliwiona niepłatna</option>
                     <option value='CHILDCARE'>Urlop wychowawczy</option>
                     <option value='CHILDCARE_FOR_14_YEARS_OLD'>Opieka nad dzieckiem do lat 14</option>
+                    <option value='QUARANTINE_OR_ISOLATION'>Kwarantanna lub izolacja</option>
                     <option value='OTHER'>Inny powód nieobecności</option>
                 </Form.Select>
 

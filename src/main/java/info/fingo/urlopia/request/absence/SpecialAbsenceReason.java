@@ -17,6 +17,7 @@ public enum SpecialAbsenceReason {
     CHILDCARE("Urlop wychowawczy"),
     CHILDCARE_FOR_14_YEARS_OLD("Opieka nad dzieckiem do lat 14"),
     WRONG("Nieznany powód nieobecności"),
+    QUARANTINE_OR_ISOLATION("Kwarantanna lub izolacja"),
     OTHER("Inny powód nieobecności");
 
     private final String translatedReason;
