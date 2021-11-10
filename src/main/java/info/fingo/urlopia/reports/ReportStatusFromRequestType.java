@@ -19,6 +19,7 @@ public enum ReportStatusFromRequestType {
     CHILDCARE("w","nu"),
     CHILDCARE_FOR_14_YEARS_OLD("uop","nu"),
     OTHER("??","??"),
+    QUARANTINE_OR_ISOLATION("k/i","nu"),
     WRONG("error","error");
 
 
