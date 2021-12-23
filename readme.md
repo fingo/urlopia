@@ -82,6 +82,19 @@ To deploy app on embedded server type:
 In the browser the app will open by default on:
 `localhost:8080`
 
+To check if the application works correctly:
+
+* enter the address in the browser
+
+[subs = + quotes]
+----
+https: // ip_address: port / health
+----
+
+Check the status of the application.
+The correct one is `UP`
+
+
 ### HOW TO RUN REACT APP IN DEVELOPMENT MODE
 In terminal in ./view.react run
 ```shell
