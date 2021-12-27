@@ -48,7 +48,7 @@ CREATE TABLE requests
     end_date     DATE        NOT NULL,
     working_days INT         NOT NULL,
     type         VARCHAR(25) NOT NULL DEFAULT 'NORMAL',
-    type_info    VARCHAR(25),
+    type_info    VARCHAR(60),
     status       VARCHAR(25) NOT NULL DEFAULT 'PENDING'
 );
 
