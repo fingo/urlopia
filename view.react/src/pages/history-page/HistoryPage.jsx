@@ -3,7 +3,9 @@ import {useLocation, useParams} from "react-router-dom";
 
 import {AbsenceHistoryList} from "../../components/absence-history-list/AbsenceHistoryList";
 import {fetchAbsenceHistory} from "../../contexts/absence-history-context/actions/fetchAbsenceHistory";
-import {fetchUserAbsenceHistory} from "../../contexts/absence-history-context/actions/fetchUserAbsenceHistory";
+import {
+    fetchPagedUserAbsenceHistory,
+} from "../../contexts/absence-history-context/actions/fetchUserAbsenceHistory";
 import styles from './HistoryPage.module.scss';
 
 export const URL = '/history';
@@ -18,9 +20,13 @@ export const HistoryPage = ({isAdmin}) => {
     useEffect(() => {
         setFetchHistoryAction(() => {
             if (isAdmin && location.pathname !== '/history/me') {
-                return (dispatch) => fetchUserAbsenceHistory(dispatch, params.userId, pageNumber, false)
+                return (dispatch, {sortField, sortOrder}) => {
+                    fetchPagedUserAbsenceHistory(dispatch, params.userId, pageNumber, sortField, sortOrder)
+                }
             }
-            return (dispatch, {selectedYear}) => fetchAbsenceHistory(dispatch, selectedYear, pageNumber)
+            return (dispatch, {selectedYear, sortField, sortOrder}) => {
+                fetchAbsenceHistory(dispatch, selectedYear, pageNumber, sortField, sortOrder)
+            }
         })
     }, [isAdmin, params.userId, location.pathname, pageNumber])
 

@@ -1,12 +1,18 @@
 import {sendGetRequest} from "../../../helpers/RequestHelper";
 import {FETCH_ACCEPTANCES_HISTORY_ACTION_PREFIX, FETCH_ACCEPTANCES_HISTORY_URL} from "../constants";
 
-export const fetchAcceptancesHistory = (dispatch, year, pageNumber) => {
+export const fetchAcceptancesHistory = (
+    dispatch,
+    year,
+    pageNumber,
+    sortField = "request.startDate",
+    sortOrder = "desc"
+) => {
     const yearStart = `${year}-01-01`
     const yearEnd = `${year}-12-31`
-    const filter = `?filter=request.endDate>:${yearStart}&filter=request.startDate<:${yearEnd}`
 
-    const pagination = `page=${pageNumber}`
+    const filter = `?filter=request.endDate>:${yearStart}&filter=request.startDate<:${yearEnd}`
+    const pagination = `page=${pageNumber}&sort=${sortField},${sortOrder}`
 
     dispatch({type: `${FETCH_ACCEPTANCES_HISTORY_ACTION_PREFIX}_request`})
     sendGetRequest(`${FETCH_ACCEPTANCES_HISTORY_URL}${filter}&${pagination}`)

@@ -19,19 +19,21 @@ export const AcceptanceHistoryList = () => {
     const [selectedYear, setSelectedYear] = useState(currentYear);
     const [availableYears, setAvailableYears] = useState([]);
 
+    const [currentSort, setCurrentSort] = useState({field: "request.startDate", order: "desc"})
+
     const getAvailableYears = useCallback(() => {
         const startYear = FIRST_AVAILABLE_YEAR;
         const years = [];
-        for (let i = currentYear; i >= startYear; i--) {
+        for (let i = currentYear + 1; i >= startYear; i--) {
             years.push(i);
         }
         setAvailableYears(years);
     }, [currentYear]);
 
     useEffect(() => {
-        fetchAcceptancesHistory(requestsDispatch, selectedYear, pageNumber)
+        fetchAcceptancesHistory(requestsDispatch, selectedYear, pageNumber, currentSort.field, currentSort.order)
         getAvailableYears();
-    }, [getAvailableYears, requestsDispatch, selectedYear, pageNumber]);
+    }, [getAvailableYears, requestsDispatch, selectedYear, pageNumber, currentSort]);
 
     const handleYearChange = (newYear) => {
         setSelectedYear(newYear);
@@ -63,7 +65,10 @@ export const AcceptanceHistoryList = () => {
                     </DropdownButton>
                 </div>
             </div>
-            <AcceptanceHistoryTab acceptances={acceptancesHistory}/>
+            <AcceptanceHistoryTab
+                acceptances={acceptancesHistory}
+                setSort={(sort) => setCurrentSort(sort)}
+            />
             {pagination}
         </>
     );

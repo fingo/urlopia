@@ -3,8 +3,9 @@ import BootstrapTable from 'react-bootstrap-table-next';
 
 import {hoursChangeMapper} from "../../helpers/react-bootstrap-table2/HistoryLogMapperHelper";
 import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
+import {disableSortingFunc} from "../../helpers/react-bootstrap-table2/utils";
 
-export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel}) => {
+export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, setSort}) => {
     const columns = [
         {
             dataField: 'id',
@@ -20,6 +21,11 @@ export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel}) => {
             headerAlign: 'center',
             align: 'center',
             sort: true,
+            sortFunc: disableSortingFunc,
+            onSort: (field, order) => {
+                const sortField = "created"
+                setSort({field: sortField, order: order})
+            },
             style: {verticalAlign: 'middle'},
             formatter: (cell, row) => {
                 if (typeof row.hours == 'string' && row.hours.toLowerCase().includes("etat")) {
@@ -83,6 +89,11 @@ export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel}) => {
             headerAlign: 'center',
             align: 'center',
             sort: true,
+            sortFunc: disableSortingFunc,
+            onSort: (field, order) => {
+                const sortField = "comment"
+                setSort({field: sortField, order: order})
+            },
             style: {verticalAlign: 'middle'},
             headerAttrs: {
                 hidden: isHidden

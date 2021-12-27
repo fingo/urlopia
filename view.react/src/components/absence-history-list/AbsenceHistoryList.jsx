@@ -19,8 +19,11 @@ export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
 
     const FIRST_AVAILABLE_YEAR = 2016;
     const currentYear = (new Date()).getFullYear()
+
     const [selectedYear, setSelectedYear] = useState(currentYear);
     const [availableYears, setAvailableYears] = useState([]);
+
+    const [currentSort, setCurrentSort] = useState({field: "created", order: "desc"})
 
     const getAvailableYears = useCallback(() => {
         const startYear = FIRST_AVAILABLE_YEAR;
@@ -33,8 +36,12 @@ export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
 
     useEffect(() => {
         getAvailableYears();
-        fetchHistoryLogs(absenceHistoryDispatch, {selectedYear})
-    }, [absenceHistoryDispatch, selectedYear, fetchHistoryLogs, getAvailableYears]);
+        fetchHistoryLogs(absenceHistoryDispatch, {
+            selectedYear,
+            sortField: currentSort.field,
+            sortOrder: currentSort.order
+        })
+    }, [absenceHistoryDispatch, selectedYear, fetchHistoryLogs, getAvailableYears, currentSort]);
 
     const handleYearChange = (newYear) => {
         setSelectedYear(newYear);
@@ -75,7 +82,11 @@ export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
                     </DropdownButton>
                 </div>
             </div>
-            <AbsenceHistoryTab logs={formattedLog} vacationTypeLabel={vacationTypeLabel}/>
+            <AbsenceHistoryTab
+                logs={formattedLog}
+                vacationTypeLabel={vacationTypeLabel}
+                setSort={(sort) => setCurrentSort(sort)}
+            />
             {pagination}
         </>
     );
