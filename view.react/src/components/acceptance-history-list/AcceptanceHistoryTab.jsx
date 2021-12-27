@@ -4,10 +4,11 @@ import BootstrapTable from "react-bootstrap-table-next";
 import {EXPIRED, PENDING} from "../../constants/statuses";
 import {formatRequestBadge, requestPeriodFormatter} from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
 import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
+import {disableSortingFunc} from "../../helpers/react-bootstrap-table2/utils";
 import {ClickablePill} from "../clickable-badge/ClickablePill";
 import {AcceptancesModal, getAcceptanceBadgeFor} from "../user-requests-list/AcceptancesModal";
 
-export const AcceptanceHistoryTab = ({acceptances}) => {
+export const AcceptanceHistoryTab = ({acceptances, setSort}) => {
     const [modalsShow, setModalsShow] = useState({});
 
     const showModal = requestId => setModalsShow({...modalsShow, [requestId]: true})
@@ -72,6 +73,11 @@ export const AcceptanceHistoryTab = ({acceptances}) => {
             headerAlign: 'center',
             align: 'center',
             sort: true,
+            sortFunc: disableSortingFunc,
+            onSort: (field, order) => {
+                const sortField = "request.requester.firstName"
+                setSort({field: sortField, order: order})
+            },
             style: {verticalAlign: 'middle'},
         },
         {
@@ -80,6 +86,11 @@ export const AcceptanceHistoryTab = ({acceptances}) => {
             headerAlign: 'center',
             align: 'center',
             sort: true,
+            sortFunc: disableSortingFunc,
+            onSort: (field, order) => {
+                const sortField = "request.startDate"
+                setSort({field: sortField, order: order})
+            },
             style: {verticalAlign: 'middle'},
         },
         {

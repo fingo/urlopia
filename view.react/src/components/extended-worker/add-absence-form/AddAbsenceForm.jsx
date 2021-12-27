@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import {Button, Form, Modal} from 'react-bootstrap';
 
 import {useAbsenceHistory} from "../../../contexts/absence-history-context/absenceHistoryContext";
-import {fetchUserAbsenceHistory} from "../../../contexts/absence-history-context/actions/fetchUserAbsenceHistory";
+import {fetchRecentUserAbsenceHistory} from "../../../contexts/absence-history-context/actions/fetchUserAbsenceHistory";
 import {fetchHolidays} from "../../../contexts/holidays-context/actions/fetchHolidays";
 import {useHolidays} from "../../../contexts/holidays-context/holidaysContext";
 import {btnClass} from '../../../global-styles/btn.module.scss';
@@ -52,7 +52,7 @@ export const AddAbsenceForm = ({show, onHide, userId, fullName}) => {
             endDate,
             reason: selectedReason,
         }).then(() => {
-            fetchUserAbsenceHistory(absenceHistoryDispatch, userId);
+            fetchRecentUserAbsenceHistory(absenceHistoryDispatch, userId);
             pushSuccessNotification("Pomyślnie dodano nieobecność wybranemu użytkownikowi")
             onHide();
         }).catch(error => {
