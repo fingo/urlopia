@@ -59,37 +59,35 @@ public class LDAPConnectionService {
     }
 
     public boolean authenticate(Credentials credentials) {
-        return true;
+        DirContext ctx = getContext();
 
-//        DirContext ctx = getContext();
-//
-//        try {
-//            var password = credentials.getPassword();
-//            if (password.equals("")) {
-//                throw new AuthenticationException("Password is blank");
-//            }
-//
-//            var controls = new SearchControls();
-//            controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-//            var filter = "(&(memberOf=" + usersGroup + ")" + "(userPrincipalName=" + credentials.getMail() + "))";
-//            boolean userFound = ctx.search(mainContainer, filter, controls).hasMore();
-//
-//            if (userFound) {
-//                Properties authEnv = new Properties();
-//                authEnv.put(Context.INITIAL_CONTEXT_FACTORY, initialContextFactory);
-//                authEnv.put(Context.PROVIDER_URL, providerUrl);
-//                authEnv.put(Context.SECURITY_PRINCIPAL, credentials.getMail());
-//                authEnv.put(Context.SECURITY_CREDENTIALS, credentials.getPassword());
-//
-//                new InitialDirContext(authEnv); // NOSONAR
-//
-//                return true;
-//            }
-//        } catch (NamingException e) {
-//            LOGGER.info("Username or password is incorrect!", e);
-//        }
-//
-//        return false;
+        try {
+            var password = credentials.getPassword();
+            if (password.equals("")) {
+                throw new AuthenticationException("Password is blank");
+            }
+
+            var controls = new SearchControls();
+            controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+            var filter = "(&(memberOf=" + usersGroup + ")" + "(userPrincipalName=" + credentials.getMail() + "))";
+            boolean userFound = ctx.search(mainContainer, filter, controls).hasMore();
+
+            if (userFound) {
+                Properties authEnv = new Properties();
+                authEnv.put(Context.INITIAL_CONTEXT_FACTORY, initialContextFactory);
+                authEnv.put(Context.PROVIDER_URL, providerUrl);
+                authEnv.put(Context.SECURITY_PRINCIPAL, credentials.getMail());
+                authEnv.put(Context.SECURITY_CREDENTIALS, credentials.getPassword());
+
+                new InitialDirContext(authEnv); // NOSONAR
+
+                return true;
+            }
+        } catch (NamingException e) {
+            LOGGER.info("Username or password is incorrect!", e);
+        }
+
+        return false;
     }
 
     private static class ActiveDirectoryConnectionException extends RuntimeException {
