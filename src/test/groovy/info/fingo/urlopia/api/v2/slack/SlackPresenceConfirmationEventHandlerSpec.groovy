@@ -13,6 +13,7 @@ import com.slack.api.model.event.AppMentionEvent
 import com.slack.api.model.event.MessageEvent
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationInputOutput
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
+import info.fingo.urlopia.api.v2.slack.presence.SlackPresenceConfirmationEventHandler
 import info.fingo.urlopia.user.NoSuchUserException
 import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserService

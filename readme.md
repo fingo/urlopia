@@ -155,6 +155,9 @@ mails.storage= (Mail address of emails storage)
 # slack
 slack.bot-token=
 slack.signing-secret=
+
+# proxy
+proxy-token= (Secret token used to validate requests coming from proxy)
 ```
 
 #### PostgreSQL
