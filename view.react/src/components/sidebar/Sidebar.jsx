@@ -54,7 +54,7 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
         <>
             <Container fluid className={styles.main}>
                 <div className={styles.days}>
-                    <p>Pozostały urlop: </p>
+                    <p>{isUserEC ? "Pozostały urlop:" : "Pozostała przerwa"} </p>
                     {
                         workTime === 8 ?
                             <p><strong>{vacationDays-pendingDays}d</strong> {vacationHours-pendingHours}h

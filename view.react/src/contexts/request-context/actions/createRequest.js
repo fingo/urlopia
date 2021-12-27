@@ -1,3 +1,4 @@
+import {getCurrentUser} from "../../../api/services/session.service";
 import {pushSuccessNotification} from "../../../helpers/notifications/Notifications";
 import {sendPostRequest} from "../../../helpers/RequestHelper";
 import {CREATE_REQUEST_ACTION_PREFIX, CREATE_REQUEST_URL} from "../constants";
@@ -29,13 +30,23 @@ export const createRequest = (dispatch, {startDate, endDate, type, occasionalTyp
         }))
 }
 
-const pushNotificationOnSuccess = action => {
-    let suffix = "wypoczynkowy"
-    if (action.payload.type === "OCCASIONAL") {
-        suffix = "okolicznościowy"
-    }
+const getNotificationSuffix = (requestType) => {
+    const {ec: isUserEC} = getCurrentUser();
+    return isUserEC ? getHolidaySuffixFor(requestType) : getBreakSuffixFor(requestType)
+}
 
-    pushSuccessNotification(`Pomyślnie złożono wniosek o urlop ${suffix}`)
+const getHolidaySuffixFor = (requestType) => {
+    return requestType === "OCCASIONAL"? "urlop okolicznościowy" : "urlop wypoczynkowy"
+}
+
+const getBreakSuffixFor = (requestType) => {
+    return requestType === "OCCASIONAL"? "przerwę okolicznościową" : "przerwę wypoczynkową"
+}
+
+
+const pushNotificationOnSuccess = action => {
+    const suffix = getNotificationSuffix(action.payload.type)
+    pushSuccessNotification(`Pomyślnie złożono wniosek o ${suffix}`)
 }
 
 export const createRequestReducer = (state, action) => {
