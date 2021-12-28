@@ -26,6 +26,7 @@ const initialState = {
         fetching: false,
         error: null,
         requests: [],
+        requestsPage: {},
     },
     contextError: null,
 }

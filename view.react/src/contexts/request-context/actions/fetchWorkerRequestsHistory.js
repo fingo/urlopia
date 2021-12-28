@@ -1,13 +1,20 @@
 import {sendGetRequest} from "../../../helpers/RequestHelper";
 import {FETCH_WORKER_REQUESTS_HISTORY_ACTION_PREFIX, FETCH_WORKER_REQUESTS_HISTORY_URL} from "../constants";
 
-const FIRST_NAME_FILTER = 'filter=requester.firstName:';
-const LAST_NAME_FILTER = 'filter=requester.lastName:';
-const SORT_FILTER = `&sort=id,DESC`
+export const fetchWorkerRequestsHistory = (
+    dispatch,
+    firstName,
+    lastName,
+    pageNumber,
+    sortField = "startDate",
+    sortOrder = "desc"
+) => {
+    const firstNameFilter = `filter=requester.firstName:${firstName}`
+    const lastNameFilter = `filter=requester.lastName:${lastName}`
+    const pagination = `page=${pageNumber}&sort=${sortField},${sortOrder}`
 
-export const fetchWorkerRequestsHistory = (dispatch, firstName, lastName) => {
     dispatch({type: `${FETCH_WORKER_REQUESTS_HISTORY_ACTION_PREFIX}_request`});
-    const URL = `${FETCH_WORKER_REQUESTS_HISTORY_URL}?${FIRST_NAME_FILTER}${firstName}&${LAST_NAME_FILTER}${lastName}${SORT_FILTER}`;
+    const URL = `${FETCH_WORKER_REQUESTS_HISTORY_URL}?${firstNameFilter}&${lastNameFilter}&${pagination}`;
     sendGetRequest(URL)
         .then(data => dispatch({
                 type: `${FETCH_WORKER_REQUESTS_HISTORY_ACTION_PREFIX}_success`,
@@ -34,6 +41,7 @@ export const fetchWorkerRequestsHistoryReducer = (state, action) => {
                 ...state,
                 fetching: false,
                 requests: action.response.content,
+                requestsPage: action.response
             }
         }
         case `${FETCH_WORKER_REQUESTS_HISTORY_ACTION_PREFIX}_failure`: {

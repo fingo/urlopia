@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {Button, Modal} from "react-bootstrap";
 
 import {
@@ -15,13 +15,16 @@ import styles from './WorkerRequestsHistory.module.scss';
 
 export const WorkerRequestsHistory = ({show, onHide, fullName}) => {
     const [requestsState, requestsDispatch] = useRequests();
-    const {requests, fetching} = requestsState.workerRequestsHistory;
+    const {requests, requestsPage, fetching} = requestsState.workerRequestsHistory;
+
+    const [pageNumber, setPageNumber] = useState(0)
+    const [currentSort, setCurrentSort] = useState({field: "created", order: "desc"})
 
     useEffect(() => {
         const firstName = fullName?.split(' ')[0];
         const lastName = fullName?.split(' ')[1];
-        fetchWorkerRequestsHistory(requestsDispatch, firstName, lastName);
-    }, [requestsDispatch, fullName]);
+        fetchWorkerRequestsHistory(requestsDispatch, firstName, lastName, pageNumber, currentSort.field, currentSort.order);
+    }, [requestsDispatch, fullName, pageNumber, currentSort]);
 
     return (
         <Modal
@@ -40,10 +43,13 @@ export const WorkerRequestsHistory = ({show, onHide, fullName}) => {
             <Modal.Body>
                 <WorkerRequestsHistoryTable
                     requests={requests}
+                    requestsPage={requestsPage}
                     acceptRequest={(requestId) => acceptRequest(requestsDispatch, {requestId})}
                     cancelRequest={(requestId) => cancelRequest(requestsDispatch, {requestId})}
                     rejectRequest={(requestId) => rejectRequest(requestsDispatch, {requestId})}
                     isFetching={fetching}
+                    setPageNumber={setPageNumber}
+                    setSort={setCurrentSort}
                 />
             </Modal.Body>
             <Modal.Footer>
