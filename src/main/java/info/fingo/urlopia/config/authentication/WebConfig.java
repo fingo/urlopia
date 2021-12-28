@@ -27,7 +27,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/api/session/**",
                                      "/api/v2/session/**",
                                      "/api/v2/info/**",
-                                     "/api/v2/slack/**");
+                                     "/api/v2/slack/**",
+                                     "/api/v2/proxy/**");
     }
 
 }

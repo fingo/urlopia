@@ -1,4 +1,4 @@
-package info.fingo.urlopia.api.v2.slack
+package info.fingo.urlopia.api.v2.slack.presence
 
 import com.slack.api.app_backend.events.payload.EventsApiPayload
 import com.slack.api.bolt.App
