@@ -20,8 +20,8 @@ export const HistoryPage = ({isAdmin}) => {
     useEffect(() => {
         setFetchHistoryAction(() => {
             if (isAdmin && location.pathname !== '/history/me') {
-                return (dispatch, {sortField, sortOrder}) => {
-                    fetchPagedUserAbsenceHistory(dispatch, params.userId, pageNumber, sortField, sortOrder)
+                return (dispatch, {selectedYear, sortField, sortOrder}) => {
+                    fetchPagedUserAbsenceHistory(dispatch, params.userId, selectedYear, pageNumber, sortField, sortOrder)
                 }
             }
             return (dispatch, {selectedYear, sortField, sortOrder}) => {
