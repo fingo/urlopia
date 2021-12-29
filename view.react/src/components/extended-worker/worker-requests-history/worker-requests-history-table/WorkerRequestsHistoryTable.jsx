@@ -3,30 +3,41 @@ import PropTypes from "prop-types";
 import {useState} from "react";
 import {CheckSquareFill as AcceptIcon, XSquareFill as XIcon} from "react-bootstrap-icons";
 import BootstrapTable from "react-bootstrap-table-next";
-import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
+import filterFactory from "react-bootstrap-table2-filter";
 import {BeatLoader} from "react-spinners";
 
 import {ACCEPTED, PENDING} from "../../../../constants/statuses";
 import {spinner} from '../../../../global-styles/loading-spinner.module.scss';
 import {actionBtn, actions} from '../../../../global-styles/table-styles.module.scss';
+import {getPaginationForPage} from "../../../../helpers/pagination/PaginationHelper";
 import {
     requestPeriodFormatter,
-    requestStatusMapper, requestTypeMapper,
+    requestStatusMapper,
+    requestTypeMapper,
     statusFormatter,
     textAsArrayFormatter
 } from "../../../../helpers/react-bootstrap-table2/RequestMapperHelper";
 import {tableClass} from "../../../../helpers/react-bootstrap-table2/tableClass";
+import {disableSortingFunc} from "../../../../helpers/react-bootstrap-table2/utils";
 import {AcceptancesModal} from "../../../user-requests-list/AcceptancesModal";
 import styles from './WorkerRequestsHistoryTable.module.scss';
 
 export const WorkerRequestsHistoryTable = ({
     requests,
+    requestsPage,
     acceptRequest,
     cancelRequest,
     rejectRequest,
     isFetching,
+    setPageNumber,
+    setSort
 }) => {
     const [modalsShow, setModalsShow] = useState({})
+
+    const pagination = getPaginationForPage({
+        page: requestsPage,
+        onClick: pageNumber => setPageNumber(pageNumber)
+    })
 
     const actionFormatter = (cell, row) => {
         const acceptBtnClass = classNames(actionBtn, 'text-success');
@@ -101,20 +112,19 @@ export const WorkerRequestsHistoryTable = ({
             align: 'center',
             style: {verticalAlign: 'middle'},
             sort: true,
+            sortFunc: disableSortingFunc,
+            onSort: (field, order) => {
+                const sortField = "startDate"
+                setSort({field: sortField, order: order})
+            },
         },
         {
             dataField: 'examiner',
             text: 'Rozpatrujący',
             headerAlign: 'center',
             align: 'center',
-            filter: textFilter({
-                id: 'examinerWorkerRequestsHistoryTableFilter',
-                placeholder: 'Filtruj...',
-                delay: 0,
-            }),
             formatter: textAsArrayFormatter,
             style: {verticalAlign: 'middle'},
-            sort: true,
         },
         {
             dataField: 'type',
@@ -122,14 +132,14 @@ export const WorkerRequestsHistoryTable = ({
             headerAlign: 'center',
             align: 'center',
             formatter: requestTypeMapper,
-            filter: textFilter({
-                id: 'typeWorkerRequestsHistoryTableFilter',
-                placeholder: 'Filtruj...',
-                delay: 0,
-            }),
             filterValue: (cell) => requestTypeMapper(cell),
             style: {verticalAlign: 'middle'},
             sort: true,
+            sortFunc: disableSortingFunc,
+            onSort: (field, order) => {
+                const sortField = "type"
+                setSort({field: sortField, order: order})
+            },
         },
         {
             dataField: 'status',
@@ -137,14 +147,14 @@ export const WorkerRequestsHistoryTable = ({
             headerAlign: 'center',
             align: 'center',
             formatter: (cell, row) => statusFormatter(cell, row, requests, showModal),
-            filter: textFilter({
-                id: 'statusWorkerRequestsHistoryTableFilter',
-                placeholder: 'Filtruj...',
-                delay: 0,
-            }),
             filterValue: (cell) => requestStatusMapper(cell),
             style: {verticalAlign: 'middle'},
             sort: true,
+            sortFunc: disableSortingFunc,
+            onSort: (field, order) => {
+                const sortField = "status"
+                setSort({field: sortField, order: order})
+            },
         },
         {
             dataField: 'actions',
@@ -156,11 +166,13 @@ export const WorkerRequestsHistoryTable = ({
         },
     ];
 
+    const isLoading = requests.length === 0 && isFetching
+
     const tableWrapperClass = classNames(tableClass, styles.table);
     return (
         <>
             {
-                !isFetching ?
+                !isLoading ?
                     <>
                         {modals}
                         <BootstrapTable
@@ -174,6 +186,7 @@ export const WorkerRequestsHistoryTable = ({
                             bordered={false}
                             hover
                         />
+                        {pagination}
                     </>
                     :
                     <div className={spinner}>
@@ -187,10 +200,13 @@ export const WorkerRequestsHistoryTable = ({
 
 WorkerRequestsHistoryTable.propTypes = {
     requests: PropTypes.array,
+    requestsPage: PropTypes.object.isRequired,
     acceptRequest: PropTypes.func.isRequired,
     cancelRequest: PropTypes.func.isRequired,
     rejectRequest: PropTypes.func.isRequired,
     isFetching: PropTypes.bool,
+    setPageNumber: PropTypes.func.isRequired,
+    setSort: PropTypes.func.isRequired,
 }
 
 WorkerRequestsHistoryTable.defaultProps = {
