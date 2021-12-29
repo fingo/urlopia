@@ -14,6 +14,7 @@ import info.fingo.urlopia.reports.evidence.EvidenceReport;
 import info.fingo.urlopia.reports.evidence.EvidenceReportModelFactory;
 import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.user.User;
+import info.fingo.urlopia.user.UserFullNameComparator;
 import info.fingo.urlopia.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -107,11 +108,9 @@ public class ReportService {
 
         var employees = userService.get(filter);
         employees.addAll(findInactiveUsersNeededToBeInReport(year,month));
-        var sortedEmployees = employees.stream()
-                                        .sorted((u1, u2) -> u1.getLastName().compareToIgnoreCase(u2.getLastName()))
-                                        .collect(Collectors.toList());
+        employees.sort(new UserFullNameComparator());
 
-        return partitionUsersToPages(sortedEmployees).stream()
+        return partitionUsersToPages(employees).stream()
                 .map(page -> generateAttendanceListPage(year, month, page))
                 .toList();
     }
