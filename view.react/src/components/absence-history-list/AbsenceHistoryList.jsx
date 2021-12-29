@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import {useCallback, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {Dropdown, DropdownButton} from "react-bootstrap";
 import {useLocation} from "react-router-dom";
 
@@ -19,35 +19,24 @@ export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
 
     const FIRST_AVAILABLE_YEAR = 2016;
     const currentYear = (new Date()).getFullYear()
+    const availableYears = getAvailableYears(FIRST_AVAILABLE_YEAR, currentYear);
 
     const [selectedYear, setSelectedYear] = useState(currentYear);
-    const [availableYears, setAvailableYears] = useState([]);
-
     const [currentSort, setCurrentSort] = useState({field: "created", order: "desc"})
 
-    const getAvailableYears = useCallback(() => {
-        const startYear = FIRST_AVAILABLE_YEAR;
-        const years = [];
-        for (let i = currentYear; i >= startYear; i--) {
-            years.push(i);
-        }
-        setAvailableYears(years);
-    }, [currentYear]);
-
     useEffect(() => {
-        getAvailableYears();
         fetchHistoryLogs(absenceHistoryDispatch, {
             selectedYear,
             sortField: currentSort.field,
             sortOrder: currentSort.order
         })
-    }, [absenceHistoryDispatch, selectedYear, fetchHistoryLogs, getAvailableYears, currentSort]);
+    }, [absenceHistoryDispatch, selectedYear, fetchHistoryLogs, currentSort]);
 
     const handleYearChange = (newYear) => {
         setSelectedYear(newYear);
     }
 
-    const formattedLog = formatLogs(absenceHistory);
+    const formattedLogs = formatLogs(absenceHistory);
     let vacationTypeLabel = isUserEC ? "Pozostały urlop" : "Pozostała przerwa"
 
     let header = 'Historia użytkownika';
@@ -83,13 +72,21 @@ export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
                 </div>
             </div>
             <AbsenceHistoryTab
-                logs={formattedLog}
+                logs={formattedLogs}
                 vacationTypeLabel={vacationTypeLabel}
                 setSort={(sort) => setCurrentSort(sort)}
             />
             {pagination}
         </>
     );
+}
+
+const getAvailableYears = (startYear, currentYear) => {
+    const years = [];
+    for (let i = currentYear; i >= startYear; i--) {
+        years.push(i);
+    }
+    return years;
 }
 
 AbsenceHistoryList.propTypes = {
