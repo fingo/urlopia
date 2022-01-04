@@ -16,7 +16,7 @@ export const HolidaysConfig = () => {
     const {holidays} = state
 
     const currentYear = (new Date()).getFullYear();
-    const availableYears = [currentYear, currentYear + 1];
+    const availableYears = getAvailableYears(currentYear);
 
     const [selectedYear, setSelectedYear] = useState(currentYear);
 
@@ -75,4 +75,12 @@ export const HolidaysConfig = () => {
             </div>
         </div>
     )
+}
+
+const getAvailableYears = (currentYear) => {
+    let result = [];
+    for (let i = currentYear + 1; i >= 2016; i--) {
+        result.push(i);
+    }
+    return result;
 }
