@@ -87,13 +87,6 @@ public class HolidayService {
         return new Holiday(holiday.getName(), date.toLocalDate());
     }
 
-    @Scheduled(cron = "1 0 0 1 1 *")
-    protected void synchronizeDatabase() {
-        deleteYear(LocalDate.now().getYear() - 1);
-        holidayRepository.saveAll(generateHolidaysList(LocalDate.now().getYear() + 1));
-        log.info("The list of upcoming holidays has been updated");
-    }
-
     public void deleteYear(int year) {
         var yearStartDate = LocalDate.of(year, 1, 1);
         var yearEndDate = LocalDate.of(year, 12, 31);
