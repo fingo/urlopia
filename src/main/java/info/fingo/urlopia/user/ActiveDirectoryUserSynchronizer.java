@@ -100,7 +100,7 @@ public class ActiveDirectoryUserSynchronizer {
     private List<SearchResult> getActiveUsers(List<SearchResult> searchResults){
         return searchResults.stream()
                 .filter(this::isActive)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }
