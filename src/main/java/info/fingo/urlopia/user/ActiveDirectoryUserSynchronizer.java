@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 public class ActiveDirectoryUserSynchronizer {
     public static final String DISABLED_USER_PROPERTY_CODE = "514";
     public static final String DISABLED_USER_PROPERTY_KEY = "useraccountcontrol";
+    public static final String DISPLAY_NAME_PROPERTY_KEY = "displayname";
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActiveDirectoryUserSynchronizer.class);
@@ -82,6 +83,9 @@ public class ActiveDirectoryUserSynchronizer {
                 .objectClass(ActiveDirectoryObjectClass.Person)
                 .memberOf(usersGroup)
                 .search();
+        for (var user: allUsers){
+            LOGGER.info(getUserInfo(user));
+        }
         return getActiveUsers(allUsers);
     }
 
@@ -101,6 +105,15 @@ public class ActiveDirectoryUserSynchronizer {
         return searchResults.stream()
                 .filter(this::isActive)
                 .toList();
+    }
+
+    private String getUserInfo(SearchResult result){
+        try {
+            return (String) result.getAttributes().get(DISPLAY_NAME_PROPERTY_KEY).get() + " : " +
+                    (String) result.getAttributes().get(DISABLED_USER_PROPERTY_KEY).get() ;
+        } catch (Exception e){
+            return null;
+        }
     }
 
 }
