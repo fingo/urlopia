@@ -16,6 +16,10 @@ import java.util.stream.Stream;
 
 @Component
 public class ActiveDirectoryUserSynchronizer {
+    public static final String DISABLED_USER_PROPERTY_CODE = "514";
+    public static final String DISABLED_USER_PROPERTY_KEY = "useraccountcontrol";
+
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ActiveDirectoryUserSynchronizer.class);
 
     @Value("${ad.groups.users}")
@@ -74,10 +78,29 @@ public class ActiveDirectoryUserSynchronizer {
     }
 
     private List<SearchResult> pickUsersFromActiveDirectory() {
-        return activeDirectory.newSearch()
+        var allUsers = activeDirectory.newSearch()
                 .objectClass(ActiveDirectoryObjectClass.Person)
                 .memberOf(usersGroup)
                 .search();
+        return getActiveUsers(allUsers);
+    }
+
+    private String getDisabledParam(SearchResult result){
+        try {
+            return (String) result.getAttributes().get(DISABLED_USER_PROPERTY_KEY).get();
+        } catch (Exception e){
+            return null;
+        }
+    }
+
+    private boolean isActive(SearchResult result){
+        return !DISABLED_USER_PROPERTY_CODE.equals(getDisabledParam(result));
+    }
+
+    private List<SearchResult> getActiveUsers(List<SearchResult> searchResults){
+        return searchResults.stream()
+                .filter(this::isActive)
+                .collect(Collectors.toList());
     }
 
 }
