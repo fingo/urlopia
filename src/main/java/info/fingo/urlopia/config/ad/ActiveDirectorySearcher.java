@@ -49,6 +49,11 @@ public class ActiveDirectorySearcher {
         return this;
     }
 
+    public ActiveDirectorySearcher active(){
+        filter.append("(!(userAccountControl=514))");
+        return this;
+    }
+
     public ActiveDirectorySearcher distinguishedName(String distinguishedName) {
         var value = String.format("(distinguishedName=%s)", distinguishedName);
         filter.append(value);

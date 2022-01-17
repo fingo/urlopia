@@ -82,11 +82,12 @@ public class ActiveDirectoryUserSynchronizer {
         var allUsers = activeDirectory.newSearch()
                 .objectClass(ActiveDirectoryObjectClass.Person)
                 .memberOf(usersGroup)
+                .active()
                 .search();
         for (var user: allUsers){
             LOGGER.info(getUserInfo(user));
         }
-        return getActiveUsers(allUsers);
+        return allUsers;
     }
 
     private String getDisabledParam(SearchResult result){
