@@ -29,6 +29,7 @@ public class ActiveDirectorySynchronizationScheduler {
         LOGGER.info("*** FULL SYNCHRONIZATION START ***");
         userSynchronizer.addNewUsers();
         userSynchronizer.deactivateDeletedUsers();
+        userSynchronizer.deactivateDisabledUsers();
         userSynchronizer.synchronizeFull();
         teamSynchronizer.addNewTeams();
         teamSynchronizer.synchronize();

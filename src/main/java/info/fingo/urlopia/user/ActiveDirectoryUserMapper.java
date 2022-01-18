@@ -37,7 +37,11 @@ class ActiveDirectoryUserMapper {
                 isB2B(searchResult));
         user.setEc(
                 isEC(searchResult));
-        user.activate();
+        if (ActiveDirectoryUtils.isDisabled(searchResult)) {
+            user.deactivate();
+        } else {
+            user.activate();
+        }
         return user;
     }
 

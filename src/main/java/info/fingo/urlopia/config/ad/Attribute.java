@@ -12,7 +12,9 @@ public enum Attribute {
     NAME("name"),
     DISTINGUISHED_NAME("distinguishedName"),
     CREATED_TIME("whenCreated"),
-    CHANGED_TIME("whenChanged");
+    CHANGED_TIME("whenChanged"),
+    USER_ACCOUNT_CONTROL("userAccountControl");
+
 
     private String key;
 

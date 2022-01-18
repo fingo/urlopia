@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
 
 import javax.naming.directory.SearchResult;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
 public class ActiveDirectoryUserSynchronizer {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ActiveDirectoryUserSynchronizer.class);
 
     @Value("${ad.groups.users}")
@@ -46,7 +46,7 @@ public class ActiveDirectoryUserSynchronizer {
     public void deactivateDeletedUsers() {
         var adUsers = pickUsersFromActiveDirectory().stream()
                 .map(user -> ActiveDirectoryUtils.pickAttribute(user, Attribute.PRINCIPAL_NAME))
-                .collect(Collectors.toList());
+                .toList();
 
         userRepository.findAll().stream()
                 .filter(user -> !adUsers.contains(user.getPrincipalName()))
@@ -55,6 +55,21 @@ public class ActiveDirectoryUserSynchronizer {
                     userRepository.save(user);
                 });
         LOGGER.info("Synchronisation succeed: deactivate deleted users");
+    }
+
+    public void deactivateDisabledUsers() {
+        var disabledUsers = pickUsersFromActiveDirectory().stream()
+                .filter(ActiveDirectoryUtils::isDisabled)
+                .map(user -> ActiveDirectoryUtils.pickAttribute(user, Attribute.PRINCIPAL_NAME))
+                .toList();
+
+        userRepository.findAll().stream()
+                .filter(user -> disabledUsers.contains(user.getPrincipalName()))
+                .forEach(user -> {
+                    user.deactivate();
+                    userRepository.save(user);
+                });
+        LOGGER.info("Synchronisation succeed: deactivate disabled users");
     }
 
     public void synchronizeFull() {
