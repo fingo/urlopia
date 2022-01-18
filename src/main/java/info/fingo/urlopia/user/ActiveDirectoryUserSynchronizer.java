@@ -58,8 +58,7 @@ public class ActiveDirectoryUserSynchronizer {
     }
 
     public void deactivateDisabledUsers() {
-        var disabledUsers = pickUsersFromActiveDirectory().stream()
-                .filter(ActiveDirectoryUtils::isDisabled)
+        var disabledUsers = pickDisabledUsersFromActiveDirectory().stream()
                 .map(user -> ActiveDirectoryUtils.pickAttribute(user, Attribute.PRINCIPAL_NAME))
                 .toList();
 
@@ -92,6 +91,14 @@ public class ActiveDirectoryUserSynchronizer {
         return activeDirectory.newSearch()
                 .objectClass(ActiveDirectoryObjectClass.Person)
                 .memberOf(usersGroup)
+                .search();
+    }
+
+    private List<SearchResult> pickDisabledUsersFromActiveDirectory(){
+        return activeDirectory.newSearch()
+                .objectClass(ActiveDirectoryObjectClass.Person)
+                .memberOf(usersGroup)
+                .isDisabled()
                 .search();
     }
 

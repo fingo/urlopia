@@ -55,6 +55,17 @@ public class ActiveDirectorySearcher {
         return this;
     }
 
+    public ActiveDirectorySearcher isDisabled(){
+        var builder = new StringBuilder("(|");
+        for (var disableKey: ActiveDirectoryUtils.DISABLED_STATUS){
+            var value = String.format("(%s=%s)",Attribute.USER_ACCOUNT_CONTROL.getKey(), disableKey);
+            builder.append(value);
+        }
+        builder.append(")");
+        filter.append(builder);
+        return this;
+    }
+
     public List<SearchResult> search() {
         var filter = this.filter.append(")").toString();
         List<SearchResult> result = new LinkedList<>();
