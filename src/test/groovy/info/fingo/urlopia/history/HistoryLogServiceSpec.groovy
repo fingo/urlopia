@@ -1,10 +1,9 @@
 package info.fingo.urlopia.history
 
+import info.fingo.urlopia.api.v2.history.UsedHoursFromMonthCalculator
 import info.fingo.urlopia.config.persistance.filter.Filter
-import info.fingo.urlopia.holidays.HolidayService
 import info.fingo.urlopia.holidays.WorkingDaysCalculator
 import info.fingo.urlopia.request.Request
-import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserRepository
 import spock.lang.Specification
 
@@ -15,13 +14,11 @@ class HistoryLogServiceSpec extends Specification {
     def historyLogRepository = Mock(HistoryLogRepository)
     def userRepository = Mock(UserRepository)
     def workingDaysCalculator = Mock(WorkingDaysCalculator)
-    def holidayService = Mock(HolidayService)
-    def historyLogService = new HistoryLogService(historyLogRepository, userRepository, workingDaysCalculator)
+    def usedHoursFromMonthCalculator = Mock(UsedHoursFromMonthCalculator)
+
+    def historyLogService = new HistoryLogService(historyLogRepository, userRepository, workingDaysCalculator, usedHoursFromMonthCalculator)
     def userID = 5;
-    def user = Mock(User){
-        getId() >> userID
-    }
-    def year = 2021
+
 
 
 
@@ -75,5 +72,82 @@ class HistoryLogServiceSpec extends Specification {
 
         then:
         1 * historyLogRepository.findAll(_ as Filter, HistoryLogExcerptProjection.class)
+    }
+
+    def "countUsedHoursInMonth WHEN user has only requests different than normal SHOULD return 0"(){
+        given:
+        def firstRequest = Mock(Request){
+            isNormal() >> false
+        }
+        def firstLog = Mock(HistoryLog){
+            getRequest() >> firstRequest
+        }
+
+        def secondRequest = Mock(Request){
+            isNormal() >> false
+        }
+        def secondLog = Mock((HistoryLog)){
+            getRequest() >> secondRequest
+        }
+
+        historyLogRepository.findLogsByUserId(_ as Long) >> [firstLog, secondLog]
+
+        when:
+        def result = historyLogService.countUsedHoursInMonth(5,2021,1)
+
+        then:
+        result == 0;
+    }
+
+    def "countUsedHoursInMonth WHEN user has normal requests SHOULD return sum of calculated hours"(){
+        given:
+        usedHoursFromMonthCalculator.countUsedHours(_ as Integer, _ as Integer, _ as HistoryLog) >> 8
+        def firstRequest = Mock(Request){
+            isNormal() >> true
+        }
+        def firstLog = Mock(HistoryLog){
+            getRequest() >> firstRequest
+        }
+
+        def secondRequest = Mock(Request){
+            isNormal() >> true
+        }
+        def secondLog = Mock((HistoryLog)){
+            getRequest() >> secondRequest
+        }
+
+        historyLogRepository.findLogsByUserId(_ as Long) >> [firstLog, secondLog]
+
+        when:
+        def result = historyLogService.countUsedHoursInMonth(5,2021,1)
+
+        then:
+        result == 16;
+    }
+
+    def "countUsedHoursInMonth WHEN user has normal and different requests SHOULD return values only for normal one"(){
+        given:
+        usedHoursFromMonthCalculator.countUsedHours(_ as Integer, _ as Integer, _ as HistoryLog) >> 8
+        def firstRequest = Mock(Request){
+            isNormal() >> true
+        }
+        def firstLog = Mock(HistoryLog){
+            getRequest() >> firstRequest
+        }
+
+        def secondRequest = Mock(Request){
+            isNormal() >> false
+        }
+        def secondLog = Mock((HistoryLog)){
+            getRequest() >> secondRequest
+        }
+
+        historyLogRepository.findLogsByUserId(_ as Long) >> [firstLog, secondLog]
+
+        when:
+        def result = historyLogService.countUsedHoursInMonth(5,2021,1)
+
+        then:
+        result == 8;
     }
 }
