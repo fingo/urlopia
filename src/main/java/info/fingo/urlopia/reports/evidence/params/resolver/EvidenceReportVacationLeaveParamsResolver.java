@@ -56,9 +56,8 @@ public class EvidenceReportVacationLeaveParamsResolver implements ParamResolver 
     private Map<String,String> resolveVacationLeaveUsedHours(){
         var result = new HashMap<String, String>();
         for (int month = 1; month <= NUMBER_OF_MONTHS; month++) {
-            var present = LocalDate.now();
             var formattedValue = "0";
-            if (month < present.getMonth().getValue()){
+            if (monthIsInPast(month, year)){
                 var usedHours = historyLogService.countUsedHoursInMonth(user.getId(), year, month);
                 formattedValue = formatResolvedHours(usedHours);
             }
@@ -74,5 +73,11 @@ public class EvidenceReportVacationLeaveParamsResolver implements ParamResolver 
         } else {
             return DECIMAL_FORMAT.format(resolvedValue);
         }
+    }
+
+    private boolean monthIsInPast(Integer month,
+                                  Integer year){
+        var present = LocalDate.now();
+        return (year == present.getYear() && month < present.getMonth().getValue()) || year < present.getYear();
     }
 }
