@@ -1,9 +1,9 @@
 package info.fingo.urlopia.history;
 
 import info.fingo.urlopia.UrlopiaApplication;
+import info.fingo.urlopia.api.v2.history.UsedHoursFromMonthCalculator;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
-import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.user.NoSuchUserException;
@@ -31,6 +31,7 @@ public class HistoryLogService {
     private final HistoryLogRepository historyLogRepository;
     private final UserRepository userRepository;
     private final WorkingDaysCalculator workingDaysCalculator;
+    private final UsedHoursFromMonthCalculator usedHoursFromMonthCalculator;
 
     private static final String CREATED_FILTER = "created";
 
@@ -215,5 +216,21 @@ public class HistoryLogService {
         var historyLogFromYear = getFromYear(userId, year);
         return historyLogFromYear.stream()
                 .allMatch(historyLog -> historyLog.getUserWorkTime() == 8.0);
+    }
+
+    public float countUsedHoursInMonth(Long userId,
+                                       Integer year,
+                                       Integer month) {
+        var hours = 0f;
+        var logs = historyLogRepository.findLogsByUserId(userId);
+        for (var log : logs) {
+            var request = log.getRequest();
+            if (request != null && request.isNormal()) {
+                var hoursFromRequest = usedHoursFromMonthCalculator.countUsedHours(year, month, log);
+                hoursFromRequest = log.getHours() <= 0 ? hoursFromRequest : -1 * hoursFromRequest;
+                hours += hoursFromRequest;
+            }
+        }
+        return hours;
     }
 }

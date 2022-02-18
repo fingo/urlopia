@@ -145,8 +145,8 @@ public class RequestService {
         return getTeammatesVacations(userId, startDate, endDate);
     }
 
-    public List<VacationDay> getTeammatesVacations(Long userId, 
-                                                   LocalDate startDate, 
+    public List<VacationDay> getTeammatesVacations(Long userId,
+                                                   LocalDate startDate,
                                                    LocalDate endDate) {
         var user = userService.get(userId);
         var teammates = teammatesOf(user);
@@ -230,7 +230,7 @@ public class RequestService {
         return new AbsentUserOutput(userName, teams);
     }
 
-    private VacationDay createVacationDay(List<User> users, 
+    private VacationDay createVacationDay(List<User> users,
                                           LocalDate date) {
         var namesOfVacationingUsers = users.stream()
                 .filter(user -> isVacationing(user, date))
@@ -307,7 +307,7 @@ public class RequestService {
         service.reject(request);
     }
 
-    public void cancel(Long requestId, 
+    public void cancel(Long requestId,
                        Long deciderId) {
         var request = requestRepository
                 .findById(requestId)
