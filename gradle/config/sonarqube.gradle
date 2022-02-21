@@ -1,6 +1,6 @@
 ext {
     sonarProjectName = project.findProperty('sonarProjectName') ?: rootProject.name
-    sonarProjectKey = project.findProperty('sonarProjectKey') ?: 'urlopia'
+    sonarProjectKey = project.findProperty('sonarProjectKey') ?: 'info.fingo:urlopia'
 }
 
 sonarqube {
