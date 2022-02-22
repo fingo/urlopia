@@ -1,0 +1,15 @@
+ext {
+    sonarProjectName = project.findProperty('sonarProjectName') ?: rootProject.name
+    sonarProjectKey = project.findProperty('sonarProjectKey') ?: 'info.fingo:urlopia'
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectName", sonarProjectName
+        property "sonar.projectKey", sonarProjectKey
+    }
+}
+
+tasks.named("sonarqube").configure {
+    dependsOn jacocoTestReport
+}
