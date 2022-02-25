@@ -78,6 +78,7 @@ class HistoryLogServiceSpec extends Specification {
         given:
         def firstRequest = Mock(Request){
             isNormal() >> false
+            getStatus() >> Request.Status.ACCEPTED
         }
         def firstLog = Mock(HistoryLog){
             getRequest() >> firstRequest
@@ -85,6 +86,7 @@ class HistoryLogServiceSpec extends Specification {
 
         def secondRequest = Mock(Request){
             isNormal() >> false
+            getStatus() >> Request.Status.ACCEPTED
         }
         def secondLog = Mock((HistoryLog)){
             getRequest() >> secondRequest
@@ -104,6 +106,7 @@ class HistoryLogServiceSpec extends Specification {
         usedHoursFromMonthCalculator.countUsedHours(_ as Integer, _ as Integer, _ as HistoryLog) >> 8
         def firstRequest = Mock(Request){
             isNormal() >> true
+            getStatus() >> Request.Status.ACCEPTED
         }
         def firstLog = Mock(HistoryLog){
             getRequest() >> firstRequest
@@ -111,6 +114,7 @@ class HistoryLogServiceSpec extends Specification {
 
         def secondRequest = Mock(Request){
             isNormal() >> true
+            getStatus() >> Request.Status.ACCEPTED
         }
         def secondLog = Mock((HistoryLog)){
             getRequest() >> secondRequest
@@ -130,6 +134,7 @@ class HistoryLogServiceSpec extends Specification {
         usedHoursFromMonthCalculator.countUsedHours(_ as Integer, _ as Integer, _ as HistoryLog) >> 8
         def firstRequest = Mock(Request){
             isNormal() >> true
+            getStatus() >> Request.Status.ACCEPTED
         }
         def firstLog = Mock(HistoryLog){
             getRequest() >> firstRequest
@@ -137,6 +142,7 @@ class HistoryLogServiceSpec extends Specification {
 
         def secondRequest = Mock(Request){
             isNormal() >> false
+            getStatus() >> Request.Status.ACCEPTED
         }
         def secondLog = Mock((HistoryLog)){
             getRequest() >> secondRequest
