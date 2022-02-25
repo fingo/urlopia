@@ -21,42 +21,9 @@ class EvidenceReportUsedTimeDuringTheYearParamsResolverSpec extends Specificatio
                                                                                                                       year,
                                                                                                                       historyLogService,
                                                                                                                       requestService)
-        def usedTimeModelPrefix = "usedTimeDuringTheYear"
         def timeUnitModelPrefix = "timeUnit"
         def PART_TIME_WORKER_SYMBOL = "godz"
         def FULL_TIME_WORKER_SYMBOL = "dni"
-
-
-
-
-    def "resolve WHEN called with use who work on fullTime all time in year SHOULD return model that contains prefix and his hours divide by 8 as value"(){
-            given:
-            def usedHours = 8d
-            requestService.countTheHoursUsedDuringTheYear(userId, year) >> usedHours
-            historyLogService.checkIfWorkedFullTimeForTheWholeYear(_ as Long, _ as Integer) >> true
-
-            when:
-            def result = evidenceReportUsedTimeDuringTheYearParamsResolver.resolve()
-
-            then:
-            result.containsKey(usedTimeModelPrefix)
-            result.get(usedTimeModelPrefix) == DECIMAL_FORMAT.format(usedHours/ FULL_TIME_DIVIDER)
-
-        }
-
-        def "resolve WHEN called with use who not work on fullTime all time in year SHOULD return model that contains prefix and his hours as value"(){
-            given:
-            def usedHours = 8
-            requestService.countTheHoursUsedDuringTheYear(_ as Long, _ as Integer) >> usedHours;
-            historyLogService.checkIfWorkedFullTimeForTheWholeYear(_ as Long, _ as Integer) >> false
-
-            when:
-            def result = evidenceReportUsedTimeDuringTheYearParamsResolver.resolve()
-
-            then:
-            result.containsKey(usedTimeModelPrefix)
-            result.get(usedTimeModelPrefix) ==  DECIMAL_FORMAT.format(usedHours)
-        }
 
 
     def "resolve() WHEN user was not fullTimeWorker all time in year SHOULD return model that contains prefix and partTime Worker Symbol as value"() {

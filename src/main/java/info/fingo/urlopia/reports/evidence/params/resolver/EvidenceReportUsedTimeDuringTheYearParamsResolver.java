@@ -23,17 +23,7 @@ public class EvidenceReportUsedTimeDuringTheYearParamsResolver implements ParamR
 
     @Override
     public Map<String, String> resolve() {
-        return Map.of("usedTimeDuringTheYear", resolveUsedTimeDuringYear(),
-                "timeUnit", resolveTimeUnit());
-    }
-
-    private String resolveUsedTimeDuringYear() {
-        var usedHours = requestService.countTheHoursUsedDuringTheYear(user.getId(), year);
-        if (historyLogService.checkIfWorkedFullTimeForTheWholeYear(user.getId(), year)) {
-            return DECIMAL_FORMAT.format(usedHours / FULL_TIME_DIVIDER);
-        } else {
-            return DECIMAL_FORMAT.format(usedHours);
-        }
+        return Map.of("timeUnit", resolveTimeUnit());
     }
 
     private String resolveTimeUnit() {

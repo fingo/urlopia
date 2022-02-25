@@ -218,19 +218,22 @@ public class HistoryLogService {
                 .allMatch(historyLog -> historyLog.getUserWorkTime() == 8.0);
     }
 
-    public float countUsedHoursInMonth(Long userId,
+    public double countUsedHoursInMonth(Long userId,
                                        Integer year,
                                        Integer month) {
-        var hours = 0f;
+        var hours = 0d;
         var logs = historyLogRepository.findLogsByUserId(userId);
         for (var log : logs) {
-            var request = log.getRequest();
-            if (request != null && request.isNormal()) {
+            if (logShouldBeCount(log)) {
                 var hoursFromRequest = usedHoursFromMonthCalculator.countUsedHours(year, month, log);
-                hoursFromRequest = log.getHours() <= 0 ? hoursFromRequest : -1 * hoursFromRequest;
                 hours += hoursFromRequest;
             }
         }
         return hours;
+    }
+
+    private boolean logShouldBeCount(HistoryLog historyLog){
+        var request = historyLog.getRequest();
+        return request != null && request.isNormal() && request.getStatus() == Request.Status.ACCEPTED;
     }
 }
