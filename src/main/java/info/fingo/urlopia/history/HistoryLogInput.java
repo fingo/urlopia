@@ -4,6 +4,16 @@ public class HistoryLogInput {
     private Float hours;
     private String comment;
 
+    private Boolean countForNextYear = false;
+
+    public Boolean getCountForNextYear() {
+        return countForNextYear;
+    }
+
+    public void setCountForNextYear(Boolean countForNextYear) {
+        this.countForNextYear = countForNextYear;
+    }
+
     public Float getHours() {
         return hours;
     }

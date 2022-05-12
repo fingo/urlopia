@@ -1,0 +1,21 @@
+@import '../../global-styles/bootstrap-breakpoints';
+
+.forms {
+  margin-top: 1rem;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+}
+
+@include media-breakpoint-only(lg) {
+  .forms {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.workingHoursSelection {
+  width: fit-content;
+  margin: 0 1rem;
+  border-radius: 0.5rem;
+}

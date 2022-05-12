@@ -1,11 +1,35 @@
 import PropTypes from "prop-types";
+import {useState} from "react";
 import BootstrapTable from 'react-bootstrap-table-next';
 
 import {hoursChangeMapper} from "../../helpers/react-bootstrap-table2/HistoryLogMapperHelper";
 import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
 import {disableSortingFunc} from "../../helpers/react-bootstrap-table2/utils";
+import {ChangeLogCountYear} from "../change-log-count-year/ChangeLogCountYear";
 
-export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, setSort}) => {
+export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, isAdminView, setSort, setRefresh}) => {
+    const [whichExpanded, setWhichExpanded] = useState([]);
+
+    const expandRow = {
+        onlyOneExpanding: true,
+        onExpand: (row, isExpand) => {
+            if (!isExpand) {
+                setWhichExpanded([]);
+            } else {
+                setWhichExpanded([row.id]);
+            }
+        },
+        expanded: whichExpanded,
+        renderer: row => (
+                <ChangeLogCountYear
+                    isAdminView={isAdminView}
+                    countForNextYear={!row.countForNextYear}
+                    historyLogId={row.id}
+                    setRefresh={setRefresh}
+                />
+            )
+    };
+
     const columns = [
         {
             dataField: 'id',
@@ -98,7 +122,11 @@ export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, setSort}) 
             headerAttrs: {
                 hidden: isHidden
             }
-        }
+        },
+        {
+            dataField: 'countForNextYear',
+            hidden: true
+        },
     ];
 
     return (
@@ -106,6 +134,7 @@ export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, setSort}) 
             bootstrap4
             keyField='id'
             data={logs}
+            expandRow={expandRow}
             wrapperClasses={tableClass}
             columns = {columns}
             bordered={false}
@@ -118,11 +147,13 @@ export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, setSort}) 
 AbsenceHistoryTab.propTypes = {
     logs: PropTypes.array,
     isHidden: PropTypes.bool,
-    vacationTypeLabel: PropTypes.string
+    vacationTypeLabel: PropTypes.string,
+    isAdminView: PropTypes.bool
 }
 
 AbsenceHistoryTab.defaultProps = {
     logs: [],
     isHidden: false,
+    isAdminView: false,
     vacationTypeLabel: "Pozostały urlop"
 }

@@ -30,7 +30,10 @@ export const AbsenceHistorySection = () => {
     return (
         <div>
             <Form.Label><strong>Historia użytkownika</strong></Form.Label>
-            <AbsenceHistoryTab logs={formattedRecentUserHistory} isHidden={true} vacationTypeLabel={vacationTypeLabel}/>
+            <AbsenceHistoryTab logs={formattedRecentUserHistory}
+                               isHidden={true}
+                               vacationTypeLabel={vacationTypeLabel}
+                               isAdminView={false}/>
             <Button className={btnClass}
                     onClick={(e) => handleShowMoreClick(e)}
             >

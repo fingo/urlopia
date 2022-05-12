@@ -1,6 +1,8 @@
 package info.fingo.urlopia.history;
 
 import info.fingo.urlopia.UrlopiaApplication;
+import info.fingo.urlopia.api.v2.history.HistoryLogOutput;
+import info.fingo.urlopia.api.v2.history.UpdateLogCountingYearInput;
 import info.fingo.urlopia.api.v2.history.UsedHoursFromMonthCalculator;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
@@ -51,7 +53,7 @@ public class HistoryLogService {
         var formattedStartOfDay = formatter.format(startOfDay);
         var formattedEndOfDay = formatter.format(endOfDay);
         var filter = Filter.newBuilder()
-                .and("user.id", Operator.EQUAL, String.valueOf(userId))
+                .and("user.historyLogId", Operator.EQUAL, String.valueOf(userId))
                 .and(CREATED_FILTER, Operator.GREATER_OR_EQUAL, formattedStartOfDay)
                 .and(CREATED_FILTER, Operator.LESS_OR_EQUAL, formattedEndOfDay)
                 .build();
@@ -83,6 +85,14 @@ public class HistoryLogService {
         return get(filterWithRestrictions, pageable);
     }
 
+    public HistoryLogOutput updateCountingYear(UpdateLogCountingYearInput updateLogCountingYearInput){
+        var optionalLog = historyLogRepository.findById(updateLogCountingYearInput.historyLogId());
+        var historyLog = optionalLog.get();
+        historyLog.setCountForNextYear(updateLogCountingYearInput.countForNextYear());
+        var savedLog = historyLogRepository.save(historyLog);
+        return HistoryLogOutput.from(savedLog);
+    }
+
     public List<HistoryLog> getFromYear(Long userId,
                                         Integer year) {
         var yearStart = LocalDateTime.of(year, 1, 1, 0, 0);
@@ -109,7 +119,8 @@ public class HistoryLogService {
         var prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByIdDesc(targetUserId);
         var hoursChange = historyLog.getHours();
         var comment = Optional.ofNullable(historyLog.getComment()).orElse("");
-        var history = new HistoryLog(targetUser, decider, hoursChange, comment, prevHistoryLog);
+        var countForNextYear = Optional.ofNullable(historyLog.getCountForNextYear()).orElse(false);
+        var history = new HistoryLog(targetUser, decider, hoursChange, comment, prevHistoryLog, countForNextYear);
         historyLogRepository.save(history);
         var loggerInfo = "A new history log with id: %d has been added for user with id: %d"
                 .formatted(history.getId(), targetUser.getId());

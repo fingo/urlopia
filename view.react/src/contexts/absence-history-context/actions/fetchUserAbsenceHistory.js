@@ -5,16 +5,17 @@ export const fetchRecentUserAbsenceHistory = (dispatch, userId) => {
     const parameters = "page=0&size=5&sort=id,desc"
     return fetchUserAbsenceHistory(dispatch, userId, parameters, {recent: true})
 }
-
 export const fetchPagedUserAbsenceHistory = (
     dispatch,
     userId,
     year,
     pageNumber,
+    showOnlyCountedInNextYear,
     sortField = "created",
     sortOrder = "desc"
 ) => {
-    const parameters = `year=${year}&page=${pageNumber}&sort=${sortField},${sortOrder}`
+    const filterForDefaultCount = showOnlyCountedInNextYear? `countForNextYear:${showOnlyCountedInNextYear}` : ``
+    const parameters = `year=${year}&page=${pageNumber}&filter=${filterForDefaultCount}&sort=${sortField},${sortOrder}`
     return fetchUserAbsenceHistory(dispatch, userId, parameters)
 }
 

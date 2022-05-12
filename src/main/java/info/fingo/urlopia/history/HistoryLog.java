@@ -3,6 +3,7 @@ package info.fingo.urlopia.history;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.RequestType;
 import info.fingo.urlopia.user.User;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -42,6 +43,9 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
 
     private String comment = "";
 
+    @Column(nullable = false)
+    private Boolean countForNextYear = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private HistoryLog prevHistoryLog;
@@ -66,6 +70,24 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
         this.prevHistoryLog = prevHistoryLog;
     }
 
+    HistoryLog(User user,
+               User decider,
+               float hours,
+               String comment,
+               HistoryLog prevHistoryLog,
+               Boolean countForNextYear) {
+        this();
+        this.user = user;
+        this.decider = decider;
+        this.hours = hours;
+        this.hoursRemaining = Optional.ofNullable(prevHistoryLog)
+                .map(historyLog -> historyLog.hoursRemaining + hours).orElse(hours);
+        this.userWorkTime = user.getWorkTime();
+        this.comment = comment;
+        this.prevHistoryLog = prevHistoryLog;
+        this.countForNextYear = countForNextYear;
+    }
+
     HistoryLog(Request request,
                User user,
                User decider,
@@ -86,10 +108,6 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
         return countWorkTimeFraction().denominator();
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public List<String> getDeciderFullName() {
         if (checkIsDecidersFromRequest()){
             return request.getDeciders().stream()
@@ -99,8 +117,8 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
         return List.of(decider.getFullName());
     }
 
-    private boolean checkIsDecidersFromRequest(){
-        return request != null && request.getType() != RequestType.SPECIAL;
+    public Long getId() {
+        return id;
     }
 
     public LocalDateTime getCreated() {
@@ -123,8 +141,8 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
         return hours;
     }
 
-    public void setHours(float hours) {
-        this.hours = hours;
+    public float getHoursRemaining() {
+        return hoursRemaining;
     }
 
     public float getUserWorkTime() {
@@ -135,12 +153,60 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
         return comment;
     }
 
-    public float getHoursRemaining() {
-        return hoursRemaining;
+    public Boolean getCountForNextYear() {
+        return countForNextYear;
     }
 
     public HistoryLog getPrevHistoryLog() {
         return prevHistoryLog;
+    }
+
+    public void setCountForNextYear(Boolean countForNextYear) {
+        this.countForNextYear = countForNextYear;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setDecider(User decider) {
+        this.decider = decider;
+    }
+
+    public void setRequest(Request request) {
+        this.request = request;
+    }
+
+    public void setHours(float hours) {
+        this.hours = hours;
+    }
+
+    public void setHoursRemaining(float hoursRemaining) {
+        this.hoursRemaining = hoursRemaining;
+    }
+
+    public void setUserWorkTime(float userWorkTime) {
+        this.userWorkTime = userWorkTime;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public void setPrevHistoryLog(HistoryLog prevHistoryLog) {
+        this.prevHistoryLog = prevHistoryLog;
+    }
+
+    private boolean checkIsDecidersFromRequest(){
+        return request != null && request.getType() != RequestType.SPECIAL;
     }
 
     private Fraction countWorkTimeFraction(){
