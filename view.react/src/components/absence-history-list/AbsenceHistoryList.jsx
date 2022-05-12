@@ -43,7 +43,6 @@ export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
             sortField: currentSort.field,
             sortOrder: currentSort.order
         })
-        console.log(showOnlyCountedInNextYear);
     }, [absenceHistoryDispatch, selectedYear, fetchHistoryLogs, currentSort, showOnlyCountedInNextYear, refresh]);
 
     const handleYearChange = (newYear) => {

@@ -10,7 +10,9 @@ import {ChangeLogCountYear} from "../change-log-count-year/ChangeLogCountYear";
 export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, isAdminView, setSort, setRefresh}) => {
     const [whichExpanded, setWhichExpanded] = useState([]);
 
-    const expandRow = {
+    const noExpandRow = {}
+
+    const expandRowForAdmin = {
         onlyOneExpanding: true,
         onExpand: (row, isExpand) => {
             if (!isExpand) {
@@ -29,6 +31,8 @@ export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, isAdminVie
                 />
             )
     };
+
+    const expandRow = isAdminView? expandRowForAdmin: noExpandRow;
 
     const columns = [
         {
@@ -148,12 +152,16 @@ AbsenceHistoryTab.propTypes = {
     logs: PropTypes.array,
     isHidden: PropTypes.bool,
     vacationTypeLabel: PropTypes.string,
-    isAdminView: PropTypes.bool
+    isAdminView: PropTypes.bool,
+    setSort: PropTypes.func,
+    setRefresh: PropTypes.func,
 }
 
 AbsenceHistoryTab.defaultProps = {
     logs: [],
     isHidden: false,
     isAdminView: false,
-    vacationTypeLabel: "Pozostały urlop"
+    vacationTypeLabel: "Pozostały urlop",
+    setSort: () => {},
+    setRefresh: () => {}
 }

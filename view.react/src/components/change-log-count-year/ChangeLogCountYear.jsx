@@ -37,5 +37,8 @@ export const ChangeLogCountYear = ({isAdminView, countForNextYear, historyLogId,
 };
 
 ChangeLogCountYear.propTypes = {
-    workTime: PropTypes.string.isRequired,
+    isAdminView: PropTypes.bool.isRequired,
+    countForNextYear: PropTypes.bool.isRequired,
+    historyLogId: PropTypes.number.isRequired,
+    setRefresh: PropTypes.func.isRequired
 }

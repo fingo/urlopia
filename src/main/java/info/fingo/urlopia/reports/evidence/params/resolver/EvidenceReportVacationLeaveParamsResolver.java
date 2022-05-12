@@ -40,17 +40,27 @@ public class EvidenceReportVacationLeaveParamsResolver implements ParamResolver 
     }
 
     private String resolveRemainingHoursAtYearStart() {
-        var previousYearRemainingHours = historyLogService
-                .countRemainingHoursForYear(user.getId(), year - 1);
-        var currentYearAddedHours = this.historyLogService
-                .getFromYear(user.getId(), year).stream()
+        var fromPreviousYear = countRemainingFromPreviousYear(year, user.getId());
+        var fromCurrentYear  = countFromCurrentYear(year, user.getId());
+        var remainingHoursAtYearStart = fromPreviousYear + fromCurrentYear;
+        return formatResolvedHours(remainingHoursAtYearStart);
+    }
+
+    private float countFromCurrentYear(int year,
+                                       long userId){
+        return historyLogService
+                .getFromYear(userId, year).stream()
                 .filter(historyLog -> historyLog.getRequest() == null)
+                .filter(historyLog -> !historyLog.getCountForNextYear())
                 .map(HistoryLog::getHours)
                 .filter(hours -> hours > 0)
                 .reduce(Float::sum)
                 .orElse(0f);
-        var remainingHoursAtYearStart = previousYearRemainingHours + currentYearAddedHours;
-        return formatResolvedHours(remainingHoursAtYearStart);
+    }
+
+    private float countRemainingFromPreviousYear(int year,
+                                                 long userId){
+     return historyLogService.countRemainingHoursForYear(userId, year - 1);
     }
 
     private Map<String,String> resolveVacationLeaveUsedHours(){
