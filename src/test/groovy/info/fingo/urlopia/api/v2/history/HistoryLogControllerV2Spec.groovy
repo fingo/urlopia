@@ -81,4 +81,16 @@ class HistoryLogControllerV2Spec extends Specification{
         then:
         notThrown(Exception)
     }
+
+    def "updateCountingYearForLog() WHEN called by admin SHOULD NOT throw"(){
+        given:
+        webTokenService.isCurrentUserAnAdmin() >> true
+        def updateLog = new UpdateLogCountingYearInput(1, true)
+
+        when:
+        historyLogControllerV2.updateCountingYearForLog(updateLog)
+
+        then:
+        notThrown(Exception)
+    }
 }

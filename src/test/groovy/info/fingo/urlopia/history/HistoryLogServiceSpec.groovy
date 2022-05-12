@@ -1,9 +1,12 @@
 package info.fingo.urlopia.history
 
+import info.fingo.urlopia.api.v2.history.NoSuchHistoryLogException
+import info.fingo.urlopia.api.v2.history.UpdateLogCountingYearInput
 import info.fingo.urlopia.api.v2.history.UsedHoursFromMonthCalculator
 import info.fingo.urlopia.config.persistance.filter.Filter
 import info.fingo.urlopia.holidays.WorkingDaysCalculator
 import info.fingo.urlopia.request.Request
+import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserRepository
 import spock.lang.Specification
 
@@ -17,7 +20,7 @@ class HistoryLogServiceSpec extends Specification {
     def usedHoursFromMonthCalculator = Mock(UsedHoursFromMonthCalculator)
 
     def historyLogService = new HistoryLogService(historyLogRepository, userRepository, workingDaysCalculator, usedHoursFromMonthCalculator)
-    def userID = 5;
+    def userID = 5
 
 
 
@@ -98,7 +101,7 @@ class HistoryLogServiceSpec extends Specification {
         def result = historyLogService.countUsedHoursInMonth(5,2021,1)
 
         then:
-        result == 0;
+        result == 0
     }
 
     def "countUsedHoursInMonth WHEN user has normal requests SHOULD return sum of calculated hours"(){
@@ -126,7 +129,7 @@ class HistoryLogServiceSpec extends Specification {
         def result = historyLogService.countUsedHoursInMonth(5,2021,1)
 
         then:
-        result == 16;
+        result == 16
     }
 
     def "countUsedHoursInMonth WHEN user has normal and different requests SHOULD return values only for normal one"(){
@@ -154,6 +157,46 @@ class HistoryLogServiceSpec extends Specification {
         def result = historyLogService.countUsedHoursInMonth(5,2021,1)
 
         then:
-        result == 8;
+        result == 8
+    }
+
+    def "updateCountingYear WHEN called with updateLogCountingYearInput SHOULD get log with existing id from it and set countForNextYear field"(){
+        given:
+        def updateLogCounting = new UpdateLogCountingYearInput(1, countForNextYear)
+
+        def user = Mock(User){
+            getFullName() >> ""
+        }
+        def historyLog = new HistoryLog()
+        historyLog.setDecider(user)
+        historyLogRepository.findById(_ as Long) >> Optional.of(historyLog)
+        historyLogRepository.save(_ as HistoryLog) >> historyLog
+
+        when:
+        def result = historyLogService.updateCountingYear(updateLogCounting)
+
+        then:
+        result.getCountForNextYear() == countForNextYear
+
+        where:
+        countForNextYear << [true,
+                            false]
+    }
+
+    def "updateCountingYear WHEN called with not existing id SHOULD thrown exception"(){
+        given:
+        def updateLogCounting = new UpdateLogCountingYearInput(1, countForNextYear)
+
+        historyLogRepository.findById(_ as Long) >> Optional.empty()
+
+        when:
+        historyLogService.updateCountingYear(updateLogCounting)
+
+        then:
+        thrown(NoSuchHistoryLogException)
+
+        where:
+        countForNextYear << [true,
+                             false]
     }
 }
