@@ -2,6 +2,7 @@ package info.fingo.urlopia.api.v2.history;
 
 import info.fingo.urlopia.config.authentication.AuthInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
+import info.fingo.urlopia.history.HistoryLog;
 import info.fingo.urlopia.history.HistoryLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v2/absence-history")
@@ -47,6 +47,13 @@ public class HistoryLogControllerV2 {
         var filter = Filter.from(filters);
         var historyLogsPage = historyLogService.get(userId, year, filter, pageable);
         return historyLogsPage.map(HistoryLogOutput::from);
+    }
+
+    @RolesAllowed("ROLES_ADMIN")
+    @PutMapping(value="/{logId}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public HistoryLogOutput updateCountingYearForLog(@RequestBody UpdateLogCountingYearInput updateLogCountingYear) {
+       return historyLogService.updateCountingYear(updateLogCountingYear);
     }
 
 }

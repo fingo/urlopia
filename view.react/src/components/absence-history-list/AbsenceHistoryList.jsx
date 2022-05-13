@@ -1,10 +1,11 @@
 import PropTypes from "prop-types";
-import {useEffect, useState} from "react";
-import {Dropdown, DropdownButton} from "react-bootstrap";
+import {useCallback, useEffect, useState} from "react";
+import {Button, Dropdown, DropdownButton} from "react-bootstrap";
 import {useLocation} from "react-router-dom";
 
 import {getCurrentUser} from "../../api/services/session.service";
 import {useAbsenceHistory} from "../../contexts/absence-history-context/absenceHistoryContext";
+import {btnClass} from "../../global-styles/btn.module.scss";
 import {formatLogs} from "../../helpers/AbsenceHistoryFormatterHelper";
 import {getPaginationForPage} from "../../helpers/pagination/PaginationHelper";
 import styles from "./AbsenceHistoryList.module.scss";
@@ -14,6 +15,11 @@ export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
     const [state, absenceHistoryDispatch] = useAbsenceHistory()
     const {absenceHistory, absenceHistoryPage} = state;
     const {ec: isUserEC} = getCurrentUser();
+    const [refresh, setRefresh] = useState(false);
+
+    const [isAdminView, setIsAdminView] = useState(false)
+    const [showOnlyCountedInNextYear, setShowOnlyCountedInNextYear] = useState(false);
+
 
     const location = useLocation();
 
@@ -24,13 +30,20 @@ export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
     const [selectedYear, setSelectedYear] = useState(currentYear);
     const [currentSort, setCurrentSort] = useState({field: "created", order: "desc"})
 
+    const refreshLogs = useCallback(() => {
+        setRefresh(prevState => ({
+            refresh: !prevState.refresh
+        }));
+    },[setRefresh]);
+
     useEffect(() => {
         fetchHistoryLogs(absenceHistoryDispatch, {
             selectedYear,
+            showOnlyCountedInNextYear,
             sortField: currentSort.field,
             sortOrder: currentSort.order
         })
-    }, [absenceHistoryDispatch, selectedYear, fetchHistoryLogs, currentSort]);
+    }, [absenceHistoryDispatch, selectedYear, fetchHistoryLogs, currentSort, showOnlyCountedInNextYear, refresh]);
 
     const handleYearChange = (newYear) => {
         setSelectedYear(newYear);
@@ -43,12 +56,25 @@ export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
     if (location.state?.fullName && location.pathname !== '/history/me') {
         header = header.concat(` - ${location.state.fullName}`);
         vacationTypeLabel = location.state.vacationTypeLabel;
+        if (!isAdminView){
+            setIsAdminView(true)
+        }
     }
 
     const pagination = getPaginationForPage({
         page: absenceHistoryPage,
         onClick: pageNumber => setPageNumber(pageNumber)
     })
+
+    const getButtonMessage = (countForNextYearShowed) => {
+        return countForNextYearShowed? `Pokaż wszystkie wnioski`:
+                               `Pokaż tylko wnioski które dotyczą innego roku niż rok w którym zostały złożone`;
+
+    }
+
+    const handleClick = active => {
+        setShowOnlyCountedInNextYear(!active)
+    }
 
     return (
         <>
@@ -70,11 +96,19 @@ export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
                         ))}
                     </DropdownButton>
                 </div>
+                {isAdminView && <Button
+                    className={btnClass}
+                    onClick={() => handleClick(showOnlyCountedInNextYear)}
+                >
+                    {getButtonMessage(showOnlyCountedInNextYear)}
+                </Button> }
             </div>
             <AbsenceHistoryTab
                 logs={formattedLogs}
                 vacationTypeLabel={vacationTypeLabel}
                 setSort={(sort) => setCurrentSort(sort)}
+                isAdminView={isAdminView}
+                setRefresh={refreshLogs}
             />
             {pagination}
         </>

@@ -27,6 +27,8 @@ public interface HistoryLogExcerptProjection {
 
     Integer getWorkTimeDenominator();
 
+    Boolean getCountForNextYear();
+
     @Value("#{target.decider != null || target.request != null ? target.deciderFullName : ''}")
     String getDeciderFullName();
 }

@@ -30,6 +30,8 @@ public interface HistoryLogRepository extends BaseRepository<HistoryLog>, JpaRep
 
     List<HistoryLog> findLogsByUserId(long userId);
 
+    HistoryLogExcerptProjection findById(long id);
+
     @Query("""
             SELECT COALESCE(SUM(h.hours), 0)
             FROM HistoryLog h

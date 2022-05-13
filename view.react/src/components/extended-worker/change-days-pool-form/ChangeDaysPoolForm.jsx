@@ -15,6 +15,7 @@ export const ChangeDaysPoolForm = ({onSubmit}) => {
             .matches(/^ *[+-]?( *\d+d)?( *\d+h)?( *\d+m)? *$/, INCORRECT_FORMAT_MSG)
             .required(EMPTY_INPUT_MSG),
         comment: yup.string(),
+        countForNextYear: yup.bool()
     });
 
     return (
@@ -23,10 +24,12 @@ export const ChangeDaysPoolForm = ({onSubmit}) => {
             onSubmit={(values, {resetForm}) => {
                 onSubmit(values);
                 resetForm();
+                document.getElementById("countForNextYear").checked= false
             }}
             initialValues={{
                 daysToChange: '',
                 comment: '',
+                countForNextYear: false
             }}
         >
             {({
@@ -52,12 +55,19 @@ export const ChangeDaysPoolForm = ({onSubmit}) => {
                         <Form.Control.Feedback type="invalid" tooltip>{errors.daysToChange}</Form.Control.Feedback>
                     </InputGroup>
                     <Form.Control as="textarea"
-                                  className={styles.commentInput}
+                                  className={styles.changeDaysPoolInput}
                                   placeholder='Komentarz...'
                                   name='comment'
                                   value={values.comment}
                                   onChange={handleChange}
                     />
+                    <Form.Check type='checkbox'
+                                className={styles.commentInput}
+                                id='countForNextYear'
+                                name='countForNextYear'
+                                label='dodaj na kolejny rok'
+                                value={values.countForNextYear}
+                                onChange={handleChange}/>
                     <Button type="submit"
                             className={styles.changeDaysPoolBtn}
                             variant='outline-success'

@@ -26,12 +26,13 @@ export const ChangeDaysPoolAndWorkTimeSection = ({workTime}) => {
     const [, vacationDaysDispatch] = useVacationDays();
 
     const handleChangeDaysPool = (valuesFromForm) => {
-        const {daysToChange, comment} = valuesFromForm;
+        const {daysToChange, comment, countForNextYear} = valuesFromForm;
         if (daysToChange !== '') {
             const hours = parseDaysPool(daysToChange);
             sendPutRequest(`${CHANGE_DAYS_POOL_URL_PREFIX}${userId}${CHANGE_DAYS_POOL_URL_POSTFIX}`, {
                 hours,
                 comment,
+                countForNextYear
             }).then(data => {
                 workersDispatch(changeRemainingDays(data.remainingDays.toString(), data.remainingHours.toString()));
                 pushSuccessNotification("Pomyślnie zmieniono pulę godzin pracownika");
