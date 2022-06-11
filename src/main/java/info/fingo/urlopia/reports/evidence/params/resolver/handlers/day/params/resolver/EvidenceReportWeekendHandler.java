@@ -1,5 +1,6 @@
 package info.fingo.urlopia.reports.evidence.params.resolver.handlers.day.params.resolver;
 
+import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.request.RequestType;
 import info.fingo.urlopia.request.absence.OperationNotSupportedException;
@@ -22,6 +23,7 @@ public class EvidenceReportWeekendHandler {
                 .getByUserAndDate(user.getId(), date)
                 .stream()
                 .filter(request -> request.getType() == RequestType.SPECIAL)
+                .filter(request -> request.getStatus() == Request.Status.ACCEPTED)
                 .map(evidenceReportStatusFromRequestHandler::handle)
                 .findFirst()
                 .orElse(getEvidenceReportStatusFromWeekendDay(date));
