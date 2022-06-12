@@ -3,15 +3,20 @@ package info.fingo.urlopia.reports.evidence.params.resolver
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
 import info.fingo.urlopia.holidays.Holiday
 import info.fingo.urlopia.holidays.HolidayService
+import info.fingo.urlopia.reports.ReportStatusFromRequestType
 import info.fingo.urlopia.reports.evidence.EvidenceReportModel
 import info.fingo.urlopia.request.Request
 import info.fingo.urlopia.request.RequestService
+import info.fingo.urlopia.request.RequestType
+import info.fingo.urlopia.request.absence.SpecialAbsenceReason
 import info.fingo.urlopia.user.User
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import java.time.LocalDate
 
 class EvidenceReportDayParamsResolverSpec extends Specification {
+
     def holidayService = Mock(HolidayService){
         generateHolidaysList(_ as Integer) >> []
     }
@@ -73,7 +78,7 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
         result.get(key) =="-"
     }
 
-    def "resolve() WHEN called with holiday date SHOULD return model that contains prefix and handler result as value"() {
+    def "resolve() WHEN called with holiday date and status from request not in special handle list SHOULD return model that contains prefix and holiday handler result as value"() {
         given: "holiday mock"
         def holidayName = "holiday"
         def holiday = new Holiday(holidayName, validDate)
@@ -92,6 +97,51 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
 
         then:
         result.containsKey(key)
+    }
+
+    @Unroll
+    def "resolve() WHEN called with holiday date and status from request in special handle list SHOULD return model that contains prefix and holiday handler result as value"() {
+        given: "holiday mock"
+        def holidayName = "holiday"
+        def holiday = new Holiday(holidayName, validDate)
+
+        and: "holidayService mock that say example date is holiday"
+        holidayService.isHoliday(_ as LocalDate) >> true
+        holidayService.getHolidayByDate(_ as LocalDate) >> holiday
+
+        and: "requestService mock with special request"
+        def request = Mock(Request){
+            getStatus() >> Request.Status.ACCEPTED
+            getType() >> RequestType.SPECIAL
+            getSpecialTypeInfo() >> specialTypeInfo
+
+        }
+        requestService = Mock(RequestService){
+            getByUserAndDate(_ as Long, _ as LocalDate) >> [request]
+        }
+
+        def key = String.format(EvidenceReportModel.DATE_FORMATTING, month, day)
+        def evidenceReportDayParamsResolver = new EvidenceReportDayParamsResolver(user,year,
+                holidayService,
+                requestService,
+                presenceConfirmationService)
+        when:
+        def result = evidenceReportDayParamsResolver.resolve()
+
+        then:
+        result.containsKey(key)
+        result.get(key) == valueFromHandler
+
+        where:
+        specialTypeInfo                                          | valueFromHandler
+        SpecialAbsenceReason.PARENTAL_LEAVE.toString()           | ReportStatusFromRequestType.PARENTAL_LEAVE.getEvidenceReportStatus()
+        SpecialAbsenceReason.MATERNITY_LEAVE.toString()          | ReportStatusFromRequestType.MATERNITY_LEAVE.getEvidenceReportStatus()
+        SpecialAbsenceReason.PATERNITY_LEAVE.toString()          | ReportStatusFromRequestType.PATERNITY_LEAVE.getEvidenceReportStatus()
+        SpecialAbsenceReason.SICK_LEAVE_EMPLOYEE.toString()      | ReportStatusFromRequestType.SICK_LEAVE_EMPLOYEE.getEvidenceReportStatus()
+        SpecialAbsenceReason.SICK_LEAVE_CHILD.toString()         | ReportStatusFromRequestType.SICK_LEAVE_CHILD.getEvidenceReportStatus()
+        SpecialAbsenceReason.SICK_LEAVE_FAMILY.toString()        | ReportStatusFromRequestType.SICK_LEAVE_FAMILY.getEvidenceReportStatus()
+        SpecialAbsenceReason.QUARANTINE_OR_ISOLATION.toString()  | ReportStatusFromRequestType.QUARANTINE_OR_ISOLATION.getEvidenceReportStatus()
+        SpecialAbsenceReason.CHILDCARE.toString()                | ReportStatusFromRequestType.CHILDCARE.getEvidenceReportStatus()
 
     }
 
