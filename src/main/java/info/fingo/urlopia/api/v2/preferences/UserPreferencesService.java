@@ -39,11 +39,15 @@ public class UserPreferencesService {
                 .collect(Collectors.toMap(UserWorkingHoursPreference::getUserId, pref -> pref));
     }
 
+    // if unspecified absence endpoint still be slow this is probably the place to change
     public UserWorkingHoursPreference getWorkingHoursPreferenceOf(Long userId) {
-        if (!userWorkingHoursPreferenceRepository.existsById(userId)) {
-            userWorkingHoursPreferenceRepository.save(UserWorkingHoursPreference.getDefault(userId));
-        }
+        var userPreferences = userWorkingHoursPreferenceRepository.findById(userId);
+        return userPreferences.orElse(initUserPreferences(userId));
+    }
 
+
+    private UserWorkingHoursPreference initUserPreferences(Long userId){
+        userWorkingHoursPreferenceRepository.save(UserWorkingHoursPreference.getDefault(userId));
         return userWorkingHoursPreferenceRepository.getById(userId);
     }
 

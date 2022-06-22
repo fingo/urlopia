@@ -1,9 +1,9 @@
 import {sendGetRequest} from "../../../helpers/RequestHelper";
 import {NO_ACTION_WORKERS_ACTION_PREFIX, NO_ACTION_WORKERS_URL} from "../constants";
 
-export const fetchNoActionWorkers = dispatch => {
+export const fetchNoActionWorkers = (dispatch, active) => {
     dispatch({type: `${NO_ACTION_WORKERS_ACTION_PREFIX}_request`});
-    sendGetRequest(NO_ACTION_WORKERS_URL)
+    sendGetRequest(`${NO_ACTION_WORKERS_URL}?active=${active}`)
         .then(data => {
             dispatch({
                 type: `${NO_ACTION_WORKERS_ACTION_PREFIX}_success`,

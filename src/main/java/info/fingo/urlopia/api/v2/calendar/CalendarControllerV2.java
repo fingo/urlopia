@@ -33,8 +33,8 @@ public class CalendarControllerV2 {
 
     @RolesAllowed("ROLES_ADMIN")
     @GetMapping(path = "/unspecified-absences", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UnspecifiedAbsenceOutput getUsersWithUnspecifiedAbsences() {
-        return unspecifiedAbsenceService.getEmployeesWithUnspecifiedAbsences();
+    public UnspecifiedAbsenceOutput getUsersWithUnspecifiedAbsences(@RequestParam("active") boolean onlyActives) {
+        return unspecifiedAbsenceService.getEmployeesWithUnspecifiedAbsences(onlyActives);
     }
 
     @RolesAllowed({"ROLES_WORKER", "ROLES_ADMIN"})

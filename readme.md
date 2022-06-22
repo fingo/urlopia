@@ -158,6 +158,10 @@ slack.signing-secret=
 
 # proxy
 proxy-token= (Secret token used to validate requests coming from proxy)
+
+# presence confirmation
+urlopia.presence.confirmation.considered.months = (Number on months in past that will be considered when checking presence.
+                          On example if value is 2 and current month is June, absent will be search between April and June)
 ```
 
 #### PostgreSQL
