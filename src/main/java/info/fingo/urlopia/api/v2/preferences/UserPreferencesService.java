@@ -47,8 +47,7 @@ public class UserPreferencesService {
 
 
     private UserWorkingHoursPreference initUserPreferences(Long userId){
-        userWorkingHoursPreferenceRepository.save(UserWorkingHoursPreference.getDefault(userId));
-        return userWorkingHoursPreferenceRepository.getById(userId);
+        return userWorkingHoursPreferenceRepository.save(UserWorkingHoursPreference.getDefault(userId));
     }
 
     public UserWorkingHoursPreferenceDTO changeWorkingHoursPreference(Long authenticatedUserId,
