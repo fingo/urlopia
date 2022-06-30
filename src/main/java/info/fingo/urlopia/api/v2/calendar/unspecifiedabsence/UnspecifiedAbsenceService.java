@@ -32,7 +32,7 @@ public class UnspecifiedAbsenceService {
     private final HolidayService holidayService;
     private final UserPreferencesService userPreferencesService;
 
-    @Value("${urlopia.presence.confirmation.considered.months}")
+    @Value("${urlopia.presence.confirmation.considered.months:2}")
     private int consideredMonthNumber;
 
     public UnspecifiedAbsenceOutput getEmployeesWithUnspecifiedAbsences(boolean onlyActives) {
@@ -175,6 +175,7 @@ public class UnspecifiedAbsenceService {
         var today = LocalDate.now();
         return firstConfirmationDate.datesUntil(today)
                 .filter(date -> !usersIdentifiedDays.isIdentified(userId, date))
+                .filter(date -> !holidayService.isWeekend(date))
                 .toList();
     }
 

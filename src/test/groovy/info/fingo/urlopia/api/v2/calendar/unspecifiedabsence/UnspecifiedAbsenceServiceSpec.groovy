@@ -62,11 +62,10 @@ class UnspecifiedAbsenceServiceSpec extends Specification {
         holidayService.getAll(_ as Filter) >> []
 
         and:
-        def usersFirstConfirmations = [1L: Optional.empty()]
-        presenceConfirmationService.getFirstUserConfirmation(_ as Long) >> {Long userId -> usersFirstConfirmations.get(userId)}
+        presenceConfirmationService.getFirstUserConfirmationFromStartDate(_ as Long, _ as LocalDate) >> Optional.empty()
 
         when:
-        def result = unspecifiedAbsenceService.getEmployeesWithUnspecifiedAbsences()
+        def result = unspecifiedAbsenceService.getEmployeesWithUnspecifiedAbsences(false)
 
         then:
         !result.users().containsKey(1L)
@@ -88,16 +87,13 @@ class UnspecifiedAbsenceServiceSpec extends Specification {
         presenceConfirmationService.getAll(_ as Filter) >> samplePresenceConfirmations
 
         and:
-        def usersFirstConfirmations = [
-                1L: Optional.of(samplePresenceConfirmations[0])
-        ]
-        presenceConfirmationService.getFirstUserConfirmation(_ as Long) >> {Long userId -> usersFirstConfirmations.get(userId)}
+        presenceConfirmationService.getFirstUserConfirmationFromStartDate(_ as Long, _ as LocalDate) >> Optional.of(samplePresenceConfirmations[0])
 
         and:
         userPreferencesService.getWorkingHoursPreferenceOf(1L) >> UserWorkingHoursPreference.getDefault(1L)
 
         when:
-        def result = unspecifiedAbsenceService.getEmployeesWithUnspecifiedAbsences()
+        def result = unspecifiedAbsenceService.getEmployeesWithUnspecifiedAbsences(false)
 
         def startDate = samplePresenceConfirmations[0].getDate().plusDays(1)
         def expectedDays = workingDaysRange(startDate, TODAY)
@@ -129,16 +125,13 @@ class UnspecifiedAbsenceServiceSpec extends Specification {
         presenceConfirmationService.getAll(_ as Filter) >> samplePresenceConfirmations
 
         and:
-        def usersFirstConfirmations = [
-                1L: Optional.of(samplePresenceConfirmations[0])
-        ]
-        presenceConfirmationService.getFirstUserConfirmation(_ as Long) >> {Long userId -> usersFirstConfirmations.get(userId)}
+        presenceConfirmationService.getFirstUserConfirmationFromStartDate(_ as Long, _ as LocalDate) >> Optional.of(samplePresenceConfirmations[0])
 
         and:
         userPreferencesService.getWorkingHoursPreferenceOf(1L) >> UserWorkingHoursPreference.getDefault(1L)
 
         when:
-        def result = unspecifiedAbsenceService.getEmployeesWithUnspecifiedAbsences()
+        def result = unspecifiedAbsenceService.getEmployeesWithUnspecifiedAbsences(false)
 
         def startDate = samplePresenceConfirmations[0].getDate().plusDays(1)
         def expectedDays = workingDaysRange(startDate, TODAY).stream()
@@ -186,12 +179,10 @@ class UnspecifiedAbsenceServiceSpec extends Specification {
         holidayService.getAll(_ as Filter) >> sampleHolidays
 
         and:
-        def usersFirstConfirmations = [
-                1L: Optional.empty(),
-                2L: Optional.of(samplePresenceConfirmations[0]),
-                3L: Optional.of(samplePresenceConfirmations[1]),
-        ]
-        presenceConfirmationService.getFirstUserConfirmation(_ as Long) >> {Long userId -> usersFirstConfirmations.get(userId)}
+        presenceConfirmationService.getFirstUserConfirmationFromStartDate(1L, _ as LocalDate) >> Optional.empty()
+        presenceConfirmationService.getFirstUserConfirmationFromStartDate(2L, _ as LocalDate) >> Optional.of(samplePresenceConfirmations[0])
+        presenceConfirmationService.getFirstUserConfirmationFromStartDate(3L, _ as LocalDate) >> Optional.of(samplePresenceConfirmations[1])
+
 
         and:
         userPreferencesService.getWorkingHoursPreferenceOf(1L) >> UserWorkingHoursPreference.getDefault(1L)
@@ -199,7 +190,7 @@ class UnspecifiedAbsenceServiceSpec extends Specification {
         userPreferencesService.getWorkingHoursPreferenceOf(3L) >> UserWorkingHoursPreference.getDefault(3L)
 
         when:
-        def result = unspecifiedAbsenceService.getEmployeesWithUnspecifiedAbsences()
+        def result = unspecifiedAbsenceService.getEmployeesWithUnspecifiedAbsences(false)
         def expectedDays = [TODAY.minusDays(6), TODAY.minusDays(4), TODAY.minusDays(2)].stream()
                 .filter(date -> !holidayService.isWeekend(date))
                 .toList()

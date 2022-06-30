@@ -1,6 +1,5 @@
 package info.fingo.urlopia.api.v2.preferences
 
-import info.fingo.urlopia.api.v2.preferences.working.hours.SingleDayHourPreference
 import info.fingo.urlopia.api.v2.preferences.working.hours.SingleDayHourPreferenceDTO
 import info.fingo.urlopia.api.v2.preferences.working.hours.UserWorkingHoursPreference
 import info.fingo.urlopia.api.v2.preferences.working.hours.UserWorkingHoursPreferenceDTO
@@ -16,7 +15,7 @@ import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-class UserPreferencesServiceTest extends Specification {
+class UserPreferencesServiceSpec extends Specification {
     def userWorkingHoursPreferenceRepository = Mock(UserWorkingHoursPreferenceRepository) {
         save(_ as UserWorkingHoursPreference) >> { UserWorkingHoursPreference pref -> pref }
     }
@@ -46,8 +45,7 @@ class UserPreferencesServiceTest extends Specification {
 
         and:
         def defaultPreference = UserWorkingHoursPreference.getDefault(userId)
-        userWorkingHoursPreferenceRepository.existsById(userId) >> false
-        userWorkingHoursPreferenceRepository.getById(userId) >> defaultPreference
+        userWorkingHoursPreferenceRepository.findById(_ as Long) >> Optional.empty()
 
         when:
         def result = userPreferencesService.getWorkingHoursPreference(userId)
@@ -56,7 +54,8 @@ class UserPreferencesServiceTest extends Specification {
         result.size() == 1
         result.containsKey(userId)
         result.get(userId) == defaultPreference
-        1 * userWorkingHoursPreferenceRepository.save(_ as UserWorkingHoursPreference)
+        1 * userWorkingHoursPreferenceRepository.save(_  as UserWorkingHoursPreference) >> defaultPreference
+
     }
 
     def "getWorkingHoursPreference() WHEN user is admin SHOULD return preferences of all users"() {
