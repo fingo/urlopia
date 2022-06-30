@@ -6,8 +6,8 @@ import info.fingo.urlopia.api.v2.reports.attendance.AttendanceListPage;
 import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReport;
 import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReportFactory;
 import info.fingo.urlopia.api.v2.reports.holidays.UserHolidaysReportFactory;
+import info.fingo.urlopia.api.v2.user.UserFilterFactory;
 import info.fingo.urlopia.config.persistance.filter.Filter;
-import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.reports.ReportTemplateLoader;
 import info.fingo.urlopia.reports.XlsxTemplateResolver;
 import info.fingo.urlopia.reports.evidence.EvidenceReport;
@@ -48,6 +48,7 @@ public class ReportService {
     private final EvidenceReportModelFactory evidenceReportModelFactory;
     private final MonthlyAttendanceListReportFactory monthlyPresenceReportFactory;
     private final UserHolidaysReportFactory userHolidaysReportFactory;
+    private final UserFilterFactory userFilterFactory;
 
     public Workbook generateWorkTimeEvidenceReport(Long userId,
                                                    int year) throws IOException {
@@ -101,13 +102,7 @@ public class ReportService {
 
     public List<Workbook> generateAttendanceList(Integer year,
                                                  Integer month) throws IOException {
-        var filter = Filter.newBuilder()
-                .and("active", Operator.EQUAL, "true")
-                .and("ec", Operator.EQUAL, "true")
-                .build();
-
-        var employees = userService.get(filter);
-        employees.addAll(findInactiveUsersNeededToBeInReport(year,month));
+        var employees = findEmployeesNeededToBeInAttendanceList(year, month);
         employees.sort(new UserFullNameComparator());
 
         return partitionUsersToPages(employees).stream()
@@ -115,12 +110,18 @@ public class ReportService {
                 .toList();
     }
 
+    List<User> findEmployeesNeededToBeInAttendanceList(Integer year,
+                                                              Integer month){
+        var filter = userFilterFactory.getActiveECUsersFilter();
+        var employees = userService.get(filter);
+        employees.addAll(findInactiveUsersNeededToBeInReport(year ,month));
+        employees.addAll(findUsersThatChangedToB2BAndNeededToBeInReport(year, month));
+        return employees;
+    }
+
     private List<User> findInactiveUsersNeededToBeInReport(Integer year,
                                                            Integer month){
-        var filter = Filter.newBuilder()
-                .and("active", Operator.EQUAL, "false")
-                .and("ec", Operator.EQUAL, "true")
-                .build();
+        var filter = userFilterFactory.getInactiveECUsersFilter();
         var employees = userService.get(filter);
 
         var yearMonth = YearMonth.of(year,month);
@@ -139,6 +140,21 @@ public class ReportService {
         usersWithAcceptedRequests.addAll(usersWithPresenceConfirmations);
         return  usersWithAcceptedRequests.stream()
                                          .toList();
+    }
+
+    private List<User> findUsersThatChangedToB2BAndNeededToBeInReport(Integer year,
+                                                           Integer month){
+        var filter = userFilterFactory.getActiveB2BUsersFilter();
+        var employees = userService.get(filter);
+
+        var yearMonth = YearMonth.of(year,month);
+        var firstDayOfMonth = yearMonth.atDay(1);
+        var lastDayOfMonth = yearMonth.atEndOfMonth();
+        return employees.stream()
+                .filter(user -> presenceConfirmationService.hasPresenceByUserAndDateInterval(firstDayOfMonth,
+                                                                                             lastDayOfMonth,
+                                                                                             user.getId()))
+                .collect(Collectors.toList());
     }
 
 
