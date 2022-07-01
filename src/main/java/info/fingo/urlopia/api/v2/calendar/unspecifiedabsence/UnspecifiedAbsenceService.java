@@ -13,6 +13,7 @@ import info.fingo.urlopia.request.RequestService;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -24,36 +25,49 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UnspecifiedAbsenceService {
+
     private final RequestService requestService;
     private final PresenceConfirmationService presenceConfirmationService;
     private final UserService userService;
     private final HolidayService holidayService;
     private final UserPreferencesService userPreferencesService;
 
-    public UnspecifiedAbsenceOutput getEmployeesWithUnspecifiedAbsences() {
-        Map<Long, List<LocalDate>> usersWithUnspecifiedAbsences = new HashMap<>();
+    @Value("${urlopia.presence.confirmation.considered.months:2}")
+    private int consideredMonthNumber;
 
-        UsersIdentifiedDays usersVacationDays = getEmployeesVacationDays();
-        UsersIdentifiedDays usersConfirmedPresenceDays = getEmployeesConfirmedPresenceDays();
+    public UnspecifiedAbsenceOutput getEmployeesWithUnspecifiedAbsences(boolean onlyActives) {
+        var users = getEmployees(onlyActives);
+        var firstConsiderDate = countFirstConsiderDate();
+        UsersIdentifiedDays usersConfirmedPresenceDays = getEmployeesConfirmedPresenceDays(firstConsiderDate);
+        Map<Long, LocalDate> usersFirstConfirmationDates = getUsersFirstPresenceConfirmationDates(users, firstConsiderDate);
+
+        UsersIdentifiedDays usersVacationDays = getEmployeesVacationDays(firstConsiderDate, onlyActives);
         var usersIdentifiedDays = usersVacationDays.mergeWith(usersConfirmedPresenceDays);
 
-        var users = getEmployeesOnly();
-        Map<Long, LocalDate> usersFirstConfirmationDates = getUsersFirstPresenceConfirmationDates(users);
-        var yearOfFirstEverConfirmation = getYearOfEarliestDate(usersFirstConfirmationDates.values());
+        usersIdentifiedDays.add(getAllHolidayDatesSince(firstConsiderDate.getYear()));
+        return absenceOutputFrom(usersFirstConfirmationDates, usersIdentifiedDays);
+    }
 
-        usersIdentifiedDays.add(getAllHolidayDatesSince(yearOfFirstEverConfirmation));
-
-        usersFirstConfirmationDates.forEach((userId, firstConfirmationDate) -> {
+    private UnspecifiedAbsenceOutput absenceOutputFrom(Map<Long, LocalDate> usersFirstConfirmationDates,
+                                                       UsersIdentifiedDays usersIdentifiedDays){
+        Map<Long, List<LocalDate>> usersWithUnspecifiedAbsences = new HashMap<>();
+        usersFirstConfirmationDates.forEach((userId, userFirstConfirmationDate) -> {
             var unspecifiedAbsenceDays = getDaysWhenUserHasUnspecifiedAbsence(usersIdentifiedDays,
-                                                                              userId,
-                                                                              firstConfirmationDate);
+                    userId,
+                    userFirstConfirmationDate);
             if (!unspecifiedAbsenceDays.isEmpty()) {
                 usersWithUnspecifiedAbsences.put(userId, unspecifiedAbsenceDays);
             }
         });
-
         return new UnspecifiedAbsenceOutput(usersWithUnspecifiedAbsences);
     }
+
+    private LocalDate countFirstConsiderDate(){
+        var today = LocalDate.now();
+        var considerMonthDate = today.minusMonths(consideredMonthNumber);
+        return LocalDate.of(considerMonthDate.getYear(), considerMonthDate.getMonth(), 1);
+    }
+
 
     public UsersIdentifiedDays getUsersVacationDays(Filter requestFilter) {
         var usersIdentifiedDays = UsersIdentifiedDays.empty();
@@ -79,18 +93,24 @@ public class UnspecifiedAbsenceService {
         return usersIdentifiedDays;
     }
 
-    private UsersIdentifiedDays getEmployeesVacationDays() {
+    private UsersIdentifiedDays getEmployeesVacationDays(LocalDate firstPresenceConfirmationDates,
+                                                         boolean onlyActive) {
         var filter = Filter.newBuilder()
                 .and("requester.b2b", Operator.EQUAL, String.valueOf(false))
+                .and("requester.active", Operator.EQUAL, String.valueOf(onlyActive))
+                .and("startDate", Operator.GREATER_OR_EQUAL, firstPresenceConfirmationDates.toString())
                 .build();
 
         return getUsersVacationDays(filter);
     }
 
-    private UsersIdentifiedDays getEmployeesConfirmedPresenceDays() {
+    private UsersIdentifiedDays getEmployeesConfirmedPresenceDays(LocalDate firstConsiderDate) {
         var usersIdentifiedDays = UsersIdentifiedDays.empty();
+        var filter = Filter.newBuilder()
+                .and("presenceConfirmationId.date", Operator.GREATER_OR_EQUAL, firstConsiderDate.toString())
+                .build();
+        var usersPresenceConfirmations = presenceConfirmationService.getAll(filter);
 
-        var usersPresenceConfirmations = presenceConfirmationService.getAll(Filter.empty());
         Map<Long, List<PresenceConfirmation>> groupedPresenceConfirmations =
                 groupByUserId(usersPresenceConfirmations, PresenceConfirmation::getUserId);
 
@@ -106,11 +126,12 @@ public class UnspecifiedAbsenceService {
             var changeDate = userWorkingHoursPreference.getChanged().toLocalDate();
             var today = LocalDate.now();
             // To be consistent with calendar output, i.e. new preference is valid from next day on
-            var startDate = changeDate.plusDays(1);
+            var startDate = changeDate.plusDays(1).isBefore(firstConsiderDate) ? firstConsiderDate: changeDate.plusDays(1);
             if (startDate.isBefore(today)) {
                 startDate.datesUntil(today)
                         .filter(day -> !usersIdentifiedDays.isIdentified(userId, day))
                         .filter(day -> userWorkingHoursPreference.isNonWorkingOn(day.getDayOfWeek()))
+                        .filter(holidayService::isWeekend)
                         .forEach(day -> usersIdentifiedDays.add(userId, day));
             }
         }
@@ -123,35 +144,29 @@ public class UnspecifiedAbsenceService {
 
         objects.forEach(obj -> {
             var userId = userIdProvider.applyAsLong(obj);
-            result.putIfAbsent(userId, new LinkedList<>());
+            result.putIfAbsent(userId, new ArrayList<>());
             result.get(userId).add(obj);
         });
 
         return result;
     }
 
-    private List<User> getEmployeesOnly() {
+    private List<User> getEmployees(boolean onlyActive) {
         var filter = Filter.newBuilder()
                 .and("b2b", Operator.EQUAL, String.valueOf(false))
+                .and("active", Operator.EQUAL, String.valueOf(onlyActive))
                 .build();
         return userService.get(filter);
     }
 
-    private Map<Long, LocalDate> getUsersFirstPresenceConfirmationDates(List<User> users) {
+    private Map<Long, LocalDate> getUsersFirstPresenceConfirmationDates(List<User> users,
+                                                                        LocalDate firstConsiderDate) {
         return users.stream()
                 .map(User::getId)
-                .map(presenceConfirmationService::getFirstUserConfirmation)
+                .map(userId -> presenceConfirmationService.getFirstUserConfirmationFromStartDate(userId, firstConsiderDate))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toMap(PresenceConfirmation::getUserId, PresenceConfirmation::getDate));
-    }
-
-    private int getYearOfEarliestDate(Collection<LocalDate> dates) {
-        return dates.stream()
-                .map(LocalDate::getYear)
-                .sorted()
-                .findFirst()
-                .orElse(LocalDate.now().getYear());
     }
 
     private List<LocalDate> getDaysWhenUserHasUnspecifiedAbsence(UsersIdentifiedDays usersIdentifiedDays,

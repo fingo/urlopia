@@ -168,6 +168,11 @@ public class PresenceConfirmationService {
         return presenceConfirmationRepository.findTopByPresenceConfirmationIdUserIdOrderByPresenceConfirmationIdDateAsc(userId);
     }
 
+    public Optional<PresenceConfirmation> getFirstUserConfirmationFromStartDate(Long userId,
+                                                                                LocalDate date) {
+        return presenceConfirmationRepository.findFirstUserConfirmationFromStartDate(userId, date);
+    }
+
     public double countWorkingHoursInDay(PresenceConfirmation presenceConfirmation){
         var startTime = presenceConfirmation.getStartTime();
         var endTime = presenceConfirmation.getEndTime();

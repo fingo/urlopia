@@ -38,8 +38,21 @@ public class PresenceConfirmation {
         this.endTime = endTime;
     }
 
+    public PresenceConfirmation(Long userId,
+                                LocalDate date,
+                                LocalTime startTime,
+                                LocalTime endTime) {
+        this.presenceConfirmationId = PresenceConfirmationId.from(userId, date);
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
     public static PresenceConfirmation empty(User user, LocalDate date) {
         return new PresenceConfirmation(user, date, LocalTime.MIN, LocalTime.MIN);
+    }
+
+    public static PresenceConfirmation empty(Long userId, LocalDate date) {
+        return new PresenceConfirmation(userId, date, LocalTime.MIN, LocalTime.MIN);
     }
 
     public LocalDate getDate() {

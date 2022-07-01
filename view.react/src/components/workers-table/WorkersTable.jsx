@@ -49,7 +49,7 @@ export const WorkersTable = ({isEC}) => {
     useEffect(() => {
         workersDispatch(changeIsEC(isEC));
         fetchUnspecifiedUsers(workersDispatch,showActive);
-        fetchNoActionWorkers(workersDispatch);
+        fetchNoActionWorkers(workersDispatch, showActive);
         fetchUsersPresenceConfirmations(presenceDispatcher);
         if (isEC) {
             fetchWorkers(workersDispatch,showActive);

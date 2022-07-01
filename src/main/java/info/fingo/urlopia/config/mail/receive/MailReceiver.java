@@ -2,10 +2,7 @@ package info.fingo.urlopia.config.mail.receive;
 
 import com.sun.mail.imap.IMAPFolder;
 import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
-import info.fingo.urlopia.config.mail.Mail;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -17,9 +14,7 @@ import javax.mail.event.MessageCountEvent;
 import javax.mail.event.MessageCountListener;
 import java.util.Properties;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 /**
  * Checks for new mails in inbox
