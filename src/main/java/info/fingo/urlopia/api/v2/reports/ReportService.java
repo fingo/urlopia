@@ -111,7 +111,7 @@ public class ReportService {
     }
 
     List<User> findEmployeesNeededToBeInAttendanceList(Integer year,
-                                                              Integer month){
+                                                       Integer month) {
         var filter = userFilterFactory.getActiveECUsersFilter();
         var employees = userService.get(filter);
         employees.addAll(findInactiveUsersNeededToBeInReport(year ,month));
@@ -120,7 +120,7 @@ public class ReportService {
     }
 
     private List<User> findInactiveUsersNeededToBeInReport(Integer year,
-                                                           Integer month){
+                                                           Integer month) {
         var filter = userFilterFactory.getInactiveECUsersFilter();
         var employees = userService.get(filter);
 
@@ -143,7 +143,7 @@ public class ReportService {
     }
 
     private List<User> findUsersThatChangedToB2BAndNeededToBeInReport(Integer year,
-                                                           Integer month){
+                                                                      Integer month) {
         var filter = userFilterFactory.getActiveB2BUsersFilter();
         var employees = userService.get(filter);
 
