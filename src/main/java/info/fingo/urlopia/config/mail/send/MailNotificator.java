@@ -16,8 +16,9 @@ public class MailNotificator extends MailSender {
     private String senderAddress;
 
     @Autowired
-    public MailNotificator(JavaMailSender mailSender) {
-        super(mailSender);
+    public MailNotificator(JavaMailSender mailSender,
+                           MailConverter mailConverter) {
+        super(mailSender, mailConverter);
     }
 
     public void notify(MailTemplate template, String recipientAddress) {

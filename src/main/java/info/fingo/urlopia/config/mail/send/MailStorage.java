@@ -19,8 +19,9 @@ public class MailStorage extends MailSender {
     private String storageAddress;
 
     @Autowired
-    public MailStorage(JavaMailSender mailSender) {
-        super(mailSender);
+    public MailStorage(JavaMailSender mailSender,
+                       MailConverter mailConverter) {
+        super(mailSender, mailConverter);
     }
 
     public void store(MailTemplate template) {
