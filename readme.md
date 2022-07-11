@@ -151,7 +151,7 @@ mail.receiver.folder=Inbox
 mail.receiver.idle.time=300000
 mails.bot= (Mail address of mailing bot)
 mails.storage= (Mail address of emails storage)
-
+mail.title.prefix = (Prefix for mail title - can be empty)
 # slack
 slack.bot-token=
 slack.signing-secret=
