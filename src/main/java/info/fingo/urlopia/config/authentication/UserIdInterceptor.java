@@ -7,18 +7,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Component
-public class CorsInterceptor implements HandlerInterceptor {
+public class UserIdInterceptor implements HandlerInterceptor {
 
-    public CorsInterceptor() {}
+
+    public static final String USER_ID_ATTRIBUTE = "userId";
 
     @Override
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
-                             Object handler) {
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        response.addHeader("Access-Control-Allow-Methods", "*");
-        response.addHeader("Access-Control-Allow-Headers", "*");
+                             Object handler){
+        var token = request.getHeader("Authorization");
+        var claim = JwtUtils.getClaimFromToken(token);
+        claim.ifPresent(claims -> request.setAttribute(USER_ID_ATTRIBUTE, Long.valueOf(claims.getSubject())));
         return true;
     }
+
+
 
 }

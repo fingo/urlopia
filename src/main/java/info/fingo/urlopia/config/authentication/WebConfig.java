@@ -1,34 +1,25 @@
 package info.fingo.urlopia.config.authentication;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-    private final CorsInterceptor corsInterceptor;
-
-    private final AuthInterceptor authInterceptor;
-
-    public WebConfig(CorsInterceptor corsInterceptor,
-                     AuthInterceptor authInterceptor) {
-        this.corsInterceptor = corsInterceptor;
-        this.authInterceptor = authInterceptor;
+    private final UserIdInterceptor userIdInterceptor;
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedMethods("*");
     }
 
-    // TODO: Use Spring Boot Security and remove these interceptors
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(corsInterceptor)
-                .addPathPatterns("/api/**");
-        registry.addInterceptor(authInterceptor)
-                .addPathPatterns("/api/**")
-                .excludePathPatterns("/api/session/**",
-                                     "/api/v2/session/**",
-                                     "/api/v2/info/**",
-                                     "/api/v2/slack/**",
-                                     "/api/v2/proxy/**");
+        registry.addInterceptor(userIdInterceptor);
+        WebMvcConfigurer.super.addInterceptors(registry);
     }
-
 }

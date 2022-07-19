@@ -2,7 +2,7 @@ package info.fingo.urlopia.api.v2.calendar;
 
 import info.fingo.urlopia.api.v2.calendar.unspecifiedabsence.UnspecifiedAbsenceOutput;
 import info.fingo.urlopia.api.v2.calendar.unspecifiedabsence.UnspecifiedAbsenceService;
-import info.fingo.urlopia.config.authentication.AuthInterceptor;
+import info.fingo.urlopia.config.authentication.UserIdInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,7 +26,7 @@ public class CalendarControllerV2 {
                                                  @RequestParam("endDate") @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate endDate,
                                                  @RequestParam(name = "filter", defaultValue = "") String[] filters,
                                                  HttpServletRequest httpRequest) {
-        var authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
         var filter = Filter.from(filters);
         return calendarService.getCalendarInfo(authenticatedId, startDate, endDate, filter);
     }
