@@ -28,18 +28,44 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         var activeProfiles = Arrays.asList(environment.getActiveProfiles());
 
-        mainHttpConfiguration(http);
+        corsAndCsrfConfiguration(http);
+
+        sessionConfiguration(http);
+
+        filtersConfiguration(http);
+
+        exceptionHandlingConfiguration(http);
 
         if (activeProfiles.contains("developer")) {
             enableH2ConsoleAccess(http);
         }
+
+        requestAuthorizationConfiguration(http);
     }
 
-    private void mainHttpConfiguration(HttpSecurity http) throws Exception {
+    private void corsAndCsrfConfiguration(HttpSecurity http) throws Exception {
         http.cors();
         http.csrf().disable();
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+    }
+
+    private void sessionConfiguration(HttpSecurity http) throws Exception {
+        http
+           .sessionManagement()
+           .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    }
+
+    private void filtersConfiguration(HttpSecurity http){
+        http
+           .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+    }
+
+    private void exceptionHandlingConfiguration(HttpSecurity http) throws Exception {
+        http
+           .exceptionHandling()
+           .accessDeniedHandler(new AccessDeniedExceptionHandler());
+    }
+
+    private void requestAuthorizationConfiguration(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/api/session/**").permitAll()
                 .antMatchers("/api/v2/session/**").permitAll()
@@ -47,7 +73,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v2/slack/**").permitAll()
                 .antMatchers("/api/v2/proxy/**").permitAll()
                 .anyRequest().authenticated();
-        http.exceptionHandling().accessDeniedHandler(new AccessDeniedExceptionHandler());
     }
 
     private void enableH2ConsoleAccess(HttpSecurity http) throws Exception {
