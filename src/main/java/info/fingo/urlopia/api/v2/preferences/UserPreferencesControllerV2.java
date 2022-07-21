@@ -2,7 +2,7 @@ package info.fingo.urlopia.api.v2.preferences;
 
 import info.fingo.urlopia.api.v2.preferences.working.hours.UserWorkingHoursPreference;
 import info.fingo.urlopia.api.v2.preferences.working.hours.UserWorkingHoursPreferenceDTO;
-import info.fingo.urlopia.config.authentication.AuthInterceptor;
+import info.fingo.urlopia.config.authentication.UserIdInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,7 +22,7 @@ public class UserPreferencesControllerV2 {
     @RolesAllowed({"ROLES_WORKER", "ROLES_ADMIN"})
     @GetMapping(path = "/working-hours", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<Long, UserWorkingHoursPreferenceDTO> getUserWorkingHoursPreference(HttpServletRequest httpRequest) {
-        var authenticatedUserId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedUserId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
         var preferences = userPreferencesService.getWorkingHoursPreference(authenticatedUserId);
         return mapPreferencesToOutput(preferences);
     }
@@ -38,7 +38,7 @@ public class UserPreferencesControllerV2 {
     @ResponseStatus(HttpStatus.CREATED)
     public UserWorkingHoursPreferenceDTO changeUserWorkingHoursPreference(@RequestBody UserWorkingHoursPreferenceDTO dto,
                                                                           HttpServletRequest httpRequest) {
-        var authenticatedUserId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedUserId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
         return userPreferencesService.changeWorkingHoursPreference(authenticatedUserId, dto);
     }
 }

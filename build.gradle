@@ -48,6 +48,7 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web')
     implementation('org.springframework.boot:spring-boot-starter-data-jpa')
     implementation('org.springframework.boot:spring-boot-starter-mail')
+    implementation('org.springframework.boot:spring-boot-starter-security')
     implementation('io.jsonwebtoken:jjwt:0.6.0')
     implementation('com.github.jknack:handlebars:4.0.6')
     implementation('org.apache.poi:poi:4.0.1')

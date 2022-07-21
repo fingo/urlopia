@@ -1,6 +1,6 @@
 package info.fingo.urlopia.request;
 
-import info.fingo.urlopia.config.authentication.AuthInterceptor;
+import info.fingo.urlopia.config.authentication.UserIdInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.request.normal.DayHourTime;
 import info.fingo.urlopia.request.normal.NormalRequestService;
@@ -58,7 +58,7 @@ public class RequestController {
 
     @RolesAllowed("ROLES_WORKER")
     @PostMapping(value = "/users/{userId}/requests", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> create(@PathVariable Long userId, 
+    public ResponseEntity<Void> create(@PathVariable Long userId,
                                        @RequestBody RequestInput input) {
         requestService.create(userId, input);
         return ResponseEntity.ok().build();
@@ -75,9 +75,9 @@ public class RequestController {
 
     @RolesAllowed("ROLES_ADMIN")
     @PostMapping(path = "/requests/{requestId}/accept", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> accept(@PathVariable Long requestId, 
+    public ResponseEntity<Void> accept(@PathVariable Long requestId,
                                        HttpServletRequest httpRequest) {
-        var authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
         requestService.validateAdminPermissionAndAccept(requestId, authenticatedId);
         return ResponseEntity.ok().build();
     }
@@ -91,9 +91,9 @@ public class RequestController {
 
     @RolesAllowed({"ROLES_WORKER", "ROLES_ADMIN"})
     @PostMapping(path = "/requests/{requestId}/cancel", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> cancel(@PathVariable Long requestId, 
+    public ResponseEntity<Void> cancel(@PathVariable Long requestId,
                                        HttpServletRequest httpRequest) {
-        var authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
         requestService.cancel(requestId, authenticatedId);
         return ResponseEntity.ok().build();
     }

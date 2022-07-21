@@ -21,6 +21,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class SessionService {
 
+    public static final String BEARER_PREFIX = "Bearer ";
+
     private final LDAPConnectionService ldapConnectionService;
 
     private final UserRepository userRepository;
@@ -52,7 +54,7 @@ public class SessionService {
             userData.setLanguage(user.getLang());
             userData.setTeams(this.pickTeamsInfo(user));
             userData.setIsEc(user.getEc());
-            userData.setToken(webTokenService.generateWebToken(user.getId(), roles));
+            userData.setToken(BEARER_PREFIX + webTokenService.generateWebToken(user.getId(), roles));
             var loggerInfo = "User: %s successfully authenticated"
                     .formatted(Anonymizer.anonymizeMail(credentials.getMail()));
             log.info(loggerInfo);

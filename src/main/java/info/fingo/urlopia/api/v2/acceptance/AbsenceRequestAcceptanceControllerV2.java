@@ -3,7 +3,7 @@ package info.fingo.urlopia.api.v2.acceptance;
 import info.fingo.urlopia.acceptance.AcceptanceExcerptProjection;
 import info.fingo.urlopia.acceptance.AcceptanceService;
 import info.fingo.urlopia.api.v2.exceptions.InvalidActionException;
-import info.fingo.urlopia.config.authentication.AuthInterceptor;
+import info.fingo.urlopia.config.authentication.UserIdInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class AbsenceRequestAcceptanceControllerV2 {
     public Page<AcceptancesOutput> getAcceptances(@RequestParam(name = "filter", defaultValue = "") String[] filters,
                                                   Pageable pageable,
                                                   HttpServletRequest httpRequest) {
-        var authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
         var filter = Filter.from(filters);
         var acceptances = acceptanceService.get(authenticatedId, filter, pageable);
 
@@ -48,7 +48,7 @@ public class AbsenceRequestAcceptanceControllerV2 {
     public Page<AcceptanceHistoryOutput> getAcceptancesHistory(@RequestParam(name = "filter", defaultValue = "") String[] filters,
                                                                Pageable pageable,
                                                                HttpServletRequest httpRequest) {
-        var authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
         var filter = Filter.from(filters);
         return acceptanceService.getHistory(authenticatedId, filter, pageable);
     }
@@ -58,7 +58,7 @@ public class AbsenceRequestAcceptanceControllerV2 {
     public AcceptanceStatus updateAcceptanceStatus(@PathVariable Long acceptanceId,
                                                    @RequestBody AcceptanceStatus status,
                                                    HttpServletRequest httpRequest) {
-        var authenticatedId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
 
         switch (status.status()) {
             case ACCEPTED -> acceptanceService.accept(acceptanceId, authenticatedId);

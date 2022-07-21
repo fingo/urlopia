@@ -1,7 +1,7 @@
 package info.fingo.urlopia.user;
 
 import info.fingo.urlopia.ActiveDirectorySynchronizationScheduler;
-import info.fingo.urlopia.config.authentication.AuthInterceptor;
+import info.fingo.urlopia.config.authentication.UserIdInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
@@ -56,7 +56,7 @@ public class UserController {
     @PostMapping(value="/language", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> setLanguage(HttpServletRequest httpRequest,
                                             @RequestBody Map<String, String> data) {
-        var userId = (Long) httpRequest.getAttribute(AuthInterceptor.USER_ID_ATTRIBUTE);
+        var userId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
         var language = data.get("language");
         userService.setLanguage(userId, language);
         return ResponseEntity.ok().build();
