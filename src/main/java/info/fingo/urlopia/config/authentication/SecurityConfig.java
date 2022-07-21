@@ -67,6 +67,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private void requestAuthorizationConfiguration(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+                .antMatchers("/").permitAll()
+                .antMatchers("/static//**").permitAll()
                 .antMatchers("/health/**").permitAll()
                 .antMatchers("/api/session/**").permitAll()
                 .antMatchers("/api/v2/session/**").permitAll()
