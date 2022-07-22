@@ -1,6 +1,7 @@
 package info.fingo.urlopia.config.authentication;
 
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,9 +19,12 @@ import java.util.List;
 import java.util.Set;
 
 @Component
+@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
     private static final String ROLE_PREFIX = "ROLE_";
+
+    private final WebTokenService webTokenService;
 
 
     @Override
@@ -47,10 +51,12 @@ public class JwtFilter extends OncePerRequestFilter {
             return null;
         } else {
             var claim = optionalClaim.get();
+            webTokenService.setWebToken(claim);
             return createAuthenticationFromClaim(claim);
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Authentication createAuthenticationFromClaim(Claims claim){
         var username = claim.getSubject();
         var roles = (List<String>) claim.get("role", List.class);

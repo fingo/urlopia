@@ -1,12 +1,12 @@
 package info.fingo.urlopia.config.authentication;
 
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RequestScope
@@ -23,8 +23,8 @@ public class WebTokenService {
         SECRET_KEY = secretKey;
     }
 
-    public void authorize(HttpServletRequest request) {
-        webToken = WebToken.fromRequest(request, SECRET_KEY);
+    public void setWebToken(Claims claims) {
+        webToken = WebToken.fromClaim(claims);
     }
 
     public List<String> getRoles() {

@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 
@@ -32,18 +31,10 @@ public class WebToken {
     }
 
     @SuppressWarnings("unchecked")
-    static WebToken fromWebToken(String token, String secretKey) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
+    static WebToken fromClaim(Claims claims){
         var userId = Long.parseLong(claims.getSubject());
         var roles = (List<String>) claims.get("role", List.class);
         return new WebToken(userId, roles);
-    }
-
-    static WebToken fromRequest(HttpServletRequest request, String secretKey) {
-        return fromWebToken(request.getHeader("authorization"), secretKey);
     }
 
     String toJsonWebToken(String secretKey) {
