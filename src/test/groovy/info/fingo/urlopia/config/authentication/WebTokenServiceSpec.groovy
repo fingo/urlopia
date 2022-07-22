@@ -4,7 +4,6 @@ import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import spock.lang.Specification
-import javax.servlet.http.HttpServletRequest
 
 class WebTokenServiceSpec extends Specification{
     private WebToken webToken
@@ -16,7 +15,7 @@ class WebTokenServiceSpec extends Specification{
 
 
     void setup(){
-        webTokenService = new WebTokenService(SECRET_KEY);
+        webTokenService = new WebTokenService(SECRET_KEY)
         webToken = Mock(WebToken){
             userId >> 5
         }
@@ -31,16 +30,23 @@ class WebTokenServiceSpec extends Specification{
                 .setSubject(String.valueOf(userId))
                 .claim("role", roles)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
-                .compact();
+                .compact()
+    }
+
+    def static getClaimFromToken(String token){
+        return Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody()
     }
 
     def "ensureAdmin() WHEN called for webToken from admin SHOULD not thrown UnauthorizedException"(){
         given:
-        def httpRequest = Mock(HttpServletRequest){
-            getHeader("authorization") >> toJsonWebToken(SECRET_KEY,webToken.userId,[ADMIN_STRING])
-        }
+        def token = toJsonWebToken(SECRET_KEY,webToken.userId,[ADMIN_STRING])
+        def claim = getClaimFromToken(token)
+
         when:
-        webTokenService.authorize(httpRequest)
+        webTokenService.setWebToken(claim)
         webTokenService.ensureAdmin()
 
         then:
@@ -49,12 +55,11 @@ class WebTokenServiceSpec extends Specification{
 
     def "ensureAdmin() WHEN called for webToken from not admin SHOULD  thrown UnauthorizedException"(){
         given:
-        def httpRequest = Mock(HttpServletRequest){
-            getHeader("authorization") >> toJsonWebToken(SECRET_KEY,webToken.userId,[LEADER_STRING,USER_STRING])
-        }
+        def token = toJsonWebToken(SECRET_KEY,webToken.userId,[LEADER_STRING,USER_STRING])
+        def claim = getClaimFromToken(token)
 
         when:
-        webTokenService.authorize(httpRequest)
+        webTokenService.setWebToken(claim)
         webTokenService.ensureAdmin()
 
         then:
@@ -64,12 +69,11 @@ class WebTokenServiceSpec extends Specification{
     }
 
     def "isCurrentUserAnAdmin() WHEN user is an admin SHOULD return true"() {
-        def httpRequest = Mock(HttpServletRequest){
-            getHeader("authorization") >> toJsonWebToken(SECRET_KEY,webToken.userId,[ADMIN_STRING])
-        }
+        def token = toJsonWebToken(SECRET_KEY,webToken.userId,[ADMIN_STRING])
+        def claim = getClaimFromToken(token)
 
         when:
-        webTokenService.authorize(httpRequest)
+        webTokenService.setWebToken(claim)
         def result = webTokenService.isCurrentUserAnAdmin()
 
         then:
@@ -78,13 +82,12 @@ class WebTokenServiceSpec extends Specification{
 
     def "isCurrentUserAnAdmin() WHEN user is not an admin SHOULD return false"() {
         given:
+        def token = toJsonWebToken(SECRET_KEY,webToken.userId,[LEADER_STRING,USER_STRING])
+        def claim = getClaimFromToken(token)
 
-        def httpRequest = Mock(HttpServletRequest){
-            getHeader("authorization") >> toJsonWebToken(SECRET_KEY,webToken.userId,[LEADER_STRING,USER_STRING])
-        }
 
         when:
-        webTokenService.authorize(httpRequest)
+        webTokenService.setWebToken(claim)
         def result = webTokenService.isCurrentUserAnAdmin()
 
         then:
