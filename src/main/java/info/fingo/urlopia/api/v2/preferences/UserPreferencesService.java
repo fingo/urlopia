@@ -42,7 +42,7 @@ public class UserPreferencesService {
     // if unspecified absence endpoint still be slow this is probably the place to change
     public UserWorkingHoursPreference getWorkingHoursPreferenceOf(Long userId) {
         var userPreferences = userWorkingHoursPreferenceRepository.findById(userId);
-        return userPreferences.orElse(initUserPreferences(userId));
+        return userPreferences.orElseGet(() -> initUserPreferences(userId));
     }
 
 
