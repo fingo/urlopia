@@ -32,8 +32,8 @@ class MailParserSpec extends Specification{
 
     def "isRejectedByMail WHEN decision start with #response SHOULD return isRejected"(){
         given:
-        def decision = response + " some message";
-        def mailParser = new MailParser();
+        def decision = response + " some message"
+        def mailParser = new MailParser()
 
         when:
         def result = mailParser.isRejectedByMail(decision)
