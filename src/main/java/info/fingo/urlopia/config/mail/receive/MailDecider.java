@@ -91,7 +91,7 @@ public class MailDecider {
         log.info(loggerInfo);
         if (mailParser.isAcceptedByMail(decision)) {
             acceptanceService.accept(acceptanceId, deciderId);
-        } else {
+        } else if (mailParser.isRejectedByMail(decision)){
             acceptanceService.reject(acceptanceId, deciderId);
         }
     }

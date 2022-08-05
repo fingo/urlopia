@@ -174,7 +174,13 @@ public class MailParser {
     }
 
     public boolean isAcceptedByMail(String decision) {
-        return decision.matches(".*(tak|yes|ok).*");
+        decision = decision.trim().toLowerCase();
+        return decision.matches("(tak|yes|ok).*");
+    }
+
+    public boolean isRejectedByMail(String decision) {
+        decision = decision.trim().toLowerCase();
+        return decision.matches("(nie|no).*");
     }
 
     public boolean checkDate(LocalDate startDate, LocalDate endDate) {
