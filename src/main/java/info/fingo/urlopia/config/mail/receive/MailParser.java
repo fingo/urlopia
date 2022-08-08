@@ -3,8 +3,6 @@ package info.fingo.urlopia.config.mail.receive;
 import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
 import info.fingo.urlopia.config.mail.Mail;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
@@ -12,7 +10,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -174,7 +171,13 @@ public class MailParser {
     }
 
     public boolean isAcceptedByMail(String decision) {
-        return decision.matches(".*(tak|yes|ok).*");
+        decision = decision.trim().toLowerCase();
+        return decision.matches("(tak|yes|ok).*");
+    }
+
+    public boolean isRejectedByMail(String decision) {
+        decision = decision.trim().toLowerCase();
+        return decision.matches("(nie|no).*");
     }
 
     public boolean checkDate(LocalDate startDate, LocalDate endDate) {
