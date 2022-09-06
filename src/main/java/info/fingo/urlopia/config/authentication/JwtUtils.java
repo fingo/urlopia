@@ -32,9 +32,9 @@ public class JwtUtils {
                     .getBody();
             return Optional.of(claim);
         } catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-            LOGGER.error("Invalid token ", e);
+            LOGGER.error("Invalid token " + e.getMessage());
         } catch (ExpiredJwtException e) {
-            LOGGER.info("Session expired ", e);
+            return Optional.empty();
         } catch (Exception e) {
             LOGGER.error("Unhandled exception ", e);
         }

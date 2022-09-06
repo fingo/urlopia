@@ -80,14 +80,12 @@ public class LDAPConnectionService {
                 authEnv.put(Context.SECURITY_CREDENTIALS, credentials.getPassword());
 
                 new InitialDirContext(authEnv); // NOSONAR
-
-                return true;
             }
+            return userFound;
         } catch (NamingException e) {
-            LOGGER.info("Username or password is incorrect!", e);
+            LOGGER.info("Username or password is incorrect!");
+            return false;
         }
-
-        return false;
     }
 
     private static class ActiveDirectoryConnectionException extends RuntimeException {
