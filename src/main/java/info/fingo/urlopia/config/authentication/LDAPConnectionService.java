@@ -83,6 +83,7 @@ public class LDAPConnectionService {
             }
             return userFound;
         } catch (NamingException e) {
+            LOGGER.info("Username or password is incorrect!");
             return false;
         }
     }
