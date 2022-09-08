@@ -18,6 +18,9 @@ public class MailStorage extends MailSender {
     @Value("${mails.storage}")
     private String storageAddress;
 
+    @Value("${mail.sender.enabled}")
+    private boolean isEnabled;
+
     @Autowired
     public MailStorage(JavaMailSender mailSender,
                        MailConverter mailConverter) {
@@ -25,12 +28,14 @@ public class MailStorage extends MailSender {
     }
 
     public void store(MailTemplate template) {
-        Mail mail = Mail.newBuilder()
-                .setTemplate(template)
-                .setSenderName(senderName)
-                .setSenderAddress(senderAddress)
-                .setRecipientAddress(storageAddress)
-                .build();
-        super.send(mail);
+        if (isEnabled){
+            Mail mail = Mail.newBuilder()
+                    .setTemplate(template)
+                    .setSenderName(senderName)
+                    .setSenderAddress(senderAddress)
+                    .setRecipientAddress(storageAddress)
+                    .build();
+            super.send(mail);
+        }
     }
 }

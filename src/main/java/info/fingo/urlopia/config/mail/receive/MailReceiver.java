@@ -40,6 +40,9 @@ public class MailReceiver extends Thread {
     @Value("${mail.receiver.idle.time}")
     private int keepAliveFreq;    //time unit: milliseconds
 
+    @Value("${mail.receiver.enabled}")
+    private boolean isEnabled;
+
     private Store store;
     private IMAPFolder inbox;
 
@@ -130,30 +133,32 @@ public class MailReceiver extends Thread {
 
     @Override
     public void run() {
-        // Configuring the inbox
-        performConfiguration();
+        if (isEnabled){
+            // Configuring the inbox
+            performConfiguration();
 
-        // Creating scheduler to keep alive the inbox
-        var scheduledExecutorService = Executors.newScheduledThreadPool(1);
-        var timeUnit = TimeUnit.MILLISECONDS;
-        scheduledExecutorService.scheduleAtFixedRate(this::keepInboxAlive, keepAliveFreq, keepAliveFreq, timeUnit);
+            // Creating scheduler to keep alive the inbox
+            var scheduledExecutorService = Executors.newScheduledThreadPool(1);
+            var timeUnit = TimeUnit.MILLISECONDS;
+            scheduledExecutorService.scheduleAtFixedRate(this::keepInboxAlive, keepAliveFreq, keepAliveFreq, timeUnit);
 
-        // Keeping the inbox idle
-        keepInboxIdle();
+            // Keeping the inbox idle
+            keepInboxIdle();
 
-        // Closing connections
-        try {
-            inbox.close(false);
-            log.info("Inbox folder connection closed");
-        } catch (MessagingException e) {
-            log.error("MessagingException during closing the inbox folder", e);
-        }
+            // Closing connections
+            try {
+                inbox.close(false);
+                log.info("Inbox folder connection closed");
+            } catch (MessagingException e) {
+                log.error("MessagingException during closing the inbox folder", e);
+            }
 
-        try {
-            store.close();
-            log.info("Store connection closed");
-        } catch (MessagingException e) {
-            log.error("MessagingException during closing the store", e);
+            try {
+                store.close();
+                log.info("Store connection closed");
+            } catch (MessagingException e) {
+                log.error("MessagingException during closing the store", e);
+            }
         }
     }
 
