@@ -15,24 +15,32 @@ public class MailNotificator extends MailSender {
     @Value("${mails.bot}")
     private String senderAddress;
 
+    @Value("${mail.sender.enabled}")
+    private boolean isEnabled;
+
     @Autowired
     public MailNotificator(JavaMailSender mailSender,
                            MailConverter mailConverter) {
         super(mailSender, mailConverter);
     }
 
-    public void notify(MailTemplate template, String recipientAddress) {
+    public void notify(MailTemplate template,
+                       String recipientAddress) {
         this.notify(template, recipientAddress, recipientAddress);
     }
 
-    public void notify(MailTemplate template, String recipientAddress, String recipientName) {
-        Mail mail = Mail.newBuilder()
-                .setTemplate(template)
-                .setSenderName(senderName)
-                .setSenderAddress(senderAddress)
-                .setRecipientName(recipientName)
-                .setRecipientAddress(recipientAddress)
-                .build();
-        super.send(mail);
+    public void notify(MailTemplate template,
+                       String recipientAddress,
+                       String recipientName) {
+        if (isEnabled){
+            Mail mail = Mail.newBuilder()
+                    .setTemplate(template)
+                    .setSenderName(senderName)
+                    .setSenderAddress(senderAddress)
+                    .setRecipientName(recipientName)
+                    .setRecipientAddress(recipientAddress)
+                    .build();
+            super.send(mail);
+        }
     }
 }

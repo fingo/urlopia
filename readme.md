@@ -152,6 +152,8 @@ mail.receiver.idle.time=300000
 mails.bot= (Mail address of mailing bot)
 mails.storage= (Mail address of emails storage)
 mail.title.prefix = (Prefix for mail title - can be empty)
+mail.sender.enabled= (Boolean flag to set sending mail)
+mail.receiver.enabled= (Boolean flag to set observing incoming mail)
 # slack
 slack.bot-token=
 slack.signing-secret=
