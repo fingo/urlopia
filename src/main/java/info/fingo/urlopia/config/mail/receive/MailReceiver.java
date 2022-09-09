@@ -28,10 +28,10 @@ public class MailReceiver extends Thread {
     @Value("${mail.receiver.host}")
     private String host;
 
-    @Value("${spring.mail.username}")
+    @Value("${mail.receiver.username}")
     private String username;
 
-    @Value("${spring.mail.password}")
+    @Value("${mail.receiver.password}")
     private String password;
 
     @Value("${mail.receiver.folder}")
