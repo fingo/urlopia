@@ -60,6 +60,9 @@ dependencies {
     implementation("com.slack.api:bolt:1.12.1")
     implementation("com.slack.api:bolt-servlet:1.12.1")
 
+    // Database migration
+    implementation("org.flywaydb:flyway-core")
+
     runtimeOnly('org.postgresql:postgresql')
 
     testImplementation('org.spockframework:spock-core:2.0-groovy-3.0')

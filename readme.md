@@ -124,6 +124,10 @@ spring.h2.console.enabled=true
 spring.h2.console.path=/h2-console (URL path for h2 console)
 spring.datasource.url=jdbc:h2: (Absolute path for db file)
 
+# database flyway
+spring.flyway.enabled= (boolean flag - self explaining)
+urlopia.flyway.baseline-version= (version of the last script that was run on db)
+
 # active directory
 ldap.initial.context.factory=com.sun.jndi.ldap.LdapCtxFactory
 ldap.security.authentication=Simple (Authentication with username and password)
@@ -141,12 +145,14 @@ spring.mail.host= (SMTP server host. For instance, `smtp.example.com`)
 spring.mail.username= (Login user of the SMTP server)
 spring.mail.password= (Login password of the SMTP server)
 spring.mail.port= (SMTP server port)
-spring.mail.properties.mail.smtp.auth=true 
+spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true (Some SMTP servers require a TLS connection)
 spring.mail.properties.smtp-auth=true
-mail.template.prefix=/mails 
+mail.template.prefix=/mails
 mail.template.suffix=.hbs
-mail.receiver.host= 
+mail.receiver.host=
+mail.receiver.username=
+mail.receiver.password=
 mail.receiver.folder=Inbox
 mail.receiver.idle.time=300000
 mails.bot= (Mail address of mailing bot)
@@ -185,6 +191,39 @@ Then in the fields:
 - Set `Database` to `urlopiadb`
 - Set `User` to `urlopia`
 - Set `Password` to `urlopia123`
+
+## Flyway configuration
+
+To turn on database migration via Flyway add
+
+- `spring.flyway.enabled=true`
+
+properties to the `application-developer.properties` (on set this via other possible ways).
+Migration scripts are in `urlopia/src/main/resources/scripts` directory
+
+Scripts cannot be modified after creating (and executing)!
+
+If you already have database where some sql scripts have been run you need to add
+
+- `urlopia.flyway.baseline-version = <last_script_version>`
+  where last_script_version is number from the latest run script.
+
+On example if latest run script was V2_7_6_1__add_count_for_next_year_column then you need to
+replace `<last_script_version>` with `2_7_6_1` (without quotas)
+
+Name convention for scripts is:
+
+* `V<APP_VERSION>_<SCRIPT_NUMBER>__<DESCRIPTION>.sql` - update scripts
+* `v<APP_VERSION>_<SCRIPT_NUMBER>__<DESCRIPTION>.sql` - update scripts to execute manually
+* `U<APP_VERSION>_<SCRIPT_NUMBER>__<DESCRIPTION>.sql` - rollback scripts
+
+where
+
+* `<APP_VERSION>` is an application version to be released e.g., `2_7_6`
+* `<SCRIPT_NUMBER>` is a counter for scripts in same app version
+* `<DESCRIPTION>` is a human-readable description of the changes made by this script.
+
+Example script name: `V2_7_6_1__add_count_for_next_year_column.sql`.
 
 #### Slack bot configuration
 
