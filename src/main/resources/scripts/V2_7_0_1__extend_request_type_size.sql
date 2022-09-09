@@ -1,0 +1,1 @@
+ALTER TABLE requests ALTER COLUMN type_info TYPE varchar(60);

@@ -1,0 +1,1 @@
+ALTER TABLE teams DROP COLUMN business_part_leader_id;
