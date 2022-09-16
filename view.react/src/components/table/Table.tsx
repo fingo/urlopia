@@ -1,12 +1,12 @@
 import { TableBody, TableHead, TableRow } from "@mui/material";
 import MuiTable from "@mui/material/Table";
-import { useState } from "react";
 
 import { FilterRow } from "./FilterRow";
 import { HeaderCell } from "./HeaderCell";
 import { Row } from "./Row";
-import { ColumnType, IExpandRow, OrderByType } from "./Table.types";
+import { ColumnType, IExpandRow } from "./Table.types";
 import useFilter from "./useFilter";
+import useSort from "./useSort";
 
 interface ITableProps {
   keyField: string;
@@ -26,11 +26,11 @@ const Table = ({
   hover = false,
   striped = false,
 }: ITableProps) => {
-  const [orderBy, setOrderBy] = useState<OrderByType>({
-    field: undefined,
-    order: undefined,
-  });
   const { filteredData, FilterComponent } = useFilter({ data, columns });
+  const { orderBy, setOrderBy, sortedData } = useSort({
+    data: filteredData,
+    columns,
+  });
 
   return (
     <div className={wrapperClasses}>
@@ -56,19 +56,21 @@ const Table = ({
             renderFilter={(column) => <FilterComponent column={column} />}
           />
         )}
-        {filteredData.length > 0 && <TableBody>
-          {filteredData.map((row) => (
-            <Row
-              key={row[keyField]}
-              keyField={keyField}
-              columns={columns}
-              row={row}
-              expandRow={expandRow}
-              striped={striped}
-              hover={hover}
-            />
-          ))}
-        </TableBody>}
+        {sortedData.length > 0 && (
+          <TableBody>
+            {sortedData.map((row) => (
+              <Row
+                key={row[keyField]}
+                keyField={keyField}
+                columns={columns}
+                row={row}
+                expandRow={expandRow}
+                striped={striped}
+                hover={hover}
+              />
+            ))}
+          </TableBody>
+        )}
       </MuiTable>
     </div>
   );
