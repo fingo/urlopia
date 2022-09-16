@@ -1,16 +1,13 @@
 import PropTypes from "prop-types";
 import {useState} from "react";
-import BootstrapTable from 'react-bootstrap-table-next';
 
 import {hoursChangeMapper} from "../../helpers/react-bootstrap-table2/HistoryLogMapperHelper";
-import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
 import {disableSortingFunc} from "../../helpers/react-bootstrap-table2/utils";
 import {ChangeLogCountYear} from "../change-log-count-year/ChangeLogCountYear";
+import Table from "../table/Table";
 
 export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, isAdminView, setSort, setRefresh}) => {
     const [whichExpanded, setWhichExpanded] = useState([]);
-
-    const noExpandRow = {}
 
     const expandRowForAdmin = {
         onlyOneExpanding: true,
@@ -32,27 +29,24 @@ export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, isAdminVie
             )
     };
 
-    const expandRow = isAdminView? expandRowForAdmin: noExpandRow;
-
     const columns = [
         {
-            dataField: 'id',
+            name: 'id',
             hidden: true
         },
         {
-            dataField: 'userWorkTime',
+            name: 'userWorkTime',
             hidden: true
         },
         {
-            dataField: 'created',
+            name: 'created',
             text: 'Utworzono',
             headerAlign: 'center',
             align: 'center',
             sort: true,
             sortFunc: disableSortingFunc,
             onSort: (field, order) => {
-                const sortField = "created"
-                setSort({field: sortField, order: order})
+                setSort({field: field, order: order})
             },
             style: {verticalAlign: 'middle'},
             formatter: (cell, row) => {
@@ -61,12 +55,11 @@ export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, isAdminVie
                 }
                 return cell;
             },
-            headerAttrs: {
-                hidden: isHidden
-            },
+            hideHeader: isHidden
+
         },
         {
-            dataField: 'deciderFullName',
+            name: 'deciderFullName',
             text: 'Rozpatrujący',
             headerAlign: 'center',
             align: 'center',
@@ -74,7 +67,7 @@ export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, isAdminVie
             hidden: isHidden
         },
         {
-            dataField: 'hours',
+            name: 'hours',
             text: 'Wartość zmiany',
             headerAlign: 'center',
             align: 'center',
@@ -98,12 +91,10 @@ export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, isAdminVie
                 }
             },
             formatter: (cell, row) => hoursChangeMapper(cell, row.userWorkTime),
-            headerAttrs: {
-                hidden: isHidden
-            }
+            hideHeader: isHidden
         },
         {
-            dataField: "hoursRemaining",
+            name: "hoursRemaining",
             text: vacationTypeLabel,
             headerAlign: 'center',
             align: 'center',
@@ -112,36 +103,31 @@ export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, isAdminVie
             formatter: (cell, row) => hoursChangeMapper(cell, row.userWorkTime)
         },
         {
-            dataField: "comment",
+            name: "comment",
             text: 'Komentarz',
             headerAlign: 'center',
             align: 'center',
             sort: true,
             sortFunc: disableSortingFunc,
             onSort: (field, order) => {
-                const sortField = "comment"
-                setSort({field: sortField, order: order})
+                setSort({field, order: order})
             },
             style: {verticalAlign: 'middle'},
-            headerAttrs: {
-                hidden: isHidden
-            }
+            hideHeader: isHidden
+
         },
         {
-            dataField: 'countForNextYear',
+            name: 'countForNextYear',
             hidden: true
         },
     ];
 
     return (
-        <BootstrapTable
-            bootstrap4
+        <Table
             keyField='id'
             data={logs}
-            expandRow={expandRow}
-            wrapperClasses={tableClass}
-            columns = {columns}
-            bordered={false}
+            expandRow={isAdminView && expandRowForAdmin}
+            columns={columns}
             hover
             striped={isHidden}
         />

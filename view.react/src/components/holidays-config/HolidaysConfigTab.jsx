@@ -1,12 +1,11 @@
 import PropTypes from "prop-types";
 import {useEffect, useState} from 'react';
 import {GearFill as GearIcon, TrashFill as TrashIcon} from "react-bootstrap-icons";
-import BootstrapTable from 'react-bootstrap-table-next';
 
 import {saveHolidays} from "../../contexts/holidays-context/actions/saveHolidays";
 import {useHolidays} from "../../contexts/holidays-context/holidaysContext";
 import {AttentionIcon, TextWithIcon} from "../../helpers/icons/Icons";
-import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
+import Table from "../table/Table";
 import {ConfirmRemoveHolidayModal} from "./confirm-remove-holiday-modal/ConfirmRemoveHolidayModal";
 import {HolidaySettingsModal} from "./holidays-settings-modal/HolidaySettingsModal";
 import styles from './HolidaysConfigTab.module.scss';
@@ -108,11 +107,11 @@ export const HolidaysConfigTab = ({holidays, year}) => {
 
     const columns = [
         {
-            dataField: 'id',
+            name: 'id',
             hidden: true
         },
         {
-            dataField: 'name',
+            name: 'name',
             text: 'Święto',
             headerAlign: 'center',
             align: 'center',
@@ -120,7 +119,7 @@ export const HolidaysConfigTab = ({holidays, year}) => {
             formatter: (cell, row) => withNotifyFormatter(cell, row),
         },
         {
-            dataField: 'date',
+            name: 'date',
             text: 'Data',
             headerAlign: 'center',
             align: 'center',
@@ -128,7 +127,7 @@ export const HolidaysConfigTab = ({holidays, year}) => {
             style: {verticalAlign: 'middle'}
         },
         {
-            dataField: 'dayOfWeek',
+            name: 'dayOfWeek',
             text: 'Dzień tygodnia',
             headerAlign: 'center',
             align: 'center',
@@ -136,7 +135,7 @@ export const HolidaysConfigTab = ({holidays, year}) => {
             style: {verticalAlign: 'middle'}
         },
         {
-            dataField: 'action',
+            name: 'action',
             text: 'Akcja',
             headerAlign: 'center',
             align: 'center',
@@ -148,13 +147,10 @@ export const HolidaysConfigTab = ({holidays, year}) => {
     return (
         <>
             {modals}
-            <BootstrapTable
-                bootstrap4
+            <Table
                 keyField='id'
                 data={holidays}
-                wrapperClasses={tableClass}
                 columns={columns}
-                bordered={false}
                 hover
             />
             <ConfirmRemoveHolidayModal show={showConfirmRemoveHolidayModal}

@@ -1,7 +1,7 @@
 import "react-month-picker/css/month-picker.css";
 
 import PropTypes from 'prop-types';
-import { useState } from "react";
+import { useRef } from "react";
 import {Button} from 'react-bootstrap';
 import ReactMonthPicker from "react-month-picker";
 
@@ -10,21 +10,19 @@ import styles from './MonthPicker.module.scss';
 
 
 export const MonthPicker = ({ range, chosenMonth, setChosenMonth}) => {
-
-    const [isVisible, setVisibility] = useState(false);
+    const monthPickerRef = useRef();
 
     const showMonthPicker = event => {
-        setVisibility(true);
+        monthPickerRef.current.show()
         event.preventDefault();
     };
 
     const handleOnDismiss = () => {
-        setVisibility(false);
     };
 
     const handleOnChange = (year, month) => {
         setChosenMonth({ year, month });
-        setVisibility(false);
+        monthPickerRef.current.dismiss()
     };
 
     const availableMonths = ["STY", "LUT", "MAR", "KWI", "MAJ", "CZE", "LIP", "SIE", "WRZ", "PAŹ", "LIS", "GRU"];
@@ -38,22 +36,23 @@ export const MonthPicker = ({ range, chosenMonth, setChosenMonth}) => {
 
     return (
         <div className="MonthYearPicker">
-            <Button
-                className={styles.btnClass}
-                onClick={(e) => showMonthPicker(e)}
-                data-testid={"monthButton"}
-            >
-                {getMonthValue()}
-            </Button>
             <ReactMonthPicker
-                show={isVisible}
+                ref={monthPickerRef}
                 lang={availableMonths}
                 years={range}
                 value={chosenMonth}
                 onChange={(year, month) => handleOnChange(year, month)}
                 onDismiss={() => handleOnDismiss()}
                 data-testid={"monthPicker"}
-            />
+            >
+                <Button
+                    className={styles.btnClass}
+                    onClick={(e) => showMonthPicker(e)}
+                    data-testid={"monthButton"}
+                >
+                    {getMonthValue()}
+                </Button>
+            </ReactMonthPicker>
         </div>
     );
 }

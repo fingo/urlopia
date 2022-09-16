@@ -1,8 +1,6 @@
 import PropTypes from "prop-types";
 import {useEffect, useState} from "react";
 import {Alert, Button} from "react-bootstrap";
-import BootstrapTable from 'react-bootstrap-table-next';
-import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
 import {BeatLoader} from "react-spinners";
 
 import {fetchUsersPresenceConfirmations} from "../../contexts/presence-context/actions/fetchUsersPresenceConfirmations";
@@ -17,9 +15,9 @@ import {btnClass} from "../../global-styles/btn.module.scss";
 import {spinner} from "../../global-styles/loading-spinner.module.scss";
 import {AttentionIcon, TextWithIcon} from "../../helpers/icons/Icons";
 import {textAsArrayFormatter} from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
-import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
 import {sortedUsers} from "../../helpers/sorts/UsersSortHelper";
 import {ExtendedWorker} from "../extended-worker/ExtendedWorker";
+import Table from "../table/Table";
 import styles from './WorkersTable.module.scss';
 
 export const URL = '/workers';
@@ -118,58 +116,45 @@ export const WorkersTable = ({isEC}) => {
 
     const columns = [
         {
-            dataField: 'userId',
+            name: 'userId',
             hidden: true,
         },
         {
-            dataField: 'fullName',
+            name: 'fullName',
             text: 'Imię i nazwisko',
             headerAlign: 'center',
             align: 'center',
             style: {verticalAlign: 'middle', cursor: 'pointer'},
-            filter: textFilter({
-                placeholder: 'Filtruj...',
-                delay: 0,
-            }),
+            filter: true,
             sort: true,
             formatter: (cell, row) => withNotifyFormatter(cell, row),
         },
         {
-            dataField: 'mailAddress',
+            name: 'mailAddress',
             text: 'E-mail',
             headerAlign: 'center',
             align: 'center',
             style: {verticalAlign: 'middle', cursor: 'pointer'},
-            filter: textFilter({
-                placeholder: 'Filtruj...',
-                delay: 0,
-            }),
+            filter: true,
             sort: true,
         },
         {
-            dataField: 'teams',
+            name: 'teams',
             text: 'Zespoły',
             headerAlign: 'center',
             align: 'center',
             style: {verticalAlign: 'middle', cursor: 'pointer'},
-            filter: textFilter({
-                placeholder: 'Filtruj...',
-                delay: 0,
-            }),
             formatter: textAsArrayFormatter,
             sort: true,
         },
         {
-            dataField: 'workTime',
+            name: 'workTime',
             hidden: !isEC,
             text: 'Etat',
             headerAlign: 'center',
             align: 'center',
             style: {verticalAlign: 'middle', cursor: 'pointer'},
-            filter: textFilter({
-                placeholder: 'Filtruj...',
-                delay: 0,
-            }),
+            filter: true,
             sort: true,
         },
     ];
@@ -211,16 +196,11 @@ export const WorkersTable = ({isEC}) => {
                 </Button>
                 {
                     areUnspecifiedAbsencesFetched ?
-                        <BootstrapTable
-                            bootstrap4
+                        <Table
                             keyField='userId'
                             data={formattedWorkers}
-                            wrapperClasses={tableClass}
                             columns={columns}
                             expandRow={expandRow}
-                            filter={filterFactory()}
-                            filterPosition='top'
-                            bordered={false}
                         />
                         :
                         <div className={spinner}>
@@ -257,16 +237,11 @@ export const WorkersTable = ({isEC}) => {
             >
                 {getButtonMessage(isEC,showActive)}
             </Button>
-            <BootstrapTable
-                bootstrap4
+            <Table
                 keyField='userId'
                 data={formattedWorkers}
-                wrapperClasses={tableClass}
                 columns={columns}
                 expandRow={expandRow}
-                filter={filterFactory()}
-                filterPosition='top'
-                bordered={false}
             />
         </div>
     )

@@ -2,8 +2,6 @@ import classNames from "classnames";
 import PropTypes from 'prop-types'
 import {useState} from "react";
 import {XSquareFill as XIcon} from "react-bootstrap-icons";
-import BootstrapTable from "react-bootstrap-table-next";
-import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
 import {BeatLoader} from "react-spinners";
 
 import {PENDING} from "../../constants/statuses";
@@ -16,8 +14,8 @@ import {
     requestTypeMapper,
     statusFormatter
 } from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
-import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
 import {updateVacationDays} from "../../helpers/updateVacationDays";
+import Table from "../table/Table";
 import {AcceptancesModal} from "./AcceptancesModal";
 
 export const UserRequestsList = ({
@@ -61,46 +59,38 @@ export const UserRequestsList = ({
 
     const columns = [
         {
-            dataField: 'id',
+            name: 'id',
             hidden: true,
         },
         {
-            dataField: 'periodInfo',
+            name: 'periodInfo',
             text: 'Termin',
             headerAlign: 'center',
             align: 'center',
             style: {verticalAlign: 'middle'},
         },
         {
-            dataField: 'type',
+            name: 'type',
             text: 'Rodzaj',
             headerAlign: 'center',
             align: 'center',
             style: {verticalAlign: 'middle'},
-            filter: textFilter({
-                id: 'typeUserRequestsListFilter',
-                placeholder: 'Filtruj...',
-                delay: 0,
-            }),
+            filter: true,
             formatter: requestTypeMapper,
             filterValue: (cell) => requestTypeMapper(cell)
         },
         {
-            dataField: 'status',
+            name: 'status',
             text: 'Status',
             headerAlign: 'center',
             align: 'center',
             style: {verticalAlign: 'middle'},
             formatter: (cell, row) => statusFormatter(cell, row, requests, showModal),
-            filter: textFilter({
-                id: 'statusUserRequestsListFilter',
-                placeholder: 'Filtruj...',
-                delay: 0,
-            }),
+            filter: true,
             filterValue: (cell) => requestStatusMapper(cell),
         },
         {
-            dataField: 'actions',
+            name: 'actions',
             text: 'Akcje',
             headerAlign: 'center',
             formatter: actionFormatter,
@@ -118,14 +108,10 @@ export const UserRequestsList = ({
                 !isFetching ?
                     <>
                         {modals}
-                        <BootstrapTable
-                            bootstrap4
+                        <Table
                             keyField='id'
                             data={formattedRequests}
-                            wrapperClasses={tableClass}
                             columns={columns}
-                            filter={filterFactory()}
-                            filterPosition='top'
                             bordered={false}
                             hover
                         />
