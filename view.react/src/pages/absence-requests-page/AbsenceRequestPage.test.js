@@ -27,7 +27,7 @@ describe("AbsenceRequestPage", () => {
     it('should not render company requests when user is not an admin', () => {
         // given
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
-            userRoles: ["ROLES_WORKER"]
+            roles: ["ROLES_WORKER"]
         }))
         CompanyRequestsListWrapper.mockImplementation(() => <div>CompanyRequestListMock</div>)
 
@@ -41,7 +41,7 @@ describe("AbsenceRequestPage", () => {
     it('should not render team requests when user is not a leader', () => {
         // given
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
-            userRoles: ["ROLES_WORKER"]
+            roles: ["ROLES_WORKER"]
         }))
         TeamRequestsListWrapper.mockImplementation(() => <div>TeamRequestListMock</div>)
 
@@ -55,7 +55,7 @@ describe("AbsenceRequestPage", () => {
     it('should render company requests when user is an admin', () => {
         // given
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
-            userRoles: ["ROLES_ADMIN"]
+            roles: ["ROLES_ADMIN"]
         }))
         CompanyRequestsListWrapper.mockImplementation(() => <div>CompanyRequestListMock</div>)
 
@@ -69,7 +69,7 @@ describe("AbsenceRequestPage", () => {
     it('should render team requests when user is a leader', () => {
         // given
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
-            userRoles: ["ROLES_LEADER"]
+            roles: ["ROLES_LEADER"]
         }))
         TeamRequestsListWrapper.mockImplementation(() => <div>TeamRequestListMock</div>)
 
