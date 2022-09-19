@@ -1,27 +1,35 @@
 import { useMemo, useState } from "react";
 
 import { ColumnType, OrderByType, OrderType } from "./Table.types";
+import { getStringValue } from "./TableHelpers";
 
-interface IUseFiltersProps {
-  data: any[];
-  columns: ColumnType[];
+interface IUseFiltersProps<T> {
+  data: { [key: string]: T }[];
+  columns: ColumnType<T>[];
 }
 
-const sortFactory = (field: string | undefined, orderBy: OrderType|undefined) => {
-  return (a: any, b: any) => {
+const sortFactory = <T>(
+  field: string | undefined,
+  orderBy: OrderType | undefined,
+  column: ColumnType<T>
+) => {
+  return (a: { [key: string]: T }, b: { [key: string]: T }) => {
     if (!field || !orderBy || !a[field] || !b[field]) {
       return 1;
     }
 
-    const compare = a[field]
-    .toString()
-    .localeCompare(b[field].toString(), "pl", { sensitivity: "base" })
+    const aString = getStringValue(a[field], column, a);
+    const bString = getStringValue(b[field], column, b);
 
-    return orderBy === 'desc' ? compare : -compare;
+    const compare = aString.localeCompare(bString, "pl", {
+      sensitivity: "base",
+    });
+
+    return orderBy === "desc" ? compare : -compare;
   };
 };
 
-const useSort = ({ data, columns }: IUseFiltersProps) => {
+const useSort = <T>({ data, columns }: IUseFiltersProps<T>) => {
   const [orderBy, setOrderBy] = useState<OrderByType>({
     field: undefined,
     order: undefined,
@@ -33,7 +41,9 @@ const useSort = ({ data, columns }: IUseFiltersProps) => {
     );
 
     if (columnIndex > -1 && !columns[columnIndex].onSort) {
-      data.sort(sortFactory(orderBy.field, orderBy.order))
+      data.sort(
+        sortFactory(orderBy.field, orderBy.order, columns[columnIndex])
+      );
     }
 
     return data;

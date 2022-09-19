@@ -1,13 +1,21 @@
 import { TableBody, TableCell, TableRow } from "@mui/material";
 import React from "react";
+import { Form } from "react-bootstrap";
 
 import { ColumnType } from "./Table.types";
 
-interface IFilterRowProps {
-  columns: ColumnType[];
-  renderFilter: (column: ColumnType) => JSX.Element;
+interface IFilterRowProps<T> {
+  columns: ColumnType<T>[];
+  filters: {
+    [key: string]: string;
+  };
+  setFilter: (name: string, value: string) => void;
 }
-export const FilterRow = ({ columns, renderFilter }: IFilterRowProps) => {
+export const FilterRow = <T,>({
+  columns,
+  filters,
+  setFilter,
+}: IFilterRowProps<T>) => {
   return (
     <TableBody>
       <TableRow>
@@ -19,7 +27,13 @@ export const FilterRow = ({ columns, renderFilter }: IFilterRowProps) => {
                 style={{ textAlign: column.headerAlign || "left" }}
                 hidden={column.hideHeader}
               >
-                {column.filter && renderFilter(column)}
+                {column.filter && (
+                  <Form.Control
+                    placeholder="Filtruj..."
+                    value={filters[column.name] || ""}
+                    onChange={(e) => setFilter(column.name, e.target.value)}
+                  />
+                )}
               </TableCell>
             )
         )}

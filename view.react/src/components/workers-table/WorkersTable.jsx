@@ -37,7 +37,7 @@ export const WorkersTable = ({isEC}) => {
     const [whichExpanded, setWhichExpanded] = useState([]);
 
     useEffect(() => {
-        if (selectedUser) {
+        if (selectedUser.userId) {
             setWhichExpanded([selectedUser.userId]);
         } else {
             setWhichExpanded([]);

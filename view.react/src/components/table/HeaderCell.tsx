@@ -18,16 +18,16 @@ const SortLabelWrapper = ({
 
   return <TableSortLabel {...rest}>{children}</TableSortLabel>;
 };
-interface IHeaderCellProps {
-  column: ColumnType;
+interface IHeaderCellProps<T> {
+  column: ColumnType<T>;
   orderBy: OrderByType;
   setOrderBy: React.Dispatch<React.SetStateAction<OrderByType>>;
 }
-export const HeaderCell = ({
+export const HeaderCell = <T,>({
   column,
   orderBy,
   setOrderBy,
-}: IHeaderCellProps) => {
+}: IHeaderCellProps<T>) => {
   const setNewOrder = () => {
     let newDir: OrderType = "desc";
     const isDesc = orderBy.field === column.name && orderBy.order === "desc";

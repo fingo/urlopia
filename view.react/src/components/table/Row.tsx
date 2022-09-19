@@ -1,57 +1,73 @@
 import { Collapse, TableCell, TableRow } from "@mui/material";
 import React from "react";
 
-import { ColumnType, IExpandRow } from "./Table.types";
+import { ColumnType, IExpandRow, RowType } from "./Table.types";
 
-interface IRowProps {
-  keyField: string;
-  columns: ColumnType[];
-  row: any;
-  expandRow?: IExpandRow;
+interface IRowProps<T> {
+  keyFieldValue: string;
+  columns: ColumnType<T>[];
+  row: RowType<T>;
+  expandRow?: IExpandRow<T>;
   striped: boolean;
   hover: boolean;
 }
 
-export const Row = ({
-  keyField,
+const getColumnStyle = <T,>(column: ColumnType<T>, row: RowType<T>) => {
+  if (column.style === undefined) {
+    return;
+  }
+
+  switch (typeof column.style) {
+    case "object":
+      return column.style;
+    case "function":
+      return column.style(row[column.name], row);
+  }
+};
+
+const getRowStyle = (expandRow: boolean, striped: boolean) => {
+  return {
+    ...(expandRow && { "& > *": { borderBottom: "unset" } }),
+    ...(striped && {
+      [`&:nth-of-type(${expandRow ? '4n+1' : 'odd'})`]: {
+        backgroundColor: "#ececec",
+      },
+    }),
+  };
+};
+
+export const Row = <T,>({
+  keyFieldValue,
   columns,
   row,
   expandRow,
   striped,
   hover,
-}: IRowProps) => {
+}: IRowProps<T>) => {
   const onClick = () => {
     expandRow?.onExpand(
       row,
-      !(expandRow?.expanded || []).includes(row[keyField])
+      !(expandRow?.expanded || []).some(
+        (value) => value.toString() === keyFieldValue
+      )
     );
   };
+
+  console.log(striped)
 
   return (
     <>
       <TableRow
+        className="mainRow"
         {...(expandRow && {
           onClick: () => onClick(),
-          sx: { "& > *": { borderBottom: "unset" } },
         })}
-        {...(striped && {
-          sx: {
-            "&:nth-of-type(odd)": {
-              backgroundColor: "#ececec",
-            },
-          },
-        })}
+        sx={getRowStyle(!!expandRow, striped)}
         hover={hover}
       >
         {columns.map((column) => {
           const baseStyle = { textAlign: column.align || "left" };
-          let passedStyle;
-
-          if (!!column.style && typeof column.style === "object") {
-            passedStyle = column.style;
-          } else if (!!column.style && typeof column.style === "function") {
-            passedStyle = column.style(row[column.name], row);
-          }
+          const passedStyle = getColumnStyle(column, row) || {};
 
           return (
             !column.hidden && (
@@ -61,7 +77,7 @@ export const Row = ({
               >
                 {column.formatter
                   ? column.formatter(row[column.name], row)
-                  : row[column.name]}
+                  : (row[column.name] as any)}
               </TableCell>
             )
           );
@@ -78,7 +94,9 @@ export const Row = ({
             )}
           >
             <Collapse
-              in={(expandRow?.expanded || []).includes(row[keyField])}
+              in={(expandRow?.expanded || []).some(
+                (value) => value?.toString() === keyFieldValue
+              )}
               timeout="auto"
               unmountOnExit
             >

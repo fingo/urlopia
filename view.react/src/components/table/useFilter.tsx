@@ -1,77 +1,47 @@
-import React, { useMemo, useState } from "react";
-import { Form } from "react-bootstrap";
+import { useMemo, useState } from "react";
 
-import { ColumnType } from "./Table.types";
+import { ColumnType, RowType } from "./Table.types";
+import { getStringValue } from "./TableHelpers";
 
-interface IUseFiltersProps {
-  data: any[];
-  columns: ColumnType[];
+interface IUseFiltersProps<T> {
+  data: RowType<T>[];
+  columns: ColumnType<T>[];
 }
 
-const useFilter = ({ data, columns }: IUseFiltersProps) => {
-  const [filters, setFilters] = useState<
-    { fieldName: string; filter: string }[]
-  >([]);
+const useFilter = <T,>({ data, columns }: IUseFiltersProps<T>) => {
+  const [filters, setFilters] = useState<{ [key: string]: string }>({});
 
   const filteredData = useMemo(
     () =>
       data.filter((row) =>
-        filters.every((filter) => {
-          let value = row[filter.fieldName];
+        Object.entries(filters).every(([fieldName, filter]) => {
           const columnIndex = columns.findIndex(
-            (column) => column.name === filter.fieldName
+            (column) => column.name === fieldName
           );
-          const filterValue = columns[columnIndex].filterValue;
-          const formatter = columns[columnIndex].formatter;
-          if (filterValue) {
-            value = filterValue(row[filter.fieldName], row);
-          } else if (formatter) {
-            value = formatter(row[filter.fieldName], row);
-          }
-          return value.toLowerCase().includes(filter.filter.toLowerCase());
+
+          const value = getStringValue(
+            row[fieldName],
+            columns[columnIndex],
+            row
+          );
+
+          return value.toLowerCase().includes(filter.toLowerCase());
         })
       ),
     [columns, data, filters]
   );
 
-  const FilterComponent = useMemo(
-    () =>
-      ({ column }: { column: ColumnType }) =>
-        (
-          <Form.Control
-            placeholder="Filtruj..."
-            onChange={(e) => {
-              setFilters((prev) => {
-                const index = prev.findIndex(
-                  (filter) => filter.fieldName === column.name
-                );
-                if (index === -1) {
-                  return [
-                    ...prev,
-                    {
-                      fieldName: column.name,
-                      filter: e.target.value,
-                    },
-                  ];
-                }
-
-                const newFilter = [...prev];
-                newFilter[index] = {
-                  ...newFilter[index],
-                  filter: e.target.value,
-                };
-
-                return newFilter;
-              });
-            }}
-          />
-        ),
-    []
-  );
-
   return {
     filteredData,
-    FilterComponent,
+    filters,
+    setFilter: (name: string, value: string) => {
+      setFilters((prev) => {
+        return {
+          ...prev,
+          [name]: value,
+        };
+      });
+    },
   };
 };
 

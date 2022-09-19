@@ -4,30 +4,35 @@ import MuiTable from "@mui/material/Table";
 import { FilterRow } from "./FilterRow";
 import { HeaderCell } from "./HeaderCell";
 import { Row } from "./Row";
-import { ColumnType, IExpandRow } from "./Table.types";
+import { ColumnType, IExpandRow, RowType } from "./Table.types";
+import { getKeyFieldValue } from "./TableHelpers";
 import useFilter from "./useFilter";
 import useSort from "./useSort";
 
-interface ITableProps {
+interface ITableProps<T> {
   keyField: string;
-  data: any[];
+  data: RowType<T>[];
+  columns: ColumnType<T>[];
+  expandRow?: IExpandRow<T>;
   wrapperClasses?: string;
-  columns: ColumnType[];
-  expandRow?: IExpandRow;
   hover?: boolean;
   striped?: boolean;
 }
-const Table = ({
+const Table = <T,>({
   keyField,
   data,
-  wrapperClasses = "",
   columns,
   expandRow,
+  wrapperClasses = "",
   hover = false,
   striped = false,
-}: ITableProps) => {
-  const { filteredData, FilterComponent } = useFilter({ data, columns });
-  const { orderBy, setOrderBy, sortedData } = useSort({
+}: ITableProps<T>) => {
+  const { filteredData, filters, setFilter } = useFilter({ data, columns });
+  const {
+    orderBy,
+    setOrderBy,
+    sortedData: sortedAndFilteredData,
+  } = useSort({
     data: filteredData,
     columns,
   });
@@ -53,15 +58,16 @@ const Table = ({
         {columns.some((column) => column.filter) && (
           <FilterRow
             columns={columns}
-            renderFilter={(column) => <FilterComponent column={column} />}
+            filters={filters}
+            setFilter={setFilter}
           />
         )}
-        {sortedData.length > 0 && (
+        {sortedAndFilteredData.length > 0 && (
           <TableBody>
-            {sortedData.map((row) => (
+            {sortedAndFilteredData.map((row) => (
               <Row
-                key={row[keyField]}
-                keyField={keyField}
+                key={getKeyFieldValue(row, keyField)}
+                keyFieldValue={getKeyFieldValue(row, keyField)}
                 columns={columns}
                 row={row}
                 expandRow={expandRow}

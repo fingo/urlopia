@@ -110,7 +110,7 @@ export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, isAdminVie
             sort: true,
             sortFunc: disableSortingFunc,
             onSort: (field, order) => {
-                setSort({field, order: order})
+                setSort({field, order})
             },
             style: {verticalAlign: 'middle'},
             hideHeader: isHidden
