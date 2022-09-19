@@ -57,7 +57,7 @@ export const HeaderCell = <T,>({
   return (
     <TableCell
       sx={{
-        textAlign: column.headerAlign || "left",
+        textAlign: column.headerAlign ?? "left",
         fontWeight: "bold",
       }}
       hidden={column.hideHeader}

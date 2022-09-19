@@ -24,13 +24,13 @@ export const FilterRow = <T,>({
             !column.hidden && (
               <TableCell
                 key={column.name}
-                style={{ textAlign: column.headerAlign || "left" }}
+                style={{ textAlign: column.headerAlign ?? "left" }}
                 hidden={column.hideHeader}
               >
                 {column.filter && (
                   <Form.Control
                     placeholder="Filtruj..."
-                    value={filters[column.name] || ""}
+                    value={filters[column.name] ?? ""}
                     onChange={(e) => setFilter(column.name, e.target.value)}
                   />
                 )}

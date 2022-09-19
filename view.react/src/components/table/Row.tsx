@@ -47,7 +47,7 @@ export const Row = <T,>({
   const onClick = () => {
     expandRow?.onExpand(
       row,
-      !(expandRow?.expanded || []).some(
+      !(expandRow?.expanded ?? []).some(
         (value) => value.toString() === keyFieldValue
       )
     );
@@ -63,8 +63,8 @@ export const Row = <T,>({
         hover={hover}
       >
         {columns.map((column) => {
-          const baseStyle = { textAlign: column.align || "left" };
-          const passedStyle = getColumnStyle(column, row) || {};
+          const baseStyle = { textAlign: column.align ?? "left" };
+          const passedStyle = getColumnStyle(column, row) ?? {};
 
           return (
             !column.hidden && (
@@ -91,7 +91,7 @@ export const Row = <T,>({
             )}
           >
             <Collapse
-              in={(expandRow?.expanded || []).some(
+              in={(expandRow?.expanded ?? []).some(
                 (value) => value?.toString() === keyFieldValue
               )}
               timeout="auto"
