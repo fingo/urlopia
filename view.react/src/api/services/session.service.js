@@ -19,10 +19,10 @@ export const getCurrentUser = () => {
 
 export const getFullUserName = () => {
     const user = getCurrentUser();
-    return user.name ? `${user?.name} ${user?.surname}` : '';
+    return !!user ? `${user.name} ${user.surname}` : '';
 }
 
 export const getUserTeams = () => {
     const user = getCurrentUser();
-    return user.teams? user.teams : [];
+    return user.teams ?? [];
 }

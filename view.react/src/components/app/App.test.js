@@ -28,7 +28,7 @@ describe("App", () => {
     it ('should not render AcceptanceLoader when user is not a leader', () => {
         // given
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
-            roles: ["ROLES_WORKER"] //console.log(spojrzec)
+            roles: ["ROLES_WORKER"]
         }))
 
         // when
