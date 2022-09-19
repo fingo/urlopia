@@ -2,11 +2,11 @@ import { TableCell, TableSortLabel, TableSortLabelProps } from "@mui/material";
 import React from "react";
 import { ArrowDown, ArrowDownUp } from "react-bootstrap-icons";
 
-import { ColumnType, OrderByType, OrderType } from "./Table.types";
-
+import { ColumnType, OrderByType } from "./Table.types";
 interface ISortLabelProps extends TableSortLabelProps {
   disabled?: boolean;
 }
+
 const SortLabelWrapper = ({
   disabled = false,
   children,
@@ -28,13 +28,24 @@ export const HeaderCell = <T,>({
   orderBy,
   setOrderBy,
 }: IHeaderCellProps<T>) => {
-  const setNewOrder = () => {
-    let newDir: OrderType = "desc";
-    const isDesc = orderBy.field === column.name && orderBy.order === "desc";
-
-    if (isDesc) {
-      newDir = "asc";
+  const getCurrentColumnDir = () => {
+    if (!column.sort || orderBy.field !== column.name) {
+      return;
     }
+
+    return orderBy.order;
+  };
+
+  const getNewColumnDir = () => {
+    if (orderBy.field !== column.name) {
+      return "desc";
+    }
+
+    return orderBy.order === "desc" ? "asc" : "desc";
+  };
+
+  const setNewOrder = () => {
+    const newDir = getNewColumnDir();
 
     setOrderBy({
       field: column.name,
@@ -50,14 +61,12 @@ export const HeaderCell = <T,>({
         fontWeight: "bold",
       }}
       hidden={column.hideHeader}
-      sortDirection={
-        column.sort && orderBy.field === column.name && orderBy.order
-      }
+      sortDirection={getCurrentColumnDir()}
     >
       <SortLabelWrapper
         disabled={!column.sort}
         active={orderBy.field === column.name}
-        direction={orderBy.field === column.name ? orderBy.order : undefined}
+        direction={getCurrentColumnDir()}
         sx={{
           "& .MuiTableSortLabel-icon": {
             opacity: 1,

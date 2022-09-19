@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-import { ColumnType, OrderByType, OrderType } from "./Table.types";
+import { ColumnType, OrderByType, OrderType, RowType } from "./Table.types";
 import { getStringValue } from "./TableHelpers";
 
 interface IUseFiltersProps<T> {
@@ -13,7 +13,7 @@ const sortFactory = <T>(
   orderBy: OrderType | undefined,
   column: ColumnType<T>
 ) => {
-  return (a: { [key: string]: T }, b: { [key: string]: T }) => {
+  return (a: RowType<T>, b: RowType<T>) => {
     if (!field || !orderBy || !a[field] || !b[field]) {
       return 1;
     }

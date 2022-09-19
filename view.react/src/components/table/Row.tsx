@@ -53,12 +53,9 @@ export const Row = <T,>({
     );
   };
 
-  console.log(striped)
-
   return (
     <>
       <TableRow
-        className="mainRow"
         {...(expandRow && {
           onClick: () => onClick(),
         })}
