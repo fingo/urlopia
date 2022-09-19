@@ -3,15 +3,6 @@ import React from "react";
 
 import { ColumnType, IExpandRow, RowType } from "./Table.types";
 
-interface IRowProps<T> {
-  keyFieldValue: string;
-  columns: ColumnType<T>[];
-  row: RowType<T>;
-  expandRow?: IExpandRow<T>;
-  striped: boolean;
-  hover: boolean;
-}
-
 const getColumnStyle = <T,>(column: ColumnType<T>, row: RowType<T>) => {
   if (column.style === undefined) {
     return;
@@ -29,12 +20,21 @@ const getRowStyle = (expandRow: boolean, striped: boolean) => {
   return {
     ...(expandRow && { "& > *": { borderBottom: "unset" } }),
     ...(striped && {
-      [`&:nth-of-type(${expandRow ? '4n+1' : 'odd'})`]: {
+      [`&:nth-of-type(${expandRow ? "4n+1" : "odd"})`]: {
         backgroundColor: "#ececec",
       },
     }),
   };
 };
+
+interface IRowProps<T> {
+  keyFieldValue: string;
+  columns: ColumnType<T>[];
+  row: RowType<T>;
+  expandRow?: IExpandRow<T>;
+  striped: boolean;
+  hover: boolean;
+}
 
 export const Row = <T,>({
   keyFieldValue,

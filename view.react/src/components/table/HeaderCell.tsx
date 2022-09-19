@@ -3,6 +3,7 @@ import React from "react";
 import { ArrowDown, ArrowDownUp } from "react-bootstrap-icons";
 
 import { ColumnType, OrderByType } from "./Table.types";
+
 interface ISortLabelProps extends TableSortLabelProps {
   disabled?: boolean;
 }
@@ -18,6 +19,7 @@ const SortLabelWrapper = ({
 
   return <TableSortLabel {...rest}>{children}</TableSortLabel>;
 };
+
 interface IHeaderCellProps<T> {
   column: ColumnType<T>;
   orderBy: OrderByType;

@@ -4,7 +4,7 @@ import { ColumnType, OrderByType, OrderType, RowType } from "./Table.types";
 import { getStringValue } from "./TableHelpers";
 
 interface IUseFiltersProps<T> {
-  data: { [key: string]: T }[];
+  data: RowType<T>[];
   columns: ColumnType<T>[];
 }
 

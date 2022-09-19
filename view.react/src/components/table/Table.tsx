@@ -18,6 +18,7 @@ interface ITableProps<T> {
   hover?: boolean;
   striped?: boolean;
 }
+
 const Table = <T,>({
   keyField,
   data,
