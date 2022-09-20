@@ -26,8 +26,8 @@ public class UserIdInterceptor implements HandlerInterceptor {
         var token = request.getHeader("Authorization");
         try{
             var accessToken = jwtTokenValidator.validateAuthorizationHeader(token);
-            var email = accessToken.getEmail();
-            var user = userService.get(email);
+            var principal = accessToken.getPrincipal();
+            var user = userService.getByPrincipal(principal);
             request.setAttribute(USER_ID_ATTRIBUTE, user.getId());
         } catch (RuntimeException ignored){
         }

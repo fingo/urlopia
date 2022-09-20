@@ -23,8 +23,8 @@ public class JwtTokenAuthoritiesProvider {
 
     public Set<SimpleGrantedAuthority> getAuthoritiesFromJWT(DecodedJWT decodedToken){
         try{
-            var email = JwtUtils.getEmailFromDecodedToken(decodedToken);
-            var user = userService.get(email);
+            var principal = JwtUtils.getPrincipalNameFromDecodedToken(decodedToken);
+            var user = userService.getByPrincipal(principal);
             return getAuthoritiesFromUser(user);
         } catch (NoSuchUserException exp){
             return null;

@@ -13,12 +13,12 @@ import java.util.Base64;
 @RequiredArgsConstructor
 public class JwtUtils {
 
-    private static final String EMAIL_KEY = "unique_name";
+    private static final String PRINCIPAL_KEY = "unique_name";
 
 
-    public static String getEmailFromDecodedToken(DecodedJWT decodedToken){
+    public static String getPrincipalNameFromDecodedToken(DecodedJWT decodedToken){
         var payloadAsJson = decodeTokenPayloadToJsonObject(decodedToken);
-        return payloadAsJson.getAsJsonPrimitive(EMAIL_KEY).getAsString();
+        return payloadAsJson.getAsJsonPrimitive(PRINCIPAL_KEY).getAsString();
     }
 
     public static JsonObject decodeTokenPayloadToJsonObject(DecodedJWT decodedJWT) {

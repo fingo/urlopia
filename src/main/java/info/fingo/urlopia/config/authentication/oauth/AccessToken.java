@@ -16,9 +16,9 @@ public class AccessToken {
     private final JwtTokenAuthoritiesProvider jwtTokenAuthoritiesProvider;
 
 
-    public String getEmail() {
+    public String getPrincipal() {
         var decodedToken = decodeToken(value);
-        return JwtUtils.getEmailFromDecodedToken(decodedToken);
+        return JwtUtils.getPrincipalNameFromDecodedToken(decodedToken);
     }
 
     public Set<SimpleGrantedAuthority> getAuthorities() {

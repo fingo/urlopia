@@ -41,7 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
                                                     HttpServletResponse response) {
         try{
             var accessToken = jwtTokenValidator.validateAuthorizationHeader(header);
-            var principal = accessToken.getEmail();
+            var principal = accessToken.getPrincipal();
             var authorities = accessToken.getAuthorities();
             return new UsernamePasswordAuthenticationToken(principal, null, authorities);
         }catch (InvalidTokenException invalidTokenException){
