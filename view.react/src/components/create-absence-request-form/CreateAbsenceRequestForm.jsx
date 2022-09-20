@@ -148,7 +148,7 @@ export const CreateAbsenceRequestForm = ({
             occasionalType,
         }
 
-        const isAdmin = getCurrentUser().userRoles.includes('ROLES_ADMIN');
+        const isAdmin = getCurrentUser().isAdmin;
         await createRequest(body, isAdmin);
         updateVacationDays(vacationDaysDispatch);
     }

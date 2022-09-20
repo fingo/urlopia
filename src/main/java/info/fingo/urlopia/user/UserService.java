@@ -64,6 +64,15 @@ public class UserService {
                 });
     }
 
+    public User getByPrincipal(String principal) {
+        return userRepository
+                .findFirstByPrincipalName(principal)
+                .orElseThrow(() -> {
+                    log.error("There is no user with principal: {}", Anonymizer.anonymizeMail(principal));
+                    return NoSuchUserException.invalidEmail();
+                });
+    }
+
     public User getAllUsersLeader() {
         var groups = activeDirectory.newSearch()
                 .objectClass(ActiveDirectoryObjectClass.Group)

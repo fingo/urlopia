@@ -1,29 +1,13 @@
 import axios from 'axios';
 
-import {logout} from "../api/services/session.service";
-import {USER_DATA_KEY} from "../constants/session.keystorage";
 import {mapCodeToMessage} from "./errors/ErrorCodeMapper";
 import {pushErrorNotification} from "./notifications/Notifications";
 
 export const URL_PREFIX = process.env.NODE_ENV === 'development' ? "http://localhost:8080" : '';
 
-axios.interceptors.response.use(response => response, error => {
-    if (axios.isCancel(error)) {
-        return Promise.resolve(error)
-    }
-
-    const {status} = error?.response
-    if (status === 401 && window.location.pathname !== "/") {
-        logout()
-        window.location = "/"
-    }
-    return Promise.reject(error)
-})
-
 export const sendGetRequest = (url, params, config) => {
     return axios
         .get(URL_PREFIX + url, {
-            headers: getAuthHeader(),
             params,
             ...config
         })
@@ -36,9 +20,7 @@ export const sendGetRequest = (url, params, config) => {
 export const sendPostRequest = (url, body) => {
     return axios
         .post(URL_PREFIX + url,
-            body, {
-                headers: getAuthHeader()
-            })
+            body)
         .then(response => {
             return response.data;
         })
@@ -48,9 +30,7 @@ export const sendPostRequest = (url, body) => {
 export const sendPatchRequest = (url, body) => {
     return axios
         .patch(URL_PREFIX + url,
-            body, {
-                headers: getAuthHeader()
-            })
+            body)
         .then(response => {
             return response.data;
         })
@@ -60,9 +40,7 @@ export const sendPatchRequest = (url, body) => {
 export const sendPutRequest = (url, body) => {
     return axios
         .put(URL_PREFIX + url,
-            body, {
-                headers: getAuthHeader()
-            })
+            body)
         .then(response => {
             return response.data;
         })
@@ -72,7 +50,6 @@ export const sendPutRequest = (url, body) => {
 export const getXlsxFromResponse = (url, fileName) => {
     return axios.get(URL_PREFIX + url, {
         responseType: "blob",
-        headers: getAuthHeader(),
     })
         .then(response => {
             const objectURL = window.URL.createObjectURL(
@@ -93,7 +70,6 @@ export const getXlsxFromResponse = (url, fileName) => {
 export const getPdfFromResponse = (url, fileName) => {
     return axios.get(URL_PREFIX + url, {
         responseType: 'blob',
-        headers: getAuthHeader(),
     })
         .then(response => {
             const objURL = window.URL.createObjectURL(
@@ -114,7 +90,6 @@ export const getPdfFromResponse = (url, fileName) => {
 export const getZipFromResponse = (url, fileName) => {
     return axios.get(URL_PREFIX + url, {
         responseType: "blob",
-        headers: getAuthHeader(),
     })
         .then(response => {
             const oURL = window.URL.createObjectURL(
@@ -130,15 +105,6 @@ export const getZipFromResponse = (url, fileName) => {
             link.click();
         })
         .catch(error => convertBlobErrorToJson(error))
-}
-
-const getAuthHeader = () => {
-    const user = JSON.parse(localStorage.getItem(USER_DATA_KEY));
-    if (user && user.token) {
-        return {'authorization': user.token};
-    } else {
-        return {};
-    }
 }
 
 const NO_RESPONSE_CODE = 'NO_RESPONSE';

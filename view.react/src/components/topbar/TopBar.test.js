@@ -19,7 +19,7 @@ describe("TopBar", () => {
             name: 'Kacper',
             surname: 'Bartek',
             teams: sampleTeams,
-            userRoles: ["ROLES_WORKER"]
+            roles: ["ROLES_WORKER"]
         }))
     })
 

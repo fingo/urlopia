@@ -25,7 +25,7 @@ import {AbsenceHistoryTab} from "./AbsenceHistoryTab";
 test('should show all headers of table if isHidden equals false', () => {
 
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
-            userRoles: ["ROLES_WORKER"],
+            roles: ["ROLES_WORKER"],
             ec: true,
             admin: false
         }))

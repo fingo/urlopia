@@ -5,15 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.naming.AuthenticationException;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.SearchControls;
 import javax.naming.ldap.InitialLdapContext;
 import java.util.Hashtable;
-import java.util.Properties;
 
 @Component
 public class LDAPConnectionService {
@@ -34,12 +30,6 @@ public class LDAPConnectionService {
     @Value("${ldap.provider.url}")
     private String providerUrl;
 
-    @Value("${ad.containers.main}")
-    private String mainContainer;
-
-    @Value("${ad.groups.users}")
-    private String usersGroup;
-
 
     public DirContext getContext() {
         Hashtable<String, String> env = new Hashtable<>(); // NOSONAR
@@ -55,36 +45,6 @@ public class LDAPConnectionService {
         } catch (NamingException e) {
             LOGGER.error("Something went wrong while connecting to AD");
             throw new ActiveDirectoryConnectionException(e);
-        }
-    }
-
-    public boolean authenticate(Credentials credentials) {
-        DirContext ctx = getContext();
-
-        try {
-            var password = credentials.getPassword();
-            if (password.equals("")) {
-                throw new AuthenticationException("Password is blank");
-            }
-
-            var controls = new SearchControls();
-            controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            var filter = "(&(memberOf=" + usersGroup + ")" + "(userPrincipalName=" + credentials.getMail() + "))";
-            boolean userFound = ctx.search(mainContainer, filter, controls).hasMore();
-
-            if (userFound) {
-                Properties authEnv = new Properties();
-                authEnv.put(Context.INITIAL_CONTEXT_FACTORY, initialContextFactory);
-                authEnv.put(Context.PROVIDER_URL, providerUrl);
-                authEnv.put(Context.SECURITY_PRINCIPAL, credentials.getMail());
-                authEnv.put(Context.SECURITY_CREDENTIALS, credentials.getPassword());
-
-                new InitialDirContext(authEnv); // NOSONAR
-            }
-            return userFound;
-        } catch (NamingException e) {
-            LOGGER.info("Username or password is incorrect!");
-            return false;
         }
     }
 

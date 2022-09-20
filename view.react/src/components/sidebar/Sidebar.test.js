@@ -38,7 +38,7 @@ describe("Sidebar", () => {
     it("should show correct links when user is not an admin and is EC", () => {
         // given
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
-            userRoles: ["ROLES_WORKER"],
+            roles: ["ROLES_WORKER"],
             ec: true,
             admin: false
         }))
@@ -70,7 +70,7 @@ describe("Sidebar", () => {
     it("should show correct links when user is an admin and is EC", () => {
         // given
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
-            userRoles: ["ROLES_WORKER", "ROLES_ADMIN"],
+            roles: ["ROLES_WORKER", "ROLES_ADMIN"],
             ec: true,
             admin: true
         }))
@@ -101,7 +101,7 @@ describe("Sidebar", () => {
     it("should render links with correct routes and is EC", () => {
         // given
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
-            userRoles: ["ROLES_WORKER", "ROLES_ADMIN"],
+            roles: ["ROLES_WORKER", "ROLES_ADMIN"],
             ec: true,
             admin: true
         }))
@@ -131,7 +131,7 @@ describe("Sidebar", () => {
     it("should show correct links when user is not an admin and is not EC", () => {
         // given
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
-            userRoles: ["ROLES_WORKER"],
+            roles: ["ROLES_WORKER"],
             ec: false,
             admin: false
         }))
@@ -163,7 +163,7 @@ describe("Sidebar", () => {
     it("should show correct links when user is an admin and is not EC", () => {
         // given
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
-            userRoles: ["ROLES_WORKER", "ROLES_ADMIN"],
+            roles: ["ROLES_WORKER", "ROLES_ADMIN"],
             ec: false,
             admin: true
         }))
@@ -194,7 +194,7 @@ describe("Sidebar", () => {
     it("should render links with correct routes and is not EC", () => {
         // given
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
-            userRoles: ["ROLES_WORKER", "ROLES_ADMIN"],
+            roles: ["ROLES_WORKER", "ROLES_ADMIN"],
             ec: false,
             admin: true
         }))

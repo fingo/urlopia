@@ -22,7 +22,7 @@ export const TeamDropdown = ({
                 <Dropdown.Divider className="m-0 d-lg-none"/>
 
                 {
-                    teams.length ?
+                    teams?.length ?
                         teams.map(({name, leader}, i) =>
                             <div key={i}
                                  className={i === teams.length - 1 ? styles.teamInfo : styles.teamInfoWithDivider}
