@@ -43,7 +43,7 @@ public class JwtTokenValidator {
     }
 
     private void verifyTokenHeader(DecodedJWT decodedJWT) {
-        var isJWTToken = decodedJWT.getType().equals("JWT");
+        var isJWTToken = "JWT".equals(decodedJWT.getType());
         if (!isJWTToken) {
             throw new InvalidTokenException("Token is not JWT type");
         }

@@ -7,3 +7,4 @@ out
 clone_guide
 /urlopia.log
 application-developer.properties
+.env
