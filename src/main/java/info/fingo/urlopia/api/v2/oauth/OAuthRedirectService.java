@@ -1,6 +1,7 @@
 package info.fingo.urlopia.api.v2.oauth;
 
 import info.fingo.urlopia.api.v2.user.UserRolesProvider;
+import info.fingo.urlopia.config.authentication.TeamInfo;
 import info.fingo.urlopia.config.authentication.UserData;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
@@ -27,17 +28,16 @@ public class OAuthRedirectService {
             return UserData.from(user, teams, roles);
     }
 
-    private Set<Map<String, String>> pickTeamsInfo(User user) {
-        Set<Map<String, String>> teams = new HashSet<>();
+    private Set<TeamInfo> pickTeamsInfo(User user) {
+        Set<TeamInfo> teams = new HashSet<>();
         for (var team : user.getTeams()) {
             var teamName = team.getName();
             var allUsersLeader = userService.getAllUsersLeader();
             var leader = user.equals(team.getLeader()) ? allUsersLeader : team.getLeader();
 
             if (leader != null) {
-                Map<String, String> teamInfo = new HashMap<>();
-                teamInfo.put("name", teamName);
-                teamInfo.put("leader", leader.getFirstName() + " " + leader.getLastName());
+                var leaderName = leader.getFirstName() + " " + leader.getLastName();
+                var teamInfo = new TeamInfo(teamName, leaderName);
                 teams.add(teamInfo);
             }
         }

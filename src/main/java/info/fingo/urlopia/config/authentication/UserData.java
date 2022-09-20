@@ -3,7 +3,6 @@ package info.fingo.urlopia.config.authentication;
 import info.fingo.urlopia.user.User;
 import lombok.Data;
 
-import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -15,7 +14,7 @@ public class UserData {
     private String surname;
     private String mail;
     private String language;
-    private Set<Map<String, String>> teams;
+    private Set<TeamInfo> teams;
     private int employmentYear;
     private boolean isEc;
 
@@ -23,7 +22,7 @@ public class UserData {
     }
 
     public static UserData from(User user,
-                                Set<Map<String, String>> teams,
+                                Set<TeamInfo> teams,
                                 Set<String> roles) {
         var userData = new UserData();
         userData.setUserId(user.getId());
