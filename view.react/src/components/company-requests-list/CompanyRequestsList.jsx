@@ -2,15 +2,13 @@ import classNames from "classnames";
 import PropTypes from "prop-types";
 import {useState} from "react";
 import {CheckSquareFill as AcceptIcon, XSquareFill as XIcon} from "react-bootstrap-icons";
-import BootstrapTable from "react-bootstrap-table-next";
-import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
 import {BeatLoader} from "react-spinners";
 
 import {spinner} from '../../global-styles/loading-spinner.module.scss';
 import {actionBtn, actions} from '../../global-styles/table-styles.module.scss'
 import {textAsArrayFormatter} from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
-import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
 import {ConfirmRejectModal} from "../../pages/absence-requests-page/confirm-reject-modal/ConfirmRejectModal";
+import Table from "../table/Table";
 
 export const CompanyRequestsList = ({
     requests,
@@ -50,38 +48,30 @@ export const CompanyRequestsList = ({
 
     const columns = [
         {
-            dataField: 'id',
+            name: 'id',
             hidden: true,
         },
         {
-            dataField: 'applicant',
+            name: 'applicant',
             text: 'Wnioskodawca',
             headerAlign: 'center',
             align: 'center',
-            filter: textFilter({
-                id: 'applicantCompanyRequestListFilter',
-                placeholder: 'Filtruj...',
-                delay: 0,
-            }),
+            filter: true,
             sort: true,
             style: {verticalAlign: 'middle'},
         },
         {
-            dataField: 'examiner',
+            name: 'examiner',
             text: 'Rozpatrujący',
             headerAlign: 'center',
             align: 'center',
-            filter: textFilter({
-                id: 'examinerCompanyRequestListFilter',
-                placeholder: 'Filtruj...',
-                delay: 0,
-            }),
+            filter: true,
             sort: true,
             formatter: textAsArrayFormatter,
             style: {verticalAlign: 'middle'},
         },
         {
-            dataField: 'period',
+            name: 'period',
             text: 'Termin',
             headerAlign: 'center',
             align: 'center',
@@ -89,7 +79,7 @@ export const CompanyRequestsList = ({
             style: {verticalAlign: 'middle'},
         },
         {
-            dataField: 'actions',
+            name: 'actions',
             text: 'Akcje',
             headerAlign: 'center',
             formatter: actionFormatter,
@@ -104,15 +94,10 @@ export const CompanyRequestsList = ({
             {
                 !isFetching ?
                     <>
-                        <BootstrapTable
-                            bootstrap4
+                        <Table
                             keyField='id'
                             data={requests}
-                            wrapperClasses={tableClass}
                             columns={columns}
-                            filter={filterFactory()}
-                            filterPosition='top'
-                            bordered={false}
                             hover
                         />
                         <ConfirmRejectModal

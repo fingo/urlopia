@@ -1,4 +1,4 @@
-import { Checkbox, FormControlLabel } from '@material-ui/core';
+import { Checkbox, FormControlLabel } from '@mui/material';
 import PropTypes from "prop-types";
 import {useEffect, useState} from 'react';
 import {Button, Modal} from "react-bootstrap";

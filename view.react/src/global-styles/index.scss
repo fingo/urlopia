@@ -1,13 +1,13 @@
 @import "~bootstrap/scss/bootstrap";
 @import "src/global-styles/color-variables";
-@import '~react-date-range/dist/styles.css';
-@import '~react-date-range/dist/theme/default.css';
-@import '~react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
-@import './bootstrap-4-compatibility.scss';
-@import '~react-notifications-component/dist/theme.css';
-@import 'src/global-styles/react-table-styles.module.scss';
+@import "~react-date-range/dist/styles.css";
+@import "~react-date-range/dist/theme/default.css";
+@import "./bootstrap-4-compatibility.scss";
+@import "~react-notifications-component/dist/theme.css";
+@import "src/global-styles/react-table-styles.module.scss";
 
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
 }

@@ -2,8 +2,6 @@ import classNames from "classnames";
 import PropTypes from "prop-types";
 import {useState} from "react";
 import {CheckSquareFill as AcceptIcon, XSquareFill as XIcon} from "react-bootstrap-icons";
-import BootstrapTable from "react-bootstrap-table-next";
-import filterFactory from "react-bootstrap-table2-filter";
 import {BeatLoader} from "react-spinners";
 
 import {ACCEPTED, PENDING} from "../../../../constants/statuses";
@@ -17,8 +15,8 @@ import {
     statusFormatter,
     textAsArrayFormatter
 } from "../../../../helpers/react-bootstrap-table2/RequestMapperHelper";
-import {tableClass} from "../../../../helpers/react-bootstrap-table2/tableClass";
 import {disableSortingFunc} from "../../../../helpers/react-bootstrap-table2/utils";
+import Table from "../../../table/Table";
 import {AcceptancesModal} from "../../../user-requests-list/AcceptancesModal";
 import styles from './WorkerRequestsHistoryTable.module.scss';
 
@@ -102,11 +100,11 @@ export const WorkerRequestsHistoryTable = ({
 
     const columns = [
         {
-            dataField: 'id',
+            name: 'id',
             hidden: true,
         },
         {
-            dataField: 'period',
+            name: 'period',
             text: 'Termin',
             headerAlign: 'center',
             align: 'center',
@@ -119,7 +117,7 @@ export const WorkerRequestsHistoryTable = ({
             },
         },
         {
-            dataField: 'examiner',
+            name: 'examiner',
             text: 'Rozpatrujący',
             headerAlign: 'center',
             align: 'center',
@@ -127,7 +125,7 @@ export const WorkerRequestsHistoryTable = ({
             style: {verticalAlign: 'middle'},
         },
         {
-            dataField: 'type',
+            name: 'type',
             text: 'Rodzaj',
             headerAlign: 'center',
             align: 'center',
@@ -142,7 +140,7 @@ export const WorkerRequestsHistoryTable = ({
             },
         },
         {
-            dataField: 'status',
+            name: 'status',
             text: 'Status',
             headerAlign: 'center',
             align: 'center',
@@ -157,7 +155,7 @@ export const WorkerRequestsHistoryTable = ({
             },
         },
         {
-            dataField: 'actions',
+            name: 'actions',
             text: 'Akcje',
             headerAlign: 'center',
             formatter: actionFormatter,
@@ -168,22 +166,17 @@ export const WorkerRequestsHistoryTable = ({
 
     const isLoading = requests.length === 0 && isFetching
 
-    const tableWrapperClass = classNames(tableClass, styles.table);
     return (
         <>
             {
                 !isLoading ?
                     <>
                         {modals}
-                        <BootstrapTable
-                            bootstrap4
+                        <Table
                             keyField='id'
                             data={formattedRequests}
-                            wrapperClasses={tableWrapperClass}
+                            wrapperClasses={styles.table}
                             columns={columns}
-                            filter={filterFactory()}
-                            filterPosition='top'
-                            bordered={false}
                             hover
                         />
                         {pagination}

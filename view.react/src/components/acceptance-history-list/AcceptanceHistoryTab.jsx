@@ -1,11 +1,10 @@
 import {useState} from "react";
-import BootstrapTable from "react-bootstrap-table-next";
 
 import {EXPIRED, PENDING} from "../../constants/statuses";
 import {formatRequestBadge, requestPeriodFormatter} from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
-import {tableClass} from "../../helpers/react-bootstrap-table2/tableClass";
 import {disableSortingFunc} from "../../helpers/react-bootstrap-table2/utils";
 import {ClickablePill} from "../clickable-badge/ClickablePill";
+import Table from "../table/Table";
 import {AcceptancesModal, getAcceptanceBadgeFor} from "../user-requests-list/AcceptancesModal";
 
 export const AcceptanceHistoryTab = ({acceptances, setSort}) => {
@@ -64,11 +63,11 @@ export const AcceptanceHistoryTab = ({acceptances, setSort}) => {
 
     const columns = [
         {
-            dataField: 'id',
+            name: 'id',
             hidden: true,
         },
         {
-            dataField: 'requester',
+            name: 'requester',
             text: 'Wnioskodawca',
             headerAlign: 'center',
             align: 'center',
@@ -81,7 +80,7 @@ export const AcceptanceHistoryTab = ({acceptances, setSort}) => {
             style: {verticalAlign: 'middle'},
         },
         {
-            dataField: 'period',
+            name: 'period',
             text: 'Termin',
             headerAlign: 'center',
             align: 'center',
@@ -94,7 +93,7 @@ export const AcceptanceHistoryTab = ({acceptances, setSort}) => {
             style: {verticalAlign: 'middle'},
         },
         {
-            dataField: 'decision',
+            name: 'decision',
             text: 'Twoja decyzja',
             headerAlign: 'center',
             align: 'center',
@@ -102,7 +101,7 @@ export const AcceptanceHistoryTab = ({acceptances, setSort}) => {
             formatter: decisionFormatter,
         },
         {
-            dataField: 'requestStatus',
+            name: 'requestStatus',
             text: 'Status wniosku',
             headerAlign: 'center',
             align: 'center',
@@ -122,13 +121,10 @@ export const AcceptanceHistoryTab = ({acceptances, setSort}) => {
     return (
         <>
             {modals}
-            <BootstrapTable
-                bootstrap4
+            <Table
                 keyField='id'
                 data={formattedAcceptances}
-                wrapperClasses={tableClass}
                 columns = {columns}
-                bordered={false}
                 hover
             />
         </>
