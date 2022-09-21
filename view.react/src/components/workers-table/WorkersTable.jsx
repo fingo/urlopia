@@ -144,6 +144,7 @@ export const WorkersTable = ({isEC}) => {
             headerAlign: 'center',
             align: 'center',
             style: {verticalAlign: 'middle', cursor: 'pointer'},
+            filter: true,
             formatter: textAsArrayFormatter,
             sort: true,
         },
