@@ -174,6 +174,12 @@ urlopia.presence.confirmation.considered.months = (Number on months in past that
                           On example if value is 2 and current month is June, absent will be search between April and June)
 ```
 
+Apart from the properties above you have to set two env variables via shell or in the `view.react/.env` file:
+```
+REACT_APP_OAUTH_CLIENT_ID= (Client Id from azure AD registration)
+REACT_APP_OAUTH_TENANT_ID= (Tenant Id from azure AD registration)
+```
+
 #### PostgreSQL
 
 To create PostgreSQL role & database, navigate to `\bin` folder in your PostgreSQL installation location in the terminal
