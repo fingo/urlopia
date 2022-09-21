@@ -69,7 +69,7 @@ describe("addPresenceConfirmationReducer", () => {
 
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
             userId: 1,
-            userRoles: ["ROLES_WORKER"]
+            roles: ["ROLES_WORKER"]
         }))
 
         // when
@@ -130,7 +130,7 @@ describe("addPresenceConfirmationReducer", () => {
 
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
             userId: 1,
-            userRoles: ["ROLES_WORKER", "ROLES_ADMIN"]
+            roles: ["ROLES_WORKER", "ROLES_ADMIN"]
         }))
 
         // when
@@ -200,7 +200,7 @@ describe("addPresenceConfirmationReducer", () => {
 
         sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({
             userId: 1,
-            userRoles: ["ROLES_WORKER", "ROLES_ADMIN"]
+            roles: ["ROLES_WORKER", "ROLES_ADMIN"]
         }))
 
         // when

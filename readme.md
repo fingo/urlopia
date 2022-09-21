@@ -139,6 +139,8 @@ ad.groups.users= (Main user group)
 ad.groups.ec= (Group for employees)
 ad.groups.b2b= (Group for associates)
 ad.identifiers.team=Team,Guild (Postfixes for group names. Here we have distinction for teams and guilds)
+azure.ad.clientId= (Client Id from azure AD registration)
+azure.ad.tenantId= (Tenant Id from azure AD registration)
 
 # mail
 spring.mail.host= (SMTP server host. For instance, `smtp.example.com`)

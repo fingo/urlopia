@@ -1,9 +1,9 @@
+import {useMsal} from "@azure/msal-react";
 import classNames from "classnames";
 import PropTypes from 'prop-types';
 import {useEffect, useState} from "react";
 import {Container, Navbar} from 'react-bootstrap';
 import {GearFill as GearIcon, List as ListIcon, Power as PowerIcon} from "react-bootstrap-icons";
-import {useHistory} from "react-router-dom";
 
 import {getFullUserName, getUserTeams, logout} from "../../api/services/session.service";
 import logoImg from '../../assets/logo.png';
@@ -15,21 +15,21 @@ import {TeamDropdown} from "./team-dropdown/TeamDropdown";
 import styles from './TopBar.module.scss';
 
 export const TopBar = ({onHamburgerClick}) => {
-    const history = useHistory();
     const userName = getFullUserName();
     const teams = getUserTeams();
 
     const [showModal, setShowModal] = useState(false);
 
     const [, userPreferencesDispatch] = useUserPreferences()
-    
+
+    const msalContext = useMsal()
+
     useEffect(() => {
         fetchWorkingHoursPreferences(userPreferencesDispatch)
     }, [userPreferencesDispatch])
 
     const handleLogout = () => {
-        logout();
-        history.go(0);
+        logout(msalContext.instance);
     }
 
     const listBtnClass = classNames('d-lg-none', styles.button);

@@ -28,75 +28,75 @@ describe("MainContentRouting", () => {
     })
 
     describe("when user is an admin", () => {
-        const userRoles = ["ROLES_WORKER", "ROLES_ADMIN"]
+        const roles = ["ROLES_WORKER", "ROLES_ADMIN"]
 
         it('should render requests route', () => {
-            expectRouteToBePresent(userRoles, VacationRequestsURL, AbsenceRequestsPage)
+            expectRouteToBePresent(roles, VacationRequestsURL, AbsenceRequestsPage)
         })
 
         it('should render associates route', () => {
-            expectRouteToBePresent(userRoles, AssociatesURL, AssociatesPage)
+            expectRouteToBePresent(roles, AssociatesURL, AssociatesPage)
         })
 
         it('should render calendar route', () => {
-            expectRouteToBePresent(userRoles, CalendarURL, CalendarPage)
+            expectRouteToBePresent(roles, CalendarURL, CalendarPage)
         })
 
         it('should render history route', () => {
-            expectRouteToBePresent(userRoles, HistoryURL, HistoryPage)
+            expectRouteToBePresent(roles, HistoryURL, HistoryPage)
         })
 
         it('should render holidays route', () => {
-            expectRouteToBePresent(userRoles, HolidaysURL, HolidaysPage)
+            expectRouteToBePresent(roles, HolidaysURL, HolidaysPage)
         })
 
         it('should render reports route', () => {
-            expectRouteToBePresent(userRoles, ReportsURL, ReportsPage)
+            expectRouteToBePresent(roles, ReportsURL, ReportsPage)
         })
 
         it('should render workers route', () => {
-            expectRouteToBePresent(userRoles, WorkersURL, WorkersPage)
+            expectRouteToBePresent(roles, WorkersURL, WorkersPage)
         })
     })
 
     describe("when user is not an admin", () => {
-        const userRoles = ["ROLES_WORKER"]
+        const roles = ["ROLES_WORKER"]
 
         it('should render requests route', () => {
-            expectRouteToBePresent(userRoles, VacationRequestsURL, AbsenceRequestsPage)
+            expectRouteToBePresent(roles, VacationRequestsURL, AbsenceRequestsPage)
         })
 
         it('should not render associates route', () => {
-            expectRouteNotToBePresent(userRoles, AssociatesURL, AssociatesPage)
+            expectRouteNotToBePresent(roles, AssociatesURL, AssociatesPage)
         })
 
         it('should render calendar route', () => {
-            expectRouteToBePresent(userRoles, CalendarURL, CalendarPage)
+            expectRouteToBePresent(roles, CalendarURL, CalendarPage)
         })
 
         it('should render history route', () => {
-            expectRouteToBePresent(userRoles, HistoryURL, HistoryPage)
+            expectRouteToBePresent(roles, HistoryURL, HistoryPage)
         })
 
         it('should not render holidays route', () => {
-            expectRouteNotToBePresent(userRoles, HolidaysURL, HolidaysPage)
+            expectRouteNotToBePresent(roles, HolidaysURL, HolidaysPage)
         })
 
         it('should not render reports route', () => {
-            expectRouteNotToBePresent(userRoles, ReportsURL, ReportsPage)
+            expectRouteNotToBePresent(roles, ReportsURL, ReportsPage)
         })
 
         it('should not render workers route', () => {
-            expectRouteNotToBePresent(userRoles, WorkersURL, WorkersPage)
+            expectRouteNotToBePresent(roles, WorkersURL, WorkersPage)
         })
     })
 
-    const expectRouteToBePresent = (userRoles, url, component) => expectRoute(userRoles, url, component, true)
-    const expectRouteNotToBePresent = (userRoles, url, component) => expectRoute(userRoles, url, component, false)
+    const expectRouteToBePresent = (roles, url, component) => expectRoute(roles, url, component, true)
+    const expectRouteNotToBePresent = (roles, url, component) => expectRoute(roles, url, component, false)
 
-    const expectRoute = (userRoles, url, component, shouldBePresent) => {
+    const expectRoute = (roles, url, component, shouldBePresent) => {
         // given
-        sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({userRoles}))
+        sessionStorageMock.setItem(USER_DATA_KEY, JSON.stringify({roles}))
         component.mockImplementation(() => <div>{`${url}Mock`}</div>)
 
         // when
