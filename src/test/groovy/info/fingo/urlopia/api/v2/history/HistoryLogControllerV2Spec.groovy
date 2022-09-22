@@ -1,7 +1,6 @@
 package info.fingo.urlopia.api.v2.history
 
 
-import info.fingo.urlopia.config.authentication.WebTokenService
 import info.fingo.urlopia.config.persistance.filter.Filter
 import info.fingo.urlopia.history.HistoryLogExcerptProjection
 import info.fingo.urlopia.history.HistoryLogService
@@ -40,7 +39,6 @@ class HistoryLogControllerV2Spec extends Specification{
         get(_ as Long, null, _ as Filter) >> List.of(projection)
         get(_ as Long, null, _ as Filter, _ as Pageable) >> samplePage
     }
-    def webTokenService = Mock(WebTokenService)
 
     def historyLogControllerV2 = new HistoryLogControllerV2(historyLogService)
 
@@ -61,9 +59,6 @@ class HistoryLogControllerV2Spec extends Specification{
     }
 
     def "getSpecificHistoryLogs() WHEN called by admin SHOULD return Page of HistoryLogOutput"() {
-        given:
-        webTokenService.isCurrentUserAnAdmin() >> true
-
         when:
         def result = historyLogControllerV2.getSpecificHistoryLogs(userId, null, [] as String[], Pageable.unpaged())
 
@@ -71,20 +66,8 @@ class HistoryLogControllerV2Spec extends Specification{
         result instanceof Page<List<HistoryLogOutput>>
     }
 
-    def "getSpecificHistoryLogs() WHEN called by admin SHOULD NOT throw" () {
-        given:
-        webTokenService.isCurrentUserAnAdmin() >> true
-
-        when:
-        historyLogControllerV2.getSpecificHistoryLogs(userId, null, [] as String[], Pageable.unpaged())
-
-        then:
-        notThrown(Exception)
-    }
-
     def "updateCountingYearForLog() WHEN called by admin SHOULD NOT throw"(){
         given:
-        webTokenService.isCurrentUserAnAdmin() >> true
         def updateLog = new UpdateLogCountingYearInput(1, true)
 
         when:

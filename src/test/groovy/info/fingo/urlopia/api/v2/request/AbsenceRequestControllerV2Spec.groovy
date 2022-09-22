@@ -2,8 +2,6 @@ package info.fingo.urlopia.api.v2.request
 
 import info.fingo.urlopia.acceptance.Acceptance
 import info.fingo.urlopia.acceptance.AcceptanceService
-import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException
-import info.fingo.urlopia.config.authentication.WebTokenService
 import info.fingo.urlopia.config.persistance.filter.Filter
 import info.fingo.urlopia.request.Request
 import info.fingo.urlopia.request.RequestExcerptProjection
@@ -36,13 +34,11 @@ class AbsenceRequestControllerV2Spec extends Specification{
 
     def requestService = Mock(RequestService)
     def acceptanceService = Mock(AcceptanceService)
-    def webTokenService = Mock(WebTokenService)
 
     def absenceRequestControllerV2 = new AbsenceRequestControllerV2(acceptanceService, requestService)
 
     def "createSpecialAbsence() WHEN called by admin SHOULD return instance of RequestOutput"() {
         given:
-        webTokenService.isCurrentUserAnAdmin() >> true
         requestService.create(requesterId, _ as BaseRequestInput) >> request
 
         when:
@@ -55,17 +51,6 @@ class AbsenceRequestControllerV2Spec extends Specification{
         output.getTypeInfo() == specialAbsence.reason().toString()
     }
 
-    def "createSpecialAbsence() WHEN called by admin SHOULD NOT throw UnauthorizedException"() {
-        given:
-        webTokenService.isCurrentUserAnAdmin() >> true
-        1 * requestService.create(requesterId, _ as BaseRequestInput) >> request
-
-        when:
-        absenceRequestControllerV2.createSpecialAbsence(specialAbsence)
-
-        then:
-        notThrown(UnauthorizedException)
-    }
 
     def "create() WHEN called SHOULD call service and return data "(){
         given: "http mock"

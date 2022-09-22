@@ -2,7 +2,6 @@ package info.fingo.urlopia.request.absence;
 
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
-import info.fingo.urlopia.config.authentication.WebTokenService;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.*;
@@ -28,7 +27,7 @@ public class SpecialAbsenceRequestService implements RequestTypeService {
     private final HistoryLogService historyLogService;
     private final RequestRepository requestRepository;
     private final ApplicationEventPublisher publisher;
-    private final WebTokenService webTokenService;
+
     private final PresenceConfirmationService presenceConfirmationService;
 
     @Override
@@ -40,7 +39,7 @@ public class SpecialAbsenceRequestService implements RequestTypeService {
                     " this action has no role ADMIN"), userId);
             throw UnauthorizedException.unauthorized();
         }
-        var adminId = (Long) webTokenService.getUserId();
+        var adminId = userService.getCurrentUserId();
         var workingDays = workingDaysCalculator.calculate(input.getStartDate(), input.getEndDate());
         var request = mapToRequest(user, input, workingDays);
 
@@ -86,7 +85,7 @@ public class SpecialAbsenceRequestService implements RequestTypeService {
     }
 
     private boolean ensureAdmin() {
-        return webTokenService.isCurrentUserAnAdmin();
+        return userService.isCurrentUserAdmin();
     }
 
     public Request mapToRequest(User user,

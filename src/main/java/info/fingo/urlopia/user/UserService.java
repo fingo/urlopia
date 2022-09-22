@@ -1,16 +1,20 @@
 package info.fingo.urlopia.user;
 
 import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
+import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
 import info.fingo.urlopia.config.ad.ActiveDirectory;
 import info.fingo.urlopia.config.ad.ActiveDirectoryObjectClass;
 import info.fingo.urlopia.config.ad.ActiveDirectoryUtils;
 import info.fingo.urlopia.config.ad.Attribute;
+import info.fingo.urlopia.config.authentication.oauth.JwtTokenAuthoritiesProvider;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.team.Team;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +33,8 @@ public class UserService {
     private final ActiveDirectory activeDirectory;
 
     private static final String NO_USER_WITH_ID_MESSAGE = "There is no user with id: {}";
+    private static final String ADMIN_AUTHORITY_STRING = JwtTokenAuthoritiesProvider.ROLE_PREFIX + User.Role.ADMIN;
+    private static final SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(ADMIN_AUTHORITY_STRING);
 
     @Value("${ad.groups.users}")
     private String usersGroup;
@@ -160,10 +166,26 @@ public class UserService {
                 });
     }
 
+    public Long getCurrentUserId(){
+        var currentPrincipal = SecurityContextHolder.getContext().getAuthentication();
+        var principalName = (String) currentPrincipal.getPrincipal();
+        var user = userRepository.findFirstByPrincipalName(principalName);
+        if (user.isPresent()){
+            return user.get().getId();
+        }
+        throw UnauthorizedException.unauthorized();
+    }
+
+
+    public boolean isCurrentUserAdmin() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var authorities = authentication.getAuthorities();
+        return authorities.contains(ADMIN_AUTHORITY);
+    }
+
     private Set<User> getLeaders(User user) {
         return user.getTeams().stream()
                 .map(Team::getLeader)
                 .collect(Collectors.toUnmodifiableSet());
     }
-
 }
