@@ -16,7 +16,7 @@ import java.util.Set;
 @Component
 public class JwtTokenAuthoritiesProvider {
 
-    private static final String ROLE_PREFIX = "ROLE_";
+    public static final String ROLE_PREFIX = "ROLE_";
 
     private final UserService userService;
     private final UserRolesProvider userRolesProvider;

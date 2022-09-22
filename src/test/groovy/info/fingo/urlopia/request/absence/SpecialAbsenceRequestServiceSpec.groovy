@@ -2,15 +2,13 @@ package info.fingo.urlopia.request.absence
 
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
-import info.fingo.urlopia.config.authentication.WebTokenService
+import info.fingo.urlopia.api.v2.user.UserRolesProvider
 import info.fingo.urlopia.history.HistoryLogService
 import info.fingo.urlopia.holidays.WorkingDaysCalculator
 import info.fingo.urlopia.request.Request
 import info.fingo.urlopia.request.RequestInput
 import info.fingo.urlopia.request.RequestOverlappingException
 import info.fingo.urlopia.request.RequestRepository
-import info.fingo.urlopia.request.RequestType
-import info.fingo.urlopia.request.occasional.OccasionalType
 import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserService
 import org.springframework.context.ApplicationEventPublisher
@@ -44,7 +42,6 @@ class SpecialAbsenceRequestServiceSpec extends Specification{
     def publisher = Mock(ApplicationEventPublisher)
     def historyLogService = Mock(HistoryLogService)
     def userService = Mock(UserService)
-    def webTokenService = Mock(WebTokenService)
     def presenceConfirmationService = Mock(PresenceConfirmationService)
 
     def specialAbsenceRequestService = new SpecialAbsenceRequestService(
@@ -53,12 +50,11 @@ class SpecialAbsenceRequestServiceSpec extends Specification{
             historyLogService,
             requestRepository,
             publisher,
-            webTokenService,
             presenceConfirmationService)
 
     def "create() WHEN called by non admin SHOULD throw UnauthorizedException"() {
         given:
-        webTokenService.isCurrentUserAnAdmin() >> false
+        userService.isCurrentUserAdmin() >> false
 
         when:
         specialAbsenceRequestService.create(requesterId, specialAbsenceInput)
@@ -69,8 +65,8 @@ class SpecialAbsenceRequestServiceSpec extends Specification{
 
     def "create() WHEN called by admin SHOULD not throw UnauthorizedException"() {
         given:
-        webTokenService.isCurrentUserAnAdmin() >> true
-        webTokenService.getUserId() >> adminId
+        userService.isCurrentUserAdmin() >> true
+        userService.getCurrentUserId() >> adminId
         userService.get(requesterId) >> requester
         requestRepository.findByRequesterId(requesterId) >> List.of()
 
@@ -83,7 +79,7 @@ class SpecialAbsenceRequestServiceSpec extends Specification{
 
     def  "create() WHEN request has reversed dates SHOULD throw InvalidDatesOrderException"() {
         given:
-        webTokenService.isCurrentUserAnAdmin() >> true
+        userService.isCurrentUserAdmin() >> true
         userService.get(requesterId) >> requester
         requestRepository.findByRequesterId(requesterId) >> List.of()
 
@@ -98,7 +94,7 @@ class SpecialAbsenceRequestServiceSpec extends Specification{
     def "create() WHEN requests are overlapping SHOULD throw RequestOverlappingException"() {
         given:
         userService.get(requesterId) >> requester
-        webTokenService.isCurrentUserAnAdmin() >> true
+        userService.isCurrentUserAdmin() >> true
         requestRepository.findByRequesterId(requesterId) >> List.of(request)
 
         when:
@@ -111,7 +107,7 @@ class SpecialAbsenceRequestServiceSpec extends Specification{
     def "create() WHEN request is valid and user is admin SHOULD save request"() {
         given:
         userService.get(requesterId) >> requester
-        webTokenService.isCurrentUserAnAdmin() >> true
+        userService.isCurrentUserAdmin() >> true
         requestRepository.findByRequesterId(requesterId) >> List.of()
 
         when:
@@ -124,8 +120,7 @@ class SpecialAbsenceRequestServiceSpec extends Specification{
     def "create() WHEN request is created SHOULD delete presence confirmations in its date range"() {
         given:
         userService.get(requesterId) >> requester
-        webTokenService.isCurrentUserAnAdmin() >> true
-        webTokenService.getUserId() >> requesterId
+        userService.isCurrentUserAdmin() >> true
         workingDaysCalculator.calculate(startDate, endDate) >> 1
         requestRepository.findByRequesterId(requesterId) >> List.of()
 
@@ -138,7 +133,7 @@ class SpecialAbsenceRequestServiceSpec extends Specification{
 
     def "cancel() WHEN called by admin SHOULD change request status to REJECTED"() {
         given:
-        webTokenService.isCurrentUserAnAdmin() >> true
+        userService.isCurrentUserAdmin() >> true
 
         when:
         specialAbsenceRequestService.cancel(request)
@@ -149,7 +144,7 @@ class SpecialAbsenceRequestServiceSpec extends Specification{
 
     def "cancel() WHEN called by non admin SHOULD throw UnauthorizedException"() {
         given:
-        webTokenService.isCurrentUserAnAdmin() >> false
+        userService.isCurrentUserAdmin() >> false
 
         when:
         specialAbsenceRequestService.cancel(request)
@@ -160,7 +155,7 @@ class SpecialAbsenceRequestServiceSpec extends Specification{
 
     def "cancel() WHEN called by admin SHOULD save given request"() {
         given:
-        webTokenService.isCurrentUserAnAdmin() >> true
+        userService.isCurrentUserAdmin() >> true
 
         when:
         specialAbsenceRequestService.cancel(request)

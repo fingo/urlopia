@@ -3,11 +3,8 @@ package info.fingo.urlopia.request
 import info.fingo.urlopia.api.v2.calendar.AbsentUserOutput
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
-import info.fingo.urlopia.config.authentication.WebTokenService
 import info.fingo.urlopia.config.persistance.filter.Filter
-import info.fingo.urlopia.history.HistoryLog
 import info.fingo.urlopia.history.HistoryLogService
-import info.fingo.urlopia.holidays.HolidayService
 import info.fingo.urlopia.request.absence.SpecialAbsenceRequestService
 import info.fingo.urlopia.request.normal.NormalRequestService
 import info.fingo.urlopia.request.normal.RequestTooFarInThePastException
@@ -20,7 +17,6 @@ import java.time.LocalDate
 
 class RequestServiceSpec extends Specification {
     def requesterId = 1L
-    def year = 2021
     def notRequesterId = 2L
     def requester = Mock(User) {
         getId() >> requesterId
@@ -41,29 +37,13 @@ class RequestServiceSpec extends Specification {
         findById(request.getId()) >> Optional.of(request)
     }
     def historyLogService = Mock(HistoryLogService)
-    def holidayService = Mock(HolidayService)
     def userService = Mock(UserService)
-    def webTokenService = Mock(WebTokenService)
     def presenceConfirmationService = Mock(PresenceConfirmationService)
     def requestService = new RequestService(requestRepository,
             historyLogService,
             userService,
-            webTokenService,
-            holidayService,
             presenceConfirmationService)
 
-    def webTokenServiceThrowingException = Mock(WebTokenService) {
-        ensureAdmin() >> {
-            throw UnauthorizedException.unauthorized()
-        }
-    }
-
-    def requestServiceWithModifiedWebTokenService = new RequestService(requestRepository,
-            historyLogService,
-            userService,
-            webTokenServiceThrowingException,
-            holidayService,
-            presenceConfirmationService)
 
     def "create() WHEN request is not special and startDate is before one month past SHOULD throw RequestTooFarInThePastException"() {
         given:
@@ -130,6 +110,7 @@ class RequestServiceSpec extends Specification {
             accept(request) >> request.setStatus(Request.Status.ACCEPTED)
         }
         type.setService(normalRequestService)
+        userService.isCurrentUserAdmin() >> true
 
         when: "Admin user is accepting request"
         requestService.validateAdminPermissionAndAccept(request.getId(), notRequester.getId())
@@ -144,9 +125,11 @@ class RequestServiceSpec extends Specification {
             accept(request) >> request.setStatus(Request.Status.ACCEPTED)
         }
         type.setService(normalRequestService)
+        userService.isCurrentUserAdmin() >> false
+
 
         when: "Not admin user is accepting request"
-        requestServiceWithModifiedWebTokenService.validateAdminPermissionAndAccept(request.getId(), requester.getId())
+        requestService.validateAdminPermissionAndAccept(request.getId(), requester.getId())
 
         then: "Exception is thrown"
         thrown(UnauthorizedException)
@@ -158,6 +141,7 @@ class RequestServiceSpec extends Specification {
             reject(request) >> request.setStatus(Request.Status.REJECTED)
         }
         type.setService(normalRequestService)
+        userService.isCurrentUserAdmin() >> true
 
         when: "Admin user is rejecting request"
         requestService.validateAdminPermissionAndReject(request.getId())
@@ -172,9 +156,10 @@ class RequestServiceSpec extends Specification {
             reject(request) >> request.setStatus(Request.Status.REJECTED)
         }
         type.setService(normalRequestService)
+        userService.isCurrentUserAdmin() >> false
 
         when: "Not admin user is rejecting request"
-        requestServiceWithModifiedWebTokenService.validateAdminPermissionAndReject(request.getId())
+        requestService.validateAdminPermissionAndReject(request.getId())
 
         then: "Exception is thrown"
         thrown(UnauthorizedException)
@@ -186,6 +171,7 @@ class RequestServiceSpec extends Specification {
             cancel(request) >> request.setStatus(Request.Status.CANCELED)
         }
         type.setService(normalRequestService)
+        userService.isCurrentUserAdmin() >> true
 
         when: "Admin user is canceling request"
         requestService.cancel(request.getId(), notRequester.getId())
@@ -200,6 +186,7 @@ class RequestServiceSpec extends Specification {
             cancel(request) >> request.setStatus(Request.Status.CANCELED)
         }
         type.setService(normalRequestService)
+        userService.isCurrentUserAdmin() >> false
 
         when: "Requester is canceling request"
         requestService.cancel(request.getId(), requester.getId())
@@ -214,9 +201,10 @@ class RequestServiceSpec extends Specification {
             cancel(request) >> request.setStatus(Request.Status.CANCELED)
         }
         type.setService(normalRequestService)
+        userService.isCurrentUserAdmin() >> false
 
         when: "Not admin user nor requester is canceling request"
-        requestServiceWithModifiedWebTokenService.cancel(request.getId(), notRequester.getId())
+        requestService.cancel(request.getId(), notRequester.getId())
 
         then: "Exception is thrown"
         thrown(UnauthorizedException)

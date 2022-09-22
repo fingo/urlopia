@@ -4,11 +4,9 @@ import info.fingo.urlopia.UrlopiaApplication;
 import info.fingo.urlopia.api.v2.calendar.AbsentUserOutput;
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
-import info.fingo.urlopia.config.authentication.WebTokenService;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.history.HistoryLogService;
-import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.request.absence.BaseRequestInput;
 import info.fingo.urlopia.request.absence.SpecialAbsenceReason;
 import info.fingo.urlopia.request.absence.SpecialAbsenceRequestService;
@@ -29,7 +27,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.function.Predicate;
 
 @Service
 @Transactional
@@ -38,8 +35,6 @@ public class RequestService {
     private final RequestRepository requestRepository;
     private final HistoryLogService historyLogService;
     private final UserService userService;
-    private final WebTokenService webTokenService;
-    private final HolidayService holidayService;
     private final PresenceConfirmationService presenceConfirmationService;
 
     private static final String REQUEST_NOT_EXIST_MESSAGE = "Request with id: {} does not exist";
@@ -52,14 +47,10 @@ public class RequestService {
     public RequestService(RequestRepository requestRepository,
                           HistoryLogService historyLogService,
                           UserService userService,
-                          WebTokenService webTokenService,
-                          HolidayService holidayService,
                           @Lazy PresenceConfirmationService presenceConfirmationService) {
         this.requestRepository = requestRepository;
         this.historyLogService = historyLogService;
         this.userService = userService;
-        this.webTokenService = webTokenService;
-        this.holidayService = holidayService;
         this.presenceConfirmationService = presenceConfirmationService;
     }
 
@@ -206,7 +197,7 @@ public class RequestService {
 
     public void validateAdminPermissionAndAccept(Long requestId,
                                                  Long deciderId) {
-        webTokenService.ensureAdmin();
+        validateAdminPermission();
 
         accept(requestId, deciderId);
     }
@@ -236,7 +227,7 @@ public class RequestService {
     }
 
     public void validateAdminPermissionAndReject(Long requestId) {
-        webTokenService.ensureAdmin();
+        validateAdminPermission();
 
         reject(requestId);
     }
@@ -263,21 +254,14 @@ public class RequestService {
         var requesterId = request.getRequester().getId();
         var isRequester = requesterId.equals(deciderId);
 
-        try {
-            webTokenService.ensureAdmin();
-        } catch (UnauthorizedException exception) {
-            if (!isRequester) {
-                log.error("User with id: {} has no permissions to cancel request with id: {}",
-                        requesterId, requestId);
-                throw UnauthorizedException.unauthorized();
-            }
+        if (!isRequester){
+            validateAdminPermission();
         }
-
 
         var service = request.getType().getService();
 
         if (service instanceof SpecialAbsenceRequestService) {
-            webTokenService.ensureAdmin();
+            validateAdminPermission();
         }
 
         var previousStatus = request.getStatus();
@@ -301,6 +285,14 @@ public class RequestService {
                 return "Anulowanie nieobecności w dniach %s - %s (%s)".formatted(startDate, endDate, reason);
             default:
                 return "Anulowanie";
+        }
+    }
+
+    private void validateAdminPermission(){
+        var isAdmin = userService.isCurrentUserAdmin();
+        if (!isAdmin){
+            log.error("This action could not be performed because user has no role ADMIN");
+            throw UnauthorizedException.unauthorized();
         }
     }
 }
