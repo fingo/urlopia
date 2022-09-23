@@ -2,7 +2,6 @@ package info.fingo.urlopia.config.authentication.oauth;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import info.fingo.urlopia.api.v2.user.UserRolesProvider;
-import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -22,14 +21,9 @@ public class JwtTokenAuthoritiesProvider {
     private final UserRolesProvider userRolesProvider;
 
     public Set<SimpleGrantedAuthority> getAuthoritiesFromJWT(DecodedJWT decodedToken){
-        try{
-            var principal = JwtUtils.getPrincipalNameFromDecodedToken(decodedToken);
-            var user = userService.getByPrincipal(principal);
-            return getAuthoritiesFromUser(user);
-        } catch (NoSuchUserException exp){
-            return null;
-        }
-
+        var principal = JwtUtils.getPrincipalNameFromDecodedToken(decodedToken);
+        var user = userService.getByPrincipal(principal);
+        return getAuthoritiesFromUser(user);
     }
 
     private Set<SimpleGrantedAuthority> getAuthoritiesFromUser(User user) {

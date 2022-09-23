@@ -7,6 +7,8 @@ public class NoSuchUserException extends BaseCustomException {
 
     private static final String ERROR_MESSAGE = "There is no user with given %s";
 
+    private static final String INACTIVE_ACCOUNT_MESSAGE = "Account for user %s is inactive";
+
     private NoSuchUserException(String errorMessage) {
         super(errorMessage);
     }
@@ -22,5 +24,9 @@ public class NoSuchUserException extends BaseCustomException {
 
     public static NoSuchUserException invalidEmail() {
         return new NoSuchUserException(ERROR_MESSAGE.formatted("email"));
+    }
+
+    public static NoSuchUserException inactiveAccount(String mail) {
+        return new NoSuchUserException(INACTIVE_ACCOUNT_MESSAGE.formatted(mail));
     }
 }
