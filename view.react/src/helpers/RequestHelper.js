@@ -1,5 +1,8 @@
+import {PublicClientApplication} from "@azure/msal-browser";
 import axios from 'axios';
 
+import {logout} from "../api/services/session.service";
+import {msalConfig} from "../authConfig";
 import {mapCodeToMessage} from "./errors/ErrorCodeMapper";
 import {pushErrorNotification} from "./notifications/Notifications";
 
@@ -112,6 +115,12 @@ const UNKNOWN_ERROR_CODE = 'UNKNOWN_ERROR'
 const handleError = (error) => {
     let errorMessage;
     if (error.response) {
+        const unauthorized = error.response.status === 401
+        if (unauthorized) {
+            const msalInstance = new PublicClientApplication(msalConfig);
+            logout(msalInstance)
+            return;
+        }
         let code = error.response.message;
         if (error.response.data.message) {
             code = error.response.data.message;
