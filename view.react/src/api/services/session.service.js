@@ -10,10 +10,13 @@ export const logout = (instance) => {
 
 export const getCurrentUser = () => {
     const user = JSON.parse(localStorage.getItem(USER_DATA_KEY)) || {roles: []}
+    if (!user.roles){
+        user.roles = [];
+    }
     return {
         ...user,
-        isLeader: user?.roles.includes("ROLES_LEADER"),
-        isAdmin: user?.roles.includes("ROLES_ADMIN")
+        isLeader: user.roles.includes("ROLES_LEADER"),
+        isAdmin: user.roles.includes("ROLES_ADMIN")
     };
 }
 

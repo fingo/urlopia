@@ -4,6 +4,7 @@ package info.fingo.urlopia.config.authentication;
 import info.fingo.urlopia.api.v2.oauth.OAuthRedirectService;
 import info.fingo.urlopia.config.authentication.oauth.InvalidTokenException;
 import info.fingo.urlopia.config.authentication.oauth.JwtTokenValidator;
+import info.fingo.urlopia.user.NoSuchUserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -44,7 +45,7 @@ public class JwtFilter extends OncePerRequestFilter {
             var principal = accessToken.getPrincipal();
             var authorities = accessToken.getAuthorities();
             return new UsernamePasswordAuthenticationToken(principal, null, authorities);
-        }catch (InvalidTokenException invalidTokenException){
+        }catch (InvalidTokenException | NoSuchUserException exception){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return null;
         }
