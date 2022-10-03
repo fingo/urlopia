@@ -1,4 +1,4 @@
-import { TableBody, TableHead, TableRow } from "@mui/material";
+import {TableBody, TableContainer, TableHead, TableRow} from "@mui/material";
 import MuiTable from "@mui/material/Table";
 
 import { FilterRow } from "./FilterRow";
@@ -39,47 +39,47 @@ const Table = <T,>({
   });
 
   return (
-    <div className={wrapperClasses}>
-      <MuiTable>
+    <TableContainer className={wrapperClasses}>
+      <MuiTable stickyHeader={true}>
         <TableHead>
           <TableRow>
             {columns.map(
-              (column) =>
-                !column.hidden && (
-                  <HeaderCell
-                    key={column.name}
-                    orderBy={orderBy}
-                    setOrderBy={setOrderBy}
-                    column={column}
-                  />
-                )
+                (column) =>
+                    !column.hidden && (
+                        <HeaderCell
+                            key={column.name}
+                            orderBy={orderBy}
+                            setOrderBy={setOrderBy}
+                            column={column}
+                        />
+                    )
             )}
           </TableRow>
         </TableHead>
         {columns.some((column) => column.filter) && (
-          <FilterRow
-            columns={columns}
-            filters={filters}
-            setFilter={setFilter}
-          />
+            <FilterRow
+                columns={columns}
+                filters={filters}
+                setFilter={setFilter}
+            />
         )}
         {sortedAndFilteredData.length > 0 && (
-          <TableBody>
-            {sortedAndFilteredData.map((row) => (
-              <Row
-                key={getKeyFieldValue(row, keyField)}
-                keyFieldValue={getKeyFieldValue(row, keyField)}
-                columns={columns}
-                row={row}
-                expandRow={expandRow}
-                striped={striped}
-                hover={hover}
-              />
-            ))}
-          </TableBody>
+            <TableBody>
+              {sortedAndFilteredData.map((row) => (
+                  <Row
+                      key={getKeyFieldValue(row, keyField)}
+                      keyFieldValue={getKeyFieldValue(row, keyField)}
+                      columns={columns}
+                      row={row}
+                      expandRow={expandRow}
+                      striped={striped}
+                      hover={hover}
+                  />
+              ))}
+            </TableBody>
         )}
       </MuiTable>
-    </div>
+    </TableContainer>
   );
 };
 

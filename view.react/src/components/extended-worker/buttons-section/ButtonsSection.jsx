@@ -30,7 +30,8 @@ export const ButtonsSection = ({isUnspecifiedAbsences}) => {
                           showModal={workerRequestsHistoryModalShow}
                           modal={<WorkerRequestsHistory show={workerRequestsHistoryModalShow}
                                                         onHide={() => setWorkerRequestsHistoryModalShow(false)}
-                                                        fullName={fullName}/>}
+                                                        fullName={fullName}
+                                                        userId={userId}/>}
                           isWithNotification={false}
             />
 
@@ -47,7 +48,6 @@ export const ButtonsSection = ({isUnspecifiedAbsences}) => {
                               isWithNotification={isUnspecifiedAbsences}
                 />
             }
-
             <ActionButton tooltipText='Dodaj nieobecność'
                           icon={<AbsenceIcon className={styles.icon}/>}
                           onButtonClick={(showStatus) => setAddAbsenceModalShow(showStatus)}

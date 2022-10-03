@@ -13,7 +13,7 @@ import {btnClass} from "../../../global-styles/btn.module.scss";
 import {WorkerRequestsHistoryTable} from "./worker-requests-history-table/WorkerRequestsHistoryTable";
 import styles from './WorkerRequestsHistory.module.scss';
 
-export const WorkerRequestsHistory = ({show, onHide, fullName}) => {
+export const WorkerRequestsHistory = ({show, onHide, fullName, userId}) => {
     const [requestsState, requestsDispatch] = useRequests();
     const {requests, requestsPage, fetching} = requestsState.workerRequestsHistory;
 
@@ -21,10 +21,8 @@ export const WorkerRequestsHistory = ({show, onHide, fullName}) => {
     const [currentSort, setCurrentSort] = useState({field: "created", order: "desc"})
 
     useEffect(() => {
-        const firstName = fullName?.split(' ')[0];
-        const lastName = fullName?.split(' ')[1];
-        fetchWorkerRequestsHistory(requestsDispatch, firstName, lastName, pageNumber, currentSort.field, currentSort.order);
-    }, [requestsDispatch, fullName, pageNumber, currentSort]);
+        fetchWorkerRequestsHistory(requestsDispatch, userId, pageNumber, currentSort.field, currentSort.order);
+    }, [requestsDispatch, userId, pageNumber, currentSort]);
 
     return (
         <Modal
@@ -63,6 +61,7 @@ WorkerRequestsHistory.propTypes = {
     show: PropTypes.bool,
     onHide: PropTypes.func.isRequired,
     fullName: PropTypes.string,
+    userId: PropTypes.number
 }
 
 WorkerRequestsHistory.defaultProps = {

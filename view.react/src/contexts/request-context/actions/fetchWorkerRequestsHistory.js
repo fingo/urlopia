@@ -3,18 +3,16 @@ import {FETCH_WORKER_REQUESTS_HISTORY_ACTION_PREFIX, FETCH_WORKER_REQUESTS_HISTO
 
 export const fetchWorkerRequestsHistory = (
     dispatch,
-    firstName,
-    lastName,
+    userId,
     pageNumber,
     sortField = "startDate",
     sortOrder = "desc"
 ) => {
-    const firstNameFilter = `filter=requester.firstName:${firstName}`
-    const lastNameFilter = `filter=requester.lastName:${lastName}`
+    const userFilter = `filter=requester.id:${userId}`
     const pagination = `page=${pageNumber}&sort=${sortField},${sortOrder}`
 
     dispatch({type: `${FETCH_WORKER_REQUESTS_HISTORY_ACTION_PREFIX}_request`});
-    const URL = `${FETCH_WORKER_REQUESTS_HISTORY_URL}?${firstNameFilter}&${lastNameFilter}&${pagination}`;
+    const URL = `${FETCH_WORKER_REQUESTS_HISTORY_URL}?${userFilter}&${pagination}`;
     sendGetRequest(URL)
         .then(data => dispatch({
                 type: `${FETCH_WORKER_REQUESTS_HISTORY_ACTION_PREFIX}_success`,
