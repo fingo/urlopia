@@ -124,7 +124,7 @@ export const AddAbsenceForm = ({show, onHide, userId, fullName}) => {
 AddAbsenceForm.propTypes = {
     show: PropTypes.bool,
     onHide: PropTypes.func.isRequired,
-    userId: PropTypes.number,
+    userId: PropTypes.number.isRequired,
     fullName: PropTypes.string,
 }
 

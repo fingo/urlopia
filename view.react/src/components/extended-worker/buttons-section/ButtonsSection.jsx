@@ -24,16 +24,18 @@ export const ButtonsSection = ({isUnspecifiedAbsences}) => {
 
     return (
         <div className={styles.buttonsSection}>
-            <ActionButton tooltipText='Historia wniosków'
-                          icon={<HistoryIcon className={styles.icon}/>}
-                          onButtonClick={(showStatus) => setWorkerRequestsHistoryModalShow(showStatus)}
-                          showModal={workerRequestsHistoryModalShow}
-                          modal={<WorkerRequestsHistory show={workerRequestsHistoryModalShow}
-                                                        onHide={() => setWorkerRequestsHistoryModalShow(false)}
-                                                        fullName={fullName}
-                                                        userId={userId}/>}
-                          isWithNotification={false}
-            />
+            {
+                userId && <ActionButton tooltipText='Historia wniosków'
+                              icon={<HistoryIcon className={styles.icon}/>}
+                              onButtonClick={(showStatus) => setWorkerRequestsHistoryModalShow(showStatus)}
+                              showModal={workerRequestsHistoryModalShow}
+                              modal={<WorkerRequestsHistory show={workerRequestsHistoryModalShow}
+                                                            onHide={() => setWorkerRequestsHistoryModalShow(false)}
+                                                            fullName={fullName}
+                                                            userId={userId}/>}
+                              isWithNotification={false}
+                />
+            }
 
             {
                 isEC &&
@@ -48,16 +50,17 @@ export const ButtonsSection = ({isUnspecifiedAbsences}) => {
                               isWithNotification={isUnspecifiedAbsences}
                 />
             }
-            <ActionButton tooltipText='Dodaj nieobecność'
-                          icon={<AbsenceIcon className={styles.icon}/>}
-                          onButtonClick={(showStatus) => setAddAbsenceModalShow(showStatus)}
-                          showModal={addAbsenceModalShow}
-                          modal={<AddAbsenceForm show={addAbsenceModalShow}
-                                                 onHide={() => setAddAbsenceModalShow(false)}
-                                                 userId={userId}
-                                                 fullName={fullName}/>}
-                          isWithNotification={false}
+            {userId && <ActionButton tooltipText='Dodaj nieobecność'
+                                     icon={<AbsenceIcon className={styles.icon}/>}
+                                     onButtonClick={(showStatus) => setAddAbsenceModalShow(showStatus)}
+                                     showModal={addAbsenceModalShow}
+                                     modal={<AddAbsenceForm show={addAbsenceModalShow}
+                                                            onHide={() => setAddAbsenceModalShow(false)}
+                                                            userId={userId}
+                                                            fullName={fullName}/>}
+                                     isWithNotification={false}
             />
+            }
         </div>
     );
 };

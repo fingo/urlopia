@@ -61,7 +61,7 @@ WorkerRequestsHistory.propTypes = {
     show: PropTypes.bool,
     onHide: PropTypes.func.isRequired,
     fullName: PropTypes.string,
-    userId: PropTypes.number
+    userId: PropTypes.number.isRequired
 }
 
 WorkerRequestsHistory.defaultProps = {
