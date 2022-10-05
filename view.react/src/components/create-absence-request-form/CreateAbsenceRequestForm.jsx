@@ -20,6 +20,7 @@ import {countWorkingDays} from "../../helpers/CountWorkingDaysHelper";
 import {formatDate} from "../../helpers/DateFormatterHelper";
 import {isHoliday} from "../../helpers/IsHolidayHelper";
 import {occasionalTypeInfoMapperHelper} from "../../helpers/OccasionalTypeInfoMapperHelper";
+import {formatHoursToDays} from "../../helpers/RemainingDaysFormatterHelper";
 import {updateVacationDays} from "../../helpers/updateVacationDays";
 import {Calendar} from "./calendar/Calendar";
 import styles from './CreateAbsenceRequestForm.module.scss';
@@ -162,6 +163,11 @@ export const CreateAbsenceRequestForm = ({
     }
     const vacationTypeLabel = isUserEC ? "Pozostały urlop: " : "Pozostała przerwa: "
 
+    const remainingDays = vacationDays-pendingDays
+    const remainingHours = vacationHours - pendingHours;
+    const remainingHoursAsDays = formatHoursToDays(remainingHours/workTime)
+    const pendingHoursAsDays  = formatHoursToDays(pendingHours/workTime)
+
     const calendarClass = classNames(styles.calendar, {[styles.blur]: !isSelected});
     return (
         <Container fluid className={styles.container}>
@@ -216,13 +222,13 @@ export const CreateAbsenceRequestForm = ({
                     {
                         workTime === 8 ?
                             <>
-                                <h5>{vacationTypeLabel}<strong>{vacationDays-pendingDays} dni</strong> {vacationHours-pendingHours} godzin</h5>
+                                <h5>{vacationTypeLabel}<strong>{remainingDays} dni</strong> {remainingHours} godzin</h5>
                                 <h5>Złożone wnioski: <strong>{pendingDays} dni</strong> {pendingHours} godzin</h5>
                             </>
                         :
                             <>
-                                <h5>{vacationTypeLabel}: <strong>{vacationHours-pendingHours} godzin</strong></h5>
-                                <h5>Złożone wnioski: <strong>{pendingHours} godzin</strong></h5>
+                                <h5>{vacationTypeLabel}<strong>{remainingHours} godzin ({remainingHoursAsDays} d) </strong></h5>
+                                <h5>Złożone wnioski: <strong>{pendingHours} godzin ({pendingHoursAsDays} d)</strong></h5>
                             </>
                     }
                 </Col>

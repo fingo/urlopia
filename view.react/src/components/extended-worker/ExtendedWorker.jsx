@@ -7,6 +7,7 @@ import {fetchRecentUserAbsenceHistory} from "../../contexts/absence-history-cont
 import {changeSelectedUser} from "../../contexts/workers-context/actions/changeSelectedUser";
 import {fetchRemainingDays} from "../../contexts/workers-context/actions/fetchRemainingDays";
 import {useWorkers} from "../../contexts/workers-context/workersContext";
+import {formatHoursToDays} from "../../helpers/RemainingDaysFormatterHelper";
 import {sendGetRequest} from "../../helpers/RequestHelper";
 import {AbsenceHistorySection} from "./absence-history-section/AbsenceHistorySection";
 import {ButtonsSection} from "./buttons-section/ButtonsSection";
@@ -18,6 +19,9 @@ const CURRENT_YEAR = new Date().getFullYear();
 const GET_AVAILABLE_YEARS_URL_PREFIX = '/api/users/';
 const GET_AVAILABLE_YEARS_URL_POSTFIX = '/days/employment-year';
 
+const HOURS_IN_WEEK = 40;
+const DAYS_IN_WEEK = 5;
+
 export const ExtendedWorker = ({workTime, userId, isUnspecifiedAbsences}) => {
     const [remainingDays, setRemainingDays] = useState('');
     const [remainingHours, setRemainingHours] = useState('');
@@ -28,6 +32,7 @@ export const ExtendedWorker = ({workTime, userId, isUnspecifiedAbsences}) => {
     const {isEC} = workersState;
 
     const [, absenceHistoryDispatch] = useAbsenceHistory();
+
     const vacationTypeLabel = isEC ? "Pozostały urlop:" : "Pozostała przerwa:"
 
     useEffect(() => {
@@ -59,6 +64,12 @@ export const ExtendedWorker = ({workTime, userId, isUnspecifiedAbsences}) => {
         fetchRecentUserAbsenceHistory(absenceHistoryDispatch, userId);
     }, [absenceHistoryDispatch, userId]);
 
+    //eslint-disable-next-line
+    const realWorkTime = eval(workTime) //eval here is safe
+    const hoursToWorkInWeek = HOURS_IN_WEEK * realWorkTime;
+    const hoursToWorkInDay = hoursToWorkInWeek / DAYS_IN_WEEK
+    const remainingHoursAsDays = formatHoursToDays(remainingHours/hoursToWorkInDay)
+
     return (
         <Container fluid>
             <Row>
@@ -73,7 +84,7 @@ export const ExtendedWorker = ({workTime, userId, isUnspecifiedAbsences}) => {
                                 :
                                 <>
                                     <h3>{vacationTypeLabel}</h3>
-                                    <h3><strong>{remainingHours} godzin</strong></h3>
+                                    <h3><strong>{remainingHours} godzin ({remainingHoursAsDays} d)</strong></h3>
                                 </>
                         }
                     </div>

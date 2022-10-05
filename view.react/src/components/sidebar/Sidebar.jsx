@@ -9,6 +9,7 @@ import {fetchPendingDays} from "../../contexts/vacation-days-context/actions/fet
 import {fetchVacationDays} from "../../contexts/vacation-days-context/actions/fetchVacationDays";
 import {useVacationDays} from "../../contexts/vacation-days-context/vacationDaysContext";
 import {AttentionIcon, TextWithIcon} from "../../helpers/icons/Icons";
+import {formatHoursToDays} from "../../helpers/RemainingDaysFormatterHelper";
 import {Link} from "./link/Link";
 import {LinkGroup} from "./link-group/LinkGroup";
 import styles from './Sidebar.module.scss';
@@ -50,17 +51,28 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
         setWorkTime(workTime);
     }, [vacationDaysState.vacationDays]);
 
+    const remainingDays = vacationDays-pendingDays
+    const remainingHours = vacationHours - pendingHours
+    const remainingHoursAsDays = formatHoursToDays(remainingHours/workTime)
+    const pendingHoursAsDays  = formatHoursToDays(pendingHours/workTime)
+
+    const leaveLabel = isUserEC ? "Pozostały urlop: " : "Pozostała przerwa: "
+
     return (
         <>
             <Container fluid className={styles.main}>
                 <div className={styles.days}>
-                    <p>{isUserEC ? "Pozostały urlop:" : "Pozostała przerwa"} </p>
                     {
                         workTime === 8 ?
-                            <p><strong>{vacationDays-pendingDays}d</strong> {vacationHours-pendingHours}h
-                                (<strong>+{pendingDays}d</strong> {pendingHours}h)</p>
+                            <>
+                                <p>{leaveLabel}<strong>{remainingDays}d</strong> {remainingHours}h </p>
+                                <p>Złożone wnioski: <strong>{pendingDays}d</strong> {pendingHours}h</p>
+                            </>
                             :
-                            <p><strong>{vacationHours-pendingHours}h ({pendingHours}h)</strong></p>
+                            <>
+                                <p>{leaveLabel} <strong>{remainingHours}h ({remainingHoursAsDays}d)</strong></p>
+                                <p>Złożone wnioski: <strong>{pendingHours}h ({pendingHoursAsDays}d)</strong></p>
+                            </>
                     }
                 </div>
                 <Nav className={styles.nav}>
