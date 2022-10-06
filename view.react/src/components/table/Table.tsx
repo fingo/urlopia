@@ -40,7 +40,7 @@ const Table = <T,>({
 
   return (
     <TableContainer className={wrapperClasses}>
-      <MuiTable>
+      <MuiTable stickyHeader={true}>
         <TableHead>
           <TableRow>
             {columns.map(
