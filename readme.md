@@ -101,7 +101,6 @@ more in application-developer.properties file.
 Important properties:
 ```properties
 spring.config.import=optional:application-developer.properties (import your own configuration)
-webtoken.secret=
 app.url=http://localhost:8080
 app.name=Urlopia
 
