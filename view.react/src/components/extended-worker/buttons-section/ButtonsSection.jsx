@@ -2,12 +2,14 @@ import PropTypes from "prop-types";
 import {useState} from "react";
 import {
     ClockHistory as HistoryIcon,
+    InfoCircleFill as EventIcon,
     PersonCheckFill as PresenceIcon,
     PersonXFill as AbsenceIcon
 } from "react-bootstrap-icons";
 
 import {useWorkers} from "../../../contexts/workers-context/workersContext";
 import {AddAbsenceForm} from "../add-absence-form/AddAbsenceForm";
+import { AddEventForm } from "../add-event-form/AddEventForm";
 import {AddPresenceForm} from "../add-presence-form/AddPresenceForm";
 import {WorkerRequestsHistory} from "../worker-requests-history/WorkerRequestsHistory";
 import {ActionButton} from "./action-button/ActionButton";
@@ -17,6 +19,8 @@ export const ButtonsSection = ({isUnspecifiedAbsences}) => {
     const [workerRequestsHistoryModalShow, setWorkerRequestsHistoryModalShow] = useState(false);
     const [addPresenceModalShow, setAddPresenceModalShow] = useState(false);
     const [addAbsenceModalShow, setAddAbsenceModalShow] = useState(false);
+    const [addEventModalShow, setAddEventModalShow] = useState(false);
+
 
     const [workersState] = useWorkers();
     const {isEC} = workersState;
@@ -58,6 +62,17 @@ export const ButtonsSection = ({isUnspecifiedAbsences}) => {
                                                             onHide={() => setAddAbsenceModalShow(false)}
                                                             userId={userId}
                                                             fullName={fullName}/>}
+                                     isWithNotification={false}
+            />
+            }
+            {userId && <ActionButton tooltipText='Dodaj wydarzenie'
+                                     icon={<EventIcon className={styles.icon}/>}
+                                     onButtonClick={(showStatus) => setAddEventModalShow(showStatus)}
+                                     showModal={addEventModalShow}
+                                     modal={<AddEventForm show={addEventModalShow}
+                                                          onHide={() => setAddEventModalShow(false)}
+                                                          userId={userId}
+                                                          fullName={fullName}/>}
                                      isWithNotification={false}
             />
             }

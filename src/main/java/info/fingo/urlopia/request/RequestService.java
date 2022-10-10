@@ -277,14 +277,18 @@ public class RequestService {
         var endDate = request.getEndDate();
 
         switch (request.getType()) {
-            case NORMAL, OCCASIONAL:
+            case NORMAL, OCCASIONAL -> {
                 return "Anulowanie urlopu w dniach: %s - %s".formatted(startDate, endDate);
-            case SPECIAL:
+            }
+            case SPECIAL -> {
                 var typeInfo = request.getSpecialTypeInfo();
-                var reason = SpecialAbsenceReason.valueOf(typeInfo).getTranslatedReason();
+                var reason = SpecialAbsenceReason.valueOf(typeInfo)
+                        .getTranslatedReason();
                 return "Anulowanie nieobecności w dniach %s - %s (%s)".formatted(startDate, endDate, reason);
-            default:
+            }
+            default -> {
                 return "Anulowanie";
+            }
         }
     }
 

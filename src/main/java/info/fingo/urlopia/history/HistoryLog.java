@@ -7,6 +7,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,6 +51,10 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
     @JoinColumn(unique = true)
     private HistoryLog prevHistoryLog;
 
+    @Column
+    @Enumerated(EnumType.STRING)
+    private UserDetailsChangeEvent userDetailsChangeEvent;
+
     public HistoryLog() {
         this.created = LocalDateTime.now();
     }
@@ -88,6 +93,41 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
         this.countForNextYear = countForNextYear;
     }
 
+    HistoryLog(User user,
+               float hours,
+               String comment,
+               HistoryLog prevHistoryLog,
+               UserDetailsChangeEvent event) {
+        this();
+        this.user = user;
+        this.hours = hours;
+        this.hoursRemaining = Optional.ofNullable(prevHistoryLog)
+                .map(historyLog -> historyLog.hoursRemaining + hours).orElse(hours);
+        this.userWorkTime = user.getWorkTime();
+        this.comment = comment;
+        this.prevHistoryLog = prevHistoryLog;
+        this.countForNextYear = false;
+        this.userDetailsChangeEvent = event;
+    }
+
+    HistoryLog(User user,
+               LocalDateTime created,
+               float hours,
+               String comment,
+               HistoryLog prevHistoryLog,
+               UserDetailsChangeEvent event) {
+        this.created = created;
+        this.user = user;
+        this.hours = hours;
+        this.hoursRemaining = Optional.ofNullable(prevHistoryLog)
+                .map(historyLog -> historyLog.hoursRemaining + hours).orElse(hours);
+        this.userWorkTime = user.getWorkTime();
+        this.comment = comment;
+        this.prevHistoryLog = prevHistoryLog;
+        this.countForNextYear = false;
+        this.userDetailsChangeEvent = event;
+    }
+
     HistoryLog(Request request,
                User user,
                User decider,
@@ -114,7 +154,7 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
                     .sorted()
                     .toList();
         }
-        return List.of(decider.getFullName());
+        return decider != null ? List.of(decider.getFullName()) : new ArrayList<>();
     }
 
     public Long getId() {
@@ -207,6 +247,14 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
 
     private boolean checkIsDecidersFromRequest(){
         return request != null && request.getType() != RequestType.SPECIAL;
+    }
+
+    public UserDetailsChangeEvent getUserDetailsChangeEvent() {
+        return userDetailsChangeEvent;
+    }
+
+    public void setUserDetailsChangeEvent(UserDetailsChangeEvent userDetailsChangeEvent) {
+        this.userDetailsChangeEvent = userDetailsChangeEvent;
     }
 
     private Fraction countWorkTimeFraction(){

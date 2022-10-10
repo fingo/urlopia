@@ -6,7 +6,6 @@ import {useLocation} from "react-router-dom";
 import {getCurrentUser} from "../../api/services/session.service";
 import {useAbsenceHistory} from "../../contexts/absence-history-context/absenceHistoryContext";
 import {btnClass} from "../../global-styles/btn.module.scss";
-import {formatLogs} from "../../helpers/AbsenceHistoryFormatterHelper";
 import {getPaginationForPage} from "../../helpers/pagination/PaginationHelper";
 import { YearPicker } from "../holidays-config/year-picker/YearPicker";
 import styles from "./AbsenceHistoryList.module.scss";
@@ -50,7 +49,6 @@ export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
         setSelectedYear(newYear);
     }
 
-    const formattedLogs = formatLogs(absenceHistory);
     let vacationTypeLabel = isUserEC ? "Pozostały urlop" : "Pozostała przerwa"
 
     let header = 'Historia użytkownika';
@@ -95,7 +93,7 @@ export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
                 </Button> }
             </div>
             <AbsenceHistoryTab
-                logs={formattedLogs}
+                logs={absenceHistory}
                 vacationTypeLabel={vacationTypeLabel}
                 setSort={(sort) => setCurrentSort(sort)}
                 isAdminView={isAdminView}
