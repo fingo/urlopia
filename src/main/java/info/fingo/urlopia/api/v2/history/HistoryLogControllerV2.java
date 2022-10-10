@@ -55,4 +55,11 @@ public class HistoryLogControllerV2 {
        return historyLogService.updateCountingYear(updateLogCountingYear);
     }
 
+    @RolesAllowed("ROLES_ADMIN")
+    @PostMapping(value = "/details-change",  produces = MediaType.APPLICATION_JSON_VALUE)
+    public HistoryLogOutput addNewDetailsChangeEvent(@RequestBody DetailsChangeEventInput detailsChangeEventInput) {
+        var historyLog = historyLogService.addNewDetailsChangeEvent(detailsChangeEventInput);
+        return HistoryLogOutput.from(historyLog);
+    }
+
 }

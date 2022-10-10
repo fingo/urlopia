@@ -4,7 +4,6 @@ import {useHistory} from "react-router-dom";
 import {useAbsenceHistory} from "../../../contexts/absence-history-context/absenceHistoryContext";
 import {useWorkers} from "../../../contexts/workers-context/workersContext";
 import {btnClass} from "../../../global-styles/btn.module.scss";
-import {formatLogs} from "../../../helpers/AbsenceHistoryFormatterHelper";
 import {AbsenceHistoryTab} from "../../absence-history-list/AbsenceHistoryTab";
 
 export const AbsenceHistorySection = () => {
@@ -25,12 +24,12 @@ export const AbsenceHistorySection = () => {
         });
     }
 
-    const formattedRecentUserHistory = formatLogs(recentUserHistory).slice(0, 5);
+    const slicedHistory = recentUserHistory.slice(0, 5);
 
     return (
         <div>
             <Form.Label><strong>Historia użytkownika</strong></Form.Label>
-            <AbsenceHistoryTab logs={formattedRecentUserHistory}
+            <AbsenceHistoryTab logs={slicedHistory}
                                isHidden={true}
                                vacationTypeLabel={vacationTypeLabel}
                                isAdminView={false}/>

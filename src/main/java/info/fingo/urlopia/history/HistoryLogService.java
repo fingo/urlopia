@@ -1,15 +1,13 @@
 package info.fingo.urlopia.history;
 
 import info.fingo.urlopia.UrlopiaApplication;
-import info.fingo.urlopia.api.v2.history.HistoryLogOutput;
-import info.fingo.urlopia.api.v2.history.NoSuchHistoryLogException;
-import info.fingo.urlopia.api.v2.history.UpdateLogCountingYearInput;
-import info.fingo.urlopia.api.v2.history.UsedHoursFromMonthCalculator;
+import info.fingo.urlopia.api.v2.history.*;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.user.NoSuchUserException;
+import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +33,7 @@ public class HistoryLogService {
     private final UserRepository userRepository;
     private final WorkingDaysCalculator workingDaysCalculator;
     private final UsedHoursFromMonthCalculator usedHoursFromMonthCalculator;
+    private final HistoryLogFromEventHandler historyLogFromEventHandler;
 
     private static final String CREATED_FILTER = "created";
 
@@ -87,6 +86,7 @@ public class HistoryLogService {
                 .build();
         return get(filterWithRestrictions, pageable);
     }
+
 
     public HistoryLogOutput updateCountingYear(UpdateLogCountingYearInput updateLogCountingYearInput){
         var optionalLog = historyLogRepository.findById(updateLogCountingYearInput.historyLogId());
@@ -250,4 +250,19 @@ public class HistoryLogService {
         var request = historyLog.getRequest();
         return request != null && request.isNormal() && request.getStatus() == Request.Status.ACCEPTED;
     }
+
+    public HistoryLog addNewDetailsChangeEvent(DetailsChangeEventInput detailsChangeEventInput) {
+        var user = userRepository.findById(detailsChangeEventInput.userId()).get(); //check it
+        var oldWorkTime = detailsChangeEventInput.oldWorkTime();
+        var newWorkTime = detailsChangeEventInput.newWorkTime();
+        var createTime = detailsChangeEventInput.created();
+        return switch (detailsChangeEventInput.event()){
+            case USER_ACTIVATED -> historyLogFromEventHandler.addUserActivationEvent(user,createTime);
+            case USER_DEACTIVATED -> historyLogFromEventHandler.addUserDeactivatedEvent(user, createTime);
+            case USER_CHANGE_TO_B2B -> historyLogFromEventHandler.addChangeToB2BEvent(user,createTime);
+            case USER_CHANGE_TO_EC -> historyLogFromEventHandler.addChangeToECEvent(user, createTime);
+            case USER_CHANGE_WORK_TIME -> historyLogFromEventHandler.addChangeWorkTime(user, createTime, oldWorkTime, newWorkTime);
+        };
+    }
+
 }
