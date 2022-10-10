@@ -8,6 +8,7 @@ import {useAbsenceHistory} from "../../contexts/absence-history-context/absenceH
 import {btnClass} from "../../global-styles/btn.module.scss";
 import {formatLogs} from "../../helpers/AbsenceHistoryFormatterHelper";
 import {getPaginationForPage} from "../../helpers/pagination/PaginationHelper";
+import { YearPicker } from "../holidays-config/year-picker/YearPicker";
 import styles from "./AbsenceHistoryList.module.scss";
 import {AbsenceHistoryTab} from "./AbsenceHistoryTab";
 
@@ -81,20 +82,10 @@ export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
             <div className={styles.panelFooter}>
                 <h3>{header}</h3>
                 <div>
-                    <DropdownButton id="dropdown-basic-button"
-                                    title={selectedYear}
-                                    size="sm"
-                                    bsPrefix={styles.datesDropdown}
-                                    onSelect={year => handleYearChange(year)}>
-                        {availableYears.map((val, index) => (
-                            <Dropdown.Item className={styles.dropItem}
-                                           key={index}
-                                           eventKey={val}
-                            >
-                                {val}
-                            </Dropdown.Item>
-                        ))}
-                    </DropdownButton>
+                    <YearPicker availableYears={availableYears}
+                                selectedYear={selectedYear}
+                                handleYearChange={handleYearChange}
+                                />
                 </div>
                 {isAdminView && <Button
                     className={btnClass}
