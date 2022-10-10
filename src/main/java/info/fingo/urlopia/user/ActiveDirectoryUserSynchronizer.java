@@ -1,19 +1,25 @@
 package info.fingo.urlopia.user;
 
+import info.fingo.urlopia.api.v2.history.DetailsChangeEventInput;
 import info.fingo.urlopia.config.ad.ActiveDirectory;
 import info.fingo.urlopia.config.ad.ActiveDirectoryObjectClass;
 import info.fingo.urlopia.config.ad.ActiveDirectoryUtils;
 import info.fingo.urlopia.config.ad.Attribute;
+import info.fingo.urlopia.history.HistoryLogService;
+import info.fingo.urlopia.history.UserDetailsChangeEvent;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.naming.directory.SearchResult;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
 @Component
+@RequiredArgsConstructor
 public class ActiveDirectoryUserSynchronizer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActiveDirectoryUserSynchronizer.class);
@@ -22,25 +28,23 @@ public class ActiveDirectoryUserSynchronizer {
     private String usersGroup;
 
     private final UserRepository userRepository;
+    private final HistoryLogService historyLogService;
     private final ActiveDirectory activeDirectory;
-    private final ActiveDirectoryUserMapper userMapper;
+    private final ActiveDirectoryUserMapperWrapper userMapper;
 
-    public ActiveDirectoryUserSynchronizer(UserRepository userRepository,
-                                           ActiveDirectory activeDirectory,
-                                           ActiveDirectoryUserMapper userMapper) {
-        this.userRepository = userRepository;
-        this.activeDirectory = activeDirectory;
-        this.userMapper = userMapper;
-    }
 
     public void addNewUsers() {
         var dbUsers = userRepository.findAllPrincipalNames();
         pickUsersFromActiveDirectory().stream()
-                .filter(user ->
-                        !dbUsers.contains(ActiveDirectoryUtils.pickAttribute(user, Attribute.PRINCIPAL_NAME)))
-                .map(userMapper::mapToUser)
-                .forEach(userRepository::save);
+                .filter(user -> !dbUsers.contains(ActiveDirectoryUtils.pickAttribute(user, Attribute.PRINCIPAL_NAME)))
+                .map(userMapper::mapNewUser)
+                .forEach(this::save);
         LOGGER.info("Synchronisation succeed: find new users");
+    }
+
+    private void save(User user){
+        userRepository.save(user);
+        userMapper.addInitUserEvents(user);
     }
 
     public void deactivateDeletedUsers() {
@@ -50,10 +54,7 @@ public class ActiveDirectoryUserSynchronizer {
 
         userRepository.findAll().stream()
                 .filter(user -> !adUsers.contains(user.getPrincipalName()))
-                .forEach(user -> {
-                    user.deactivate();
-                    userRepository.save(user);
-                });
+                .forEach(this::deactivateUser);
         LOGGER.info("Synchronisation succeed: deactivate deleted users");
     }
 
@@ -64,11 +65,15 @@ public class ActiveDirectoryUserSynchronizer {
 
         userRepository.findAll().stream()
                 .filter(user -> disabledUsers.contains(user.getPrincipalName()))
-                .forEach(user -> {
-                    user.deactivate();
-                    userRepository.save(user);
-                });
+                .forEach(this::deactivateUser);
         LOGGER.info("Synchronisation succeed: deactivate disabled users");
+    }
+
+    private void deactivateUser(User user){
+        user.deactivate();
+        var input = new DetailsChangeEventInput(LocalDateTime.now(), user.getId(), UserDetailsChangeEvent.USER_DEACTIVATED);
+        historyLogService.addNewDetailsChangeEvent(input);
+        userRepository.save(user);
     }
 
     public void synchronizeFull() {
@@ -82,7 +87,7 @@ public class ActiveDirectoryUserSynchronizer {
             var principalName = ActiveDirectoryUtils.pickAttribute(adUser, Attribute.PRINCIPAL_NAME);
             userRepository
                     .findFirstByPrincipalName(principalName)
-                    .map(user -> userMapper.mapToUser(adUser, user))
+                    .map(user -> userMapper.updateUser(adUser, user))
                     .ifPresent(userRepository::save);
         });
     }

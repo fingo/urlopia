@@ -2,12 +2,15 @@ package info.fingo.urlopia.user;
 
 import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
+import info.fingo.urlopia.api.v2.history.DetailsChangeEventInput;
 import info.fingo.urlopia.config.ad.ActiveDirectory;
 import info.fingo.urlopia.config.ad.ActiveDirectoryObjectClass;
 import info.fingo.urlopia.config.ad.ActiveDirectoryUtils;
 import info.fingo.urlopia.config.ad.Attribute;
 import info.fingo.urlopia.config.authentication.oauth.JwtTokenAuthoritiesProvider;
 import info.fingo.urlopia.config.persistance.filter.Filter;
+import info.fingo.urlopia.history.HistoryLogService;
+import info.fingo.urlopia.history.UserDetailsChangeEvent;
 import info.fingo.urlopia.team.Team;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -31,6 +35,8 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ActiveDirectory activeDirectory;
+
+    private final HistoryLogService historyLogService;
 
     private static final String NO_USER_WITH_ID_MESSAGE = "There is no user with id: {}";
     private static final String ADMIN_AUTHORITY_STRING = JwtTokenAuthoritiesProvider.ROLE_PREFIX + User.Role.ADMIN;
@@ -125,29 +131,49 @@ public class UserService {
 
     public void setWorkTime(Long userId,
                             String workTimeString) {
-        var fullTimeInHours = 8f;
-        var workTime = fullTimeInHours * Arrays.stream(workTimeString.split("/"))
-                .map(Float::parseFloat)
-                .reduce((a, b) -> a / b)
-                .orElseThrow(() -> {
-                    log.error("Something went wrong while setting work time for user with id: {} from: {}",
-                            userId, workTimeString);
-                    return new RuntimeException();
-                });
 
-        userRepository
-                .findById(userId)
+        var workTime = workTimeFrom(workTimeString, userId);
+        userRepository.findById(userId)
                 .ifPresentOrElse(
-                        user -> {
-                            user.setWorkTime(workTime);
-                            userRepository.save(user);
-                        },
+                        user -> updateUserWithEvent(user, workTime),
                         () -> {
                             log.error(NO_USER_WITH_ID_MESSAGE, userId);
                             throw NoSuchUserException.invalidId();
                         });
         var loggerInfo = "Work time of user with id: %d has been set to: %f".formatted(userId, workTime);
         log.info(loggerInfo);
+    }
+
+    private Float workTimeFrom(String workTime,
+                               Long userId){
+        var fullTimeInHours = 8f;
+       return fullTimeInHours * Arrays.stream(workTime.split("/"))
+                .map(Float::parseFloat)
+                .reduce((a, b) -> a / b)
+                .orElseThrow(() -> {
+                    log.error("Something went wrong while setting work time for user with id: {} from: {}",
+                            userId, workTime);
+                    return new InvalidWorkTimeFormatException();
+                });
+    }
+
+    private void updateUserWithEvent(User user,
+                                        Float newWorkTime){
+        var input = prepareWorkTimeChangeEvent(user, newWorkTime);
+        historyLogService.addNewDetailsChangeEvent(input);
+        user.setWorkTime(newWorkTime);
+        userRepository.save(user);
+    }
+
+    private DetailsChangeEventInput prepareWorkTimeChangeEvent(User user,
+                                                               Float newWorkTime){
+        var oldWorkTime = user.getWorkTime();
+        return new DetailsChangeEventInput(LocalDateTime.now(), user.getId(),
+                UserDetailsChangeEvent.USER_CHANGE_WORK_TIME, formatWorkTime(oldWorkTime), formatWorkTime(newWorkTime));
+    }
+
+    private Float formatWorkTime(Float workTime){
+        return workTime / 8.0f;
     }
 
     public Set<User> getAdmins() {

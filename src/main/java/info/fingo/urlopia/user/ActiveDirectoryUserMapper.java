@@ -4,23 +4,19 @@ import info.fingo.urlopia.config.ad.ActiveDirectoryUtils;
 import info.fingo.urlopia.config.ad.Attribute;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import javax.naming.directory.SearchResult;
 
 @Component
-class ActiveDirectoryUserMapper {
-
+public class ActiveDirectoryUserMapper {
     @Value("${ad.groups.b2b}")
     private String b2bGroup;
 
     @Value("${ad.groups.ec}")
     private String ecGroup;
 
-    User mapToUser(SearchResult searchResult) {
-        return mapToUser(searchResult, new User());
-    }
-
-    User mapToUser(SearchResult searchResult,
-                   User user) {
+    public User mapToUser(SearchResult searchResult,
+                           User user) {
         user.setPrincipalName(
                 ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.PRINCIPAL_NAME));
         user.setAdName(
@@ -37,11 +33,9 @@ class ActiveDirectoryUserMapper {
                 isB2B(searchResult));
         user.setEc(
                 isEC(searchResult));
-        if (ActiveDirectoryUtils.isDisabled(searchResult)) {
-            user.deactivate();
-        } else {
-            user.activate();
-        }
+        user.setActive(
+                !ActiveDirectoryUtils.isDisabled(searchResult));
+
         return user;
     }
 
