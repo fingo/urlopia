@@ -30,7 +30,7 @@ public class ActiveDirectoryUserSynchronizer {
     private final UserRepository userRepository;
     private final HistoryLogService historyLogService;
     private final ActiveDirectory activeDirectory;
-    private final ActiveDirectoryUserMapper userMapper;
+    private final ActiveDirectoryUserMapperWrapper userMapper;
 
 
     public void addNewUsers() {

@@ -153,7 +153,7 @@ public class UserService {
                 .orElseThrow(() -> {
                     log.error("Something went wrong while setting work time for user with id: {} from: {}",
                             userId, workTime);
-                    return new RuntimeException();
+                    return new InvalidWorkTimeFormatException();
                 });
     }
 

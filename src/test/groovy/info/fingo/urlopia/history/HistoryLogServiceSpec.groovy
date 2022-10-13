@@ -18,12 +18,13 @@ class HistoryLogServiceSpec extends Specification {
     def userRepository = Mock(UserRepository)
     def workingDaysCalculator = Mock(WorkingDaysCalculator)
     def usedHoursFromMonthCalculator = Mock(UsedHoursFromMonthCalculator)
+    def historyLogFromEventHandler = Mock(HistoryLogFromEventHandler)
 
-    def historyLogService = new HistoryLogService(historyLogRepository, userRepository, workingDaysCalculator, usedHoursFromMonthCalculator)
-    def userID = 5
-
-
-
+    def historyLogService = new HistoryLogService(historyLogRepository,
+                                                  userRepository,
+                                                  workingDaysCalculator,
+                                                  usedHoursFromMonthCalculator,
+                                                  historyLogFromEventHandler)
 
     def "checkIfWorkedFullTimeForTheWholeYear() WHEN called with year and user who was not working all time in fullTime SHOULD return false"() {
         given: "logs which show two different workTime "
