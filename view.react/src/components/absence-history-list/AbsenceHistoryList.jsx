@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import {useCallback, useEffect, useState} from "react";
-import {Button, Dropdown, DropdownButton} from "react-bootstrap";
+import {Button} from "react-bootstrap";
 import {useLocation} from "react-router-dom";
 
 import {getCurrentUser} from "../../api/services/session.service";
