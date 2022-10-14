@@ -120,10 +120,6 @@ export const WorkersTable = ({isEC}) => {
             hidden: true,
         },
         {
-            name: 'hasMissingAbsence',
-            formatter: (cell, row) => withNotifyFormatter(cell, row),
-        },
-        {
             name: 'fullName',
             text: 'Imię i nazwisko',
             headerAlign: 'center',
@@ -131,6 +127,7 @@ export const WorkersTable = ({isEC}) => {
             style: {verticalAlign: 'middle', cursor: 'pointer'},
             filter: true,
             sort: true,
+            formatter: (cell, row) => withNotifyFormatter(cell, row),
         },
         {
             name: 'mailAddress',

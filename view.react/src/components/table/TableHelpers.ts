@@ -7,12 +7,13 @@ export const getStringValue = <T>(
 ) => {
   let stringValue: string | T | JSX.Element = value;
 
-  const filterValue = column.filterValue;
-  const formatter = column.formatter;
-  if (filterValue) {
-    stringValue = filterValue(value, row);
-  } else if (formatter) {
-    stringValue = formatter(value, row);
+  const filteredValue = column.filterValue?.(value, row);
+  const formattedValue = column.formatter?.(value, row);
+  
+  if (typeof filteredValue === 'string') {
+    stringValue = filteredValue;
+  } else if (typeof formattedValue === 'string') {
+    stringValue = formattedValue;
   }
 
   if (stringValue?.toString() === undefined) {

@@ -32,7 +32,7 @@ export interface ColumnType<Cell, Row = RowType<Cell>> {
   sort?: boolean;
   onSort?: OnSortType;
   style?: CSSProperties | ((cell: Cell, row: Row) => CSSProperties);
-  formatter?: (cell: Cell, row: Row) => JSX.Element;
+  formatter?: (cell: Cell, row: Row) => JSX.Element | string;
   filterValue?: (cell: Cell, row: Row) => string;
   hidden?: boolean;
   hideHeader?: boolean;
