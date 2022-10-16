@@ -136,40 +136,4 @@ class ActiveDirectoryUserMapperWrapperSpec extends Specification {
         then:
         1 * historyLogService.addNewDetailsChangeEvent(_ as DetailsChangeEventInput)
     }
-
-    def "addInitUserEvents WHEN user is ec and active SHOULD save 2 event about it"() {
-        given:
-        def mockedUser = Mock(User) {
-            getEc() >> true
-            getB2b() >> false
-            isActive() >> true
-        }
-        historyLogService.addNewDetailsChangeEvent(_ as DetailsChangeEventInput) >>
-                { DetailsChangeEventInput detailsChangeEventInput -> detailsChangeEventInput }
-
-
-        when:
-        ADUserMapper.addInitUserEvents(mockedUser)
-
-        then:
-        2 * historyLogService.addNewDetailsChangeEvent(_ as DetailsChangeEventInput)
-    }
-
-    def "addInitUserEvents WHEN user is b2b and active SHOULD save 2 event about it"() {
-        given:
-        def mockedUser = Mock(User){
-            getEc() >> false
-            getB2b() >> true
-            isActive() >> true
-        }
-        historyLogService.addNewDetailsChangeEvent(_ as DetailsChangeEventInput) >>
-                { DetailsChangeEventInput detailsChangeEventInput -> detailsChangeEventInput}
-
-
-        when:
-        ADUserMapper.addInitUserEvents(mockedUser)
-
-        then:
-        2 * historyLogService.addNewDetailsChangeEvent(_ as DetailsChangeEventInput)
-    }
 }

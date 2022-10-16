@@ -2,6 +2,8 @@ package info.fingo.urlopia.api.v2.reports.attendance.resolver.handlers.user.para
 
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmation
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
+import info.fingo.urlopia.history.HistoryLogService
+import info.fingo.urlopia.history.UserDetailsChangeEvent
 import info.fingo.urlopia.holidays.HolidayService
 import info.fingo.urlopia.reports.ReportStatusFromRequestType
 import info.fingo.urlopia.request.Request
@@ -13,12 +15,15 @@ import spock.lang.Specification
 
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.YearMonth
 
 class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
     def holidayService = Mock(HolidayService)
     def requestService = Mock(RequestService)
     def presenceConfirmationService = Mock(PresenceConfirmationService)
-    def handler = new MonthlyAttendanceListReportDayHandler(holidayService, requestService, presenceConfirmationService)
+    def historyLogService = Mock(HistoryLogService)
+    def handler = new MonthlyAttendanceListReportDayHandler(holidayService, requestService,
+                                                            presenceConfirmationService, historyLogService)
 
     def userId = 1
     def sampleUser = Mock(User) {
@@ -64,6 +69,7 @@ class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
         given:
         holidayService.isWorkingDay(_ as LocalDate) >> true
         presenceConfirmationService.getByUserAndDate(userId, sampleDate) >> []
+        historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
 
         and:
         def normalRequest = Mock(Request) {
@@ -84,6 +90,7 @@ class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
         given:
         holidayService.isWorkingDay(_ as LocalDate) >> true
         presenceConfirmationService.getByUserAndDate(userId, sampleDate) >> []
+        historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
 
         and:
         def occasionalRequest = Mock(Request) {
@@ -104,6 +111,7 @@ class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
         given:
         holidayService.isWorkingDay(_ as LocalDate) >> true
         presenceConfirmationService.getByUserAndDate(userId, sampleDate) >> []
+        historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
 
         and:
         def occasionalRequest = Mock(Request) {
@@ -124,6 +132,7 @@ class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
         given:
         holidayService.isWorkingDay(_ as LocalDate) >> true
         requestService.getByUserAndDate(userId, sampleDate) >> []
+        historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
 
         and:
         def presenceConfirmation = Mock(PresenceConfirmation) {
@@ -145,6 +154,7 @@ class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
         holidayService.isWorkingDay(_ as LocalDate) >> true
         presenceConfirmationService.getByUserAndDate(userId, sampleDate) >> []
         requestService.getByUserAndDate(userId, sampleDate) >> []
+        historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
 
         when:
         def result = handler.handle(sampleYear, sampleMonth, sampleDay, sampleUser)
