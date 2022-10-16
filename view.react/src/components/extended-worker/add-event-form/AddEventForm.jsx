@@ -48,7 +48,7 @@ export const AddEventForm = ({show, onHide, userId, fullName}) => {
         const startDate = formatDate(selectedRange[0].startDate);
 
         sendPostRequest(POST_EVENT_URL, {
-            created: `${startDate} 00:00:00`,
+            created: `${startDate} 00:02:00`,
             userId,
             event: selectedReason
         }).then(() => {

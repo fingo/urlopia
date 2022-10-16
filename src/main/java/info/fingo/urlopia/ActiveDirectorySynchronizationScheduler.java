@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,7 +23,7 @@ public class ActiveDirectorySynchronizationScheduler {
         this.teamSynchronizer = teamSynchronizer;
     }
 
-    @Scheduled(cron = "0 0-59/15 * * * *")
+//    @Scheduled(cron = "0 0-59/15 * * * *")
     public void fullSynchronization() {
         LOGGER.info("*** FULL SYNCHRONIZATION START ***");
         userSynchronizer.addNewUsers();

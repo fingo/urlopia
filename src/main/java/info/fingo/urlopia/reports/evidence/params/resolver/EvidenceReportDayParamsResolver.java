@@ -1,6 +1,9 @@
 package info.fingo.urlopia.reports.evidence.params.resolver;
 
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
+import info.fingo.urlopia.history.HistoryLogExcerptProjection;
+import info.fingo.urlopia.history.HistoryLogService;
+import info.fingo.urlopia.history.UserDetailsChangeEvent;
 import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.reports.ParamResolver;
 import info.fingo.urlopia.reports.ReportStatusFromRequestType;
@@ -15,11 +18,18 @@ import info.fingo.urlopia.user.User;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class EvidenceReportDayParamsResolver implements ParamResolver {
+
+    private static final String EMPTY_VALUE = "";
+    private static final String DEFAULT_VALUE = "-";
+
+
     private static final List<ReportStatusFromRequestType> SHOULD_OVERWRITE_HOLIDAY_STATUTES =
             List.of(ReportStatusFromRequestType.PARENTAL_LEAVE,
                     ReportStatusFromRequestType.MATERNITY_LEAVE,
@@ -34,6 +44,8 @@ public class EvidenceReportDayParamsResolver implements ParamResolver {
     private final HolidayService holidayService;
     private final RequestService requestService;
 
+    private final HistoryLogService historyLogService;
+
     private final EvidenceReportStatusFromHolidayHandler fromHolidayHandler;
     private final EvidenceReportWeekendHandler fromWeekendHandler;
     private final EvidenceReportStatusFromRequestHandler fromRequestHandler;
@@ -43,11 +55,13 @@ public class EvidenceReportDayParamsResolver implements ParamResolver {
                                            int year,
                                            HolidayService holidayService,
                                            RequestService requestService,
-                                           PresenceConfirmationService presenceConfirmationService) {
+                                           PresenceConfirmationService presenceConfirmationService,
+                                           HistoryLogService historyLogService) {
         this.user = user;
         this.year = year;
         this.holidayService = holidayService;
         this.requestService = requestService;
+        this.historyLogService = historyLogService;
         this.fromDayWithPresenceHandler = new EvidenceReportDayWithPresenceHandler(presenceConfirmationService);
         this.fromRequestHandler = new EvidenceReportStatusFromRequestHandler();
         this.fromWeekendHandler = new EvidenceReportWeekendHandler(requestService, fromRequestHandler);
@@ -69,12 +83,13 @@ public class EvidenceReportDayParamsResolver implements ParamResolver {
     }
 
     private String resolveSpecificDay(int month, int dayOfMonth) {
-        var currentDate = LocalDate.now();
-        if (year > currentDate.getYear()
-                || (year == currentDate.getYear() && month >= currentDate.getMonthValue())) {
-            return "";
+        if (shouldReturnEmptyValue(year, month)) {
+            return EMPTY_VALUE;
         }
         try {
+            if (shouldReturnDefaultValue(year, month, dayOfMonth)){
+                return DEFAULT_VALUE;
+            }
             var date = LocalDate.of(year, month, dayOfMonth);
             if (holidayService.isHoliday(date)) {
                 return resolveHoliday(user, date);
@@ -88,7 +103,52 @@ public class EvidenceReportDayParamsResolver implements ParamResolver {
         } catch (DateTimeException ignore) {
             // if day does not exist then default value
         }
-        return "-";
+        return DEFAULT_VALUE;
+    }
+
+    private boolean shouldReturnEmptyValue(int year,
+                                           int month){
+        var currentDate = LocalDate.now();
+        var yearIsInvalid = year > currentDate.getYear();
+        var yearMonthIsInvalid = year == currentDate.getYear() && month >= currentDate.getMonthValue();
+        return yearIsInvalid || yearMonthIsInvalid;
+    }
+
+    private boolean shouldReturnDefaultValue(int year,
+                                           int month,
+                                           int day){
+        var handleDate = LocalDate.of(year,month,day);
+        var dateIsBeforeFirstValid = handleDate.isBefore(getFirstValidDay());
+        var dateIsAfterLastValid = handleDate.isAfter(getLastValidDay());
+        return dateIsAfterLastValid || dateIsBeforeFirstValid;
+    }
+
+    private LocalDate getFirstValidDay(){
+        var logs = historyLogService.get(user.getId(), year, UserDetailsChangeEvent.USER_CHANGE_TO_EC);
+        var firstDayOfYear = LocalDate.of(year, 1, 1);
+        return logs.stream()
+                .map(HistoryLogExcerptProjection::getCreated)
+                .sorted()
+                .findFirst()
+                .map(LocalDate::from)
+                .orElse(firstDayOfYear);
+    }
+
+    private LocalDate getLastValidDay(){
+        var lastDayOfYear = LocalDate.of(year, 12, 31);
+        var firstDayAsB2B = getFirstDayAsB2B(user);
+        return firstDayAsB2B
+                .map(localDateTime -> localDateTime.minusDays(1))
+                .map(LocalDate::from)
+                .orElse(lastDayOfYear);
+    }
+
+    private Optional<LocalDateTime> getFirstDayAsB2B(User user){
+        var logs = historyLogService.get(user.getId(), year, UserDetailsChangeEvent.USER_CHANGE_TO_B2B);
+        return logs.stream()
+                .map(HistoryLogExcerptProjection::getCreated)
+                .sorted()
+                .findFirst();
     }
 
     private String resolveByRequestService(User user,

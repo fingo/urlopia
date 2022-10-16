@@ -7,7 +7,6 @@ import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.user.NoSuchUserException;
-import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -67,6 +67,21 @@ public class HistoryLogService {
                                                  Filter filter) {
         return get(userId, year, filter, Pageable.unpaged()).getContent();
     }
+
+    public List<HistoryLogExcerptProjection> get(Long userId,
+                                                 YearMonth yearMonth,
+                                                 UserDetailsChangeEvent userDetailsChangeEvent){
+        var filter = HistoryLogFilterCreator.filterBy(userDetailsChangeEvent, yearMonth, userId);
+        return historyLogRepository.findAll(filter, HistoryLogExcerptProjection.class);
+    }
+
+    public List<HistoryLogExcerptProjection> get(Long userId,
+                                                 int year,
+                                                 UserDetailsChangeEvent userDetailsChangeEvent){
+        var filter = HistoryLogFilterCreator.filterBy(userDetailsChangeEvent, year, userId);
+        return historyLogRepository.findAll(filter, HistoryLogExcerptProjection.class);
+    }
+
 
     public Page<HistoryLogExcerptProjection> get(Long userId,
                                                  Integer year,
@@ -252,7 +267,8 @@ public class HistoryLogService {
     }
 
     public HistoryLog addNewDetailsChangeEvent(DetailsChangeEventInput detailsChangeEventInput) {
-        var user = userRepository.findById(detailsChangeEventInput.userId()).get(); //check it
+        var optionalUser = userRepository.findById(detailsChangeEventInput.userId());
+        var user = optionalUser.orElseThrow(NoSuchUserException::invalidId);
         var oldWorkTime = detailsChangeEventInput.oldWorkTime();
         var newWorkTime = detailsChangeEventInput.newWorkTime();
         var createTime = detailsChangeEventInput.created();

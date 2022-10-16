@@ -8,6 +8,8 @@ import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReportF
 import info.fingo.urlopia.api.v2.reports.holidays.UserHolidaysReportFactory;
 import info.fingo.urlopia.api.v2.user.UserFilterFactory;
 import info.fingo.urlopia.config.persistance.filter.Filter;
+import info.fingo.urlopia.history.HistoryLogService;
+import info.fingo.urlopia.history.UserDetailsChangeEvent;
 import info.fingo.urlopia.reports.ReportTemplateLoader;
 import info.fingo.urlopia.reports.XlsxTemplateResolver;
 import info.fingo.urlopia.reports.evidence.EvidenceReport;
@@ -32,6 +34,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -49,6 +52,8 @@ public class ReportService {
     private final MonthlyAttendanceListReportFactory monthlyPresenceReportFactory;
     private final UserHolidaysReportFactory userHolidaysReportFactory;
     private final UserFilterFactory userFilterFactory;
+
+    private final HistoryLogService historyLogService;
 
     public Workbook generateWorkTimeEvidenceReport(Long userId,
                                                    int year) throws IOException {
@@ -132,12 +137,9 @@ public class ReportService {
                                                                                 lastDayOfMonth,
                                                                                 user.getId()))
                 .collect(Collectors.toSet());
-        var usersWithPresenceConfirmations= employees.stream()
-                .filter(user -> presenceConfirmationService.hasPresenceByUserAndDateInterval(firstDayOfMonth,
-                                                                                            lastDayOfMonth,
-                                                                                            user.getId()))
-                .collect(Collectors.toSet());
-        usersWithAcceptedRequests.addAll(usersWithPresenceConfirmations);
+        var usersWithPresence = getEmployeesWithPresence(employees, firstDayOfMonth, lastDayOfMonth);
+
+        usersWithAcceptedRequests.addAll(usersWithPresence);
         return  usersWithAcceptedRequests.stream()
                                          .toList();
     }
@@ -150,11 +152,38 @@ public class ReportService {
         var yearMonth = YearMonth.of(year,month);
         var firstDayOfMonth = yearMonth.atDay(1);
         var lastDayOfMonth = yearMonth.atEndOfMonth();
+
+        var usersWithPresence = getEmployeesWithPresence(employees, firstDayOfMonth, lastDayOfMonth);
+        var usersWithChangeEvent = getB2BWithChangeEvent(yearMonth, employees);
+
+        usersWithPresence.addAll(usersWithChangeEvent);
+        return usersWithPresence.stream().toList();
+    }
+
+    private Set<User> getB2BWithChangeEvent(YearMonth yearMonth,
+                                            List<User> employees){
         return employees.stream()
-                .filter(user -> presenceConfirmationService.hasPresenceByUserAndDateInterval(firstDayOfMonth,
-                                                                                             lastDayOfMonth,
-                                                                                             user.getId()))
-                .collect(Collectors.toList());
+                .filter(user -> hasChangeToB2B(user, yearMonth))
+                .collect(Collectors.toSet());
+    }
+
+    private boolean hasChangeToB2B(User user,
+                                   YearMonth yearMonth){
+        return !historyLogService.get(user.getId(), yearMonth, UserDetailsChangeEvent.USER_CHANGE_TO_B2B).isEmpty();
+    }
+
+    private Set<User> getEmployeesWithPresence(List<User> employees,
+                                               LocalDate firstDayOfMonth,
+                                               LocalDate lastDayOfMonth){
+        return employees.stream()
+                .filter(user -> hasPresence(firstDayOfMonth, lastDayOfMonth, user))
+                .collect(Collectors.toSet());
+    }
+
+    private boolean hasPresence(LocalDate firstDayOfMonth,
+                                LocalDate lastDayOfMonth,
+                                User user){
+        return presenceConfirmationService.hasPresenceByUserAndDateInterval(firstDayOfMonth, lastDayOfMonth, user.getId());
     }
 
 
