@@ -14,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import java.text.DecimalFormat;
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class MonthlyAttendanceListReportDayHandler {
@@ -91,20 +93,39 @@ public class MonthlyAttendanceListReportDayHandler {
 
     private boolean shouldReturnDefaultValue(LocalDate handleDate,
                                              User user) {
-        var lastValidDate = dateOfFirstInvalidResult(handleDate, user).minusDays(1);
-
-        return handleDate.isAfter(lastValidDate);
+        var dateIsBeforeFirstValid = handleDate.isBefore(getFirstValidDay(handleDate, user));
+        var dateIsAfterLastValid = handleDate.isAfter(getLastValidDay(handleDate, user));
+        return dateIsAfterLastValid || dateIsBeforeFirstValid;
     }
 
-    private LocalDate dateOfFirstInvalidResult(LocalDate handleDate,
-                                               User user) {
+    private LocalDate getFirstValidDay(LocalDate handleDate,
+                                       User user){
+        var logs = historyLogService.get(user.getId(), YearMonth.from(handleDate), UserDetailsChangeEvent.USER_CHANGE_TO_EC);
+        var firstDayOfMonth = LocalDate.of(handleDate.getYear(), handleDate.getMonth(), 1);
+        return logs.stream()
+                .map(HistoryLogExcerptProjection::getCreated)
+                .sorted()
+                .findFirst()
+                .map(LocalDate::from)
+                .orElse(firstDayOfMonth);
+    }
+
+    private LocalDate getLastValidDay(LocalDate handleDate,
+                                      User user) {
+        var lastDayOfYear = LocalDate.of(handleDate.getYear(), handleDate.getMonthValue(), handleDate.lengthOfMonth());
+        var firstDayAsB2B = getFirstDayAsB2B(handleDate, user);
+        return firstDayAsB2B
+                .map(localDateTime -> localDateTime.minusDays(1))
+                .map(LocalDate::from)
+                .orElse(lastDayOfYear);
+    }
+
+    private Optional<LocalDateTime> getFirstDayAsB2B(LocalDate handleDate,
+                                                     User user){
         var logs =  historyLogService.get(user.getId(), YearMonth.from(handleDate), UserDetailsChangeEvent.USER_CHANGE_TO_B2B);
         return logs.stream()
                 .map(HistoryLogExcerptProjection::getCreated)
-                .map(LocalDate::from)
                 .sorted()
-                .findFirst()
-                .orElse(handleDate.plusMonths(1));
-
+                .findFirst();
     }
 }

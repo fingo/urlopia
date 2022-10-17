@@ -1,6 +1,7 @@
 package info.fingo.urlopia.reports.evidence.params.resolver
 
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
+import info.fingo.urlopia.history.HistoryLogExcerptProjection
 import info.fingo.urlopia.history.HistoryLogService
 import info.fingo.urlopia.history.UserDetailsChangeEvent
 import info.fingo.urlopia.holidays.Holiday
@@ -41,6 +42,9 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
     def user = Mock(User) {
         getId() >> userId
     }
+
+    def EMPTY_KEY = ""
+    def DEFAULT_KEY = "-"
 
     def "resolve() WHEN called with year in future, SHOULD return model that contains prefix and empty string as value"() {
         given: "year from future"
@@ -218,6 +222,65 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
 
         then:
         result.containsKey(key)
+    }
+
+    def "resolve() WHEN called with date that user was after switch from ec to b2b SHOULD return default value "() {
+        given:
+
+        def evidenceReportDayParamsResolver = new EvidenceReportDayParamsResolver(user,givenDate.getYear(),
+                holidayService,
+                requestService,
+                presenceConfirmationService,
+                historyLogService)
+        def key = String.format(EvidenceReportModel.DATE_FORMATTING, givenDate.getMonthValue(), givenDate.getDayOfMonth())
+
+        and: "mock change from ec to b2b"
+        def mockedLog = Mock(HistoryLogExcerptProjection){
+            getCreated() >> givenDate
+        }
+
+        historyLogService.get(_ as Long, _ as Integer, UserDetailsChangeEvent.USER_CHANGE_TO_B2B) >> [mockedLog]
+
+        when:
+        def result = evidenceReportDayParamsResolver.resolve()
+
+        then:
+        result.containsKey(key)
+        result.get(key) == DEFAULT_KEY
+
+        where:
+        changeDate             | givenDate
+        LocalDate.of(2021,1,2) | LocalDate.of(2021,1,2)
+        LocalDate.of(2021,1,1) | LocalDate.of(2021,1,2)
+    }
+
+    def "resolve() WHEN called with date that user was before switch from b2b to ec SHOULD return default value "() {
+        given:
+
+        def evidenceReportDayParamsResolver = new EvidenceReportDayParamsResolver(user,givenDate.getYear(),
+                holidayService,
+                requestService,
+                presenceConfirmationService,
+                historyLogService)
+        def key = String.format(EvidenceReportModel.DATE_FORMATTING, givenDate.getMonthValue(), givenDate.getDayOfMonth())
+
+        and: "mock change from ec to b2b"
+        def mockedLog = Mock(HistoryLogExcerptProjection){
+            getCreated() >> givenDate
+        }
+
+        historyLogService.get(_ as Long, _ as Integer, UserDetailsChangeEvent.USER_CHANGE_TO_EC) >> [mockedLog]
+
+        when:
+        def result = evidenceReportDayParamsResolver.resolve()
+
+        then:
+        result.containsKey(key)
+        result.get(key) == DEFAULT_KEY
+
+        where:
+        changeDate             | givenDate
+        LocalDate.of(2021,1,2) | LocalDate.of(2021,1,1)
     }
 
 }
