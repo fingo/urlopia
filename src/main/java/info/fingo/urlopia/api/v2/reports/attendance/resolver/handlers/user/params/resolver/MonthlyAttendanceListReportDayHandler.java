@@ -47,7 +47,7 @@ public class MonthlyAttendanceListReportDayHandler {
                                     .map(this::handleRequest)
                                     .findFirst()
                                     .orElse(handlePresence(handleDate, user));
-                if (shouldReturnEmptyValue(resolvedValue, handleDate, user)) {
+                if (shouldReturnEmptyValue(resolvedValue, handleDate)) {
                     return EMPTY_VALUE;
                 }
                 return resolvedValue;
@@ -82,15 +82,11 @@ public class MonthlyAttendanceListReportDayHandler {
     }
 
     private boolean shouldReturnEmptyValue(String resolvedValue,
-                                           LocalDate handleDate,
-                                           User user) {
+                                           LocalDate handleDate) {
         var currentDate = LocalDate.now();
-        var lastValidDate = dateOfFirstInvalidResult(handleDate, user).minusDays(1);
         var isDayInPast = handleDate.isBefore(currentDate);
 
-        var dateIsInvalid = handleDate.isAfter(lastValidDate);
-        var valueIsInvalid = isDefault(resolvedValue) && !isDayInPast;
-        return dateIsInvalid || valueIsInvalid;
+        return isDefault(resolvedValue) && !isDayInPast;
     }
 
     private boolean shouldReturnDefaultValue(LocalDate handleDate,

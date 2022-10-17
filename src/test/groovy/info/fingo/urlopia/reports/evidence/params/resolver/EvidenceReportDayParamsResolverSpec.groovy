@@ -28,7 +28,9 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
     def presenceConfirmationService = Mock(PresenceConfirmationService){
         getByUserAndDate(_ as Long, _ as LocalDate) >> []
     }
-    def historyLogService = Mock(HistoryLogService)
+    def historyLogService = Mock(HistoryLogService){
+        get(_ as Long, _ as Integer, _ as UserDetailsChangeEvent) >> []
+    }
 
 
     def day = 4
@@ -52,7 +54,6 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
                                                                                 presenceConfirmationService,
                                                                                 historyLogService)
         def key = String.format(EvidenceReportModel.DATE_FORMATTING, month, day)
-        historyLogService.get(_ as Long, year, _ as UserDetailsChangeEvent) >> []
 
 
         when:
@@ -76,7 +77,6 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
                                                                                 historyLogService)
 
         def key = String.format(EvidenceReportModel.DATE_FORMATTING, month, day)
-        historyLogService.get(_ as Long, year, _ as UserDetailsChangeEvent) >> []
 
         when:
         def result = evidenceReportDayParamsResolver.resolve()
@@ -94,7 +94,6 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
         and: "holidayService mock that say example date is holiday"
         holidayService.isHoliday(_ as LocalDate) >> true
         holidayService.getHolidayByDate(_ as LocalDate) >> holiday
-        historyLogService.get(_ as Long, year, _ as UserDetailsChangeEvent) >> []
 
         def key = String.format(EvidenceReportModel.DATE_FORMATTING, month, day)
         def evidenceReportDayParamsResolver = new EvidenceReportDayParamsResolver(user,year,
@@ -118,7 +117,6 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
         and: "holidayService mock that say example date is holiday"
         holidayService.isHoliday(_ as LocalDate) >> true
         holidayService.getHolidayByDate(_ as LocalDate) >> holiday
-        historyLogService.get(_ as Long, year, _ as UserDetailsChangeEvent) >> []
 
         and: "requestService mock with special request"
         def request = Mock(Request){
@@ -167,7 +165,6 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
                                                                                 presenceConfirmationService,
                                                                                 historyLogService)
         def key = String.format(EvidenceReportModel.DATE_FORMATTING, month, day)
-        historyLogService.get(_ as Long, year, _ as UserDetailsChangeEvent) >> []
 
         when:
         def result = evidenceReportDayParamsResolver.resolve()
@@ -182,7 +179,6 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
 
         and: "holidayService mock that say example date is working day"
         holidayService.isWorkingDay(_ as LocalDate) >> true
-        historyLogService.get(_ as Long, year, _ as UserDetailsChangeEvent) >> []
 
         def evidenceReportDayParamsResolver = new EvidenceReportDayParamsResolver(user,year,
                 holidayService,

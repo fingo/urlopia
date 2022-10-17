@@ -21,7 +21,9 @@ class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
     def holidayService = Mock(HolidayService)
     def requestService = Mock(RequestService)
     def presenceConfirmationService = Mock(PresenceConfirmationService)
-    def historyLogService = Mock(HistoryLogService)
+    def historyLogService = Mock(HistoryLogService){
+       get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
+    }
     def handler = new MonthlyAttendanceListReportDayHandler(holidayService, requestService,
                                                             presenceConfirmationService, historyLogService)
 
@@ -69,7 +71,6 @@ class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
         given:
         holidayService.isWorkingDay(_ as LocalDate) >> true
         presenceConfirmationService.getByUserAndDate(userId, sampleDate) >> []
-        historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
 
         and:
         def normalRequest = Mock(Request) {
@@ -90,7 +91,6 @@ class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
         given:
         holidayService.isWorkingDay(_ as LocalDate) >> true
         presenceConfirmationService.getByUserAndDate(userId, sampleDate) >> []
-        historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
 
         and:
         def occasionalRequest = Mock(Request) {
@@ -111,7 +111,6 @@ class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
         given:
         holidayService.isWorkingDay(_ as LocalDate) >> true
         presenceConfirmationService.getByUserAndDate(userId, sampleDate) >> []
-        historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
 
         and:
         def occasionalRequest = Mock(Request) {
@@ -132,7 +131,6 @@ class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
         given:
         holidayService.isWorkingDay(_ as LocalDate) >> true
         requestService.getByUserAndDate(userId, sampleDate) >> []
-        historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
 
         and:
         def presenceConfirmation = Mock(PresenceConfirmation) {
