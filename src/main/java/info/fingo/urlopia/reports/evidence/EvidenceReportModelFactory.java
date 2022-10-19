@@ -63,7 +63,7 @@ public class EvidenceReportModelFactory {
         resolvers.put(VACATION_LEAVE_PREFIX, new EvidenceReportVacationLeaveParamsResolver(user, year,
                                                                                             historyLogService));
         resolvers.put(DAY_STATUS_PREFIX, new EvidenceReportDayParamsResolver(user, year, holidayService,
-                requestService, presenceConfirmationService));
+                requestService, presenceConfirmationService, historyLogService));
         return resolvers;
 
     }

@@ -4,6 +4,7 @@ package info.fingo.urlopia.api.v2.reports.attendance;
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
 import info.fingo.urlopia.api.v2.reports.attendance.resolver.MonthlyAttendanceListReportDateParamsResolver;
 import info.fingo.urlopia.api.v2.reports.attendance.resolver.MonthlyAttendanceListReportUserParamsResolver;
+import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.reports.ParamResolver;
 import info.fingo.urlopia.request.RequestService;
@@ -27,6 +28,8 @@ public class MonthlyAttendanceListReportFactory {
     private final HolidayService holidayService;
     private final RequestService requestService;
     private final PresenceConfirmationService presenceConfirmationService;
+
+    private final HistoryLogService historyLogService;
 
     public MonthlyAttendanceListReportModel create(int month,
                                                    int year,
@@ -65,7 +68,8 @@ public class MonthlyAttendanceListReportFactory {
         var index = mapPrefixToIndex(prefix);
         User user = index < page.getUsersOnPage().size() ? page.getUsersOnPage().get(index) : null;
         var resolver = new MonthlyAttendanceListReportUserParamsResolver(user, year, month, holidayService,
-                                                                         requestService, presenceConfirmationService);
+                                                                         requestService, presenceConfirmationService,
+                                                                         historyLogService);
         resolvers.put(prefix, resolver);
     }
 

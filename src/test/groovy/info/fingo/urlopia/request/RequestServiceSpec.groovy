@@ -268,4 +268,31 @@ class RequestServiceSpec extends Specification {
         then:
         output == expectedResult
     }
+
+    def "hasAcceptedByDateIntervalAndUser WHEN user has no request in given interval SHOULD return false"(){
+        given:
+        def exampleDate =LocalDate.now()
+        def exampleId = 1L
+        requestRepository.findByRequesterAndDateIntervalAndStatus(exampleId, exampleDate, exampleDate, _ as String) >> []
+
+        when:
+        def result = requestService.hasAcceptedByDateIntervalAndUser(exampleDate, exampleDate, exampleId)
+
+        then:
+        !result
+    }
+
+    def "hasAcceptedByDateIntervalAndUser WHEN user has request in given interval SHOULD return true"(){
+        given:
+        def exampleDate =LocalDate.now()
+        def exampleId = 1L
+        def request = Mock(Request)
+        requestRepository.findByRequesterAndDateIntervalAndStatus(exampleId, exampleDate, exampleDate, _ as String) >> [request]
+
+        when:
+        def result = requestService.hasAcceptedByDateIntervalAndUser(exampleDate, exampleDate, exampleId)
+
+        then:
+        result
+    }
 }

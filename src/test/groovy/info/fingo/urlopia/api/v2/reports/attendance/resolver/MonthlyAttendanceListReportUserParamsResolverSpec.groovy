@@ -1,6 +1,7 @@
 package info.fingo.urlopia.api.v2.reports.attendance.resolver
 
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
+import info.fingo.urlopia.history.HistoryLogService
 import info.fingo.urlopia.holidays.HolidayService
 import info.fingo.urlopia.request.RequestService
 import info.fingo.urlopia.user.User
@@ -14,6 +15,7 @@ class MonthlyAttendanceListReportUserParamsResolverSpec extends Specification {
     }
     def requestService = Mock(RequestService)
     def presenceConfirmationService = Mock(PresenceConfirmationService)
+    def historyLogService = Mock(HistoryLogService)
 
     def userFullName = "John Doe"
     def sampleUser = Mock(User) {
@@ -24,13 +26,13 @@ class MonthlyAttendanceListReportUserParamsResolverSpec extends Specification {
 
     def resolver = new MonthlyAttendanceListReportUserParamsResolver(sampleUser, sampleYear, sampleMonth,
                                                                      holidayService, requestService,
-                                                                     presenceConfirmationService)
+                                                                     presenceConfirmationService, historyLogService)
 
     def "resolve() WHEN user is null SHOULD put empty string as full name value"() {
         given:
         def resolver = new MonthlyAttendanceListReportUserParamsResolver(null, sampleYear, sampleMonth,
                                                                          holidayService, requestService,
-                                                                         presenceConfirmationService)
+                                                                         presenceConfirmationService, historyLogService)
 
         when:
         def result = resolver.resolve()

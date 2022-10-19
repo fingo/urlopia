@@ -38,13 +38,8 @@ public class ActiveDirectoryUserSynchronizer {
         pickUsersFromActiveDirectory().stream()
                 .filter(user -> !dbUsers.contains(ActiveDirectoryUtils.pickAttribute(user, Attribute.PRINCIPAL_NAME)))
                 .map(userMapper::mapNewUser)
-                .forEach(this::save);
+                .forEach(userRepository::save);
         LOGGER.info("Synchronisation succeed: find new users");
-    }
-
-    private void save(User user){
-        userRepository.save(user);
-        userMapper.addInitUserEvents(user);
     }
 
     public void deactivateDeletedUsers() {

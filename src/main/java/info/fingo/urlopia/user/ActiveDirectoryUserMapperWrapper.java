@@ -73,18 +73,6 @@ class ActiveDirectoryUserMapperWrapper {
         }
     }
 
-    public void addInitUserEvents(User user){
-        if (user.isActive()){
-           saveEvent(UserDetailsChangeEvent.USER_ACTIVATED, user);
-        }
-        if (user.getEc()){
-            saveEvent(UserDetailsChangeEvent.USER_CHANGE_TO_EC, user);
-        }
-        if (user.getB2b()){
-            saveEvent(UserDetailsChangeEvent.USER_CHANGE_TO_B2B, user);
-        }
-    }
-
     private void saveEvent(UserDetailsChangeEvent event,
                            User user){
         var input = new DetailsChangeEventInput(LocalDateTime.now(), user.getId(), event);

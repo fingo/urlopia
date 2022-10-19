@@ -5,6 +5,9 @@ import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReportF
 import info.fingo.urlopia.api.v2.reports.holidays.UserHolidaysReportFactory
 import info.fingo.urlopia.api.v2.user.UserFilterFactory
 import info.fingo.urlopia.config.persistance.filter.Filter
+import info.fingo.urlopia.history.HistoryLogExcerptProjection
+import info.fingo.urlopia.history.HistoryLogService
+import info.fingo.urlopia.history.UserDetailsChangeEvent
 import info.fingo.urlopia.reports.ReportTemplateLoader
 import info.fingo.urlopia.reports.XlsxTemplateResolver
 import info.fingo.urlopia.reports.evidence.EvidenceReportModel
@@ -15,6 +18,7 @@ import info.fingo.urlopia.user.UserService
 import spock.lang.Specification
 
 import java.time.LocalDate
+import java.time.YearMonth
 
 class ReportServiceSpec extends Specification{
 
@@ -28,6 +32,7 @@ class ReportServiceSpec extends Specification{
     private RequestService requestService
     private PresenceConfirmationService presenceConfirmationService
     private UserFilterFactory userFilterFactory
+    private HistoryLogService historyLogService
 
     def createSampleUser(userId, isActive, isB2B, isEC) {
         return Mock(User) {
@@ -63,6 +68,8 @@ class ReportServiceSpec extends Specification{
         userHolidaysReportFactory = Mock(UserHolidaysReportFactory)
         requestService = Mock(RequestService)
         presenceConfirmationService = Mock(PresenceConfirmationService)
+        historyLogService = Mock(HistoryLogService)
+
         reportService = new ReportService(userService,
                                           requestService,
                                           presenceConfirmationService,
@@ -71,13 +78,15 @@ class ReportServiceSpec extends Specification{
                                           evidenceReportModelFactory,
                                           monthlyPresenceReportFactory,
                                           userHolidaysReportFactory,
-                                          userFilterFactory)
+                                          userFilterFactory,
+                                          historyLogService)
     }
 
     def "findEmployeesNeededToBeInAttendanceList() WHEN called SHOULD return every active ec worker"(){
         given:
         def requiredUsers = [activeECUser]
         def undesirableUsers = [inactiveECUser, activeB2BUser]
+        historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
 
         when:
         def result = reportService.findEmployeesNeededToBeInAttendanceList(1, 1)
@@ -93,6 +102,8 @@ class ReportServiceSpec extends Specification{
         def requiredUsers = [activeECUser, inactiveECUser]
         def undesirableUsers = [activeB2BUser]
         presenceConfirmationService.hasPresenceByUserAndDateInterval(_ as LocalDate, _ as LocalDate, inactiveECUser.getId()) >> true
+        historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
+
 
         when:
         def result = reportService.findEmployeesNeededToBeInAttendanceList(1, 1)
@@ -107,6 +118,8 @@ class ReportServiceSpec extends Specification{
         def requiredUsers = [activeECUser, inactiveECUser]
         def undesirableUsers = [activeB2BUser]
         requestService.hasAcceptedByDateIntervalAndUser(_ as LocalDate, _ as LocalDate, _ as Long) >> true
+        historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
+
 
         when:
         def result = reportService.findEmployeesNeededToBeInAttendanceList(1, 1)
@@ -121,6 +134,7 @@ class ReportServiceSpec extends Specification{
         def requiredUsers = [activeECUser, activeB2BUser]
         def undesirableUsers = [inactiveECUser]
         presenceConfirmationService.hasPresenceByUserAndDateInterval(_ as LocalDate, _ as LocalDate, activeB2BUser.getId()) >> true
+        historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
 
         when:
         def result = reportService.findEmployeesNeededToBeInAttendanceList(1, 1)
@@ -128,6 +142,19 @@ class ReportServiceSpec extends Specification{
         then:
         result.containsAll(requiredUsers)
         !undesirableUsers.any({user -> result.contains(user)})
+    }
+
+    def "findEmployeesNeededToBeInAttendanceList() WHEN user switches from EC to B2B by event SHOULD also be added"(){
+        given:
+        def requiredUsers = [activeECUser, activeB2BUser]
+        presenceConfirmationService.hasPresenceByUserAndDateInterval(_ as LocalDate, _ as LocalDate, activeB2BUser.getId()) >> false
+        historyLogService.get(_ as Long, _ as YearMonth, UserDetailsChangeEvent.USER_CHANGE_TO_B2B) >> [Mock(HistoryLogExcerptProjection)]
+
+        when:
+        def result = reportService.findEmployeesNeededToBeInAttendanceList(1, 1)
+
+        then:
+        result.containsAll(requiredUsers)
     }
 
 
@@ -171,9 +198,6 @@ class ReportServiceSpec extends Specification{
 
         then:
         result == expected
-
-
-
 
         where:
         reportDateYear | userLastName | userFirstName
