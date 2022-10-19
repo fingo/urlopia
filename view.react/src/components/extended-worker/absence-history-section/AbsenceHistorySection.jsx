@@ -20,8 +20,7 @@ export const AbsenceHistorySection = () => {
     const handleShowMoreClick = (e) => {
         e.currentTarget.blur();
         history.push({
-            pathname: `/history/${userId}`,
-            state: {fullName,vacationTypeLabel},
+            pathname: `/history/${userId}?fullName=${fullName}&vacationTypeLabel=${vacationTypeLabel}`,
         });
     }
 
