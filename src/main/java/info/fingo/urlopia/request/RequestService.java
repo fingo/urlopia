@@ -41,7 +41,6 @@ public class RequestService {
     private static final String REQUESTER_ID = "requester.id";
     private static final String START_DATE = "startDate";
     private static final String END_DATE = "endDate";
-    private static final String STATUS = "status";
 
     @Autowired
     public RequestService(RequestRepository requestRepository,
@@ -83,16 +82,8 @@ public class RequestService {
     public boolean hasAcceptedByDateIntervalAndUser(LocalDate startDate,
                                                     LocalDate endDate,
                                                     Long userId) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_FORMAT);
-        String formattedStartDate = formatter.format(startDate);
-        String formattedEndDate = formatter.format(endDate);
-        Filter filter = Filter.newBuilder()
-                .and(REQUESTER_ID, Operator.EQUAL, String.valueOf(userId))
-                .and(START_DATE, Operator.GREATER_OR_EQUAL, formattedStartDate)
-                .and(END_DATE, Operator.LESS_OR_EQUAL, formattedEndDate)
-                .and(STATUS,Operator.EQUAL, Request.Status.ACCEPTED.name())
-                .build();
-        return !requestRepository.findAll(filter).isEmpty();
+        var requests = requestRepository.findByRequesterAndDateIntervalAndStatus(userId, startDate, endDate, Request.Status.ACCEPTED.name());
+        return !requests.isEmpty();
     }
 
     public List<Request> get(Long userId, Integer year) {

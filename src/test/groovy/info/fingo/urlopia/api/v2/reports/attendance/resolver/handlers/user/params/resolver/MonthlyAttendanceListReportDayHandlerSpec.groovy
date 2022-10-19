@@ -2,6 +2,9 @@ package info.fingo.urlopia.api.v2.reports.attendance.resolver.handlers.user.para
 
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmation
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
+import info.fingo.urlopia.history.HistoryLogExcerptProjection
+import info.fingo.urlopia.history.HistoryLogService
+import info.fingo.urlopia.history.UserDetailsChangeEvent
 import info.fingo.urlopia.holidays.HolidayService
 import info.fingo.urlopia.reports.ReportStatusFromRequestType
 import info.fingo.urlopia.request.Request
@@ -12,32 +15,39 @@ import info.fingo.urlopia.user.User
 import spock.lang.Specification
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.YearMonth
 
 class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
     def holidayService = Mock(HolidayService)
     def requestService = Mock(RequestService)
     def presenceConfirmationService = Mock(PresenceConfirmationService)
-    def handler = new MonthlyAttendanceListReportDayHandler(holidayService, requestService, presenceConfirmationService)
+    def historyLogService = Mock(HistoryLogService){
+       get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
+    }
+    def handler = new MonthlyAttendanceListReportDayHandler(holidayService, requestService,
+                                                            presenceConfirmationService, historyLogService)
 
     def userId = 1
     def sampleUser = Mock(User) {
         getId() >> userId
     }
 
-    def fallbackValue = "-"
+    def DEFAULT_VALUE = "-"
+    def EMPTY_VALUE = ""
     def today = LocalDate.now()
     def sampleYear = today.getYear() - 1
     def sampleMonth = today.getMonthValue()
     def sampleDay = 1
     def sampleDate = LocalDate.of(sampleYear, sampleMonth, sampleDay)
 
-    def "handle() WHEN user is null SHOULD return no value"() {
+    def "handle() WHEN user is null SHOULD return EMPTY_VALUE"() {
         expect:
-        handler.handle(sampleYear, sampleMonth, sampleDay, null) == ""
+        handler.handle(sampleYear, sampleMonth, sampleDay, null) == EMPTY_VALUE
     }
 
-    def "handle() WHEN given date is holiday SHOULD return fallback value"() {
+    def "handle() WHEN given date is holiday SHOULD return DEFAULT_VALUE"() {
         given:
         holidayService.isHoliday(_ as LocalDate) >> true
 
@@ -45,10 +55,10 @@ class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
         def result = handler.handle(sampleYear, sampleMonth, sampleDay, sampleUser)
 
         then:
-        result == fallbackValue
+        result == DEFAULT_VALUE
     }
 
-    def "handle() WHEN given date is weekend SHOULD return fallback value"() {
+    def "handle() WHEN given date is weekend SHOULD return DEFAULT_VALUE"() {
         given:
         holidayService.isHoliday(_ as LocalDate) >> false
         holidayService.isWeekend(_ as LocalDate) >> true
@@ -57,7 +67,7 @@ class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
         def result = handler.handle(sampleYear, sampleMonth, sampleDay, sampleUser)
 
         then:
-        result == fallbackValue
+        result == DEFAULT_VALUE
     }
 
     def "handle() WHEN given date is working day and there is accepted normal request SHOULD return proper abbreviation"() {
@@ -140,7 +150,7 @@ class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
         result == "7"
     }
 
-    def "handle() WHEN given date is working day and there is no presence confirmation SHOULD return fallback value"() {
+    def "handle() WHEN given date is working day and there is no presence confirmation SHOULD return DEFAULT_VALUE"() {
         given:
         holidayService.isWorkingDay(_ as LocalDate) >> true
         presenceConfirmationService.getByUserAndDate(userId, sampleDate) >> []
@@ -150,6 +160,74 @@ class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
         def result = handler.handle(sampleYear, sampleMonth, sampleDay, sampleUser)
 
         then:
-        result == fallbackValue
+        result == DEFAULT_VALUE
+    }
+
+    def "handle() WHEN given date is working day and there is no presence confirmation SHOULD return DEFAULT_VALUE"() {
+        given:
+        holidayService.isWorkingDay(_ as LocalDate) >> true
+        presenceConfirmationService.getByUserAndDate(userId, sampleDate) >> []
+        requestService.getByUserAndDate(userId, sampleDate) >> []
+
+        when:
+        def result = handler.handle(sampleYear, sampleMonth, sampleDay, sampleUser)
+
+        then:
+        result == DEFAULT_VALUE
+    }
+
+    def "handle() WHEN called with date that user was after switch from ec to b2b SHOULD return default value "() {
+        given:
+        holidayService.isWorkingDay(_ as LocalDate) >> true
+        requestService.getByUserAndDate(userId, sampleDate) >> []
+
+        and: "mock change from ec to b2b"
+        def mockedLog = Mock(HistoryLogExcerptProjection){
+            getCreated() >> LocalDateTime.of(givenDate, LocalTime.MIN)
+        }
+        def historyLogService = Mock(HistoryLogService) {
+            get(sampleUser.getId(), YearMonth.from(givenDate), UserDetailsChangeEvent.USER_CHANGE_TO_B2B) >> [mockedLog]
+            get(sampleUser.getId(), YearMonth.from(givenDate), UserDetailsChangeEvent.USER_CHANGE_TO_EC) >> []
+        }
+        def handler = new MonthlyAttendanceListReportDayHandler(holidayService, requestService,
+                presenceConfirmationService, historyLogService)
+
+        when:
+        def result = handler.handle(givenDate.getYear(), givenDate.getMonthValue(), givenDate.getDayOfMonth(), sampleUser)
+
+        then:
+        result == DEFAULT_VALUE
+
+        where:
+        changeDate             | givenDate
+        LocalDate.of(2021,1,2) | LocalDate.of(2021,1,2)
+        LocalDate.of(2021,1,1) | LocalDate.of(2021,1,2)
+    }
+
+    def "handle() WHEN called with date that user was before switch from b2b to ec SHOULD return default value "() {
+        given:
+        holidayService.isWorkingDay(_ as LocalDate) >> true
+        requestService.getByUserAndDate(userId, sampleDate) >> []
+
+        and: "mock change from ec to b2b"
+        def mockedLog = Mock(HistoryLogExcerptProjection){
+            getCreated() >> LocalDateTime.of(givenDate, LocalTime.MIN)
+        }
+        def historyLogService = Mock(HistoryLogService) {
+            get(sampleUser.getId(), YearMonth.from(givenDate), UserDetailsChangeEvent.USER_CHANGE_TO_B2B) >> [mockedLog]
+            get(sampleUser.getId(), YearMonth.from(givenDate), UserDetailsChangeEvent.USER_CHANGE_TO_EC) >> []
+        }
+        def handler = new MonthlyAttendanceListReportDayHandler(holidayService, requestService,
+                presenceConfirmationService, historyLogService)
+
+        when:
+        def result = handler.handle(givenDate.getYear(), givenDate.getMonthValue(), givenDate.getDayOfMonth(), sampleUser)
+
+        then:
+        result == DEFAULT_VALUE
+
+        where:
+        changeDate             | givenDate
+        LocalDate.of(2021,1,2) | LocalDate.of(2021,1,1)
     }
 }

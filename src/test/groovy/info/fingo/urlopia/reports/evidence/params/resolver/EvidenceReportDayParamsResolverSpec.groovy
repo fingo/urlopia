@@ -1,6 +1,9 @@
 package info.fingo.urlopia.reports.evidence.params.resolver
 
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService
+import info.fingo.urlopia.history.HistoryLogExcerptProjection
+import info.fingo.urlopia.history.HistoryLogService
+import info.fingo.urlopia.history.UserDetailsChangeEvent
 import info.fingo.urlopia.holidays.Holiday
 import info.fingo.urlopia.holidays.HolidayService
 import info.fingo.urlopia.reports.ReportStatusFromRequestType
@@ -26,6 +29,9 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
     def presenceConfirmationService = Mock(PresenceConfirmationService){
         getByUserAndDate(_ as Long, _ as LocalDate) >> []
     }
+    def historyLogService = Mock(HistoryLogService){
+        get(_ as Long, _ as Integer, _ as UserDetailsChangeEvent) >> []
+    }
 
 
     def day = 4
@@ -37,6 +43,9 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
         getId() >> userId
     }
 
+    def EMPTY_KEY = ""
+    def DEFAULT_KEY = "-"
+
     def "resolve() WHEN called with year in future, SHOULD return model that contains prefix and empty string as value"() {
         given: "year from future"
         def year = LocalDate.now().plusYears(2).getYear()
@@ -46,7 +55,8 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
         def evidenceReportDayParamsResolver = new EvidenceReportDayParamsResolver(user,year,
                                                                                 holidayService,
                                                                                 requestService,
-                                                                                presenceConfirmationService )
+                                                                                presenceConfirmationService,
+                                                                                historyLogService)
         def key = String.format(EvidenceReportModel.DATE_FORMATTING, month, day)
 
 
@@ -67,7 +77,9 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
         def evidenceReportDayParamsResolver = new EvidenceReportDayParamsResolver(user,year,
                                                                                 holidayService,
                                                                                 requestService,
-                                                                                presenceConfirmationService)
+                                                                                presenceConfirmationService,
+                                                                                historyLogService)
+
         def key = String.format(EvidenceReportModel.DATE_FORMATTING, month, day)
 
         when:
@@ -91,7 +103,8 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
         def evidenceReportDayParamsResolver = new EvidenceReportDayParamsResolver(user,year,
                                                                                     holidayService,
                                                                                     requestService,
-                                                                                    presenceConfirmationService)
+                                                                                    presenceConfirmationService,
+                                                                                    historyLogService)
         when:
         def result = evidenceReportDayParamsResolver.resolve()
 
@@ -124,7 +137,8 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
         def evidenceReportDayParamsResolver = new EvidenceReportDayParamsResolver(user,year,
                 holidayService,
                 requestService,
-                presenceConfirmationService)
+                presenceConfirmationService,
+                historyLogService)
         when:
         def result = evidenceReportDayParamsResolver.resolve()
 
@@ -152,7 +166,8 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
         def evidenceReportDayParamsResolver = new EvidenceReportDayParamsResolver(user,year,
                                                                                 holidayService,
                                                                                 requestService,
-                                                                                presenceConfirmationService)
+                                                                                presenceConfirmationService,
+                                                                                historyLogService)
         def key = String.format(EvidenceReportModel.DATE_FORMATTING, month, day)
 
         when:
@@ -169,11 +184,11 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
         and: "holidayService mock that say example date is working day"
         holidayService.isWorkingDay(_ as LocalDate) >> true
 
-
         def evidenceReportDayParamsResolver = new EvidenceReportDayParamsResolver(user,year,
                 holidayService,
                 requestService,
-                presenceConfirmationService)
+                presenceConfirmationService,
+                historyLogService)
 
         def key = String.format(EvidenceReportModel.DATE_FORMATTING, month, day)
 
@@ -193,11 +208,13 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
 
         and: "holidayService mock that say example date is working day"
         holidayService.isWorkingDay(_ as LocalDate) >> true
+        historyLogService.get(_ as Long, year, _ as UserDetailsChangeEvent) >> []
 
         def evidenceReportDayParamsResolver = new EvidenceReportDayParamsResolver(user,year,
                 holidayService,
                 requestService,
-                presenceConfirmationService)
+                presenceConfirmationService,
+                historyLogService)
         def key = String.format(EvidenceReportModel.DATE_FORMATTING, month, day)
 
         when:
@@ -205,6 +222,65 @@ class EvidenceReportDayParamsResolverSpec extends Specification {
 
         then:
         result.containsKey(key)
+    }
+
+    def "resolve() WHEN called with date that user was after switch from ec to b2b SHOULD return default value "() {
+        given:
+
+        def evidenceReportDayParamsResolver = new EvidenceReportDayParamsResolver(user,givenDate.getYear(),
+                holidayService,
+                requestService,
+                presenceConfirmationService,
+                historyLogService)
+        def key = String.format(EvidenceReportModel.DATE_FORMATTING, givenDate.getMonthValue(), givenDate.getDayOfMonth())
+
+        and: "mock change from ec to b2b"
+        def mockedLog = Mock(HistoryLogExcerptProjection){
+            getCreated() >> givenDate
+        }
+
+        historyLogService.get(_ as Long, _ as Integer, UserDetailsChangeEvent.USER_CHANGE_TO_B2B) >> [mockedLog]
+
+        when:
+        def result = evidenceReportDayParamsResolver.resolve()
+
+        then:
+        result.containsKey(key)
+        result.get(key) == DEFAULT_KEY
+
+        where:
+        changeDate             | givenDate
+        LocalDate.of(2021,1,2) | LocalDate.of(2021,1,2)
+        LocalDate.of(2021,1,1) | LocalDate.of(2021,1,2)
+    }
+
+    def "resolve() WHEN called with date that user was before switch from b2b to ec SHOULD return default value "() {
+        given:
+
+        def evidenceReportDayParamsResolver = new EvidenceReportDayParamsResolver(user,givenDate.getYear(),
+                holidayService,
+                requestService,
+                presenceConfirmationService,
+                historyLogService)
+        def key = String.format(EvidenceReportModel.DATE_FORMATTING, givenDate.getMonthValue(), givenDate.getDayOfMonth())
+
+        and: "mock change from ec to b2b"
+        def mockedLog = Mock(HistoryLogExcerptProjection){
+            getCreated() >> givenDate
+        }
+
+        historyLogService.get(_ as Long, _ as Integer, UserDetailsChangeEvent.USER_CHANGE_TO_EC) >> [mockedLog]
+
+        when:
+        def result = evidenceReportDayParamsResolver.resolve()
+
+        then:
+        result.containsKey(key)
+        result.get(key) == DEFAULT_KEY
+
+        where:
+        changeDate             | givenDate
+        LocalDate.of(2021,1,2) | LocalDate.of(2021,1,1)
     }
 
 }

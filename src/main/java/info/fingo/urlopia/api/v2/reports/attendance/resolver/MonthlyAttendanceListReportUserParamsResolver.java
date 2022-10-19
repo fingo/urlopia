@@ -2,6 +2,7 @@ package info.fingo.urlopia.api.v2.reports.attendance.resolver;
 
 import info.fingo.urlopia.api.v2.presence.PresenceConfirmationService;
 import info.fingo.urlopia.api.v2.reports.attendance.resolver.handlers.user.params.resolver.MonthlyAttendanceListReportDayHandler;
+import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.HolidayService;
 import info.fingo.urlopia.reports.ParamResolver;
 import info.fingo.urlopia.request.RequestService;
@@ -23,13 +24,15 @@ public class MonthlyAttendanceListReportUserParamsResolver implements ParamResol
                                                          int month,
                                                          HolidayService holidayService,
                                                          RequestService requestService,
-                                                         PresenceConfirmationService presenceConfirmationService) {
+                                                         PresenceConfirmationService presenceConfirmationService,
+                                                         HistoryLogService historyLogService) {
         this.user = user;
         this.year = year;
         this.month = month;
         this.monthlyAttendanceListReportDayHandler = new MonthlyAttendanceListReportDayHandler(holidayService,
                                                                                          requestService,
-                                                                                         presenceConfirmationService);
+                                                                                         presenceConfirmationService,
+                                                                                         historyLogService);
     }
 
     public Map<String, String> resolve() {
