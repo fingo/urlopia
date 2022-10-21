@@ -1,7 +1,7 @@
 import 'animate.css/animate.min.css';
 
 import {CheckCircle, ExclamationCircle} from "react-bootstrap-icons";
-import { store } from 'react-notifications-component'
+import { Store  } from 'react-notifications-component'
 
 import styles from './Notifications.module.scss'
 
@@ -14,7 +14,7 @@ export const pushErrorNotification = message => {
 }
 
 export const pushNotification = notification => {
-    store.addNotification(notification)
+    Store.addNotification(notification)
 }
 
 export const genericNotification = ({title, message, type}) => {

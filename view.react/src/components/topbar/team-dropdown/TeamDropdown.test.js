@@ -1,4 +1,4 @@
-import {act, fireEvent, render, screen} from "@testing-library/react";
+import {fireEvent, render, screen, waitFor} from "@testing-library/react";
 
 import {TeamDropdown} from "./TeamDropdown";
 
@@ -17,7 +17,7 @@ test('shows user name', async () => {
 test('not shows teams before clicking on user name', async () => {
     render(<TeamDropdown userName={testUserName} teams={testTeams}/>);
 
-    expect(screen.queryByText(testTeams[0].name)).not.toBeInTheDocument();
+    expect(screen.queryByTestId('team-dropdown')).not.toBeInTheDocument();
     expect(screen.queryByText(`Lider: ${testTeams[0].leader}`)).not.toBeInTheDocument();
 });
 
@@ -27,12 +27,12 @@ test('shows teams after clicking on user name', async () => {
     const userNameLabel = screen.getByText(testUserName);
     expect(userNameLabel).toBeInTheDocument();
 
-    await act(async () => {
-        await fireEvent.click(userNameLabel);
-    });
+    fireEvent.click(userNameLabel);
 
-    expect(screen.queryByText(testTeams[0].name)).toBeInTheDocument();
-    expect(screen.queryByText(`Lider: ${testTeams[0].leader}`)).toBeInTheDocument();
+    await waitFor(() => {
+        expect(screen.queryByTestId('team-dropdown')).toHaveClass('show');
+    })
+    expect(screen.getByText(`Lider: ${testTeams[0].leader}`)).toBeInTheDocument();
 });
 
 test('hide teams after clicking user name when teams component is displayed', async () => {
@@ -41,11 +41,13 @@ test('hide teams after clicking user name when teams component is displayed', as
     const userNameLabel = screen.getByText(testUserName);
     expect(userNameLabel).toBeInTheDocument();
 
-    await act(async () => {
-        await fireEvent.click(userNameLabel);
-        await fireEvent.click(userNameLabel);
-    });
+    fireEvent.click(userNameLabel);
+    await waitFor(() => {
+        expect(screen.queryByTestId('team-dropdown')).toHaveClass('show');
+    })
 
-    expect(screen.getByText(testTeams[0].name)).not.toBeVisible();
-    expect(screen.getByText(`Lider: ${testTeams[0].leader}`)).not.toBeVisible();
+    fireEvent.click(userNameLabel);
+    await waitFor(() => {
+        expect(screen.queryByTestId('team-dropdown')).not.toHaveClass('show');
+    })
 });
