@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import {useState} from "react";
 import {CheckLg as AcceptIcon, XLg as XIcon} from "react-bootstrap-icons";
 
-import {actionBtn, actions} from '../../global-styles/table-styles.module.scss';
+import tableClasses from '../../global-styles/table-styles.module.scss';
 import {ConfirmRejectModal} from "../../pages/absence-requests-page/confirm-reject-modal/ConfirmRejectModal";
 import Table from "../table/Table";
 
@@ -17,11 +17,11 @@ export const TeamRequestsList = ({
     const [rowId, setRowId] = useState(0);
 
     const actionFormatter = (cell, row) => {
-        const cancelBtnClass = classNames(actionBtn, 'text-danger');
-        const acceptBtnClass = classNames(actionBtn, 'text-success');
+        const cancelBtnClass = classNames(tableClasses.actionBtn, 'text-danger');
+        const acceptBtnClass = classNames(tableClasses.actionBtn, 'text-success');
 
         return (
-            <div className={actions}>
+            <div className={tableClasses.actions}>
                 <button
                     title='Zaakceptuj wniosek'
                     className={acceptBtnClass}

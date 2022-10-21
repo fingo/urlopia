@@ -5,8 +5,8 @@ import {CheckSquareFill as AcceptIcon, XSquareFill as XIcon} from "react-bootstr
 import {BeatLoader} from "react-spinners";
 
 import {ACCEPTED, PENDING} from "../../../../constants/statuses";
-import {spinner} from '../../../../global-styles/loading-spinner.module.scss';
-import {actionBtn, actions} from '../../../../global-styles/table-styles.module.scss';
+import spinnerClasses from '../../../../global-styles/loading-spinner.module.scss';
+import tableClasses from '../../../../global-styles/table-styles.module.scss';
 import {getPaginationForPage} from "../../../../helpers/pagination/PaginationHelper";
 import {
     requestPeriodFormatter,
@@ -38,12 +38,12 @@ export const WorkerRequestsHistoryTable = ({
     })
 
     const actionFormatter = (cell, row) => {
-        const acceptBtnClass = classNames(actionBtn, 'text-success');
-        const cancelBtnClass = classNames(actionBtn, 'text-warning');
-        const rejectBtnClass = classNames(actionBtn, 'text-danger');
+        const acceptBtnClass = classNames(tableClasses.actionBtn, 'text-success');
+        const cancelBtnClass = classNames(tableClasses.actionBtn, 'text-warning');
+        const rejectBtnClass = classNames(tableClasses.actionBtn, 'text-danger');
         if (row.status === PENDING) {
             return (
-                <div className={actions}>
+                <div className={tableClasses.actions}>
                     <button
                         title='Zaakceptuj wniosek'
                         className={acceptBtnClass}
@@ -63,7 +63,7 @@ export const WorkerRequestsHistoryTable = ({
             );
         } else if (row.status === ACCEPTED) {
             return (
-                <div className={actions}>
+                <div className={tableClasses.actions}>
                     <button
                         title='Anuluj wniosek'
                         className={cancelBtnClass}
@@ -182,7 +182,7 @@ export const WorkerRequestsHistoryTable = ({
                         {pagination}
                     </>
                     :
-                    <div className={spinner}>
+                    <div className={spinnerClasses.spinner}>
                         <BeatLoader color='deepskyblue' size={50}/>
                         <h1>Pobieram dane...</h1>
                     </div>

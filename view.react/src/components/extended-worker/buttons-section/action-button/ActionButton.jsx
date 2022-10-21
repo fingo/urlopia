@@ -2,7 +2,7 @@ import classNames from "classnames";
 import PropTypes from "prop-types";
 import {Button, OverlayTrigger, Tooltip} from "react-bootstrap";
 
-import {btnClass} from "../../../../global-styles/btn.module.scss";
+import btnClass from "../../../../global-styles/btn.module.scss";
 import {AttentionIcon, TextWithIcon} from "../../../../helpers/icons/Icons";
 import styles from './ActionButton.module.scss';
 

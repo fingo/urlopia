@@ -6,8 +6,8 @@ import {BeatLoader} from "react-spinners";
 
 import {PENDING} from "../../constants/statuses";
 import {useVacationDays} from "../../contexts/vacation-days-context/vacationDaysContext";
-import {spinner} from '../../global-styles/loading-spinner.module.scss';
-import {actionBtn} from '../../global-styles/table-styles.module.scss';
+import spinnerClasses from '../../global-styles/loading-spinner.module.scss';
+import tableClasses from '../../global-styles/table-styles.module.scss';
 import {
     requestPeriodFormatter,
     requestStatusMapper,
@@ -28,7 +28,7 @@ export const UserRequestsList = ({
     const [, vacationDaysDispatch] = useVacationDays();
 
     const actionFormatter = (cell, row) => {
-        const cancelBtnClass = classNames(actionBtn, 'text-warning');
+        const cancelBtnClass = classNames(tableClasses.actionBtn, 'text-warning');
         if (row.status === PENDING) {
             return (
                 <button
@@ -117,7 +117,7 @@ export const UserRequestsList = ({
                         />
                     </>
                     :
-                    <div className={spinner}>
+                    <div className={spinnerClasses.spinner}>
                         <BeatLoader color='deepskyblue' size={50}/>
                         <h1>Pobieram dane...</h1>
                     </div>

@@ -9,7 +9,7 @@ import {
 } from "../../../contexts/request-context/actions/changeRequestStatus";
 import {fetchWorkerRequestsHistory} from "../../../contexts/request-context/actions/fetchWorkerRequestsHistory";
 import {useRequests} from "../../../contexts/request-context/requestContext";
-import {btnClass} from "../../../global-styles/btn.module.scss";
+import btnClasses from "../../../global-styles/btn.module.scss";
 import {WorkerRequestsHistoryTable} from "./worker-requests-history-table/WorkerRequestsHistoryTable";
 import styles from './WorkerRequestsHistory.module.scss';
 
@@ -51,7 +51,7 @@ export const WorkerRequestsHistory = ({show, onHide, fullName, userId}) => {
                 />
             </Modal.Body>
             <Modal.Footer>
-                <Button onClick={onHide} className={btnClass}>Anuluj</Button>
+                <Button onClick={onHide} className={btnClasses.btnClass}>Anuluj</Button>
             </Modal.Footer>
         </Modal>
     );

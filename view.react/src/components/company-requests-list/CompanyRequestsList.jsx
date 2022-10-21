@@ -4,8 +4,8 @@ import {useState} from "react";
 import {CheckSquareFill as AcceptIcon, XSquareFill as XIcon} from "react-bootstrap-icons";
 import {BeatLoader} from "react-spinners";
 
-import {spinner} from '../../global-styles/loading-spinner.module.scss';
-import {actionBtn, actions} from '../../global-styles/table-styles.module.scss'
+import spinnerClasses from '../../global-styles/loading-spinner.module.scss';
+import tableClasses from '../../global-styles/table-styles.module.scss'
 import {textAsArrayFormatter} from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
 import {ConfirmRejectModal} from "../../pages/absence-requests-page/confirm-reject-modal/ConfirmRejectModal";
 import Table from "../table/Table";
@@ -20,10 +20,10 @@ export const CompanyRequestsList = ({
     const [rowId, setRowId] = useState(0);
 
     const actionFormatter = (cell, row) => {
-        const acceptBtnClass = classNames(actionBtn, 'text-success');
-        const cancelBtnClass = classNames(actionBtn, 'text-danger');
+        const acceptBtnClass = classNames(tableClasses.actionBtn, 'text-success');
+        const cancelBtnClass = classNames(tableClasses.actionBtn, 'text-danger');
         return (
-            <div className={actions}>
+            <div className={tableClasses.actions}>
                 <button
                     title='Zaakceptuj wniosek'
                     className={acceptBtnClass}
@@ -108,7 +108,7 @@ export const CompanyRequestsList = ({
                         />
                     </>
                     :
-                    <div className={spinner}>
+                    <div className={spinnerClasses.spinner}>
                         <BeatLoader color='deepskyblue' size={50}/>
                         <h1>Pobieram dane...</h1>
                     </div>
