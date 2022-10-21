@@ -12,7 +12,7 @@ project.ext.set("mainViewModule", project(":view.react"))
 
 
 allprojects {
-    project.version = "3.0.0"
+    project.version = "3.1.0"
 }
 
 java {
