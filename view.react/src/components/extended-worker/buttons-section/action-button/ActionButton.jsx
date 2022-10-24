@@ -2,12 +2,12 @@ import classNames from "classnames";
 import PropTypes from "prop-types";
 import {Button, OverlayTrigger, Tooltip} from "react-bootstrap";
 
-import btnClass from "../../../../global-styles/btn.module.scss";
+import btnStyles from "../../../../global-styles/btn.module.scss";
 import {AttentionIcon, TextWithIcon} from "../../../../helpers/icons/Icons";
 import styles from './ActionButton.module.scss';
 
 export const ActionButton = ({tooltipText, icon, onButtonClick, modal, showModal, isWithNotification}) => {
-    const buttonClass = classNames(btnClass, {[styles.notifyButton]: isWithNotification});
+    const buttonClass = classNames(btnStyles.btnClass, {[styles.notifyButton]: isWithNotification});
     return (
         <>
             <OverlayTrigger
