@@ -1,11 +1,11 @@
-@import 'src/global-styles/color-variables';
+@import "src/global-styles/color-variables";
 
 .clickablePill {
-  background-color: $BACK-COLOR;
+  background-color: $BACK-COLOR !important;
   margin-left: 0.5rem;
 
   &:hover {
     cursor: pointer;
-    background-color: $HOVER-COLOR;
+    background-color: $HOVER-COLOR !important;
   }
 }
