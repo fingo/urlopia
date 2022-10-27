@@ -65,9 +65,12 @@ public class ActiveDirectoryUserSynchronizer {
     }
 
     private void deactivateUser(User user){
+        var wasActive = user.isActive();
         user.deactivate();
-        var input = new DetailsChangeEventInput(LocalDateTime.now(), user.getId(), UserDetailsChangeEvent.USER_DEACTIVATED);
-        historyLogService.addNewDetailsChangeEvent(input);
+        if (wasActive){
+            var input = new DetailsChangeEventInput(LocalDateTime.now(), user.getId(), UserDetailsChangeEvent.USER_DEACTIVATED);
+            historyLogService.addNewDetailsChangeEvent(input);
+        }
         userRepository.save(user);
     }
 
