@@ -3,7 +3,7 @@ import {useHistory} from "react-router-dom";
 
 import {useAbsenceHistory} from "../../../contexts/absence-history-context/absenceHistoryContext";
 import {useWorkers} from "../../../contexts/workers-context/workersContext";
-import {btnClass} from "../../../global-styles/btn.module.scss";
+import btnClasses from "../../../global-styles/btn.module.scss";
 import {AbsenceHistoryTab} from "../../absence-history-list/AbsenceHistoryTab";
 
 export const AbsenceHistorySection = () => {
@@ -33,7 +33,7 @@ export const AbsenceHistorySection = () => {
                                isHidden={true}
                                vacationTypeLabel={vacationTypeLabel}
                                isAdminView={false}/>
-            <Button className={btnClass}
+            <Button className={btnClasses.btnClass}
                     onClick={(e) => handleShowMoreClick(e)}
             >
                 Pokaż więcej

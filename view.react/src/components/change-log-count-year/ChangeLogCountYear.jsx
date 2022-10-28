@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import {Button} from "react-bootstrap";
 
-import {btnClass} from "../../global-styles/btn.module.scss";
+import btnClasses from "../../global-styles/btn.module.scss";
 import {sendPutRequest} from "../../helpers/RequestHelper";
 import styles from "./ChangeLogCountYear.module.scss";
 
@@ -27,7 +27,7 @@ export const ChangeLogCountYear = ({isAdminView, countForNextYear, historyLogId,
     return (
         <div className={styles.forms}>
             {isAdminView && <Button
-                className={btnClass}
+                className={btnClasses.btnClass}
                 onClick={() => handleCountForNextYearChange()}
             >
                 {getButtonMessage}

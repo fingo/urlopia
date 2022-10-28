@@ -11,8 +11,8 @@ import {fetchNoActionWorkers} from "../../contexts/workers-context/actions/fetch
 import {fetchUnspecifiedUsers} from "../../contexts/workers-context/actions/fetchUnspecifiedUsers";
 import {fetchWorkers} from "../../contexts/workers-context/actions/fetchWorkers";
 import {useWorkers} from "../../contexts/workers-context/workersContext";
-import {btnClass} from "../../global-styles/btn.module.scss";
-import {spinner} from "../../global-styles/loading-spinner.module.scss";
+import btnClasses from "../../global-styles/btn.module.scss";
+import spinnerClasses from "../../global-styles/loading-spinner.module.scss";
 import {AttentionIcon, TextWithIcon} from "../../helpers/icons/Icons";
 import {textAsArrayFormatter} from "../../helpers/react-bootstrap-table2/RequestMapperHelper";
 import {sortedUsers} from "../../helpers/sorts/UsersSortHelper";
@@ -162,7 +162,7 @@ export const WorkersTable = ({isEC}) => {
 
     if (fetching) {
         return (
-            <div className={spinner}>
+            <div className={spinnerClasses.spinner}>
                 <BeatLoader color='deepskyblue' size={50}/>
                 <h1>Pobieram dane...</h1>
             </div>
@@ -190,7 +190,7 @@ export const WorkersTable = ({isEC}) => {
                 }
                 <h1 className='text-center'>Pracownicy</h1>
                 <Button
-                    className={btnClass}
+                    className={btnClasses.btnClass}
                     onClick={() => handleClick(showActive)}
                 >
                     {getButtonMessage(isEC,showActive)}
@@ -204,7 +204,7 @@ export const WorkersTable = ({isEC}) => {
                             expandRow={expandRow}
                         />
                         :
-                        <div className={spinner}>
+                        <div className={spinnerClasses.spinner}>
                             <BeatLoader color='deepskyblue' size={50}/>
                             <h1>Pobieram dane...</h1>
                         </div>
@@ -233,7 +233,7 @@ export const WorkersTable = ({isEC}) => {
             }
             <h1 className='text-center'>Współpracownicy</h1>
             <Button
-                className={btnClass}
+                className={btnClasses.btnClass}
                 onClick={() => handleClick(showActive)}
             >
                 {getButtonMessage(isEC,showActive)}

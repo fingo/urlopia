@@ -5,7 +5,7 @@ import {Button, ButtonGroup, Form} from "react-bootstrap";
 import {BeatLoader} from "react-spinners";
 
 import {useWorkers} from "../../../contexts/workers-context/workersContext";
-import {btnClass} from "../../../global-styles/btn.module.scss";
+import btnClasses from "../../../global-styles/btn.module.scss";
 import {formatReportFileName} from "../../../helpers/formatReportFileNameHelper";
 import {getXlsxFromResponse} from "../../../helpers/RequestHelper";
 import styles from './ReportsSection.module.scss';
@@ -34,7 +34,7 @@ export const ReportsSection = ({availableYears}) => {
         setReportYear(value);
     }
 
-    const generateReportBtnClass = classNames(btnClass, styles.generateReportBtn);
+    const generateReportBtnClass = classNames(btnClasses.btnClass, styles.generateReportBtn);
     return (
         <div className={styles.reportsSection}>
             <ButtonGroup>

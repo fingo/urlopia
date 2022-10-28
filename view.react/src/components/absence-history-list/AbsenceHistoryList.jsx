@@ -5,7 +5,7 @@ import {useLocation} from "react-router-dom";
 
 import {getCurrentUser} from "../../api/services/session.service";
 import {useAbsenceHistory} from "../../contexts/absence-history-context/absenceHistoryContext";
-import {btnClass} from "../../global-styles/btn.module.scss";
+import btnClasses from "../../global-styles/btn.module.scss";
 import {getPaginationForPage} from "../../helpers/pagination/PaginationHelper";
 import { YearPicker } from "../holidays-config/year-picker/YearPicker";
 import styles from "./AbsenceHistoryList.module.scss";
@@ -86,7 +86,7 @@ export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
                                 />
                 </div>
                 {isAdminView && <Button
-                    className={btnClass}
+                    className={btnClasses.btnClass}
                     onClick={() => handleClick(showOnlyCountedInNextYear)}
                 >
                     {getButtonMessage(showOnlyCountedInNextYear)}

@@ -6,7 +6,7 @@ import {useAbsenceHistory} from "../../../contexts/absence-history-context/absen
 import {fetchRecentUserAbsenceHistory} from "../../../contexts/absence-history-context/actions/fetchUserAbsenceHistory";
 import {fetchHolidays} from "../../../contexts/holidays-context/actions/fetchHolidays";
 import {useHolidays} from "../../../contexts/holidays-context/holidaysContext";
-import {btnClass} from '../../../global-styles/btn.module.scss';
+import btnClasses from '../../../global-styles/btn.module.scss';
 import {formatDate} from "../../../helpers/DateFormatterHelper";
 import {pushSuccessNotification} from "../../../helpers/notifications/Notifications";
 import {sendPostRequest} from "../../../helpers/RequestHelper";
@@ -95,12 +95,12 @@ export const AddEventForm = ({show, onHide, userId, fullName}) => {
             </Modal.Body>
             <Modal.Footer>
                 <Button onClick={() => handleSubmit()}
-                        className={btnClass}
+                        className={btnClasses.btnClass}
                         disabled={!isReadyToSubmit}
                 >
                     Zapisz wydarzenie
                 </Button>
-                <Button onClick={onHide} className={btnClass}>Anuluj</Button>
+                <Button onClick={onHide} className={btnClasses.btnClass}>Anuluj</Button>
             </Modal.Footer>
         </Modal>
     );

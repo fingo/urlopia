@@ -2,7 +2,7 @@ import {InteractionType, PublicClientApplication} from "@azure/msal-browser";
 import {MsalAuthenticationTemplate, MsalProvider} from "@azure/msal-react";
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ReactNotification from 'react-notifications-component';
+import { ReactNotifications } from 'react-notifications-component';
 import {BrowserRouter as Router} from "react-router-dom";
 
 import {loginRequest, msalConfig} from "./authConfig";
@@ -22,7 +22,7 @@ ReactDOM.render(
     <React.StrictMode>
         <MsalProvider instance={msalInstance}>
             <Router>
-                <ReactNotification isMobile={true}/>
+                <ReactNotifications isMobile={true}/>
                 <AppInfoProvider>
                     <MsalAuthenticationTemplate interactionType={InteractionType.Redirect} authenticationRequest={signInRequest}>
                         <RequestInterceptor>

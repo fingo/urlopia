@@ -17,19 +17,19 @@ export const TeamDropdown = ({
                 <p className="d-none d-lg-flex">{userName}</p>
             </Dropdown.Toggle>
 
-            <Dropdown.Menu>
+            <Dropdown.Menu data-testid="team-dropdown">
                 <Dropdown.Header className="d-lg-none text-center">{userName}</Dropdown.Header>
                 <Dropdown.Divider className="m-0 d-lg-none"/>
 
                 {
                     teams?.length ?
                         teams.map(({name, leader}, i) =>
-                            <div key={i}
-                                 className={i === teams.length - 1 ? styles.teamInfo : styles.teamInfoWithDivider}
-                            >
-                                <p className={styles.team}>{name}</p>
-                                <p className={styles.leader}>Lider: {leader}</p>
-                            </div>
+                           <div key={i}
+                            className={i === teams.length - 1 ? styles.teamInfo : styles.teamInfoWithDivider}
+                       >
+                           <p className={styles.team}>{name}</p>
+                           <p className={styles.leader}>Lider: {leader}</p>
+                       </div>
                         )
 
                         :
