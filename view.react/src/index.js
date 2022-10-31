@@ -3,7 +3,7 @@ import {MsalAuthenticationTemplate, MsalProvider} from "@azure/msal-react";
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ReactNotification from 'react-notifications-component';
-import {BrowserRouter as Router} from "react-router-dom";
+import {HashRouter as Router} from "react-router-dom";
 
 import {loginRequest, msalConfig} from "./authConfig";
 import {App} from './components/app/App';

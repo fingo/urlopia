@@ -52,9 +52,12 @@ export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
     let vacationTypeLabel = isUserEC ? "Pozostały urlop" : "Pozostała przerwa"
 
     let header = 'Historia użytkownika';
-    if (location.state?.fullName && location.pathname !== '/history/me') {
-        header = header.concat(` - ${location.state.fullName}`);
-        vacationTypeLabel = location.state.vacationTypeLabel;
+
+    if (location?.pathname !== '/history/me') {
+        const search =  new URLSearchParams(location.search)
+        const fullName = search.get("fullName");
+        header = fullName ? `${header} - ${fullName}` : header;
+        vacationTypeLabel = search.get("vacationTypeLabel") ?? vacationTypeLabel;
         if (!isAdminView){
             setIsAdminView(true)
         }
