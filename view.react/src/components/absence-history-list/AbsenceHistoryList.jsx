@@ -7,9 +7,9 @@ import {getCurrentUser} from "../../api/services/session.service";
 import {useAbsenceHistory} from "../../contexts/absence-history-context/absenceHistoryContext";
 import {btnClass} from "../../global-styles/btn.module.scss";
 import {getPaginationForPage} from "../../helpers/pagination/PaginationHelper";
+import {AbsenceHistoryTab} from "../absence-history-tab/AbsenceHistoryTab";
 import { YearPicker } from "../holidays-config/year-picker/YearPicker";
 import styles from "./AbsenceHistoryList.module.scss";
-import {AbsenceHistoryTab} from "./AbsenceHistoryTab";
 
 export const AbsenceHistoryList = ({fetchHistoryLogs, setPageNumber}) => {
     const [state, absenceHistoryDispatch] = useAbsenceHistory()

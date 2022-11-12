@@ -213,6 +213,28 @@ public class HistoryLogService {
         return hours;
     }
 
+    public void delete(Long historyLogId){
+        var logToDelete = historyLogRepository.findById(historyLogId).orElseThrow(HistoryLogNotFoundException::new); //change to dedicate
+        var prevLog = logToDelete.getPrevHistoryLog();
+        var optionalNextLog = historyLogRepository.findByPrevHistoryLog(logToDelete);
+
+        if (optionalNextLog.isEmpty()){
+            historyLogRepository.delete(logToDelete);
+        }
+        else {
+            var nextLog = optionalNextLog.get();
+            if (prevLog == null) {
+                nextLog.setPrevHistoryLog(null);
+            } else {
+                logToDelete.setPrevHistoryLog(null);
+                historyLogRepository.saveAndFlush(logToDelete);
+                nextLog.setPrevHistoryLog(prevLog);
+            }
+            historyLogRepository.saveAndFlush(nextLog);
+            historyLogRepository.delete(logToDelete);
+        }
+    }
+
     private float countRemainingHoursFromNormalRequest(Request request,
                                                        Integer year,
                                                        HistoryLog log,

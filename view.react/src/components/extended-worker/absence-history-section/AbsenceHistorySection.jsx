@@ -4,7 +4,7 @@ import {useHistory} from "react-router-dom";
 import {useAbsenceHistory} from "../../../contexts/absence-history-context/absenceHistoryContext";
 import {useWorkers} from "../../../contexts/workers-context/workersContext";
 import {btnClass} from "../../../global-styles/btn.module.scss";
-import {AbsenceHistoryTab} from "../../absence-history-list/AbsenceHistoryTab";
+import {AbsenceHistoryTab} from "../../absence-history-tab/AbsenceHistoryTab";
 
 export const AbsenceHistorySection = () => {
     const history = useHistory();

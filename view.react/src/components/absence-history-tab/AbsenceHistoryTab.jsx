@@ -1,13 +1,19 @@
 import PropTypes from "prop-types";
 import {useState} from "react";
+import {TrashFill as TrashIcon} from "react-bootstrap-icons";
 
+import {DELETE_USER_HISTORY_LOG_URL} from "../../contexts/absence-history-context/constants";
 import {hoursChangeMapper} from "../../helpers/react-bootstrap-table2/HistoryLogMapperHelper";
 import {disableSortingFunc} from "../../helpers/react-bootstrap-table2/utils";
+import {sendDeleteRequest} from "../../helpers/RequestHelper";
 import {ChangeLogCountYear} from "../change-log-count-year/ChangeLogCountYear";
 import Table from "../table/Table";
-
+import styles from "./AbsenceHistoryTab.module.scss"
+import {ConfirmRemoveHistoryLogModal} from "./confirm-remove-history-log-modal/ConfirmRemoveHistoryLogModal";
 export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, isAdminView, setSort, setRefresh}) => {
     const [whichExpanded, setWhichExpanded] = useState([]);
+    const [showConfirmRemoveHistoryLogModal, setShowConfirmRemoveHistoryLogModal] = useState(false)
+    const [logId, setLogId] = useState(0);
 
     const expandRowForAdmin = {
         onlyOneExpanding: true,
@@ -28,6 +34,32 @@ export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, isAdminVie
                 />
             )
     };
+
+
+    const actionFormatter = (cell, row) => {
+
+        const historyLog = {...row}
+        return (
+            <>
+                {historyLog.userDetailsChangeEvent && <div className={styles.actionButtonsContainer}>
+                    <button onClick={() => {
+                        setLogId(historyLog.id);
+                        setShowConfirmRemoveHistoryLogModal(true);
+                    }}>
+                        <TrashIcon className={styles.removeButton} size={20}/>
+                    </button>
+                </div>}
+            </>
+        )
+    }
+
+    const deleteHistoryLog = (historyLogId) => {
+        sendDeleteRequest(`${DELETE_USER_HISTORY_LOG_URL}/${historyLogId}`)
+            .then(() => setRefresh())
+            .catch(error => {
+                console.log('err: ', error);
+            });
+    }
 
     const columns = [
         {
@@ -120,17 +152,33 @@ export const AbsenceHistoryTab = ({logs, isHidden, vacationTypeLabel, isAdminVie
             name: 'countForNextYear',
             hidden: true
         },
+        {
+            name: 'action',
+            text: 'Akcja',
+            headerAlign: 'center',
+            align: 'center',
+            formatter: actionFormatter,
+            style: {verticalAlign: 'middle'},
+            hidden: isHidden
+        },
     ];
 
     return (
-        <Table
-            keyField='id'
-            data={logs}
-            expandRow={isAdminView && expandRowForAdmin}
-            columns={columns}
-            hover
-            striped={isHidden}
-        />
+        <>
+            <Table
+                keyField='id'
+                data={logs}
+                expandRow={isAdminView && expandRowForAdmin}
+                columns={columns}
+                hover
+                striped={isHidden}
+            />
+            <ConfirmRemoveHistoryLogModal show={showConfirmRemoveHistoryLogModal}
+                                          onHide={() => setShowConfirmRemoveHistoryLogModal(false)}
+                                          historyLogId={logId}
+                                          removeHistoryLog={deleteHistoryLog}/>
+        </>
+
     );
 }
 

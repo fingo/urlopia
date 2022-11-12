@@ -200,4 +200,61 @@ class HistoryLogServiceSpec extends Specification {
         countForNextYear << [true,
                              false]
     }
+
+    def "delete WHEN id not exist SHOULD throw HistoryLogNotFoundException"() {
+        given:
+        historyLogRepository.findById(_ as Long) >> Optional.empty()
+
+        when:
+        historyLogService.delete(1)
+
+        then:
+        thrown(HistoryLogNotFoundException)
+    }
+
+    def "delete WHEN this was user last log SHOULD delete it"(){
+        given:
+        def mockLogToDelete = Mock(HistoryLog)
+        historyLogRepository.findById(1) >> Optional.of(mockLogToDelete)
+        historyLogRepository.findByPrevHistoryLog(_ as HistoryLog) >> Optional.empty()
+
+        when:
+        historyLogService.delete(1)
+
+        then:
+        1 * historyLogRepository.delete(mockLogToDelete)
+    }
+
+    def "delete WHEN this was user first and not last log SHOULD delete it and change prev_log of next one to null"(){
+        given:
+        def mockLogToDelete = Mock(HistoryLog)
+        def nextLog = Mock(HistoryLog)
+        historyLogRepository.findById(1) >> Optional.of(mockLogToDelete)
+        historyLogRepository.findByPrevHistoryLog(_ as HistoryLog) >> Optional.of(nextLog)
+
+        when:
+        historyLogService.delete(1)
+
+        then:
+        1 * historyLogRepository.delete(mockLogToDelete)
+        1 * nextLog.setPrevHistoryLog(null)
+    }
+
+    def "delete WHEN this prev and next log exists SHOULD delete it and change prev_log of next one to prev one"(){
+        given:
+        def nextLog = Mock(HistoryLog)
+        def prevLog = Mock(HistoryLog)
+        def mockLogToDelete = Mock(HistoryLog) {
+            getPrevHistoryLog() >> prevLog
+        }
+        historyLogRepository.findById(1) >> Optional.of(mockLogToDelete)
+        historyLogRepository.findByPrevHistoryLog(_ as HistoryLog) >> Optional.of(nextLog)
+
+        when:
+        historyLogService.delete(1)
+
+        then:
+        1 * historyLogRepository.delete(mockLogToDelete)
+        1 * nextLog.setPrevHistoryLog(prevLog)
+    }
 }

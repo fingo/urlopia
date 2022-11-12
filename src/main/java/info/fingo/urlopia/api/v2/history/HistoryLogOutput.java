@@ -3,6 +3,7 @@ package info.fingo.urlopia.api.v2.history;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import info.fingo.urlopia.history.HistoryLog;
 import info.fingo.urlopia.history.HistoryLogExcerptProjection;
+import info.fingo.urlopia.history.UserDetailsChangeEvent;
 import lombok.Data;
 import org.modelmapper.ModelMapper;
 
@@ -22,6 +23,7 @@ public class HistoryLogOutput {
     private Integer workTimeNumerator;
     private Float userWorkTime;
     private Boolean countForNextYear;
+    private UserDetailsChangeEvent userDetailsChangeEvent;
 
     public static List<HistoryLogOutput> from(List<HistoryLogExcerptProjection> projections) {
         var mapper = new ModelMapper();
@@ -48,6 +50,7 @@ public class HistoryLogOutput {
         historyLogOutput.setWorkTimeNumerator(Math.round(historyLog.getWorkTimeNumerator()));
         historyLogOutput.setUserWorkTime(historyLog.getUserWorkTime());
         historyLogOutput.setCountForNextYear(historyLog.getCountForNextYear());
+        historyLogOutput.setUserDetailsChangeEvent(historyLog.getUserDetailsChangeEvent());
         return historyLogOutput;
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface HistoryLogRepository extends BaseRepository<HistoryLog>, JpaRepository<HistoryLog, Long> {
 
@@ -17,8 +18,6 @@ public interface HistoryLogRepository extends BaseRepository<HistoryLog>, JpaRep
     HistoryLog findFirstByUserIdOrderByIdDesc(Long userId);
 
     HistoryLog findFirstByRequestId(Long requestId);
-
-    List<HistoryLogExcerptProjection> findByUserId(long userId);
 
     Page<HistoryLogExcerptProjection> findByUserId(long userId, Pageable pageable);
 
@@ -31,6 +30,8 @@ public interface HistoryLogRepository extends BaseRepository<HistoryLog>, JpaRep
     List<HistoryLog> findLogsByUserId(long userId);
 
     HistoryLogExcerptProjection findById(long id);
+
+    Optional<HistoryLog> findByPrevHistoryLog(HistoryLog historyLog);
 
     @Query("""
             SELECT COALESCE(SUM(h.hours), 0)

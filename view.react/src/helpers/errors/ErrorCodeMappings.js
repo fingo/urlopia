@@ -24,13 +24,18 @@ const reportsErrorCodeMappings = {
     "UNABLE_TO_GENERATE_EVIDENCE_REPORT_FOR_ALL_USERS": "Generowanie raportów nie powiodło się",
 }
 
+const historyLogsErrorCodeMappings = {
+    "UNABLE_TO_DELETE_GIVEN_HISTORY_LOG": "Próba usunięcia wybranego wpisu w historii nie powiodła się",
+}
+
 export const ERROR_CODE_MAPPINGS = {
     "NO_RESPONSE": "Brak odpowiedzi",
     ...presenceConfirmationErrorCodeMappings,
     ...holidaysErrorCodeMappings,
     ...loginErrorCodeMappings,
     ...requestsErrorCodeMappings,
-    ...reportsErrorCodeMappings
+    ...reportsErrorCodeMappings,
+    ...historyLogsErrorCodeMappings
 }
 
 export const ERROR_CODE_PREFIX_MAPPINGS = {
