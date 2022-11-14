@@ -18,7 +18,7 @@ public enum ReportStatusFromRequestType {
     EXCUSED_UNPAID("nun", "nu"),
     CHILDCARE("w","nu"),
     CHILDCARE_FOR_14_YEARS_OLD("uop","nu"),
-    OTHER("??","??"),
+    OTHER("nupi","nu"),
     QUARANTINE_OR_ISOLATION("k/i","nu"),
     WRONG("error","error");
 
