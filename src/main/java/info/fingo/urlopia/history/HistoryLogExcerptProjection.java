@@ -29,6 +29,8 @@ public interface HistoryLogExcerptProjection {
 
     Boolean getCountForNextYear();
 
+    UserDetailsChangeEvent getUserDetailsChangeEvent();
+
     @Value("#{target.decider != null || target.request != null ? target.deciderFullName : ''}")
     String getDeciderFullName();
 }

@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -53,6 +54,14 @@ public class HistoryLogControllerV2 {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public HistoryLogOutput updateCountingYearForLog(@RequestBody UpdateLogCountingYearInput updateLogCountingYear) {
        return historyLogService.updateCountingYear(updateLogCountingYear);
+    }
+
+    @RolesAllowed("ROLES_ADMIN")
+    @DeleteMapping(value="/{logId}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
+    public void delete(@PathVariable Long logId) {
+        historyLogService.delete(logId);
     }
 
     @RolesAllowed("ROLES_ADMIN")

@@ -50,6 +50,15 @@ export const sendPutRequest = (url, body) => {
         .catch(error => handleError(error))
 }
 
+export const sendDeleteRequest = (url) => {
+    return axios
+        .delete(URL_PREFIX + url)
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => handleError(error));
+}
+
 export const getXlsxFromResponse = (url, fileName) => {
     return axios.get(URL_PREFIX + url, {
         responseType: "blob",
