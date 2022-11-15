@@ -209,12 +209,14 @@ class HistoryLogServiceSpec extends Specification {
         historyLogService.delete(1)
 
         then:
-        thrown(HistoryLogNotFoundException)
+        thrown(HistoryLogDeleteException)
     }
 
     def "delete WHEN this was user last log SHOULD delete it"(){
         given:
-        def mockLogToDelete = Mock(HistoryLog)
+        def mockLogToDelete = Mock(HistoryLog) {
+            getUserDetailsChangeEvent() >> UserDetailsChangeEvent.USER_ACTIVATED
+        }
         historyLogRepository.findById(1) >> Optional.of(mockLogToDelete)
         historyLogRepository.findByPrevHistoryLog(_ as HistoryLog) >> Optional.empty()
 
@@ -227,7 +229,9 @@ class HistoryLogServiceSpec extends Specification {
 
     def "delete WHEN this was user first and not last log SHOULD delete it and change prev_log of next one to null"(){
         given:
-        def mockLogToDelete = Mock(HistoryLog)
+        def mockLogToDelete = Mock(HistoryLog) {
+            getUserDetailsChangeEvent() >> UserDetailsChangeEvent.USER_ACTIVATED
+        }
         def nextLog = Mock(HistoryLog)
         historyLogRepository.findById(1) >> Optional.of(mockLogToDelete)
         historyLogRepository.findByPrevHistoryLog(_ as HistoryLog) >> Optional.of(nextLog)
@@ -246,6 +250,7 @@ class HistoryLogServiceSpec extends Specification {
         def prevLog = Mock(HistoryLog)
         def mockLogToDelete = Mock(HistoryLog) {
             getPrevHistoryLog() >> prevLog
+            getUserDetailsChangeEvent() >> UserDetailsChangeEvent.USER_ACTIVATED
         }
         historyLogRepository.findById(1) >> Optional.of(mockLogToDelete)
         historyLogRepository.findByPrevHistoryLog(_ as HistoryLog) >> Optional.of(nextLog)
@@ -256,5 +261,22 @@ class HistoryLogServiceSpec extends Specification {
         then:
         1 * historyLogRepository.delete(mockLogToDelete)
         1 * nextLog.setPrevHistoryLog(prevLog)
+    }
+
+    def "delete WHEN event is missing SHOULD throw exception"(){
+        given:
+        def nextLog = Mock(HistoryLog)
+        def prevLog = Mock(HistoryLog)
+        def mockLogToDelete = Mock(HistoryLog) {
+            getPrevHistoryLog() >> prevLog
+        }
+        historyLogRepository.findById(1) >> Optional.of(mockLogToDelete)
+        historyLogRepository.findByPrevHistoryLog(_ as HistoryLog) >> Optional.of(nextLog)
+
+        when:
+        historyLogService.delete(1)
+
+        then:
+        thrown(HistoryLogDeleteException)
     }
 }

@@ -214,7 +214,10 @@ public class HistoryLogService {
     }
 
     public void delete(Long historyLogId){
-        var logToDelete = historyLogRepository.findById(historyLogId).orElseThrow(HistoryLogNotFoundException::new); //change to dedicate
+        var logToDelete = historyLogRepository.findById(historyLogId).orElseThrow(HistoryLogDeleteException::logNotFound); //change to dedicate
+        if (logToDelete.getUserDetailsChangeEvent() == null){
+            throw HistoryLogDeleteException.missingEvent();
+        }
         var prevLog = logToDelete.getPrevHistoryLog();
         var optionalNextLog = historyLogRepository.findByPrevHistoryLog(logToDelete);
 
