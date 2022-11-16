@@ -1,5 +1,6 @@
 package info.fingo.urlopia.user;
 
+import info.fingo.urlopia.api.v2.automatic.vacation.days.AutomaticVacationDaysService;
 import info.fingo.urlopia.api.v2.history.DetailsChangeEventInput;
 import info.fingo.urlopia.config.ad.ActiveDirectory;
 import info.fingo.urlopia.config.ad.ActiveDirectoryObjectClass;
@@ -31,6 +32,7 @@ public class ActiveDirectoryUserSynchronizer {
     private final HistoryLogService historyLogService;
     private final ActiveDirectory activeDirectory;
     private final ActiveDirectoryUserMapperWrapper userMapper;
+    private final AutomaticVacationDaysService automaticVacationDaysService;
 
 
     public void addNewUsers() {
@@ -38,8 +40,13 @@ public class ActiveDirectoryUserSynchronizer {
         pickUsersFromActiveDirectory().stream()
                 .filter(user -> !dbUsers.contains(ActiveDirectoryUtils.pickAttribute(user, Attribute.PRINCIPAL_NAME)))
                 .map(userMapper::mapNewUser)
-                .forEach(userRepository::save);
+                .forEach(this::saveNewUser);
         LOGGER.info("Synchronisation succeed: find new users");
+    }
+
+    private void saveNewUser(User user){
+        userRepository.save(user);
+        automaticVacationDaysService.addForNewUser(user);
     }
 
     public void deactivateDeletedUsers() {

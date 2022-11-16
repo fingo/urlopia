@@ -35,23 +35,25 @@ class ActiveDirectoryUserMapperWrapper {
                                             boolean wasB2BBefore,
                                             boolean wasECBefore,
                                             boolean wasActiveBefore){
-        addECEventIfNeeded(updatedUser, wasECBefore);
-        addB2BEventIfNeeded(updatedUser, wasB2BBefore);
+        addECEventIfNeeded(updatedUser, wasB2BBefore, wasECBefore);
+        addB2BEventIfNeeded(updatedUser, wasB2BBefore, wasECBefore);
         addActivationEventIfNeeded(updatedUser, wasActiveBefore);
         addDisActivationEventIfNeeded(updatedUser, wasActiveBefore);
     }
 
     private void addB2BEventIfNeeded(User updatedUser,
-                                    boolean wasB2BBefore){
-        var becomeB2B = !wasB2BBefore && updatedUser.getB2b();
+                                    boolean wasB2BBefore,
+                                    boolean wasECBefore){
+        var becomeB2B = !wasB2BBefore && updatedUser.getB2b() && wasECBefore;
         if (becomeB2B){
             saveEvent(UserDetailsChangeEvent.USER_CHANGE_TO_B2B, updatedUser);
         }
     }
 
     private void addECEventIfNeeded(User updatedUser,
+                                    boolean wasB2BBefore,
                                     boolean wasECBefore){
-        var becomeEC = !wasECBefore && updatedUser.getEc();
+        var becomeEC = !wasECBefore && updatedUser.getEc() && wasB2BBefore;
         if (becomeEC){
             saveEvent(UserDetailsChangeEvent.USER_CHANGE_TO_EC, updatedUser);
         }
