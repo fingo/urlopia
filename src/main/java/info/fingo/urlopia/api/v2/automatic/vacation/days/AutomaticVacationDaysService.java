@@ -4,8 +4,6 @@ import info.fingo.urlopia.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-
 @RequiredArgsConstructor
 @Component
 public class AutomaticVacationDaysService {
@@ -13,7 +11,7 @@ public class AutomaticVacationDaysService {
     private final AutomaticVacationDaysRepository automaticVacationDaysRepository;
 
     public void addForNewUser(User user){
-        var automaticVacationDays = new AutomaticVacationDays(user, LocalDateTime.now());
+        var automaticVacationDays = new AutomaticVacationDays(user);
         automaticVacationDaysRepository.save(automaticVacationDays);
     }
 

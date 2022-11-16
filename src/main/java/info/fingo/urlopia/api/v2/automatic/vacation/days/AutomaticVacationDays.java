@@ -22,6 +22,9 @@ public class AutomaticVacationDays {
     private LocalDateTime created;
 
     @Column(nullable = false)
+    private LocalDateTime modified;
+
+    @Column(nullable = false)
     private Integer nextYearDaysBase = 26; //default value
 
     @Column(nullable = false)
@@ -35,9 +38,9 @@ public class AutomaticVacationDays {
         //required by hibernate
     }
 
-    public AutomaticVacationDays(User user,
-                                 LocalDateTime created) {
+    public AutomaticVacationDays(User user) {
         this.user = user;
-        this.created = created;
+        this.created = LocalDateTime.now();
+        this.modified = LocalDateTime.now();
     }
 }
