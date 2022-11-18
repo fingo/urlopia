@@ -1,4 +1,4 @@
-package info.fingo.urlopia.api.v2.automatic.vacation.days;
+package info.fingo.urlopia.api.v2.automatic.vacation.days.model;
 
 import info.fingo.urlopia.user.User;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "automatic_vacation_days")
 @Getter
 @Setter
-public class AutomaticVacationDays {
+public class AutomaticVacationDay {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_sequence")
@@ -34,13 +34,21 @@ public class AutomaticVacationDays {
     @JoinColumn(nullable = false)
     private User user;
 
-    public AutomaticVacationDays() {
+    public AutomaticVacationDay() {
         //required by hibernate
     }
 
-    public AutomaticVacationDays(User user) {
+    public AutomaticVacationDay(User user) {
         this.user = user;
         this.created = LocalDateTime.now();
         this.modified = LocalDateTime.now();
+    }
+
+    public AutomaticVacationDay(User user,
+                                Integer nextYearDaysBase,
+                                Double nextYearHoursProposition) {
+        this(user);
+        this.nextYearDaysBase = nextYearDaysBase;
+        this.nextYearHoursProposition = nextYearHoursProposition;
     }
 }
