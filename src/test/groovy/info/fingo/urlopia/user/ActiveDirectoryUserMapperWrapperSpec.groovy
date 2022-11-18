@@ -16,7 +16,7 @@ class ActiveDirectoryUserMapperWrapperSpec extends Specification {
         given:
         def mockedUser = Mock(User) {
             getEc() >> false
-            getB2b() >> false
+            getB2b() >> true
             isActive() >> false
         }
         def mockedUpdatedUser = Mock(User) {
@@ -40,7 +40,7 @@ class ActiveDirectoryUserMapperWrapperSpec extends Specification {
     def "updateUser WHEN user become b2b SHOULD save event about it"() {
         given:
         def mockedUser = Mock(User) {
-            getEc() >> false
+            getEc() >> true
             getB2b() >> false
             isActive() >> false
         }
@@ -72,7 +72,7 @@ class ActiveDirectoryUserMapperWrapperSpec extends Specification {
         def mockedUpdatedUser = Mock(User) {
             getEc() >> true
             getB2b() >> false
-            isActive() >> false
+            isActive() >> true
         }
         def searchResult = Mock(SearchResult)
         activeDirectoryUserMapper.mapToUser(searchResult, _ as User) >> mockedUpdatedUser
@@ -88,31 +88,6 @@ class ActiveDirectoryUserMapperWrapperSpec extends Specification {
     }
 
     def "updateUser WHEN user become inactive SHOULD save event about it"() {
-        given:
-        def mockedUser = Mock(User) {
-            getEc() >> false
-            getB2b() >> false
-            isActive() >> true
-        }
-        def mockedUpdatedUser = Mock(User) {
-            getEc() >> false
-            getB2b() >> false
-            isActive() >> false
-        }
-        def searchResult = Mock(SearchResult)
-        activeDirectoryUserMapper.mapToUser(searchResult, _ as User) >> mockedUpdatedUser
-        historyLogService.addNewDetailsChangeEvent(_ as DetailsChangeEventInput) >>
-                { DetailsChangeEventInput detailsChangeEventInput -> detailsChangeEventInput }
-
-
-        when:
-        ADUserMapper.updateUser(searchResult, mockedUser)
-
-        then:
-        1 * historyLogService.addNewDetailsChangeEvent(_ as DetailsChangeEventInput)
-    }
-
-    def "addInitUserEvents WHEN user is active SHOULD save event about it"() {
         given:
         def mockedUser = Mock(User) {
             getEc() >> false
