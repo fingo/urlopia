@@ -7,6 +7,7 @@ import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.Request;
 import info.fingo.urlopia.user.NoSuchUserException;
+import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -134,15 +135,38 @@ public class HistoryLogService {
                             " because decider with id: {} does not exist"), targetUserId, deciderId);
                     return NoSuchUserException.invalidId();
                 });
-        var prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByIdDesc(targetUserId);
+        create(historyLog, targetUser, decider);
+    }
+
+    public void createBySystem(HistoryLogInput historyLog,
+                               Long targetUserId) {
+        var targetUser = userRepository
+                .findById(targetUserId)
+                .orElseThrow(() -> {
+                    log.error("Could not create new history log for nonexistent user with id: {}", targetUserId);
+                    return NoSuchUserException.invalidId();
+                });
+        createWithoutDecider(historyLog, targetUser);
+    }
+
+    private void create(HistoryLogInput historyLog,
+                       User targetUser,
+                       User deciderUser) {
+
+        var prevHistoryLog = historyLogRepository.findFirstByUserIdOrderByIdDesc(targetUser.getId());
         var hoursChange = historyLog.getHours();
         var comment = Optional.ofNullable(historyLog.getComment()).orElse("");
         var countForNextYear = historyLog.getCountForNextYear();
-        var history = new HistoryLog(targetUser, decider, hoursChange, comment, prevHistoryLog, countForNextYear);
+        var history = new HistoryLog(targetUser, deciderUser, hoursChange, comment, prevHistoryLog, countForNextYear);
         historyLogRepository.save(history);
         var loggerInfo = "A new history log with id: %d has been added for user with id: %d"
                 .formatted(history.getId(), targetUser.getId());
         log.info(loggerInfo);
+    }
+
+    private void createWithoutDecider(HistoryLogInput historyLog,
+                                      User targetUser){
+        create(historyLog, targetUser, null);
     }
 
     public void createReverse(Request request,
