@@ -135,5 +135,36 @@ class AutomaticVacationDayServiceSpec extends Specification{
 
     }
 
+    def "resetPropositionFor WHEN automaticVacationDay for given user not exists SHOULD throw AutomaticVacationDaysNotFoundException"(){
+        given:
+        automaticVacationDaysRepository.findByUserId(_ as Long) >> Optional.empty()
+
+        when:
+        automaticVacationDayService.resetPropositionFor(1L)
+
+        then:
+        thrown(AutomaticVacationDaysNotFoundException)
+    }
+
+    def "update WHEN automaticVacationDay for given user not exists SHOULD throw AutomaticVacationDaysNotFoundException"(){
+        given:
+        def user = Mock(User) {
+            getId() >> 1L
+            getFullName() >> "Jane Doe"
+            getWorkTime() >> 8.0
+        }
+        def vacationDays = new AutomaticVacationDay(user, 26, 100)
+
+        automaticVacationDaysRepository.findByUserId(_ as Long) >> Optional.of(vacationDays)
+        automaticVacationDaysRepository.save(_ as AutomaticVacationDay) >> vacationDays
+
+        when:
+        def result = automaticVacationDayService.resetPropositionFor(1L)
+
+        then:
+        notThrown(AutomaticVacationDaysNotFoundException)
+        result.getNextYearHoursProposition() == 0
+    }
+
 
 }

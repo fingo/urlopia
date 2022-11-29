@@ -1,6 +1,7 @@
 package info.fingo.urlopia.user;
 
 import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
+import info.fingo.urlopia.api.v2.automatic.vacation.days.AutomaticVacationDayService;
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
 import info.fingo.urlopia.api.v2.history.DetailsChangeEventInput;
 import info.fingo.urlopia.config.ad.ActiveDirectory;
@@ -37,6 +38,7 @@ public class UserService {
     private final ActiveDirectory activeDirectory;
 
     private final HistoryLogService historyLogService;
+    private final AutomaticVacationDayService automaticVacationDayService;
 
     private static final String NO_USER_WITH_ID_MESSAGE = "There is no user with id: {}";
     private static final String ADMIN_AUTHORITY_STRING = JwtTokenAuthoritiesProvider.ROLE_PREFIX + User.Role.ADMIN;
@@ -158,9 +160,10 @@ public class UserService {
     }
 
     private void updateUserWithEvent(User user,
-                                        Float newWorkTime){
+                                     Float newWorkTime){
         var input = prepareWorkTimeChangeEvent(user, newWorkTime);
         historyLogService.addNewDetailsChangeEvent(input);
+        automaticVacationDayService.resetPropositionFor(user.getId());
         user.setWorkTime(newWorkTime);
         userRepository.save(user);
     }
