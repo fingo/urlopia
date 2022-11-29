@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class AddDaysScheduler {
 
-    private AutomaticVacationDayService automaticVacationDayService;
+    private final AutomaticVacationDayService automaticVacationDayService;
 
     @Scheduled(cron = "0 5 0 1 1 ?") //1 january 00:05:00
     public void addNewYearHours() {
