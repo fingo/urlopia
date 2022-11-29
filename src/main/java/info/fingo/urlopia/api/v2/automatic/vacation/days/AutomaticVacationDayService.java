@@ -46,6 +46,12 @@ public class AutomaticVacationDayService {
                 .forEach(this::addHours);
     }
 
+    public AutomaticVacationDay resetPropositionFor(Long userId){
+        var avd = getAutomaticVacationDayFrom(userId);
+        avd.setNextYearHoursProposition(0d);
+        return automaticVacationDaysRepository.save(avd);
+    }
+
     private boolean hasNotEmptyProposition(AutomaticVacationDay automaticVacationDay){
         return automaticVacationDay.getNextYearHoursProposition() != 0;
     }

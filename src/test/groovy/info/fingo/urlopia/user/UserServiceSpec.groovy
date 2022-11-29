@@ -1,5 +1,6 @@
 package info.fingo.urlopia.user
 
+import info.fingo.urlopia.api.v2.automatic.vacation.days.AutomaticVacationDayService
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException
 import info.fingo.urlopia.api.v2.history.DetailsChangeEventInput
 import info.fingo.urlopia.config.ad.ActiveDirectory
@@ -15,7 +16,9 @@ class UserServiceSpec extends Specification {
     def userRepository = Mock(UserRepository)
     def activeDirectory = Mock(ActiveDirectory)
     def historyLogService = Mock(HistoryLogService)
-    def userService = new UserService(userRepository, activeDirectory, historyLogService)
+    def automaticVacationDayService = Mock(AutomaticVacationDayService)
+
+    def userService = new UserService(userRepository, activeDirectory, historyLogService, automaticVacationDayService)
     def filter = Mock(Filter)
 
     def "get() SHOULD return list of users"() {
@@ -114,12 +117,12 @@ class UserServiceSpec extends Specification {
 
     def "setWorkTime() WHEN called with valid String and User SHOULD save event and update user"(){
         given:
-        userRepository.findById(_ as Long) >> Optional.of(Mock(User));
+        userRepository.findById(_ as Long) >> Optional.of(Mock(User))
         var exampleId = 1L;
         var exampleWorkTime = "1/2"
 
         when:
-        userService.setWorkTime(exampleId, exampleWorkTime);
+        userService.setWorkTime(exampleId, exampleWorkTime)
 
         then:
         1 * historyLogService.addNewDetailsChangeEvent(_ as DetailsChangeEventInput)
@@ -128,12 +131,12 @@ class UserServiceSpec extends Specification {
 
     def "setWorkTime() WHEN called with incorrect user id SHOULD throw NoSuchUserException"(){
         given:
-        userRepository.findById(_ as Long) >> Optional.empty();
-        var exampleId = 1L;
+        userRepository.findById(_ as Long) >> Optional.empty()
+        var exampleId = 1L
         var exampleWorkTime = "1/2"
 
         when:
-        userService.setWorkTime(exampleId, exampleWorkTime);
+        userService.setWorkTime(exampleId, exampleWorkTime)
 
         then:
         thrown(NoSuchUserException)
