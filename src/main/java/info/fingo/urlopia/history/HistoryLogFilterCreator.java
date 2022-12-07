@@ -16,6 +16,17 @@ public class HistoryLogFilterCreator {
 
 
     public static Filter filterBy(UserDetailsChangeEvent changeEvent,
+                                  YearMonth minYearMonth){
+        var firstDayOfMonth = minYearMonth.atDay(1);
+        var startOfFirstDay = LocalDateTime.of(firstDayOfMonth, LocalTime.MIN);
+
+        return Filter.newBuilder()
+                .and(CREATED_FIELD_FILTER, Operator.GREATER_OR_EQUAL, DATE_FORMATTER.format(startOfFirstDay))
+                .and(EVENT_FILTER, Operator.EQUAL, changeEvent.name())
+                .build();
+    }
+
+    public static Filter filterBy(UserDetailsChangeEvent changeEvent,
                                   YearMonth yearMonth,
                                   Long userId){
         var firstDayOfMonth = yearMonth.atDay(1);

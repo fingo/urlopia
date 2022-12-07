@@ -104,6 +104,12 @@ public class HistoryLogService {
     }
 
 
+    public List<HistoryLog> get(YearMonth yearMonth,
+                                UserDetailsChangeEvent userDetailsChangeEvent){
+        var filter = HistoryLogFilterCreator.filterBy(userDetailsChangeEvent, yearMonth);
+        return historyLogRepository.findAll(filter);
+    }
+
     public HistoryLogOutput updateCountingYear(UpdateLogCountingYearInput updateLogCountingYearInput){
         var optionalLog = historyLogRepository.findById(updateLogCountingYearInput.historyLogId());
         var historyLog = optionalLog.orElseThrow(NoSuchHistoryLogException::invalidId);
