@@ -104,7 +104,7 @@ public class HistoryLogService {
     }
 
 
-    public List<HistoryLog> get(YearMonth yearMonth,
+    public List<HistoryLog> getBy(YearMonth yearMonth,
                                 UserDetailsChangeEvent userDetailsChangeEvent){
         var filter = HistoryLogFilterCreator.filterBy(userDetailsChangeEvent, yearMonth);
         return historyLogRepository.findAll(filter);

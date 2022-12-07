@@ -129,7 +129,7 @@ public class ReportService {
     private List<User> findAllUserThatWasNotActiveYet(Integer year,
                                                       Integer month) {
         var nextMonth = YearMonth.of(year,month).plusMonths(1);
-        var logsWithActivationEventFromFuture = historyLogService.get(nextMonth, UserDetailsChangeEvent.USER_ACTIVATED);
+        var logsWithActivationEventFromFuture = historyLogService.getBy(nextMonth, UserDetailsChangeEvent.USER_ACTIVATED);
         return logsWithActivationEventFromFuture.stream()
                 .map(HistoryLog::getUser)
                 .toList();
