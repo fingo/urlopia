@@ -8,6 +8,7 @@ import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReportF
 import info.fingo.urlopia.api.v2.reports.holidays.UserHolidaysReportFactory;
 import info.fingo.urlopia.api.v2.user.UserFilterFactory;
 import info.fingo.urlopia.config.persistance.filter.Filter;
+import info.fingo.urlopia.history.HistoryLog;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.history.UserDetailsChangeEvent;
 import info.fingo.urlopia.reports.ReportTemplateLoader;
@@ -121,7 +122,17 @@ public class ReportService {
         var employees = userService.get(filter);
         employees.addAll(findInactiveUsersNeededToBeInReport(year ,month));
         employees.addAll(findUsersThatChangedToB2BAndNeededToBeInReport(year, month));
+        employees.removeAll(findAllUserThatWasNotActiveYet(year, month));
         return employees;
+    }
+
+    private List<User> findAllUserThatWasNotActiveYet(Integer year,
+                                                      Integer month) {
+        var nextMonth = YearMonth.of(year,month).plusMonths(1);
+        var logsWithActivationEventFromFuture = historyLogService.getBy(nextMonth, UserDetailsChangeEvent.USER_ACTIVATED);
+        return logsWithActivationEventFromFuture.stream()
+                .map(HistoryLog::getUser)
+                .toList();
     }
 
     private List<User> findInactiveUsersNeededToBeInReport(Integer year,

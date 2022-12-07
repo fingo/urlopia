@@ -5,6 +5,7 @@ import info.fingo.urlopia.api.v2.reports.attendance.MonthlyAttendanceListReportF
 import info.fingo.urlopia.api.v2.reports.holidays.UserHolidaysReportFactory
 import info.fingo.urlopia.api.v2.user.UserFilterFactory
 import info.fingo.urlopia.config.persistance.filter.Filter
+import info.fingo.urlopia.history.HistoryLog
 import info.fingo.urlopia.history.HistoryLogExcerptProjection
 import info.fingo.urlopia.history.HistoryLogService
 import info.fingo.urlopia.history.UserDetailsChangeEvent
@@ -87,6 +88,7 @@ class ReportServiceSpec extends Specification{
         def requiredUsers = [activeECUser]
         def undesirableUsers = [inactiveECUser, activeB2BUser]
         historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
+        historyLogService.getBy(_ as YearMonth, UserDetailsChangeEvent.USER_ACTIVATED) >> []
 
         when:
         def result = reportService.findEmployeesNeededToBeInAttendanceList(1, 1)
@@ -103,7 +105,7 @@ class ReportServiceSpec extends Specification{
         def undesirableUsers = [activeB2BUser]
         presenceConfirmationService.hasPresenceByUserAndDateInterval(_ as LocalDate, _ as LocalDate, inactiveECUser.getId()) >> true
         historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
-
+        historyLogService.getBy(_ as YearMonth, UserDetailsChangeEvent.USER_ACTIVATED) >> []
 
         when:
         def result = reportService.findEmployeesNeededToBeInAttendanceList(1, 1)
@@ -119,7 +121,7 @@ class ReportServiceSpec extends Specification{
         def undesirableUsers = [activeB2BUser]
         requestService.hasAcceptedByDateIntervalAndUser(_ as LocalDate, _ as LocalDate, _ as Long) >> true
         historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
-
+        historyLogService.getBy(_ as YearMonth, UserDetailsChangeEvent.USER_ACTIVATED) >> []
 
         when:
         def result = reportService.findEmployeesNeededToBeInAttendanceList(1, 1)
@@ -135,6 +137,7 @@ class ReportServiceSpec extends Specification{
         def undesirableUsers = [inactiveECUser]
         presenceConfirmationService.hasPresenceByUserAndDateInterval(_ as LocalDate, _ as LocalDate, activeB2BUser.getId()) >> true
         historyLogService.get(_ as Long, _ as YearMonth, _ as UserDetailsChangeEvent) >> []
+        historyLogService.getBy(_ as YearMonth, UserDetailsChangeEvent.USER_ACTIVATED) >> []
 
         when:
         def result = reportService.findEmployeesNeededToBeInAttendanceList(1, 1)
@@ -149,12 +152,40 @@ class ReportServiceSpec extends Specification{
         def requiredUsers = [activeECUser, activeB2BUser]
         presenceConfirmationService.hasPresenceByUserAndDateInterval(_ as LocalDate, _ as LocalDate, activeB2BUser.getId()) >> false
         historyLogService.get(_ as Long, _ as YearMonth, UserDetailsChangeEvent.USER_CHANGE_TO_B2B) >> [Mock(HistoryLogExcerptProjection)]
+        historyLogService.getBy(_ as YearMonth, UserDetailsChangeEvent.USER_ACTIVATED) >> []
 
         when:
         def result = reportService.findEmployeesNeededToBeInAttendanceList(1, 1)
 
         then:
         result.containsAll(requiredUsers)
+    }
+
+    def "findEmployeesNeededToBeInAttendanceList() WHEN user has activation event after given month SHOULD be removed from list"(){
+        given:
+        historyLogService.get(_ as Long, _ as YearMonth, UserDetailsChangeEvent.USER_CHANGE_TO_B2B) >> []
+        def logMock = Mock(HistoryLog){
+            getUser() >> activeECUser
+        }
+        historyLogService.getBy(_ as YearMonth, UserDetailsChangeEvent.USER_ACTIVATED) >> [logMock]
+
+        when:
+        def result = reportService.findEmployeesNeededToBeInAttendanceList(1, 1)
+
+        then:
+        !result.contains(activeECUser)
+    }
+
+    def "findEmployeesNeededToBeInAttendanceList() WHEN user not has activation event after given month SHOULD not be removed from list"(){
+        given:
+        historyLogService.get(_ as Long, _ as YearMonth, UserDetailsChangeEvent.USER_CHANGE_TO_B2B) >> []
+        historyLogService.getBy(_ as YearMonth, UserDetailsChangeEvent.USER_ACTIVATED) >> []
+
+        when:
+        def result = reportService.findEmployeesNeededToBeInAttendanceList(1, 1)
+
+        then:
+        result.contains(activeECUser)
     }
 
 
