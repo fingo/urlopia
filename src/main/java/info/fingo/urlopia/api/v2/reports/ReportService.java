@@ -9,6 +9,7 @@ import info.fingo.urlopia.api.v2.reports.holidays.UserHolidaysReportFactory;
 import info.fingo.urlopia.api.v2.user.UserFilterFactory;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.history.HistoryLog;
+import info.fingo.urlopia.history.HistoryLogExcerptProjection;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.history.UserDetailsChangeEvent;
 import info.fingo.urlopia.reports.ReportTemplateLoader;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -180,7 +182,14 @@ public class ReportService {
 
     private boolean hasChangeToB2B(User user,
                                    YearMonth yearMonth){
-        return !historyLogService.get(user.getId(), yearMonth, UserDetailsChangeEvent.USER_CHANGE_TO_B2B).isEmpty();
+        var changeToB2BLogs = historyLogService.get(user.getId(), yearMonth, UserDetailsChangeEvent.USER_CHANGE_TO_B2B);
+        if (changeToB2BLogs.isEmpty()){
+            return false;
+        }
+        changeToB2BLogs.sort(Comparator.comparing(HistoryLogExcerptProjection::getCreated));
+        var firstLog = changeToB2BLogs.get(0);
+        var firstDayOfMonth = 1;
+        return firstLog.getCreated().getDayOfMonth() != firstDayOfMonth;
     }
 
     private Set<User> getEmployeesWithPresence(List<User> employees,

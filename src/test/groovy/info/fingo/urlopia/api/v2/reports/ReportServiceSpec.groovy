@@ -19,6 +19,8 @@ import info.fingo.urlopia.user.UserService
 import spock.lang.Specification
 
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.YearMonth
 
 class ReportServiceSpec extends Specification{
@@ -147,11 +149,31 @@ class ReportServiceSpec extends Specification{
         !undesirableUsers.any({user -> result.contains(user)})
     }
 
-    def "findEmployeesNeededToBeInAttendanceList() WHEN user switches from EC to B2B by event SHOULD also be added"(){
+    def "findEmployeesNeededToBeInAttendanceList() WHEN user switches from EC to B2B in first day of month by event SHOULD not be added"(){
+        given:
+        def requiredUsers = [activeECUser]
+        presenceConfirmationService.hasPresenceByUserAndDateInterval(_ as LocalDate, _ as LocalDate, activeB2BUser.getId()) >> false
+        def mockedLog = Mock(HistoryLogExcerptProjection) {
+            getCreated() >> LocalDateTime.of(LocalDate.of(2022,1,1), LocalTime.MIN)
+        }
+        historyLogService.get(_ as Long, _ as YearMonth, UserDetailsChangeEvent.USER_CHANGE_TO_B2B) >> [mockedLog]
+        historyLogService.getBy(_ as YearMonth, UserDetailsChangeEvent.USER_ACTIVATED) >> []
+
+        when:
+        def result = reportService.findEmployeesNeededToBeInAttendanceList(1, 1)
+
+        then:
+        result.containsAll(requiredUsers)
+    }
+
+    def "findEmployeesNeededToBeInAttendanceList() WHEN user switches from EC to B2B after first day of month by event SHOULD be added"(){
         given:
         def requiredUsers = [activeECUser, activeB2BUser]
         presenceConfirmationService.hasPresenceByUserAndDateInterval(_ as LocalDate, _ as LocalDate, activeB2BUser.getId()) >> false
-        historyLogService.get(_ as Long, _ as YearMonth, UserDetailsChangeEvent.USER_CHANGE_TO_B2B) >> [Mock(HistoryLogExcerptProjection)]
+        def mockedLog = Mock(HistoryLogExcerptProjection) {
+            getCreated() >> LocalDateTime.of(LocalDate.of(2022,1,2), LocalTime.MIN)
+        }
+        historyLogService.get(_ as Long, _ as YearMonth, UserDetailsChangeEvent.USER_CHANGE_TO_B2B) >> [mockedLog]
         historyLogService.getBy(_ as YearMonth, UserDetailsChangeEvent.USER_ACTIVATED) >> []
 
         when:
