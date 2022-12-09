@@ -3,11 +3,10 @@ import {Alert} from 'react-bootstrap';
 import {useWorkers} from "../../../../contexts/workers-context/workersContext";
 import styles from './MissingPresence.module.scss';
 
-export const MissingPresence = () => {
+export const MissingPresence = ({userId}) => {
     const [workersState] = useWorkers();
-    const {userId} = workersState.workers.selectedWorker;
     const unspecifiedAbsences = workersState.workers.unspecifiedAbsences;
-    const userAbsence = unspecifiedAbsences[userId.toString()];
+    const userAbsence = unspecifiedAbsences[userId];
 
     if (userAbsence && userAbsence.length) {
         return (
