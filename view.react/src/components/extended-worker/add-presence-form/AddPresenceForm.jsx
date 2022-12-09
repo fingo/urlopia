@@ -27,7 +27,7 @@ export const AddPresenceForm = ({show, onHide, fullName, userId}) => {
             </Modal.Header>
             <Modal.Body>
                 <PresenceConfirmationPanel userId={userId} onConfirmation={handlePresenceConfirmation}/>
-                <MissingPresence />
+                <MissingPresence userId={userId}/>
             </Modal.Body>
         </Modal>
     );
