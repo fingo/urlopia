@@ -42,7 +42,6 @@ export const ButtonsSection = ({isUnspecifiedAbsences}) => {
             }
 
             {
-                isEC &&
                 <ActionButton tooltipText='Dodaj obecność'
                               icon={<PresenceIcon className={styles.icon}/>}
                               onButtonClick={(showStatus) => setAddPresenceModalShow(showStatus)}
