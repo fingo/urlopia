@@ -1,14 +1,14 @@
 import {faUmbrellaBeach} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import axios from "axios";
 import {format, lastDayOfMonth, startOfMonth} from "date-fns";
 import pl from "date-fns/locale/pl";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import {Form} from "react-bootstrap";
 import {ExclamationTriangleFill as ExclamationIcon} from "react-bootstrap-icons";
 import Calendar from "react-date-range/dist/components/Calendar";
 import Select from "react-select";
 
+import useGetCalendarQuery from "../../api/queryHooks/queries/Calendar/useGetCalendarQuery";
 import {getCurrentUser} from "../../api/services/session.service";
 import {usePresence} from "../../contexts/presence-context/presenceContext";
 import {getLastDayFromCalendarMonthView} from "../../helpers/CalendarEndDateHelper";
@@ -39,8 +39,6 @@ const getSelectedUsersFilter = () => {
     return JSON.parse(localStorage.getItem("dashboard.selectedUsers")) || []
 }
 
-const CancelToken = axios.CancelToken
-
 export const DashboardCalendar = () => {
     const [presenceState] = usePresence();
 
@@ -54,11 +52,14 @@ export const DashboardCalendar = () => {
     const [usersOptions, setUsersOptions] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState(() => getSelectedUsersFilter());
 
-    const [calendarResponse, setCalendarResponse] = useState(null);
+    const firstDay = formatDate(currentMonth);
+    const lastDay = formatDate(lastDayOfMonth(currentMonth));
+    const firstDayFromCalendarMonthView = getFirstDayFromCalendarMonthView(firstDay)
+    const lastDayFromCalendarMonthView = getLastDayFromCalendarMonthView(lastDay)
 
-    const [isFetched, setIsFetched] = useState(false);
+    const { data, isFetched } = useGetCalendarQuery({startDate: firstDayFromCalendarMonthView, endDate: lastDayFromCalendarMonthView})
 
-    const requestCancelToken = useRef(undefined)
+    const calendarResponse = data?.calendar;
 
     useEffect(() => {
         sendGetRequest(`${ENDPOINT_PREFIX_URL}/users?filter=active:true`)
@@ -68,26 +69,6 @@ export const DashboardCalendar = () => {
             .then(teams => setTeamsOptions(formatTeams(teams)))
             .catch(error => error);
     }, []);
-
-    useEffect(() => {
-        setIsFetched(false);
-        const firstDay = formatDate(currentMonth);
-        const lastDay = formatDate(lastDayOfMonth(currentMonth));
-        const firstDayFromCalendarMonthView = getFirstDayFromCalendarMonthView(firstDay)
-        const lastDayFromCalendarMonthView = getLastDayFromCalendarMonthView(lastDay)
-
-        requestCancelToken.current?.cancel()
-        requestCancelToken.current = CancelToken.source()
-
-        const url = `${ENDPOINT_PREFIX_URL}/calendar?startDate=${firstDayFromCalendarMonthView}&endDate=${lastDayFromCalendarMonthView}&filter=active:true`
-        sendGetRequest(url, {}, {
-            cancelToken: requestCancelToken.current.token
-        })
-            .then(data => {
-                setCalendarResponse(data.calendar);
-                setIsFetched(true);
-            }).catch(error => error);
-    }, [currentMonth]);
 
     const handleDateChange = (item) => {
         setSelectedDate(item);

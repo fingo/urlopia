@@ -121,7 +121,7 @@ export const getZipFromResponse = (url, fileName) => {
 
 const NO_RESPONSE_CODE = 'NO_RESPONSE';
 const UNKNOWN_ERROR_CODE = 'UNKNOWN_ERROR'
-const handleError = (error) => {
+export const handleError = (error) => {
     let errorMessage;
     if (error.response) {
         const unauthorized = error.response.status === 401
