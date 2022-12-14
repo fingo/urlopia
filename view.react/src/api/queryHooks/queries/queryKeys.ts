@@ -4,3 +4,8 @@ export const calendarKeys = {
   list: ({ startDate, endDate }: { startDate: string; endDate: string }) =>
     [...calendarKeys.lists(), { startDate, endDate }] as const,
 };
+
+export const automaticVacationDays = {
+  all: ["automaticVacationDays"] as const,
+  lists: () => [...automaticVacationDays.all, "list"] as const
+}
