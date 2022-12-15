@@ -6,14 +6,20 @@ import {IAutomaticVacationDaysResponse} from "../../../types/AutomaticVacationDa
 import useRequest from "../../../useRequest";
 import {automaticVacationDays} from "../queryKeys";
 
-const useGetAutomaticVacationDaysQuery = () => {
+interface IonSuccessCallback { (data: IAutomaticVacationDaysResponse[]): void }
+const useGetAutomaticVacationDaysQuery = (onSuccessCallback: IonSuccessCallback) => {
     const { request } = useRequest<IAutomaticVacationDaysResponse[]>(ApiOperation.GetAutomaticVacationDays);
 
     return useQuery(automaticVacationDays.lists(), async () => {
-        const res = await request();
+        const res = await request({params:{
+            sort:'id'}
+        });
 
         return res.data;
     }, {
+        onSuccess: (res: IAutomaticVacationDaysResponse[]) => {
+            onSuccessCallback(res)
+        },
         onError: (err) => {
             handleError(err)
         }

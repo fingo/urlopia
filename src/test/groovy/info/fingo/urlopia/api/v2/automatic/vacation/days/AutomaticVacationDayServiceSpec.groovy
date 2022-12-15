@@ -4,8 +4,11 @@ import info.fingo.urlopia.api.v2.automatic.vacation.days.model.AutomaticVacation
 import info.fingo.urlopia.api.v2.automatic.vacation.days.model.UpdateUserConfig
 import info.fingo.urlopia.history.HistoryLogInput
 import info.fingo.urlopia.history.HistoryLogService
+import org.springframework.data.domain.PageImpl
 import spock.lang.Specification
 import info.fingo.urlopia.user.User
+import org.springframework.data.domain.Pageable
+
 
 class AutomaticVacationDayServiceSpec extends Specification{
 
@@ -67,11 +70,11 @@ class AutomaticVacationDayServiceSpec extends Specification{
         }
         def vacationDays = new AutomaticVacationDay(user, 26, 0)
 
-        automaticVacationDaysRepository.findAll() >> [vacationDays]
+        automaticVacationDaysRepository.findAll(_ as Pageable) >> new PageImpl<AutomaticVacationDay>([vacationDays])
         automaticVacationDaysRepository.save(_ as AutomaticVacationDay) >> {AutomaticVacationDay automaticVacationDay -> automaticVacationDay}
 
         when:
-        def result = automaticVacationDayService.getAll()
+        def result = automaticVacationDayService.getAll(Mock(Pageable))
 
         then:
         result.get(0).nextYearProposition() == 0
@@ -83,11 +86,11 @@ class AutomaticVacationDayServiceSpec extends Specification{
             getId() >> 1L
         }
         def vacationDays = new AutomaticVacationDay(user, 26, 0)
-        automaticVacationDaysRepository.findAll() >> [vacationDays]
+        automaticVacationDaysRepository.findAll(_ as Pageable) >> new PageImpl<AutomaticVacationDay>([vacationDays])
         automaticVacationDaysRepository.save(_ as AutomaticVacationDay) >> {AutomaticVacationDay automaticVacationDay -> automaticVacationDay}
 
         when:
-        def result = automaticVacationDayService.getAll()
+        def result = automaticVacationDayService.getAll(Mock(Pageable))
 
         then:
         result.get(0).nextYearProposition() == 26 * 8

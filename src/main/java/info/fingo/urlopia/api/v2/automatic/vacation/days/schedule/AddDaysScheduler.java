@@ -13,7 +13,7 @@ public class AddDaysScheduler {
 
     private final AutomaticVacationDayService automaticVacationDayService;
 
-    @Scheduled(cron = "0 5 0 1 1 ?") //1 january 00:05:00
+    @Scheduled(cron = "${urlopia.automatic.days.add.cron}")
     public void addNewYearHours() {
         log.info("Automatic add of hours for new year started");
         automaticVacationDayService.addHoursForNewYear();

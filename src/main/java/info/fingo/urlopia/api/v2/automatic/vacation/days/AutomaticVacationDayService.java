@@ -9,6 +9,7 @@ import info.fingo.urlopia.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,8 +31,8 @@ public class AutomaticVacationDayService {
         return AutomaticVacationDayDTO.from(updated);
     }
 
-    public List<AutomaticVacationDayDTO> getAll() {
-        return automaticVacationDaysRepository.findAll()
+    public List<AutomaticVacationDayDTO> getAll(Pageable pageable) {
+        return automaticVacationDaysRepository.findAll(pageable)
                 .stream()
                 .map(this::countProposition)
                 .map(AutomaticVacationDayDTO::from)

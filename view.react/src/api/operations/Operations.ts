@@ -9,8 +9,13 @@ const Operations: ApiOperationsType = {
   },
   [ApiOperation.GetAutomaticVacationDays]: {
     method: ApiMethod.GET,
-    url: () => '/automatic-vacation-days'
+    url: () => `/automatic-vacation-days`
+  },
+  [ApiOperation.UpdateAutomaticVacationDayProposition]: {
+    method: ApiMethod.PATCH,
+    url: () => `/automatic-vacation-days`
   }
+
 }
 
 export default Operations;
