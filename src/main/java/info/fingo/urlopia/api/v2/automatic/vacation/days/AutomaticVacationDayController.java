@@ -2,8 +2,8 @@ package info.fingo.urlopia.api.v2.automatic.vacation.days;
 
 import info.fingo.urlopia.api.v2.automatic.vacation.days.model.AutomaticVacationDayDTO;
 import info.fingo.urlopia.api.v2.automatic.vacation.days.model.UpdateUserConfig;
+import info.fingo.urlopia.config.persistance.filter.Filter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -17,8 +17,9 @@ public class AutomaticVacationDayController {
 
     @GetMapping()
     @RolesAllowed({"ROLES_ADMIN"})
-    public List<AutomaticVacationDayDTO> getAll(Pageable pageable){
-        return automaticVacationDayService.getAll(pageable);
+    public List<AutomaticVacationDayDTO> getAll(@RequestParam(name = "filter", defaultValue = "") String[] filters){
+        var filter = Filter.from(filters);
+        return automaticVacationDayService.getFiltered(filter);
     }
 
     @PatchMapping()

@@ -3,13 +3,13 @@ package info.fingo.urlopia.api.v2.automatic.vacation.days;
 import info.fingo.urlopia.api.v2.automatic.vacation.days.model.AutomaticVacationDay;
 import info.fingo.urlopia.api.v2.automatic.vacation.days.model.AutomaticVacationDayDTO;
 import info.fingo.urlopia.api.v2.automatic.vacation.days.model.UpdateUserConfig;
+import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.history.HistoryLogInput;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,8 +31,8 @@ public class AutomaticVacationDayService {
         return AutomaticVacationDayDTO.from(updated);
     }
 
-    public List<AutomaticVacationDayDTO> getAll(Pageable pageable) {
-        return automaticVacationDaysRepository.findAll(pageable)
+    public List<AutomaticVacationDayDTO> getFiltered(Filter filter) {
+        return automaticVacationDaysRepository.findAll(filter)
                 .stream()
                 .map(this::countProposition)
                 .map(AutomaticVacationDayDTO::from)
@@ -42,6 +42,7 @@ public class AutomaticVacationDayService {
     public void addHoursForNewYear(){
         automaticVacationDaysRepository.findAll()
                 .stream()
+                .filter(avd -> avd.getUser().isActive())
                 .map(this::countProposition)
                 .filter(this::hasNotEmptyProposition)
                 .forEach(this::addHours);
