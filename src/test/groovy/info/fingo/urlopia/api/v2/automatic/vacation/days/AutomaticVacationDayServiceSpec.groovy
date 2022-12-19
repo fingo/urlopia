@@ -2,12 +2,11 @@ package info.fingo.urlopia.api.v2.automatic.vacation.days
 
 import info.fingo.urlopia.api.v2.automatic.vacation.days.model.AutomaticVacationDay
 import info.fingo.urlopia.api.v2.automatic.vacation.days.model.UpdateUserConfig
+import info.fingo.urlopia.config.persistance.filter.Filter
 import info.fingo.urlopia.history.HistoryLogInput
 import info.fingo.urlopia.history.HistoryLogService
-import org.springframework.data.domain.PageImpl
 import spock.lang.Specification
 import info.fingo.urlopia.user.User
-import org.springframework.data.domain.Pageable
 
 
 class AutomaticVacationDayServiceSpec extends Specification{
@@ -63,34 +62,34 @@ class AutomaticVacationDayServiceSpec extends Specification{
         notThrown(AutomaticVacationDaysNotFoundException)
     }
 
-    def "getAll WHEN non full-time worker has empty proposition SHOULD count value for him and save it"(){
+    def "getFiltered WHEN non full-time worker has empty proposition SHOULD count value for him and save it"(){
         def user = Mock(User) {
             getWorkTime() >> 7.0f
             getId() >> 1L
         }
         def vacationDays = new AutomaticVacationDay(user, 26, 0)
 
-        automaticVacationDaysRepository.findAll(_ as Pageable) >> new PageImpl<AutomaticVacationDay>([vacationDays])
+        automaticVacationDaysRepository.findAll(_ as Filter) >> [vacationDays]
         automaticVacationDaysRepository.save(_ as AutomaticVacationDay) >> {AutomaticVacationDay automaticVacationDay -> automaticVacationDay}
 
         when:
-        def result = automaticVacationDayService.getAll(Mock(Pageable))
+        def result = automaticVacationDayService.getFiltered(Filter.empty())
 
         then:
         result.get(0).nextYearProposition() == 0
     }
 
-    def "getAll WHEN full-time worker has empty proposition SHOULD count value for him and save it"(){
+    def "getFiltered WHEN full-time worker has empty proposition SHOULD count value for him and save it"(){
         def user = Mock(User) {
             getWorkTime() >> 8.0f
             getId() >> 1L
         }
         def vacationDays = new AutomaticVacationDay(user, 26, 0)
-        automaticVacationDaysRepository.findAll(_ as Pageable) >> new PageImpl<AutomaticVacationDay>([vacationDays])
+        automaticVacationDaysRepository.findAll(_ as Filter) >> [vacationDays]
         automaticVacationDaysRepository.save(_ as AutomaticVacationDay) >> {AutomaticVacationDay automaticVacationDay -> automaticVacationDay}
 
         when:
-        def result = automaticVacationDayService.getAll(Mock(Pageable))
+        def result = automaticVacationDayService.getFiltered(Filter.empty())
 
         then:
         result.get(0).nextYearProposition() == 26 * 8
@@ -117,11 +116,33 @@ class AutomaticVacationDayServiceSpec extends Specification{
 
     }
 
-
-    def "addHours WHEN proposition is not empty SHOULD  invoke save on historyLog"() {
+    def "addHours WHEN user is inactive SHOULD  invoke save on historyLog"() {
         def user = Mock(User) {
             getWorkTime() >> 8.0f
             getId() >> 1L
+            isActive() >> false
+        }
+        def automaticVacationDay = Mock(AutomaticVacationDay) {
+            getNextYearHoursProposition() >> 100
+            getNextYearDaysBase() >> 26
+            getUser() >> user
+        }
+        automaticVacationDaysRepository.findAll() >> [automaticVacationDay]
+
+        when:
+        automaticVacationDayService.addHoursForNewYear()
+
+        then:
+        0 * historyLogService.createBySystem(_ as HistoryLogInput, _ as Long)
+
+    }
+
+
+    def "addHours WHEN proposition is not empty and user is active SHOULD  invoke save on historyLog"() {
+        def user = Mock(User) {
+            getWorkTime() >> 8.0f
+            getId() >> 1L
+            isActive() >> true
         }
         def automaticVacationDay = Mock(AutomaticVacationDay) {
             getNextYearHoursProposition() >> 100

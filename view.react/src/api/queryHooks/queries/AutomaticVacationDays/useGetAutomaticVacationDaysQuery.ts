@@ -11,8 +11,8 @@ const useGetAutomaticVacationDaysQuery = (onSuccessCallback: IonSuccessCallback)
     const { request } = useRequest<IAutomaticVacationDaysResponse[]>(ApiOperation.GetAutomaticVacationDays);
 
     return useQuery(automaticVacationDays.lists(), async () => {
-        const res = await request({params:{
-            sort:'id'}
+        const res = await request({params: {
+            filter: `user.active:TRUE`}
         });
 
         return res.data;
