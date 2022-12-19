@@ -96,6 +96,7 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                                 <Link to="/holidays" onClick={onClickLinkOrOutside}>Dni świąteczne</Link>
                             </LinkGroup>
                             <Link to="/reports" onClick={onClickLinkOrOutside}>Raporty</Link>
+                            <Link to="/automaticVacationDays" onClick={onClickLinkOrOutside}>Dni na nowy rok</Link>
                         </>
                     )}
 

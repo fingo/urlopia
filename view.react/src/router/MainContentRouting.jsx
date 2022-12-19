@@ -8,6 +8,7 @@ import {WorkersProvider} from "../contexts/workers-context/workersContext";
 import {AbsenceRequestsPage, URL as VacationRequestsURL} from '../pages/absence-requests-page/AbsenceRequestsPage';
 import {AcceptanceHistoryPage, URL as AcceptanceHistoryURL} from "../pages/acceptance-history-page/AcceptanceHistoryPage";
 import {AssociatesPage, URL as AssociatesURL} from '../pages/associates-page/AssociatesPage';
+import {AutomaticVacationDaysPage,URL as AutomaticVacationDaysURL} from '../pages/automatic-vacation-days-page/AutomaticVacationDaysPage';
 import {CalendarPage, URL as CalendarURL} from '../pages/calendar-page/CalendarPage';
 import {HistoryPage, URL as HistoryURL} from '../pages/history-page/HistoryPage';
 import {HolidaysPage, URL as HolidaysURL} from '../pages/holidays-page/HolidaysPage';
@@ -74,6 +75,12 @@ export const MainContentRouting = ({acceptancesPresent}) => {
                             <Route path={ReportsURL} exact>
                                 <ReportsPage/>
                             </Route>
+                            }
+
+                            {isUserAnAdmin &&
+                                <Route path={AutomaticVacationDaysURL} exact>
+                                    <AutomaticVacationDaysPage/>
+                                </Route>
                             }
 
                             <Route path="*">

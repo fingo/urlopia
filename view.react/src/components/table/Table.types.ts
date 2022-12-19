@@ -26,7 +26,7 @@ export type OrderByType = {
 
 export interface ColumnType<Cell, Row = RowType<Cell>> {
   name: string;
-  text: string;
+  text?: string;
   headerAlign?: AlignType;
   align?: AlignType;
   sort?: boolean;

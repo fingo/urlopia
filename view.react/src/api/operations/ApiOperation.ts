@@ -1,5 +1,7 @@
 enum ApiOperation {
-  GetCalendar
+  GetCalendar,
+  GetAutomaticVacationDays,
+  UpdateAutomaticVacationDayProposition,
 }
 
 export default ApiOperation;

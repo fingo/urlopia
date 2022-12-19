@@ -4,7 +4,8 @@ public record AutomaticVacationDayDTO(Long userId,
                                       String userFullName,
                                       Float workTime,
                                       Double nextYearProposition,
-                                      Integer nextYearDaysBase) {
+                                      Integer nextYearDaysBase,
+                                      Boolean isEc) {
 
 
     public static AutomaticVacationDayDTO from(AutomaticVacationDay automaticVacationDay){
@@ -13,6 +14,7 @@ public record AutomaticVacationDayDTO(Long userId,
         var workTime = automaticVacationDay.getUser().getWorkTime();
         var nextYearProposition = automaticVacationDay.getNextYearHoursProposition();
         var nextYearDaysBase = automaticVacationDay.getNextYearDaysBase();
-        return new AutomaticVacationDayDTO(userId, userFullName, workTime, nextYearProposition, nextYearDaysBase);
+        var isEc = automaticVacationDay.getUser().getEc();
+        return new AutomaticVacationDayDTO(userId, userFullName, workTime, nextYearProposition, nextYearDaysBase, isEc);
     }
 }
