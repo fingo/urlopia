@@ -97,7 +97,7 @@ export const AutomaticVacationDaysTable: FunctionComponent = () => {
         return <TextFieldWrapper value={nextYearProposition}
                                  name={'nextYearProposition'}
                                  pattern={'^[0-9]*[h|d]$'}
-                                 helperText={'niepoprawny format (liczba[d/h])'}
+                                 helperText={'niepoprawny format (liczba naturalna[d/h])'}
                                  row={row}
                                  saveRow={saveRow}
                 />
@@ -107,7 +107,7 @@ export const AutomaticVacationDaysTable: FunctionComponent = () => {
         return <TextFieldWrapper value={nextYearDaysBase}
                                  name={'nextYearDaysBase'}
                                  pattern={'^[0-9]+$'}
-                                 helperText={'tylko liczby są dopuszczalne'}
+                                 helperText={'tylko liczby naturalne są dopuszczalne'}
                                  row={row}
                                  saveRow={saveRow}
         />
