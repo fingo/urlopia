@@ -1,11 +1,11 @@
 package info.fingo.urlopia.config.mail.send;
 
 import info.fingo.urlopia.config.mail.Mail;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -76,7 +76,7 @@ class MailConverter {
             message = new MimeMessage(Session.getInstance(System.getProperties()));
 
             try {
-                var title = StringUtils.isEmpty(titlePrefix) ? mail.getSubject() : String.format("%s - %s", titlePrefix, mail.getSubject());
+                var title = !StringUtils.hasLength(titlePrefix) ? mail.getSubject() : String.format("%s - %s", titlePrefix, mail.getSubject());
                 message.setFrom(pickSender(mail));
                 message.setRecipient(Message.RecipientType.TO, pickRecipient(mail));
                 message.setSubject(title);
