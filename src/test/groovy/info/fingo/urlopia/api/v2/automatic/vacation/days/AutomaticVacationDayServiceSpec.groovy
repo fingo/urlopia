@@ -23,7 +23,7 @@ class AutomaticVacationDayServiceSpec extends Specification{
         automaticVacationDayService.addForNewUser(user)
 
         then:
-        2 * automaticVacationDaysRepository.save(_ as AutomaticVacationDay)
+        1 * automaticVacationDaysRepository.save(_ as AutomaticVacationDay)
 
     }
 

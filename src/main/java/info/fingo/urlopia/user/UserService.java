@@ -8,7 +8,7 @@ import info.fingo.urlopia.config.ad.ActiveDirectory;
 import info.fingo.urlopia.config.ad.ActiveDirectoryObjectClass;
 import info.fingo.urlopia.config.ad.ActiveDirectoryUtils;
 import info.fingo.urlopia.config.ad.Attribute;
-import info.fingo.urlopia.config.authentication.oauth.JwtTokenAuthoritiesProvider;
+import info.fingo.urlopia.config.authentication.UserAuthoritiesProvider;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.history.UserDetailsChangeEvent;
@@ -41,7 +41,7 @@ public class UserService {
     private final AutomaticVacationDayService automaticVacationDayService;
 
     private static final String NO_USER_WITH_ID_MESSAGE = "There is no user with id: {}";
-    private static final String ADMIN_AUTHORITY_STRING = JwtTokenAuthoritiesProvider.ROLE_PREFIX + User.Role.ADMIN;
+    private static final String ADMIN_AUTHORITY_STRING = UserAuthoritiesProvider.ROLE_PREFIX + User.Role.ADMIN;
     private static final SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(ADMIN_AUTHORITY_STRING);
 
     @Value("${ad.groups.users}")
@@ -101,35 +101,6 @@ public class UserService {
     }
 
     // *** ACTIONS ***
-
-    void setLanguage(Long userId,
-                     String language) {
-        userRepository
-                .findById(userId)
-                .ifPresentOrElse(
-                        user -> {
-                            user.setLang(language);
-                            userRepository.save(user);
-                        },
-                        () -> {
-                            log.error(NO_USER_WITH_ID_MESSAGE, userId);
-                            throw NoSuchUserException.invalidId();
-                        });
-        var loggerInfo = "Language of user with id: %d has been set to: %s".formatted(userId, language);
-        log.info(loggerInfo);
-    }
-
-    boolean isEC(Long userId) {
-        return userRepository
-                .findById(userId)
-                .map(User::getEc)
-                .orElseThrow(() ->
-                {
-                    log.error(NO_USER_WITH_ID_MESSAGE, userId);
-                    return NoSuchUserException.invalidId();
-                });
-    }
-
 
     public void setWorkTime(Long userId,
                             String workTimeString) {
