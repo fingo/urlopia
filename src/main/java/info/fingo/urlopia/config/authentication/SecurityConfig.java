@@ -20,9 +20,8 @@ import java.util.Arrays;
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final JwtFilter jwtFilter;
-
     private final Environment environment;
+    private final AuthorizationFilterProvider authorizationFilterProvider;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -55,8 +54,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private void filtersConfiguration(HttpSecurity http){
+        var authFilter = authorizationFilterProvider.getAuthorizationFilter();
         http
-           .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+           .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     private void exceptionHandlingConfiguration(HttpSecurity http) throws Exception {

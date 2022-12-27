@@ -1,10 +1,11 @@
-package info.fingo.urlopia.config.authentication;
+package info.fingo.urlopia.config.authentication.noauth;
 
-
-import info.fingo.urlopia.api.v2.oauth.OAuthRedirectService;
+import info.fingo.urlopia.config.authentication.UserAuthoritiesProvider;
+import info.fingo.urlopia.config.authentication.UserIdInterceptor;
 import info.fingo.urlopia.config.authentication.oauth.InvalidTokenException;
-import info.fingo.urlopia.config.authentication.oauth.JwtTokenValidator;
 import info.fingo.urlopia.user.NoSuchUserException;
+import info.fingo.urlopia.user.User;
+import info.fingo.urlopia.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,30 +21,33 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class JwtFilter extends OncePerRequestFilter {
-    private final JwtTokenValidator jwtTokenValidator;
+public class NoAuthFilter extends OncePerRequestFilter {
+
+    private final UserAuthoritiesProvider userAuthoritiesProvider;
+    private final UserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain chain) throws IOException, ServletException {
-        String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith(OAuthRedirectService.BEARER_PREFIX)) {
-            chain.doFilter(request, response);
+                                    FilterChain filterChain) throws ServletException, IOException {
+        String header = request.getHeader(UserIdInterceptor.USER_ID_ATTRIBUTE);
+        if (header == null) {
+            filterChain.doFilter(request, response);
             return;
         }
-        Authentication authResult = getAuthenticationByToken(header, response);
+        var user = userService.get(Long.valueOf(header));
+        var authResult = getAuthenticationForUser(user, response);
         if (authResult != null){
             SecurityContextHolder.getContext().setAuthentication(authResult);
-            chain.doFilter(request, response);
+            filterChain.doFilter(request, response);
         }
     }
-    private Authentication getAuthenticationByToken(String header,
+
+    private Authentication getAuthenticationForUser(User user,
                                                     HttpServletResponse response) {
         try{
-            var accessToken = jwtTokenValidator.validateAuthorizationHeader(header);
-            var principal = accessToken.getPrincipal();
-            var authorities = accessToken.getAuthorities();
+            var principal = user.getPrincipalName();
+            var authorities = userAuthoritiesProvider.getAuthoritiesFromUser(user);
             return new UsernamePasswordAuthenticationToken(principal, null, authorities);
         }catch (InvalidTokenException | NoSuchUserException exception){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

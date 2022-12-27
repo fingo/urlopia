@@ -1,4 +1,4 @@
-package info.fingo.urlopia.api.v2.oauth;
+package info.fingo.urlopia.api.v2.authentication.oauth;
 
 import info.fingo.urlopia.config.authentication.UserData;
 import info.fingo.urlopia.config.authentication.UserIdInterceptor;

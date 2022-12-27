@@ -3,6 +3,7 @@ package info.fingo.urlopia.config.authentication;
 import info.fingo.urlopia.config.authentication.oauth.JwtTokenValidator;
 import info.fingo.urlopia.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Component
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "ad.configuration.enabled", havingValue = "true", matchIfMissing = true)
 public class UserIdInterceptor implements HandlerInterceptor {
 
 

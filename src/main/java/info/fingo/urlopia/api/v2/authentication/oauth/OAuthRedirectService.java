@@ -1,4 +1,4 @@
-package info.fingo.urlopia.api.v2.oauth;
+package info.fingo.urlopia.api.v2.authentication.oauth;
 
 import info.fingo.urlopia.api.v2.user.UserRolesProvider;
 import info.fingo.urlopia.config.authentication.TeamInfo;
