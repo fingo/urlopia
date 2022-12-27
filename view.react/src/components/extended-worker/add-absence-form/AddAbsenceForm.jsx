@@ -15,7 +15,7 @@ import styles from './AddAbsenceForm.module.scss';
 
 const KEY = 'selection';
 const DEFAULT_REASON = 'ADDITIONAL_CARE_ALLOWANCE_PANDEMIC';
-const POST_ABSENCE_URL = '/api/v2/absence-requests/special-absence'
+const POST_ABSENCE_URL = '/absence-requests/special-absence'
 
 export const AddAbsenceForm = ({show, onHide, userId, fullName}) => {
     const [, absenceHistoryDispatch] = useAbsenceHistory();

@@ -1,7 +1,7 @@
 import { useAccount,useMsal } from '@azure/msal-react';
-import axios from 'axios';
 import React from 'react';
 
+import { axiosClient } from "../../api/client";
 import {loginRequest} from "../../authConfig";
 
 
@@ -10,7 +10,7 @@ const RequestInterceptor = ({ children }) => {
     const { instance, accounts } = useMsal();
     const account = useAccount(accounts[0]);
 
-    axios.interceptors.request.use(async (config) => {
+    axiosClient.interceptors.request.use(async (config) => {
         if (!account) {
             return config;
         }

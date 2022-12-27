@@ -8,7 +8,7 @@ import styles from '../Reports.module.scss';
 
 export const PresenceListModal = ({show, onHide}) => {
 
-    const GET_PDF_LIST_URL = "/api/v2/reports/monthly-presence";
+    const GET_PDF_LIST_URL = "/reports/monthly-presence";
 
     const today = new Date();
     const currentYear = today.getFullYear();

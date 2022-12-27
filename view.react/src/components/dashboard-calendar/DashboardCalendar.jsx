@@ -21,8 +21,6 @@ import {sortedUsers} from "../../helpers/sorts/UsersSortHelper";
 import {CalendarDayInfo} from "./calendar-day-info/CalendarDayInfo";
 import styles from "./DashboardCalendar.module.scss";
 
-const ENDPOINT_PREFIX_URL = '/api/v2';
-
 const saveSelectedTeamsFilter = selectedTeams => {
     localStorage.setItem("dashboard.selectedTeams", JSON.stringify(selectedTeams))
 }
@@ -62,10 +60,10 @@ export const DashboardCalendar = () => {
     const calendarResponse = data?.calendar;
 
     useEffect(() => {
-        sendGetRequest(`${ENDPOINT_PREFIX_URL}/users?filter=active:true`)
+        sendGetRequest(`/users?filter=active:true`)
             .then(users => setUsersOptions(formatUsers(users)))
             .catch(error => error);
-        sendGetRequest(`${ENDPOINT_PREFIX_URL}/teams`)
+        sendGetRequest(`/teams`)
             .then(teams => setTeamsOptions(formatTeams(teams)))
             .catch(error => error);
     }, []);

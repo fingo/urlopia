@@ -12,5 +12,5 @@ export const msalConfig = {
 
 // Add scopes here for ID token to be used at Microsoft identity platform endpoints.
 export const loginRequest = {
-    scopes: ["136f665b-8ad9-4662-92b6-3aad6f959e0f/.default"]
+    scopes: [`${process.env.REACT_APP_OAUTH_CLIENT_ID}/.default`]
 };

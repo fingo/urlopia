@@ -1,16 +1,15 @@
 import {PublicClientApplication} from "@azure/msal-browser";
-import axios from 'axios';
 
+import { axiosClient } from "../api/client";
 import {logout} from "../api/services/session.service";
 import {msalConfig} from "../authConfig";
 import {mapCodeToMessage} from "./errors/ErrorCodeMapper";
 import {pushErrorNotification} from "./notifications/Notifications";
 
-export const URL_PREFIX = process.env.NODE_ENV === 'development' ? "http://localhost:8080" : '';
 
 export const sendGetRequest = (url, params, config) => {
-    return axios
-        .get(URL_PREFIX + url, {
+    return axiosClient
+        .get(url, {
             params,
             ...config
         })
@@ -21,8 +20,8 @@ export const sendGetRequest = (url, params, config) => {
 }
 
 export const sendPostRequest = (url, body) => {
-    return axios
-        .post(URL_PREFIX + url,
+    return axiosClient
+        .post( url,
             body)
         .then(response => {
             return response.data;
@@ -31,8 +30,8 @@ export const sendPostRequest = (url, body) => {
 }
 
 export const sendPatchRequest = (url, body) => {
-    return axios
-        .patch(URL_PREFIX + url,
+    return axiosClient
+        .patch(url,
             body)
         .then(response => {
             return response.data;
@@ -41,8 +40,8 @@ export const sendPatchRequest = (url, body) => {
 }
 
 export const sendPutRequest = (url, body) => {
-    return axios
-        .put(URL_PREFIX + url,
+    return axiosClient
+        .put(url,
             body)
         .then(response => {
             return response.data;
@@ -51,8 +50,8 @@ export const sendPutRequest = (url, body) => {
 }
 
 export const sendDeleteRequest = (url) => {
-    return axios
-        .delete(URL_PREFIX + url)
+    return axiosClient
+        .delete(url)
         .then(response => {
             return response.data;
         })
@@ -60,7 +59,7 @@ export const sendDeleteRequest = (url) => {
 }
 
 export const getXlsxFromResponse = (url, fileName) => {
-    return axios.get(URL_PREFIX + url, {
+    return axiosClient.get(url, {
         responseType: "blob",
     })
         .then(response => {
@@ -80,7 +79,7 @@ export const getXlsxFromResponse = (url, fileName) => {
 }
 
 export const getPdfFromResponse = (url, fileName) => {
-    return axios.get(URL_PREFIX + url, {
+    return axiosClient.get(url, {
         responseType: 'blob',
     })
         .then(response => {
@@ -100,7 +99,7 @@ export const getPdfFromResponse = (url, fileName) => {
 }
 
 export const getZipFromResponse = (url, fileName) => {
-    return axios.get(URL_PREFIX + url, {
+    return axiosClient.get(url, {
         responseType: "blob",
     })
         .then(response => {

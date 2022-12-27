@@ -15,7 +15,7 @@ import styles from './AddEventForm.module.scss';
 
 const KEY = 'selection';
 const DEFAULT_REASON = 'USER_ACTIVATED';
-const POST_EVENT_URL = '/api/v2/absence-history/details-change'
+const POST_EVENT_URL = '/absence-history/details-change'
 
 export const AddEventForm = ({show, onHide, userId, fullName}) => {
     const [, absenceHistoryDispatch] = useAbsenceHistory();

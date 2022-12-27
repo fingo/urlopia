@@ -1,4 +1,4 @@
-const PRESENCE_ENDPOINT = "/api/v2/presence-confirmations"
+const PRESENCE_ENDPOINT = "/presence-confirmations"
 const PRESENCE_ACTION_PREFIX = "presence"
 
 export const FETCH_MY_PRESENCE_CONFIRMATIONS_URL = PRESENCE_ENDPOINT
