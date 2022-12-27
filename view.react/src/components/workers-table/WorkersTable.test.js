@@ -1,13 +1,22 @@
 import {act, fireEvent, render, screen, waitFor} from "@testing-library/react";
-import axios from "axios";
+import MockAdapter from "axios-mock-adapter";
 
+import { axiosClient } from "../../api/client";
 import {USER_DATA_KEY} from "../../constants/session.keystorage";
 import {PresenceProvider} from "../../contexts/presence-context/presenceContext";
 import {WorkersProvider} from "../../contexts/workers-context/workersContext";
 import {mockLocalStorage} from "../../helpers/TestHelper";
 import {WorkersTable} from "./WorkersTable";
 
-jest.mock('axios');
+
+let axiosMock
+beforeAll(() => {
+    axiosMock = new MockAdapter(axiosClient);
+});
+
+afterEach(() => {
+    axiosMock.reset();
+});
 
 describe('WorkersTable', () => {
     const sessionStorageMock = mockLocalStorage()
@@ -21,7 +30,7 @@ describe('WorkersTable', () => {
     })
 
     it('should show headers of table for employees', async () => {
-        axios.get.mockResolvedValue({data: []})
+        axiosMock.onGet().reply(200, [])
         await act(async () => {
             await render(<PresenceProvider><WorkersProvider><WorkersTable/></WorkersProvider></PresenceProvider>);
 
@@ -40,7 +49,7 @@ describe('WorkersTable', () => {
     })
 
     it('should show headers of table for associates', async () => {
-        axios.get.mockResolvedValue({data: []});
+        axiosMock.onGet().reply(200, [])
         await act(async () => {
             await render(<PresenceProvider><WorkersProvider><WorkersTable isEC={false}/></WorkersProvider></PresenceProvider>);
             const fullNameHeader = screen.getByText('Imię i nazwisko');
@@ -53,7 +62,7 @@ describe('WorkersTable', () => {
     })
 
     it('should show title "Pracownicy" for employees', async () => {
-        axios.get.mockResolvedValue({data: []});
+        axiosMock.onGet().reply(200, [])
         await act(async () => {
             await render(<PresenceProvider><WorkersProvider><WorkersTable/></WorkersProvider></PresenceProvider>);
             const title = screen.getByText('Pracownicy');
@@ -62,7 +71,7 @@ describe('WorkersTable', () => {
     })
 
     it('shows title "Współpracownicy" for associates', async () => {
-        axios.get.mockResolvedValue({data: []});
+        axiosMock.onGet().reply(200, [])
         await act(async () => {
             await render(<PresenceProvider><WorkersProvider><WorkersTable isEC={false}/></WorkersProvider></PresenceProvider>);
             const title = screen.getByText('Współpracownicy');
@@ -71,7 +80,7 @@ describe('WorkersTable', () => {
     })
 
     it('should show filter inputs for workers', async () => {
-        axios.get.mockResolvedValue({data: []});
+        axiosMock.onGet().reply(200, [])
         await act(async () => {
             await render(<PresenceProvider><WorkersProvider><WorkersTable isEC={true}/></WorkersProvider></PresenceProvider>);
             await waitFor(() => expect(screen.queryAllByPlaceholderText('Filtruj...').length).toBe(4));
@@ -79,7 +88,7 @@ describe('WorkersTable', () => {
     })
 
     it('should show filter inputs for associates', async () => {
-        axios.get.mockResolvedValue({data: []});
+        axiosMock.onGet().reply(200, [])
         await act(async () => {
             await render(<PresenceProvider><WorkersProvider><WorkersTable isEC={false}/></WorkersProvider></PresenceProvider>);
             await waitFor(() => expect(screen.queryAllByPlaceholderText('Filtruj...').length).toBe(3));
@@ -87,7 +96,7 @@ describe('WorkersTable', () => {
     })
 
     it('filter inputs should keep what the user enters', async () => {
-        axios.get.mockResolvedValue({data: []});
+        axiosMock.onGet().reply(200, [])
         await act(async () => {
             await render(<PresenceProvider><WorkersProvider><WorkersTable/></WorkersProvider></PresenceProvider>);
         })

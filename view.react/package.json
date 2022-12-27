@@ -80,6 +80,8 @@
     ]
   },
   "devDependencies": {
-    "eslint-plugin-simple-import-sort": "^7.0.0"
+    "axios-mock-adapter": "^1.21.2",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "yarn": "^1.22.19"
   }
 }

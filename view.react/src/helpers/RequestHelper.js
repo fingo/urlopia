@@ -1,8 +1,5 @@
-import {PublicClientApplication} from "@azure/msal-browser";
-
 import { axiosClient } from "../api/client";
-import {logout} from "../api/services/session.service";
-import {msalConfig} from "../authConfig";
+import { logout } from "./authentication/LogoutHelper";
 import {mapCodeToMessage} from "./errors/ErrorCodeMapper";
 import {pushErrorNotification} from "./notifications/Notifications";
 
@@ -125,8 +122,7 @@ export const handleError = (error) => {
     if (error.response) {
         const unauthorized = error.response.status === 401
         if (unauthorized) {
-            const msalInstance = new PublicClientApplication(msalConfig);
-            logout(msalInstance)
+            logout()
             return;
         }
         let code = error.response.message;

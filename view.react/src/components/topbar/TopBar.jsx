@@ -1,15 +1,15 @@
-import {useMsal} from "@azure/msal-react";
 import classNames from "classnames";
 import PropTypes from 'prop-types';
 import {useEffect, useState} from "react";
 import {Container, Navbar} from 'react-bootstrap';
 import {GearFill as GearIcon, List as ListIcon, Power as PowerIcon} from "react-bootstrap-icons";
 
-import {getFullUserName, getUserTeams, logout} from "../../api/services/session.service";
+import {getFullUserName, getUserTeams} from "../../api/services/session.service";
 import logoImg from '../../assets/logo.svg';
 import UrlopiaLogo from '../../assets/logo-urlopia.png';
 import {fetchWorkingHoursPreferences} from "../../contexts/user-preferences-context/actions/fetchWorkingHoursPreferences";
 import {useUserPreferences} from "../../contexts/user-preferences-context/userPreferencesContext";
+import { logout } from "../../helpers/authentication/LogoutHelper";
 import {PreferencesModal} from "../preferences-modal/PreferencesModal";
 import {TeamDropdown} from "./team-dropdown/TeamDropdown";
 import styles from './TopBar.module.scss';
@@ -22,14 +22,12 @@ export const TopBar = ({onHamburgerClick}) => {
 
     const [, userPreferencesDispatch] = useUserPreferences()
 
-    const msalContext = useMsal()
-
     useEffect(() => {
         fetchWorkingHoursPreferences(userPreferencesDispatch)
     }, [userPreferencesDispatch])
 
     const handleLogout = () => {
-        logout(msalContext.instance);
+        logout()
     }
 
     const listBtnClass = classNames('d-lg-none', styles.button);
