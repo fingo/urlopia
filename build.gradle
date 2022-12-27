@@ -16,8 +16,8 @@ allprojects {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_16
-    targetCompatibility = JavaVersion.VERSION_16
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 jacocoTestReport {
@@ -32,43 +32,69 @@ repositories {
     maven { url("https://repository.jboss.org/nexus/content/repositories/releases") }
 }
 
-dependencies {
-    implementation platform("org.springframework.boot:spring-boot-dependencies:2.5.2")
-    developmentOnly platform("org.springframework.boot:spring-boot-dependencies:2.5.2")
+ext {
+    versions = [
+            //spring
+            springBoot   : '2.7.7',
 
-    developmentOnly('com.h2database:h2')
+            //oauth
+            oauthJavaJwt : '4.2.1',
+            oauthJwksRsa : '0.21.2',
+
+            //mail
+            handlebars   : '4.3.1',
+
+            //excel
+            apachePoi    : '5.2.3',
+
+            //pdf
+            itextPdf     : '5.5.13.3',
+
+            //modelMapping
+            modelMapper  : '3.1.1',
+
+            //slack
+            slackApiBolt : '1.27.2',
+
+            //testing
+            spock       : '2.0-groovy-3.0'
+
+    ]
+}
+
+
+dependencies {
+    implementation platform("org.springframework.boot:spring-boot-dependencies:${versions.springBoot}")
     developmentOnly('org.springframework.boot:spring-boot-devtools')
-    implementation('javax.ejb:ejb-api:3.0')
-    implementation('javax.jms:jms-api:1.1-rev-1')
-    implementation('javax.resource:javax.resource-api:1.7')
-    implementation('javax.servlet.jsp:jsp-api:2.2')
-    implementation('javax.servlet.jsp.jstl:javax.servlet.jsp.jstl-api:1.2.1')
-    implementation('javax.transaction:jta:1.1')
-    implementation('org.hibernate:hibernate-java8:5.0.12.Final')
-    implementation('org.springframework.boot:spring-boot-starter-web')
-    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
-    implementation('org.springframework.boot:spring-boot-starter-mail')
-    implementation('org.springframework.boot:spring-boot-starter-security')
-    implementation("com.auth0:java-jwt:4.0.0")
-    implementation("com.auth0:jwks-rsa:0.21.1")
-    implementation('io.jsonwebtoken:jjwt:0.6.0')
-    implementation('com.github.jknack:handlebars:4.0.6')
-    implementation('org.apache.poi:poi:4.0.1')
-    implementation('org.apache.poi:poi-ooxml:4.0.1')
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.1')
-    implementation('org.modelmapper:modelmapper:2.1.1')
-    implementation('com.itextpdf:itextpdf:5.5.13.2')
-    implementation("com.slack.api:bolt:1.12.1")
-    implementation("com.slack.api:bolt-servlet:1.12.1")
+
+    implementation("com.auth0:java-jwt:${versions.oauthJavaJwt}")
+    implementation("com.auth0:jwks-rsa:${versions.oauthJwksRsa}")
+
+    implementation("com.github.jknack:handlebars:${versions.handlebars}")
+
+    implementation("org.apache.poi:poi:${versions.apachePoi}")
+    implementation("org.apache.poi:poi-ooxml:${versions.apachePoi}")
+
+    implementation("org.modelmapper:modelmapper:${versions.modelMapper}")
+
+    implementation("com.itextpdf:itextpdf:${versions.itextPdf}")
+
+    implementation("com.slack.api:bolt:${versions.slackApiBolt}")
+    implementation("com.slack.api:bolt-servlet:${versions.slackApiBolt}")
 
     // Database migration
     implementation("org.flywaydb:flyway-core")
 
     runtimeOnly('org.postgresql:postgresql')
+    developmentOnly('com.h2database:h2')
 
-    testImplementation('org.spockframework:spock-core:2.0-groovy-3.0')
-    testImplementation('org.codehaus.groovy:groovy')
+    testImplementation("org.spockframework:spock-core:${versions.spock}")
+    testImplementation("org.codehaus.groovy:groovy")
 }
 
 test {

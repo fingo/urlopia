@@ -34,10 +34,9 @@ class ExcelToPDFConverterUtilsSpec extends Specification {
         and: "their types"
         cells[0].setCellValue("string value")
         cells[1].setCellValue(256d)
-        cells[2].setCellType(CellType.BLANK)
-        cells[3].setCellType(CellType.FORMULA)
-        cells[4].setCellType(CellType.BOOLEAN)
-        cells[5].setCellType(CellType.ERROR)
+        cells[2].setBlank()
+        cells[3].setCellFormula('ISBLANK(A1)')
+        cells[4].setCellValue(false)
 
         expect:
         ExcelToPDFConverterUtils.resolveCellValue(cells[0]) == "string value"
