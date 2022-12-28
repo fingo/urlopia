@@ -1,4 +1,4 @@
-@import '../../global-styles/bootstrap-breakpoints';
+@import 'src/global-styles/bootstrap-breakpoints';
 
 @include media-breakpoint-up(lg) {
   .mainContent {

@@ -19,8 +19,8 @@ import {MainContentRouting} from "../../router/MainContentRouting";
 import {AcceptanceLoader} from "../acceptance-loader/AcceptanceLoader";
 import {Sidebar} from "../sidebar/Sidebar";
 import {TopBar} from "../topbar/TopBar";
-import styles from './App.module.scss';
-export const App = () => {
+import styles from './Main.module.scss';
+export const Main = () => {
 
 
     const [, setUser] = useState({isLeader: false, isAdmin: false})

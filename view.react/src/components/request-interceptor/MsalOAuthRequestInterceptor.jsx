@@ -4,9 +4,7 @@ import React from 'react';
 import { axiosClient } from "../../api/client";
 import {loginRequest} from "../../authConfig";
 
-
-
-const RequestInterceptor = ({ children }) => {
+const MsalOAuthRequestInterceptor = ({ children }) => {
     const { instance, accounts } = useMsal();
     const account = useAccount(accounts[0]);
 
@@ -31,4 +29,4 @@ const RequestInterceptor = ({ children }) => {
     );
 };
 
-export default RequestInterceptor;
+export default MsalOAuthRequestInterceptor;
