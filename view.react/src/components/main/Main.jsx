@@ -34,8 +34,10 @@ export const Main = () => {
     useEffect(() => {
         sendGetRequest(USER_DETAILS_URL)
             .then(data => {
-                localStorage.setItem(USER_DATA_KEY, JSON.stringify(data))
-                setUser(data)
+                if (data){
+                    localStorage.setItem(USER_DATA_KEY, JSON.stringify(data))
+                    setUser(data)
+                }
             })
     }, []);
 

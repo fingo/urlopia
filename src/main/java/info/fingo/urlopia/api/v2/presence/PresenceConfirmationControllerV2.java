@@ -1,6 +1,6 @@
 package info.fingo.urlopia.api.v2.presence;
 
-import info.fingo.urlopia.config.authentication.UserIdInterceptor;
+import info.fingo.urlopia.config.authentication.oauth.OAuthUserIdInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,7 +20,7 @@ public class PresenceConfirmationControllerV2 {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PresenceConfirmationInputOutput> getPresenceConfirmations(
             @RequestParam(name = "filter", defaultValue = "") String[] filters, HttpServletRequest httpRequest) {
-        var authenticatedUserId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedUserId = (Long) httpRequest.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
         var presenceConfirmations = presenceConfirmationService.getPresenceConfirmations(authenticatedUserId, filters);
         return PresenceConfirmationInputOutput.listFrom(presenceConfirmations);
     }
@@ -30,7 +30,7 @@ public class PresenceConfirmationControllerV2 {
     @ResponseStatus(HttpStatus.CREATED)
     public PresenceConfirmationInputOutput savePresenceConfirmation(
             @RequestBody PresenceConfirmationInputOutput inputDto, HttpServletRequest httpRequest) {
-        var authenticatedUserId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedUserId = (Long) httpRequest.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
         var addedPresenceConfirmation = presenceConfirmationService.confirmPresence(authenticatedUserId, inputDto);
         return PresenceConfirmationInputOutput.from(addedPresenceConfirmation);
     }

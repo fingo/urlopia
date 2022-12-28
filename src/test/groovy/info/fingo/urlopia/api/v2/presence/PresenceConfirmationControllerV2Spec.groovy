@@ -1,6 +1,6 @@
 package info.fingo.urlopia.api.v2.presence
 
-import info.fingo.urlopia.config.authentication.UserIdInterceptor
+import info.fingo.urlopia.config.authentication.oauth.OAuthUserIdInterceptor
 import info.fingo.urlopia.user.User
 import spock.lang.Specification
 
@@ -25,7 +25,7 @@ class PresenceConfirmationControllerV2Spec extends Specification {
     def "getPresenceConfirmations() WHEN user is authenticated SHOULD return presence confirmations"() {
         given: "an http request with authenticated user id"
         def httpRequest = Mock(HttpServletRequest) {
-            getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE) >> authenticatedUserId
+            getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE) >> authenticatedUserId
         }
 
         and: "any filters"
@@ -52,7 +52,7 @@ class PresenceConfirmationControllerV2Spec extends Specification {
     def "savePresenceConfirmation() WHEN user is authenticated and dto is valid SHOULD return saved presence confirmation"() {
         given: "an http request with authenticated user id"
         def httpRequest = Mock(HttpServletRequest) {
-            getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE) >> authenticatedUserId
+            getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE) >> authenticatedUserId
         }
 
         and: "a valid dto"

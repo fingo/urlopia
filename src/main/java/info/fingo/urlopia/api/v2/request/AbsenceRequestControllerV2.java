@@ -2,7 +2,7 @@ package info.fingo.urlopia.api.v2.request;
 
 import info.fingo.urlopia.acceptance.AcceptanceService;
 import info.fingo.urlopia.api.v2.exceptions.InvalidActionException;
-import info.fingo.urlopia.config.authentication.UserIdInterceptor;
+import info.fingo.urlopia.config.authentication.oauth.OAuthUserIdInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.request.RequestInput;
 import info.fingo.urlopia.request.RequestService;
@@ -42,7 +42,7 @@ public class AbsenceRequestControllerV2 {
     @ResponseStatus(HttpStatus.CREATED)
     public RequestsOutput create(@RequestBody RequestInput input,
                                     HttpServletRequest httpRequest) {
-        var authenticatedId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedId = (Long) httpRequest.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
         var request = requestService.create(authenticatedId, input);
         request = requestService.getById(request.getId());
         var acceptances = acceptanceService.getAcceptancesByRequestId(request.getId());
@@ -54,7 +54,7 @@ public class AbsenceRequestControllerV2 {
     public Page<RequestsOutput> getMyRequests(@RequestParam(name = "filter", defaultValue = "") String[] filters,
                                               Pageable pageable,
                                               HttpServletRequest httpRequest) {
-        var authenticatedId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedId = (Long) httpRequest.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
         var filter = Filter.from(filters);
         var requestsPage = requestService.getFromUser(authenticatedId, filter, pageable);
         return requestsPage.map(RequestsOutput::fromRequestExcerptProjection);
@@ -74,7 +74,7 @@ public class AbsenceRequestControllerV2 {
     public RequestStatus updateAbsenceRequestStatus(@PathVariable Long requestId,
                                                     @RequestBody RequestStatus status,
                                                     HttpServletRequest httpRequest) {
-        var authenticatedId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedId = (Long) httpRequest.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
 
         switch (status.status()) {
             case CANCELED -> requestService.cancel(requestId, authenticatedId);

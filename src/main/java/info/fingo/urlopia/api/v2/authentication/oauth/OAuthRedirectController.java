@@ -1,7 +1,7 @@
 package info.fingo.urlopia.api.v2.authentication.oauth;
 
 import info.fingo.urlopia.config.authentication.UserData;
-import info.fingo.urlopia.config.authentication.UserIdInterceptor;
+import info.fingo.urlopia.config.authentication.oauth.OAuthUserIdInterceptor;
 import info.fingo.urlopia.history.HistoryLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,7 @@ public class OAuthRedirectController {
     @RolesAllowed({"ROLES_ADMIN", "ROLES_LEADER", "ROLES_WORKER"})
     @GetMapping()
     public UserData getAuthenticatedUserData(HttpServletRequest httpRequest){
-        var authenticatedId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedId = (Long) httpRequest.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
         var userData = oAuthRedirectService.getUserData(authenticatedId);
 
         var userEmploymentYear = historyLogService.getEmploymentYear(authenticatedId);

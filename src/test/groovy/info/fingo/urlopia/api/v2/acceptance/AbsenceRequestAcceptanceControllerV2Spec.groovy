@@ -4,7 +4,7 @@ import info.fingo.urlopia.acceptance.Acceptance
 import info.fingo.urlopia.acceptance.AcceptanceExcerptProjection
 import info.fingo.urlopia.acceptance.AcceptanceService
 import info.fingo.urlopia.api.v2.exceptions.InvalidActionException
-import info.fingo.urlopia.config.authentication.UserIdInterceptor
+import info.fingo.urlopia.config.authentication.oauth.OAuthUserIdInterceptor
 import info.fingo.urlopia.config.persistance.filter.Filter
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -18,7 +18,7 @@ class AbsenceRequestAcceptanceControllerV2Spec extends Specification {
     def filtersString = [] as String[]
     def pageable = Mock(Pageable)
     def httpRequest = Mock(HttpServletRequest) {
-        getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE) >> leaderId
+        getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE) >> leaderId
     }
 
     def expectedAcceptances = Mock(Page<AcceptancesOutput>)

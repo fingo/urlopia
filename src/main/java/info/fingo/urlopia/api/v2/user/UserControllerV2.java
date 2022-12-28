@@ -1,6 +1,6 @@
 package info.fingo.urlopia.api.v2.user;
 
-import info.fingo.urlopia.config.authentication.UserIdInterceptor;
+import info.fingo.urlopia.config.authentication.oauth.OAuthUserIdInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.history.HistoryLogInput;
 import info.fingo.urlopia.history.HistoryLogService;
@@ -40,14 +40,14 @@ public class UserControllerV2 {
    @RolesAllowed("ROLES_WORKER")
    @GetMapping(path = "/me/pending-days", produces = MediaType.APPLICATION_JSON_VALUE)
    public PendingDaysOutput getPendingDays(HttpServletRequest httpRequest) {
-      var authenticatedId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
+      var authenticatedId = (Long) httpRequest.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
       return normalRequestService.getPendingRequestsTimeV2(authenticatedId);
    }
 
    @RolesAllowed("ROLES_WORKER")
    @GetMapping(value = "/me/vacation-days", produces = MediaType.APPLICATION_JSON_VALUE)
    public VacationDaysOutput getRemainingDays(HttpServletRequest httpRequest) {
-      var authenticatedId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
+      var authenticatedId = (Long) httpRequest.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
       var remainingDaysInfo = historyLogService.countRemainingDays(authenticatedId);
       return VacationDaysOutput.fromWorkTimeResponse(remainingDaysInfo);
    }
@@ -79,7 +79,7 @@ public class UserControllerV2 {
    public VacationDaysOutput addVacationHours(@PathVariable Long userId,
                                               @RequestBody HistoryLogInput historyLog,
                                               HttpServletRequest httpRequest) {
-      var authenticatedUserId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
+      var authenticatedUserId = (Long) httpRequest.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
       historyLogService.create(historyLog, userId, authenticatedUserId);
       return getVacationDays(userId);
    }

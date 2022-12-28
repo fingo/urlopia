@@ -1,7 +1,7 @@
 package info.fingo.urlopia.config.authentication.noauth;
 
 import info.fingo.urlopia.config.authentication.UserAuthoritiesProvider;
-import info.fingo.urlopia.config.authentication.UserIdInterceptor;
+import info.fingo.urlopia.config.authentication.oauth.OAuthUserIdInterceptor;
 import info.fingo.urlopia.config.authentication.oauth.InvalidTokenException;
 import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.User;
@@ -30,7 +30,7 @@ public class NoAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String header = request.getHeader(UserIdInterceptor.USER_ID_ATTRIBUTE);
+        String header = request.getHeader(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
         if (header == null) {
             filterChain.doFilter(request, response);
             return;

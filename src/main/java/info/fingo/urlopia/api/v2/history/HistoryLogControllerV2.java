@@ -1,6 +1,6 @@
 package info.fingo.urlopia.api.v2.history;
 
-import info.fingo.urlopia.config.authentication.UserIdInterceptor;
+import info.fingo.urlopia.config.authentication.oauth.OAuthUserIdInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.history.HistoryLogService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class HistoryLogControllerV2 {
             @RequestParam(name = "filter", defaultValue = "") String[] filters,
             Pageable pageable) {
 
-        var authenticatedUserId = (Long) request.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedUserId = (Long) request.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
         var filter = Filter.from(filters);
         var historyLogsPage = historyLogService.get(authenticatedUserId, year, filter, pageable);
         return historyLogsPage.map(HistoryLogOutput::from);

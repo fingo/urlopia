@@ -4,7 +4,11 @@ import React from 'react';
 import { axiosClient } from "../../api/client";
 import {loginRequest} from "../../authConfig";
 
-const MsalOAuthRequestInterceptor = ({ children }) => {
+interface IProps {
+    children: JSX.Element
+}
+
+const MsalOAuthRequestInterceptor = ({ children }: IProps) => {
     const { instance, accounts } = useMsal();
     const account = useAccount(accounts[0]);
 
