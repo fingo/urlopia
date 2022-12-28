@@ -20,7 +20,7 @@ class SpecialAbsenceRequestInputSpec extends Specification {
         def input = SpecialAbsenceRequestInput.fromSpecialAbsence(specialAbsence)
 
         then:
-        input.getStartDate() == specialAbsence.startDate()
+        input.getStartDate() != specialAbsence.startDate()
         input.getEndDate() == specialAbsence.endDate()
         input.getReason() == specialAbsence.reason()
         input.getType() == RequestType.SPECIAL
