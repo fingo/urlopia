@@ -1,4 +1,4 @@
-FROM openjdk:16-jdk
+FROM openjdk:17-jdk
 ENV TZ=Europe/Warsaw
 
 COPY build/libs/urlopia-*.jar /urlopia.jar

@@ -9,8 +9,9 @@ import logoImg from '../../assets/logo.svg';
 import UrlopiaLogo from '../../assets/logo-urlopia.png';
 import {fetchWorkingHoursPreferences} from "../../contexts/user-preferences-context/actions/fetchWorkingHoursPreferences";
 import {useUserPreferences} from "../../contexts/user-preferences-context/userPreferencesContext";
-import { logout } from "../../helpers/authentication/LogoutHelper";
+import { isNoAuthMode, logout } from "../../helpers/authentication/LogoutHelper";
 import {PreferencesModal} from "../preferences-modal/PreferencesModal";
+import { NoAuthUsersDropdown } from "./noauth-users-dropdown/NoAuthUsersDropdown";
 import {TeamDropdown} from "./team-dropdown/TeamDropdown";
 import styles from './TopBar.module.scss';
 
@@ -29,6 +30,8 @@ export const TopBar = ({onHamburgerClick}) => {
     const handleLogout = () => {
         logout()
     }
+
+    const isNoAuth = isNoAuthMode();
 
     const listBtnClass = classNames('d-lg-none', styles.button);
     const listIconClass = classNames(styles.hamburger, styles.icon);
@@ -56,11 +59,13 @@ export const TopBar = ({onHamburgerClick}) => {
 
                     <img src={UrlopiaLogo} alt={"Urlopia"} className={styles.appLogo}/>
                     <div className={styles.mobileRightSide}>
+                        {
+                            isNoAuth && <NoAuthUsersDropdown />
+                        }
                         <button type="button" className={styles.settingsButton} onClick={() => setShowModal(true)}>
                             <GearIcon className={styles.settingsIcon} size={20}/>
                         </button>
                         <TeamDropdown userName={userName} teams={teams}/>
-
                         <button type="button" className={styles.button} onClick={handleLogout}>
                             <PowerIcon className={styles.icon}/>
                         </button>

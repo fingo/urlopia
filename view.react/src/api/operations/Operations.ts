@@ -14,7 +14,11 @@ const Operations: ApiOperationsType = {
   [ApiOperation.UpdateAutomaticVacationDayProposition]: {
     method: ApiMethod.PATCH,
     url: () => `/automatic-vacation-days`
-  }
+  },
+  [ApiOperation.GetUsers]: {
+    method: ApiMethod.GET,
+    url: () => `/users`
+  },
 
 }
 

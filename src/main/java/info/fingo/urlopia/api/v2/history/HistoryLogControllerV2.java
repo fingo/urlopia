@@ -71,4 +71,10 @@ public class HistoryLogControllerV2 {
         return HistoryLogOutput.from(historyLog);
     }
 
+    @RolesAllowed({"ROLES_WORKER", "ROLES_LEADER", "ROLES_ADMIN"})
+    @GetMapping(value = "/employment-year/{userId}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public Integer getEmploymentYear(@PathVariable Long userId) {
+        return historyLogService.getEmploymentYear(userId);
+    }
+
 }

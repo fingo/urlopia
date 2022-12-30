@@ -9,3 +9,10 @@ export const automaticVacationDays = {
   all: ["automaticVacationDays"] as const,
   lists: () => [...automaticVacationDays.all, "list"] as const
 }
+
+export const userKeys = {
+  all: ["user"] as const,
+  lists: () => [...userKeys.all, "list"] as const,
+  list: ({ active }: { active: boolean }) =>
+      [...userKeys.lists(), { active }] as const,
+}

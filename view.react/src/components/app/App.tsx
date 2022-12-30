@@ -1,18 +1,18 @@
 import React from "react";
 
+import {isNoAuthMode} from "../../helpers/authentication/LogoutHelper";
 import {NoAuthApp} from "../noauth-app/NoAuthApp";
 import {OAuthApp} from "../ouath-app/OAuthApp";
 
 
 export const App = () => {
-    const authMode = process.env.REACT_APP_AUTH_MODE || '';
+
+    const isNoAuth = isNoAuthMode();
 
     return (
         <>
             {
-                authMode === 'NO-AUTH' ?
-                    <NoAuthApp /> :
-                    <OAuthApp />
+                isNoAuth ? <NoAuthApp /> : <OAuthApp />
             }
         </>
     )
