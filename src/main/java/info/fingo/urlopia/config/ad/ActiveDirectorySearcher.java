@@ -3,6 +3,7 @@ package info.fingo.urlopia.config.ad;
 import info.fingo.urlopia.config.authentication.LDAPConnectionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -12,6 +13,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+@ConditionalOnProperty(name = "ad.configuration.enabled", havingValue = "true", matchIfMissing = true)
 public class ActiveDirectorySearcher {
     private static final Logger LOGGER = LoggerFactory.getLogger(ActiveDirectorySearcher.class);
 

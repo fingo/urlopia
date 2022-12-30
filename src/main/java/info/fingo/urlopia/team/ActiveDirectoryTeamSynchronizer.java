@@ -9,6 +9,7 @@ import info.fingo.urlopia.user.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import javax.naming.directory.SearchResult;
@@ -16,6 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
+@ConditionalOnProperty(name = "ad.configuration.enabled", havingValue = "true", matchIfMissing = true)
 public class ActiveDirectoryTeamSynchronizer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ActiveDirectoryTeamSynchronizer.class);
 
@@ -49,7 +51,7 @@ public class ActiveDirectoryTeamSynchronizer {
                 .filter(adTeam ->
                         !dbTeams.contains(
                                 adNameOf(adTeam)))
-                .map(adTeam -> teamMapper.mapToTeam(adTeam))
+                .map(teamMapper::mapToTeam)
                 .forEach(teamRepository::save);
         LOGGER.info("Synchronisation succeed: find new teams");
     }
