@@ -6,7 +6,7 @@ import {Container, Navbar} from 'react-bootstrap';
 import {GearFill as GearIcon, List as ListIcon, Power as PowerIcon} from "react-bootstrap-icons";
 
 import {getFullUserName, getUserTeams, logout} from "../../api/services/session.service";
-import logoImg from '../../assets/logo.png';
+import logoImg from '../../assets/logo.svg';
 import UrlopiaLogo from '../../assets/logo-urlopia.png';
 import {fetchWorkingHoursPreferences} from "../../contexts/user-preferences-context/actions/fetchWorkingHoursPreferences";
 import {useUserPreferences} from "../../contexts/user-preferences-context/userPreferencesContext";
