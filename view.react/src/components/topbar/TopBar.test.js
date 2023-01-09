@@ -26,7 +26,7 @@ describe("TopBar", () => {
     it('should show logo',() => {
         render(<Router><UserPreferencesProvider><TopBar onHamburgerClick={() => null}/></UserPreferencesProvider></Router>);
         const displayedImage = document.querySelector("img");
-        expect((displayedImage.src)).toContain('logo.png');
+        expect((displayedImage.src)).toContain('logo.svg');
     });
 
     it('should show correct user name', () => {
