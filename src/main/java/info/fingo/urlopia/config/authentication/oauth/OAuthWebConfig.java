@@ -1,6 +1,5 @@
 package info.fingo.urlopia.config.authentication.oauth;
 
-import info.fingo.urlopia.config.authentication.UserIdInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ConditionalOnProperty(name = "ad.configuration.enabled", havingValue = "true", matchIfMissing = true)
 public class OAuthWebConfig implements WebMvcConfigurer {
 
-    private final UserIdInterceptor userIdInterceptor;
+    private final OAuthUserIdInterceptor OAuthUserIdInterceptor;
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
@@ -22,7 +21,7 @@ public class OAuthWebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(userIdInterceptor);
+        registry.addInterceptor(OAuthUserIdInterceptor);
         WebMvcConfigurer.super.addInterceptors(registry);
     }
 }

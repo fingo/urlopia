@@ -14,7 +14,7 @@ import {updateVacationDays} from "../../../helpers/updateVacationDays";
 import {ChangeDaysPoolForm} from "../change-days-pool-form/ChangeDaysPoolForm";
 import styles from "./ChangeDaysPoolAndWorkTimeSection.module.scss";
 
-const CHANGE_DAYS_POOL_URL_PREFIX = '/api/v2/users/';
+const CHANGE_DAYS_POOL_URL_PREFIX = '/users/';
 const CHANGE_DAYS_POOL_URL_POSTFIX = '/vacation-days';
 
 export const ChangeDaysPoolAndWorkTimeSection = ({workTime}) => {

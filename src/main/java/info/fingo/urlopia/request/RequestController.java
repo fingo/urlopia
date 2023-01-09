@@ -1,6 +1,6 @@
 package info.fingo.urlopia.request;
 
-import info.fingo.urlopia.config.authentication.UserIdInterceptor;
+import info.fingo.urlopia.config.authentication.oauth.OAuthUserIdInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.request.normal.DayHourTime;
 import info.fingo.urlopia.request.normal.NormalRequestService;
@@ -77,7 +77,7 @@ public class RequestController {
     @PostMapping(path = "/requests/{requestId}/accept", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> accept(@PathVariable Long requestId,
                                        HttpServletRequest httpRequest) {
-        var authenticatedId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedId = (Long) httpRequest.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
         requestService.validateAdminPermissionAndAccept(requestId, authenticatedId);
         return ResponseEntity.ok().build();
     }
@@ -93,7 +93,7 @@ public class RequestController {
     @PostMapping(path = "/requests/{requestId}/cancel", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> cancel(@PathVariable Long requestId,
                                        HttpServletRequest httpRequest) {
-        var authenticatedId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedId = (Long) httpRequest.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
         requestService.cancel(requestId, authenticatedId);
         return ResponseEntity.ok().build();
     }

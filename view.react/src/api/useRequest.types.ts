@@ -15,5 +15,4 @@ export interface IRequestProps extends IRequestParams {
 export interface IRequestInternalProps extends IRequestParams {
   url: string;
   method: ApiMethod;
-  token?: string;
 }

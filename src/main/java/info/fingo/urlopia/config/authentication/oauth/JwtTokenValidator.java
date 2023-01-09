@@ -9,6 +9,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.JsonObject;
 import info.fingo.urlopia.api.v2.authentication.oauth.OAuthRedirectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.security.interfaces.RSAPublicKey;
@@ -18,6 +19,7 @@ import static java.util.Objects.isNull;
 
 @RequiredArgsConstructor
 @Component
+@ConditionalOnProperty(name = "ad.configuration.enabled", havingValue = "true", matchIfMissing = true)
 public class JwtTokenValidator {
     private final JwkProvider jwkProvider;
     private final JwtTokenAuthoritiesProvider jwtTokenAuthoritiesProvider;

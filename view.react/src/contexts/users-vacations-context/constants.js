@@ -1,4 +1,4 @@
-const USERS_VACATIONS_ENDPOINT_PREFIX = "/api/v2/calendar/users/"
+const USERS_VACATIONS_ENDPOINT_PREFIX = "/calendar/users/"
 const USERS_VACATIONS_ENDPOINT_POSTFIX = "/vacations"
 const USERS_VACATIONS_ACTION_PREFIX = "users-vacations"
 

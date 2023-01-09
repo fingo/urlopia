@@ -1,6 +1,6 @@
 package info.fingo.urlopia.history;
 
-import info.fingo.urlopia.config.authentication.UserIdInterceptor;
+import info.fingo.urlopia.config.authentication.oauth.OAuthUserIdInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -37,7 +37,7 @@ public class HistoryLogController {
     public ResponseEntity<Void> add(@PathVariable Long userId,
                                     @RequestBody HistoryLogInput historyLog,
                                     HttpServletRequest httpRequest) {
-        var authenticatedUserId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedUserId = (Long) httpRequest.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
         historyService.create(historyLog, userId, authenticatedUserId);
         return ResponseEntity.ok().build();
     }

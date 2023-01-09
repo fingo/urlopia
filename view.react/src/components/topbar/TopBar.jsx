@@ -1,16 +1,17 @@
-import {useMsal} from "@azure/msal-react";
 import classNames from "classnames";
 import PropTypes from 'prop-types';
 import {useEffect, useState} from "react";
 import {Container, Navbar} from 'react-bootstrap';
 import {GearFill as GearIcon, List as ListIcon, Power as PowerIcon} from "react-bootstrap-icons";
 
-import {getFullUserName, getUserTeams, logout} from "../../api/services/session.service";
+import {getFullUserName, getUserTeams} from "../../api/services/session.service";
 import logoImg from '../../assets/logo.svg';
 import UrlopiaLogo from '../../assets/logo-urlopia.png';
 import {fetchWorkingHoursPreferences} from "../../contexts/user-preferences-context/actions/fetchWorkingHoursPreferences";
 import {useUserPreferences} from "../../contexts/user-preferences-context/userPreferencesContext";
+import { isNoAuthMode, logout } from "../../helpers/authentication/LogoutHelper";
 import {PreferencesModal} from "../preferences-modal/PreferencesModal";
+import { NoAuthUsersDropdown } from "./noauth-users-dropdown/NoAuthUsersDropdown";
 import {TeamDropdown} from "./team-dropdown/TeamDropdown";
 import styles from './TopBar.module.scss';
 
@@ -22,15 +23,15 @@ export const TopBar = ({onHamburgerClick}) => {
 
     const [, userPreferencesDispatch] = useUserPreferences()
 
-    const msalContext = useMsal()
-
     useEffect(() => {
         fetchWorkingHoursPreferences(userPreferencesDispatch)
     }, [userPreferencesDispatch])
 
     const handleLogout = () => {
-        logout(msalContext.instance);
+        logout()
     }
+
+    const isNoAuth = isNoAuthMode();
 
     const listBtnClass = classNames('d-lg-none', styles.button);
     const listIconClass = classNames(styles.hamburger, styles.icon);
@@ -58,11 +59,13 @@ export const TopBar = ({onHamburgerClick}) => {
 
                     <img src={UrlopiaLogo} alt={"Urlopia"} className={styles.appLogo}/>
                     <div className={styles.mobileRightSide}>
+                        {
+                            isNoAuth && <NoAuthUsersDropdown />
+                        }
                         <button type="button" className={styles.settingsButton} onClick={() => setShowModal(true)}>
                             <GearIcon className={styles.settingsIcon} size={20}/>
                         </button>
                         <TeamDropdown userName={userName} teams={teams}/>
-
                         <button type="button" className={styles.button} onClick={handleLogout}>
                             <PowerIcon className={styles.icon}/>
                         </button>

@@ -5,12 +5,14 @@ import info.fingo.urlopia.config.ad.Attribute;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import javax.naming.directory.SearchResult;
 import java.util.List;
 
 @Component
+@ConditionalOnProperty(name = "ad.configuration.enabled", havingValue = "true", matchIfMissing = true)
 public class ActiveDirectoryTeamMapper {
 
     @Value("${ad.identifiers.team}")

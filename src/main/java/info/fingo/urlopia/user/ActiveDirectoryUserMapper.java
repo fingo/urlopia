@@ -3,11 +3,13 @@ package info.fingo.urlopia.user;
 import info.fingo.urlopia.config.ad.ActiveDirectoryUtils;
 import info.fingo.urlopia.config.ad.Attribute;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import javax.naming.directory.SearchResult;
 
 @Component
+@ConditionalOnProperty(name = "ad.configuration.enabled", havingValue = "true", matchIfMissing = true)
 public class ActiveDirectoryUserMapper {
     @Value("${ad.groups.b2b}")
     private String b2bGroup;

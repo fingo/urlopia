@@ -10,7 +10,7 @@ import {formatReportFileName} from "../../../helpers/formatReportFileNameHelper"
 import {getXlsxFromResponse} from "../../../helpers/RequestHelper";
 import styles from './ReportsSection.module.scss';
 
-const GET_XLSX_REPORT_URL = '/api/v2/reports/work-time-evidence/user/';
+const GET_XLSX_REPORT_URL = '/reports/work-time-evidence/user/';
 
 export const ReportsSection = ({availableYears}) => {
     const [reportYear, setReportYear] = useState(new Date().getFullYear().toString());

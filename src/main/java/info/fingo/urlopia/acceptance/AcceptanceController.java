@@ -1,6 +1,6 @@
 package info.fingo.urlopia.acceptance;
 
-import info.fingo.urlopia.config.authentication.UserIdInterceptor;
+import info.fingo.urlopia.config.authentication.oauth.OAuthUserIdInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +37,7 @@ public class AcceptanceController {
     @PostMapping(path = "/acceptances/{acceptanceId}/accept", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> accept(@PathVariable Long acceptanceId,
                                        HttpServletRequest httpRequest) {
-        var authenticatedId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedId = (Long) httpRequest.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
         acceptanceService.accept(acceptanceId, authenticatedId);
         return ResponseEntity.ok().build();
     }
@@ -46,7 +46,7 @@ public class AcceptanceController {
     @PostMapping(path = "/acceptances/{acceptanceId}/reject", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> reject(@PathVariable Long acceptanceId,
                                        HttpServletRequest httpRequest) {
-        var authenticatedId = (Long) httpRequest.getAttribute(UserIdInterceptor.USER_ID_ATTRIBUTE);
+        var authenticatedId = (Long) httpRequest.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
         acceptanceService.reject(acceptanceId, authenticatedId);
         return ResponseEntity.ok().build();
     }

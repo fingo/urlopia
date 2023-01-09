@@ -3,9 +3,9 @@ package info.fingo.urlopia.user
 import info.fingo.urlopia.api.v2.automatic.vacation.days.AutomaticVacationDayService
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException
 import info.fingo.urlopia.api.v2.history.DetailsChangeEventInput
-import info.fingo.urlopia.config.ad.ActiveDirectory
 import info.fingo.urlopia.config.persistance.filter.Filter
 import info.fingo.urlopia.history.HistoryLogService
+import info.fingo.urlopia.team.AllUsersLeaderProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContext
@@ -14,11 +14,11 @@ import spock.lang.Specification
 
 class UserServiceSpec extends Specification {
     def userRepository = Mock(UserRepository)
-    def activeDirectory = Mock(ActiveDirectory)
     def historyLogService = Mock(HistoryLogService)
     def automaticVacationDayService = Mock(AutomaticVacationDayService)
+    def allUsersLeaderProvider = Mock(AllUsersLeaderProvider)
 
-    def userService = new UserService(userRepository, activeDirectory, historyLogService, automaticVacationDayService)
+    def userService = new UserService(userRepository, historyLogService, automaticVacationDayService, allUsersLeaderProvider)
     def filter = Mock(Filter)
 
     def "get() SHOULD return list of users"() {
@@ -118,7 +118,7 @@ class UserServiceSpec extends Specification {
     def "setWorkTime() WHEN called with valid String and User SHOULD save event and update user"(){
         given:
         userRepository.findById(_ as Long) >> Optional.of(Mock(User))
-        var exampleId = 1L;
+        var exampleId = 1L
         var exampleWorkTime = "1/2"
 
         when:

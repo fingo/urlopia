@@ -7,14 +7,14 @@ import {MainContentRouting} from "../../router/MainContentRouting";
 import {AcceptanceLoader} from "../acceptance-loader/AcceptanceLoader";
 import {Sidebar} from "../sidebar/Sidebar";
 import {TopBar} from "../topbar/TopBar";
-import {App} from "./App";
+import {Main} from "./Main";
 
 jest.mock("../acceptance-loader/AcceptanceLoader")
 jest.mock("../../router/MainContentRouting")
 jest.mock("../sidebar/Sidebar")
 jest.mock("../topbar/TopBar")
 
-describe("App", () => {
+describe("Main", () => {
     const sessionStorageMock = mockLocalStorage()
 
     beforeEach(() => {
@@ -33,7 +33,7 @@ describe("App", () => {
 
         // when
         act(() => {
-            render(<AppInfoProvider><App/></AppInfoProvider>)
+            render(<AppInfoProvider><Main/></AppInfoProvider>)
         })
 
         // then
@@ -48,7 +48,7 @@ describe("App", () => {
 
         // when
         act(() => {
-            render(<AppInfoProvider><App/></AppInfoProvider>)
+            render(<AppInfoProvider><Main/></AppInfoProvider>)
         })
 
         // then

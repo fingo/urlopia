@@ -4,12 +4,14 @@ import info.fingo.urlopia.api.v2.history.DetailsChangeEventInput;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.history.UserDetailsChangeEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import javax.naming.directory.SearchResult;
 import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "ad.configuration.enabled", havingValue = "true", matchIfMissing = true)
 class ActiveDirectoryUserMapperWrapper {
 
     private final HistoryLogService historyLogService;

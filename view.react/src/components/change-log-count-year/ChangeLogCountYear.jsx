@@ -6,7 +6,7 @@ import {sendPutRequest} from "../../helpers/RequestHelper";
 import styles from "./ChangeLogCountYear.module.scss";
 
 
-const CHANGE_COUNT_FOR_NEXT_YEAR = '/api/v2/absence-history/';
+const CHANGE_COUNT_FOR_NEXT_YEAR = '/absence-history/';
 
 export const ChangeLogCountYear = ({isAdminView, countForNextYear, historyLogId, setRefresh}) => {
 

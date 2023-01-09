@@ -4,18 +4,14 @@ import info.fingo.urlopia.api.v2.anonymizer.Anonymizer;
 import info.fingo.urlopia.api.v2.automatic.vacation.days.AutomaticVacationDayService;
 import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException;
 import info.fingo.urlopia.api.v2.history.DetailsChangeEventInput;
-import info.fingo.urlopia.config.ad.ActiveDirectory;
-import info.fingo.urlopia.config.ad.ActiveDirectoryObjectClass;
-import info.fingo.urlopia.config.ad.ActiveDirectoryUtils;
-import info.fingo.urlopia.config.ad.Attribute;
 import info.fingo.urlopia.config.authentication.UserAuthoritiesProvider;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.history.UserDetailsChangeEvent;
+import info.fingo.urlopia.team.AllUsersLeaderProvider;
 import info.fingo.urlopia.team.Team;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,18 +30,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
-    private final ActiveDirectory activeDirectory;
-
-    private final HistoryLogService historyLogService;
-    private final AutomaticVacationDayService automaticVacationDayService;
-
     private static final String NO_USER_WITH_ID_MESSAGE = "There is no user with id: {}";
     private static final String ADMIN_AUTHORITY_STRING = UserAuthoritiesProvider.ROLE_PREFIX + User.Role.ADMIN;
     private static final SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(ADMIN_AUTHORITY_STRING);
 
-    @Value("${ad.groups.users}")
-    private String usersGroup;
+    private final UserRepository userRepository;
+    private final HistoryLogService historyLogService;
+    private final AutomaticVacationDayService automaticVacationDayService;
+    private final AllUsersLeaderProvider allUsersLeaderProvider;
+
+
 
     public List<UserExcerptProjection> get(Filter filter,
                                            Sort sort) {
@@ -88,16 +82,7 @@ public class UserService {
     }
 
     public User getAllUsersLeader() {
-        var groups = activeDirectory.newSearch()
-                .objectClass(ActiveDirectoryObjectClass.Group)
-                .distinguishedName(usersGroup)
-                .search();
-
-        return groups.stream()
-                .map(group -> ActiveDirectoryUtils.pickAttribute(group, Attribute.MANAGED_BY))
-                .findFirst()
-                .flatMap(userRepository::findFirstByAdName)
-                .orElse(null);
+        return allUsersLeaderProvider.getAllUsersLeader();
     }
 
     // *** ACTIONS ***

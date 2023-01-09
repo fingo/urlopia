@@ -4,6 +4,7 @@ import {Col, Container, Row} from "react-bootstrap";
 
 import {useAbsenceHistory} from "../../contexts/absence-history-context/absenceHistoryContext";
 import {fetchRecentUserAbsenceHistory} from "../../contexts/absence-history-context/actions/fetchUserAbsenceHistory";
+import { FETCH_USER_EMPLOYMENT_YEAR_PREFIX_URL } from "../../contexts/absence-history-context/constants";
 import {changeSelectedUser} from "../../contexts/workers-context/actions/changeSelectedUser";
 import {fetchRemainingDays} from "../../contexts/workers-context/actions/fetchRemainingDays";
 import {useWorkers} from "../../contexts/workers-context/workersContext";
@@ -16,8 +17,6 @@ import styles from './ExtendedWorker.module.scss';
 import {ReportsSection} from "./reports-section/ReportsSection";
 
 const CURRENT_YEAR = new Date().getFullYear();
-const GET_AVAILABLE_YEARS_URL_PREFIX = '/api/users/';
-const GET_AVAILABLE_YEARS_URL_POSTFIX = '/days/employment-year';
 
 const HOURS_IN_WEEK = 40;
 const DAYS_IN_WEEK = 5;
@@ -36,7 +35,7 @@ export const ExtendedWorker = ({workTime, userId, isUnspecifiedAbsences}) => {
     const vacationTypeLabel = isEC ? "Pozostały urlop:" : "Pozostała przerwa:"
 
     useEffect(() => {
-        sendGetRequest(`${GET_AVAILABLE_YEARS_URL_PREFIX}${userId}${GET_AVAILABLE_YEARS_URL_POSTFIX}`)
+        sendGetRequest(`${FETCH_USER_EMPLOYMENT_YEAR_PREFIX_URL}/${userId}`)
             .then(year => {
                 let years = [];
                 for (let i = CURRENT_YEAR; i >= year; i--) {

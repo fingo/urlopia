@@ -3,6 +3,7 @@ package info.fingo.urlopia.config.authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import javax.naming.Context;
@@ -12,6 +13,7 @@ import javax.naming.ldap.InitialLdapContext;
 import java.util.Hashtable;
 
 @Component
+@ConditionalOnProperty(name = "ad.configuration.enabled", havingValue = "true", matchIfMissing = true)
 public class LDAPConnectionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(LDAPConnectionService.class);
 

@@ -12,8 +12,8 @@ import styles from '../Reports.module.scss';
 
 export const EvidenceReportModal = ({show, onHide}) => {
 
-    const ALL_USERS_URL = "/api/v2/users";
-    const GET_EVIDENCE_REPORT_URL = '/api/v2/reports/work-time-evidence';
+    const ALL_USERS_URL = "/users";
+    const GET_EVIDENCE_REPORT_URL = '/reports/work-time-evidence';
     const currentYear = (new Date()).getFullYear();
     const availableYears = [currentYear, currentYear-1, currentYear-2, currentYear-3, currentYear-4];
 

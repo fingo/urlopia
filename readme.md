@@ -128,6 +128,7 @@ spring.flyway.enabled= (boolean flag - self explaining)
 urlopia.flyway.baseline-version= (version of the last script that was run on db)
 
 # active directory
+ad.configuration.enabled=true (if false ad won't be used as data provider)
 ldap.initial.context.factory=com.sun.jndi.ldap.LdapCtxFactory
 ldap.security.authentication=Simple (Authentication with username and password)
 ldap.security.principal= (Active directory username)
@@ -232,6 +233,14 @@ where
 * `<DESCRIPTION>` is a human-readable description of the changes made by this script.
 
 Example script name: `V2_7_6_1__add_count_for_next_year_column.sql`.
+
+## Application without Active Directory
+
+Urlopia has option to be run without AD. You can configure it by setting `ad.configuration.enabled = false` properties.
+If this option is choose synchronization won't be run and all data will be got from database. 
+In this mode there is no need to define any of Active Directory properties. 
+If there is need to use frontend in this configuration, frontend should be build in no-auth mode [check details](view.react/README.md#no-auth-mode)
+
 
 #### Slack bot configuration
 

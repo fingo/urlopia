@@ -1,7 +1,7 @@
-const REQUESTS_ENDPOINT = "/api/v2/absence-requests";
+const REQUESTS_ENDPOINT = "/absence-requests";
 const REQUESTS_ACTION_PREFIX = "requests";
 
-const ACCEPTANCES_ENDPOINT = "/api/v2/absence-request-acceptances";
+const ACCEPTANCES_ENDPOINT = "/absence-request-acceptances";
 const ACCEPTANCE_ACTION_PREFIX = `${REQUESTS_ACTION_PREFIX}/acceptances`;
 
 export const FETCH_MY_REQUESTS_URL = `${REQUESTS_ENDPOINT}/requester/me`;
