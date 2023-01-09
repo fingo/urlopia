@@ -35,32 +35,32 @@ repositories {
 ext {
     versions = [
             //spring
-            springBoot     : '2.7.7',
+            springBoot   : '2.7.7',
 
             //oauth
-            oauthJavaJwt   : '4.2.1',
-            oauthJwksRsa   : '0.21.2',
+            oauthJavaJwt : '4.2.1',
+            oauthJwksRsa : '0.21.2',
 
             //mail
-            handlebars     : '4.3.1',
+            handlebars   : '4.3.1',
 
             //excel
-            apachePoi      : '5.2.3',
+            apachePoi    : '5.2.3',
 
             //pdf
-            itextPdf       : '5.5.13.3',
+            itextPdf     : '5.5.13.3',
 
             //modelMapping
-            modelMapper    : '3.1.1',
+            modelMapper  : '3.1.1',
 
             //slack
-            slackApiBolt   : '1.27.2',
+            slackApiBolt : '1.27.2',
 
             //testing
-            spock          : '2.0-groovy-3.0',
+            spock        : '2.0-groovy-3.0',
 
             //h2
-            h2             : '2.1.214'
+            h2           : '2.1.214'
 
 
     ]
