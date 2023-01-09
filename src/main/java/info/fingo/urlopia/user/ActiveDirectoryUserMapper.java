@@ -15,6 +15,9 @@ public class ActiveDirectoryUserMapper {
     @Value("${ad.groups.ec}")
     private String ecGroup;
 
+    @Value("${ad.groups.admin}")
+    private String adminGroup;
+
     public User mapToUser(SearchResult searchResult,
                            User user) {
         user.setPrincipalName(
@@ -35,6 +38,8 @@ public class ActiveDirectoryUserMapper {
                 isEC(searchResult));
         user.setActive(
                 !ActiveDirectoryUtils.isDisabled(searchResult));
+        user.setAdmin(
+                isAdmin(searchResult));
 
         return user;
     }
@@ -44,13 +49,21 @@ public class ActiveDirectoryUserMapper {
         return !leaderOf.isEmpty();
     }
 
-    private boolean isB2B(SearchResult searchResult) {
+    private boolean isInGroup(SearchResult searchResult,
+                              String groupName){
         var memberOf = ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.MEMBER_OF);
-        return memberOf.contains(b2bGroup);
+        return memberOf.contains(groupName);
+    }
+
+    private boolean isB2B(SearchResult searchResult) {
+        return isInGroup(searchResult, b2bGroup);
     }
 
     private boolean isEC(SearchResult searchResult) {
-        var memberOf = ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.MEMBER_OF);
-        return memberOf.contains(ecGroup);
+        return isInGroup(searchResult, ecGroup);
+    }
+
+    private boolean isAdmin(SearchResult searchResult) {
+        return isInGroup(searchResult, adminGroup);
     }
 }
