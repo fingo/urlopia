@@ -50,7 +50,7 @@ export const AutomaticVacationDaysTable: FunctionComponent = () => {
         return `${nextYearProposition}h`
     }
 
-    const withNotifyFormatter = (cell: any, row: RowType<any>) => {
+    const withNotifyFormatter = (cell: string, row: RowType<IAutomaticVacationDaysRow>) => {
         const nextYearProposition = getNumericValueOfNextYearProposition(row)
         if ( nextYearProposition === 0) {
             return (
@@ -92,7 +92,7 @@ export const AutomaticVacationDaysTable: FunctionComponent = () => {
         updateRow(row)
     }
 
-    const nextYearPropositionFormatter = (cell: any, row: RowType<any>) => {
+    const nextYearPropositionFormatter = (cell: string, row: RowType<IAutomaticVacationDaysRow>) => {
         const {nextYearProposition} = row
         return <TextFieldWrapper value={nextYearProposition}
                                  name={'nextYearProposition'}
@@ -102,7 +102,7 @@ export const AutomaticVacationDaysTable: FunctionComponent = () => {
                                  saveRow={saveRow}
                 />
     }
-    const nextYearDaysBaseFormatter = (cell: any, row: RowType<any>) => {
+    const nextYearDaysBaseFormatter = (cell: string, row: RowType<IAutomaticVacationDaysRow>) => {
         const {nextYearDaysBase} = row
         return <TextFieldWrapper value={nextYearDaysBase}
                                  name={'nextYearDaysBase'}
@@ -113,13 +113,13 @@ export const AutomaticVacationDaysTable: FunctionComponent = () => {
         />
     }
 
-    const getNumericValueOfNextYearProposition = ({nextYearProposition}: any) => {
+    const getNumericValueOfNextYearProposition = ({nextYearProposition}: IAutomaticVacationDaysRow) => {
         return nextYearProposition.slice(-1) === 'h' ? Number(nextYearProposition.slice(0,-1)) :
                                                         Number(nextYearProposition.slice(0,-1)) * 8
     }
 
 
-    const columns: ColumnType<any>[] = [
+    const columns: ColumnType<IAutomaticVacationDaysRow>[] = [
         {
             name: 'userId',
             hidden: true,

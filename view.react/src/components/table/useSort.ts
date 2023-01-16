@@ -3,17 +3,17 @@ import { useMemo, useState } from "react";
 import { ColumnType, OrderByType, OrderType, RowType } from "./Table.types";
 import { getStringValue } from "./TableHelpers";
 
-interface IUseFiltersProps<T> {
-  data: RowType<T>[];
-  columns: ColumnType<T>[];
+interface IUseFiltersProps<DataType extends object> {
+  data: RowType<DataType>[];
+  columns: ColumnType<DataType>[];
 }
 
-const sortFactory = <T>(
-  field: string | undefined,
+const sortFactory = <DataType extends object>(
+  field: keyof DataType | undefined,
   orderBy: OrderType | undefined,
-  column: ColumnType<T>
+  column: ColumnType<DataType>
 ) => {
-  return (a: RowType<T>, b: RowType<T>) => {
+  return (a: RowType<DataType>, b: RowType<DataType>) => {
     if (!field || !orderBy || !a[field] || !b[field]) {
       return 1;
     }
@@ -29,8 +29,8 @@ const sortFactory = <T>(
   };
 };
 
-const useSort = <T>({ data, columns }: IUseFiltersProps<T>) => {
-  const [orderBy, setOrderBy] = useState<OrderByType>({
+const useSort = <DataType extends object>({ data, columns }: IUseFiltersProps<DataType>) => {
+  const [orderBy, setOrderBy] = useState<OrderByType<DataType>>({
     field: undefined,
     order: undefined,
   });
