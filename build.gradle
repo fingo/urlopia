@@ -57,7 +57,11 @@ ext {
             slackApiBolt : '1.27.2',
 
             //testing
-            spock       : '2.0-groovy-3.0'
+            spock        : '2.0-groovy-3.0',
+
+            //h2
+            h2           : '2.1.214'
+
 
     ]
 }
@@ -65,7 +69,6 @@ ext {
 
 dependencies {
     implementation platform("org.springframework.boot:spring-boot-dependencies:${versions.springBoot}")
-    developmentOnly('org.springframework.boot:spring-boot-devtools')
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-mail")
@@ -90,8 +93,8 @@ dependencies {
     // Database migration
     implementation("org.flywaydb:flyway-core")
 
-    runtimeOnly('org.postgresql:postgresql')
-    developmentOnly('com.h2database:h2')
+    runtimeOnly("org.postgresql:postgresql")
+    developmentOnly("com.h2database:h2:${versions.h2}")
 
     testImplementation("org.spockframework:spock-core:${versions.spock}")
     testImplementation("org.codehaus.groovy:groovy")

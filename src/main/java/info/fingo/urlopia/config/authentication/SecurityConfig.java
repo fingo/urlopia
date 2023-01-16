@@ -20,6 +20,14 @@ import java.util.Arrays;
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private static final String[] PUBLIC_ROUTES = {
+            "/", "/static/**", "/health/**", "/api/v2/info/**", "/api/v2/slack/**",
+            "/api/v2/proxy/**", "/login_check/**", "/icons/**"
+    };
+    private static final String[] ALLOWED_EXTENSIONS = {
+            "/*.png", "/*.xml", "/*.ico", "/*.webmanifest", "/*.svg",
+    };
+
     private final Environment environment;
     private final AuthorizationFilterProvider authorizationFilterProvider;
 
@@ -67,17 +75,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private void requestAuthorizationConfiguration(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers("/static/**").permitAll()
-                .antMatchers("/icons/**").permitAll()
-                .antMatchers("/manifest.json").permitAll()
-                .antMatchers("/static/**").permitAll()
-                .antMatchers("/health/**").permitAll()
-                .antMatchers("/api/session/**").permitAll()
-                .antMatchers("/api/v2/session/**").permitAll()
-                .antMatchers("/api/v2/info/**").permitAll()
-                .antMatchers("/api/v2/slack/**").permitAll()
-                .antMatchers("/api/v2/proxy/**").permitAll()
+                .antMatchers(PUBLIC_ROUTES).permitAll()
+                .antMatchers(ALLOWED_EXTENSIONS).permitAll()
                 .anyRequest().authenticated();
     }
 
