@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ 12, 18 ]
+        node-version: [ 12, 14, 16 ]
 
     name: Run all tests on Node ${{ matrix.node-version }}
 
