@@ -9,15 +9,18 @@ on:
 permissions:
   contents: read
 
+env:
+  FRONTEND_DIR: view.react
+
 jobs:
-  build:
-    name: run all tests
+  test:
+    name: Run all tests
 
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [ 12.x ]
+        node-version: [ 12, 18 ]
 
     steps:
     - uses: actions/checkout@v3
@@ -32,20 +35,34 @@ jobs:
       with:
         arguments: test
 
-    - name: Setup node.js env
+    - name: Setup Node.js env
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
 
     - name: npm install
       run: npm install
-      working-directory: view.react
+      working-directory: ${{ FRONTEND_DIR }}
 
     - name: npm run build
       run: npm run build --if-present
-      working-directory: view.react
+      working-directory: ${{ FRONTEND_DIR }}
 
     - name: run frontend tests
       run: npm test
-      working-directory: view.react
+      working-directory: ${{ FRONTEND_DIR }}
 
+  check-linters:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+      - run: npm install
+        working-directory: ${{ FRONTEND_DIR }}
+      - run: npm run lint
+        working-directory: ${{ FRONTEND_DIR }}
