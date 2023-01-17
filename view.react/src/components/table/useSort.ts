@@ -14,7 +14,7 @@ const sortFactory = <DataType extends object>(
   column: ColumnType<DataType>
 ) => {
   return (a: RowType<DataType>, b: RowType<DataType>) => {
-    if (!field || !orderBy || !a[field] || !b[field]) {
+    if (!field || !orderBy) {
       return 1;
     }
 
