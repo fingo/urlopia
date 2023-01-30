@@ -2,6 +2,7 @@ package info.fingo.urlopia.history;
 
 import info.fingo.urlopia.UrlopiaApplication;
 import info.fingo.urlopia.api.v2.history.*;
+import info.fingo.urlopia.api.v2.history.usedHoursCalculator.UsedHoursFromMonthCalculator;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.config.persistance.filter.Operator;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;

@@ -2,7 +2,7 @@ package info.fingo.urlopia.history
 
 import info.fingo.urlopia.api.v2.history.NoSuchHistoryLogException
 import info.fingo.urlopia.api.v2.history.UpdateLogCountingYearInput
-import info.fingo.urlopia.api.v2.history.UsedHoursFromMonthCalculator
+import info.fingo.urlopia.api.v2.history.usedHoursCalculator.UsedHoursFromMonthCalculator
 import info.fingo.urlopia.config.persistance.filter.Filter
 import info.fingo.urlopia.holidays.WorkingDaysCalculator
 import info.fingo.urlopia.request.Request
