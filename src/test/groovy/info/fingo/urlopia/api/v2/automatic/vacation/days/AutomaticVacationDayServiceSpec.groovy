@@ -39,7 +39,7 @@ class AutomaticVacationDayServiceSpec extends Specification{
         thrown(AutomaticVacationDaysNotFoundException)
     }
 
-    def "update WHEN automaticVacationDay for given user not exists SHOULD throw AutomaticVacationDaysNotFoundException"(){
+    def "update WHEN automaticVacationDay for given user exists SHOULD not throw AutomaticVacationDaysNotFoundException"(){
         given:
         def user = Mock(User) {
             getId() >> 1L
@@ -170,7 +170,7 @@ class AutomaticVacationDayServiceSpec extends Specification{
         thrown(AutomaticVacationDaysNotFoundException)
     }
 
-    def "update WHEN automaticVacationDay for given user not exists SHOULD throw AutomaticVacationDaysNotFoundException"(){
+    def "resetPropositionFor WHEN automaticVacationDay for given user exists SHOULD not throw AutomaticVacationDaysNotFoundException"(){
         given:
         def user = Mock(User) {
             getId() >> 1L

@@ -163,19 +163,6 @@ class MonthlyAttendanceListReportDayHandlerSpec extends Specification {
         result == DEFAULT_VALUE
     }
 
-    def "handle() WHEN given date is working day and there is no presence confirmation SHOULD return DEFAULT_VALUE"() {
-        given:
-        holidayService.isWorkingDay(_ as LocalDate) >> true
-        presenceConfirmationService.getByUserAndDate(userId, sampleDate) >> []
-        requestService.getByUserAndDate(userId, sampleDate) >> []
-
-        when:
-        def result = handler.handle(sampleYear, sampleMonth, sampleDay, sampleUser)
-
-        then:
-        result == DEFAULT_VALUE
-    }
-
     def "handle() WHEN called with date that user was after switch from ec to b2b SHOULD return default value "() {
         given:
         holidayService.isWorkingDay(_ as LocalDate) >> true

@@ -1,4 +1,4 @@
-package info.fingo.urlopia.api.v2.history
+package info.fingo.urlopia.api.v2.history.usedHoursCalculator
 
 import info.fingo.urlopia.history.HistoryLog
 import info.fingo.urlopia.holidays.WorkingDaysCalculator
@@ -23,7 +23,10 @@ class UsedHoursFromMonthCalculatorSpec extends Specification{
             arguments -> return countDaysBetween(arguments)
         }
     }
-    def usedHoursFromMonthCalculator = new UsedHoursFromMonthCalculator(workingDaysCalculator)
+
+    def requestMonthsOverlappingChecker = Mock(RequestMonthsOverlappingChecker)
+
+    def usedHoursFromMonthCalculator = new UsedHoursFromMonthCalculator(workingDaysCalculator, requestMonthsOverlappingChecker)
 
     @Unroll
     def "countUsedHours WHEN request is not take place in a given month SHOULD return 0 "(){
@@ -53,7 +56,7 @@ class UsedHoursFromMonthCalculatorSpec extends Specification{
     }
 
     @Unroll
-    def "countUsedHoursFromNormalRequest WHEN called with request that's start and end in the same month SHOULD return logHours"(){
+    def "countUsedHoursFromNormalRequest WHEN called with request is not overlapping SHOULD return logHours"(){
         given:
         def checkedMonth = 1
         def checkedYear = 2021
@@ -65,6 +68,12 @@ class UsedHoursFromMonthCalculatorSpec extends Specification{
             getHours() >> -8 * countDaysBetween([startDate, endDate])
             getRequest() >> request
         }
+
+        def requestMonthsOverlappingChecker = Mock(RequestMonthsOverlappingChecker) {
+            requestNotOverlapOtherMonth(_ as Integer, _ as Integer, _ as Request) >> true
+        }
+
+        def usedHoursFromMonthCalculator = new UsedHoursFromMonthCalculator(workingDaysCalculator, requestMonthsOverlappingChecker)
 
         when:
         def result = usedHoursFromMonthCalculator.countUsedHours(checkedYear, checkedMonth, historyLog)
@@ -83,7 +92,7 @@ class UsedHoursFromMonthCalculatorSpec extends Specification{
 
 
     @Unroll
-    def "countUsedHoursFromNormalRequest WHEN called with request that's overlap other months SHOULD return logHours only for given month"(){
+    def "countUsedHoursFromNormalRequest WHEN called with request that's overlap prev months SHOULD return logHours only for given month"(){
         given:
         def checkedMonth = 5
         def checkedYear = 2021
@@ -96,6 +105,11 @@ class UsedHoursFromMonthCalculatorSpec extends Specification{
             getRequest() >> request
         }
 
+        def requestMonthsOverlappingChecker = Mock(RequestMonthsOverlappingChecker){
+            requestOverlapOnlyPrevMonths(_ as Integer, _ as Integer, _ as Request) >> true
+        }
+        def usedHoursFromMonthCalculator = new UsedHoursFromMonthCalculator(workingDaysCalculator, requestMonthsOverlappingChecker)
+
         when:
         def result = usedHoursFromMonthCalculator.countUsedHours(checkedYear, checkedMonth, historyLog)
 
@@ -106,9 +120,67 @@ class UsedHoursFromMonthCalculatorSpec extends Specification{
         startDate                 | endDate                   | daysBetween
         LocalDate.of(2021, 4, 30) | LocalDate.of(2021, 5, 2)  | 2
         LocalDate.of(2021, 4, 1)  | LocalDate.of(2021, 5, 31) | 31
+    }
+
+    @Unroll
+    def "countUsedHoursFromNormalRequest WHEN called with request that's overlap next months SHOULD return logHours only for given month"(){
+        given:
+        def checkedMonth = 5
+        def checkedYear = 2021
+        def request = Mock(Request){
+            getStartDate() >> startDate
+            getEndDate() >> endDate
+        }
+        def historyLog = Mock(HistoryLog){
+            getUserWorkTime() >> 8
+            getRequest() >> request
+        }
+
+        def requestMonthsOverlappingChecker = Mock(RequestMonthsOverlappingChecker){
+            requestOverlapOnlyNextMonths(_ as Integer, _ as Integer, _ as Request) >> true
+        }
+        def usedHoursFromMonthCalculator = new UsedHoursFromMonthCalculator(workingDaysCalculator, requestMonthsOverlappingChecker)
+
+        when:
+        def result = usedHoursFromMonthCalculator.countUsedHours(checkedYear, checkedMonth, historyLog)
+
+        then:
+        result == 8 * daysBetween
+
+        where:
+        startDate                 | endDate                   | daysBetween
         LocalDate.of(2021, 5, 31) | LocalDate.of(2021, 6, 1)  | 1
         LocalDate.of(2021, 5, 1)  | LocalDate.of(2021, 6, 1)  | 31
         LocalDate.of(2021, 5, 7)  | LocalDate.of(2021, 6, 30) | 25
+    }
+
+    @Unroll
+    def "countUsedHoursFromNormalRequest WHEN called with request that's overlap prev and next months SHOULD return logHours only for given month"(){
+        given:
+        def checkedMonth = 5
+        def checkedYear = 2021
+        def request = Mock(Request){
+            getStartDate() >> startDate
+            getEndDate() >> endDate
+        }
+        def historyLog = Mock(HistoryLog){
+            getUserWorkTime() >> 8
+            getRequest() >> request
+        }
+
+        def requestMonthsOverlappingChecker = Mock(RequestMonthsOverlappingChecker){
+            requestOverlapNextAndPrevMonth(_ as Integer, _ as Integer, _ as Request) >> true
+        }
+        def usedHoursFromMonthCalculator = new UsedHoursFromMonthCalculator(workingDaysCalculator, requestMonthsOverlappingChecker)
+
+        when:
+        def result = usedHoursFromMonthCalculator.countUsedHours(checkedYear, checkedMonth, historyLog)
+
+        then:
+        result == 8 * daysBetween
+
+        where:
+        startDate                 | endDate                   | daysBetween
         LocalDate.of(2021, 4, 30) | LocalDate.of(2021, 6, 1)  | 31
         LocalDate.of(2021, 4, 1)  | LocalDate.of(2021, 6, 1)  | 31
     }
