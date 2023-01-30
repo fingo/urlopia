@@ -22,7 +22,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String[] PUBLIC_ROUTES = {
             "/", "/static/**", "/health/**", "/api/v2/info/**", "/api/v2/slack/**",
-            "/api/v2/proxy/**", "/login_check/**", "/icons/**"
+            "/api/v2/proxy/**", "/login_check/**", "/icons/**", "/error", "/index.html"
     };
     private static final String[] ALLOWED_EXTENSIONS = {
             "/*.png", "/*.xml", "/*.ico", "/*.webmanifest", "/*.svg",
