@@ -2,7 +2,7 @@ plugins {
     id "groovy"
     id "jacoco"
     id "java"
-    id "org.springframework.boot" version "2.5.2"
+    id "org.springframework.boot" version "2.7.7" //if changed here, update in versions array
     id "org.sonarqube" version "3.3"
     id "com.gorylenko.gradle-git-properties" version "1.4.17"
     id "io.freefair.lombok" version "6.1.0-m3"
@@ -12,7 +12,7 @@ project.ext.set("mainViewModule", project(":view.react"))
 
 
 allprojects {
-    project.version = "3.4.0"
+    project.version = "4.0.0"
 }
 
 java {
@@ -35,7 +35,7 @@ repositories {
 ext {
     versions = [
             //spring
-            springBoot   : '2.7.7',
+            springBoot   : '2.7.7', //if changed here update on plugins
 
             //oauth
             oauthJavaJwt : '4.2.1',
