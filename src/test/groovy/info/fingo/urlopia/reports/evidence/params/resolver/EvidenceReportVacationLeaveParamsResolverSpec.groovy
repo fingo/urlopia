@@ -1,6 +1,5 @@
 package info.fingo.urlopia.reports.evidence.params.resolver
 
-import info.fingo.urlopia.history.HistoryLog
 import info.fingo.urlopia.history.HistoryLogService
 import info.fingo.urlopia.user.User
 import spock.lang.Specification
@@ -23,38 +22,19 @@ class EvidenceReportVacationLeaveParamsResolverSpec extends  Specification{
     def b2b_label = "przerwa"
     def vacationLeaveModelPrefix = "remainingTimeAtYearStart"
     def vacationLabelModelPrefix = "label"
-
     def "resolve() WHEN called with year and user who work all time in fullTime SHOULD return model that contains prefix and as value count how many free hours user have and divide by 8"(){
+
         given: "history logs with added hours"
-        def firstFreeHours = 4
-        def firstLog = Mock(HistoryLog){
-            getRequest() >> null
-            getHours() >> firstFreeHours
-            getCountForNextYear() >> false
-        }
-
-        def secondFreeHours = 5
-        def secondLog = Mock(HistoryLog){
-            getRequest() >> null
-            getHours() >> secondFreeHours
-            getCountForNextYear() >> false
-        }
-
-        and: "historyLogService"
-        def lastYearHours = 6
+        def sumOfHours = 16
+        historyLogService.countRemainingForCurrentYear(_ as Long, _ as Integer) >> sumOfHours
         historyLogService.checkIfWorkedFullTimeForTheWholeYear(_ as Long, _ as Integer) >> true
-        historyLogService.countRemainingHoursForYear(_ as Long, _ as Integer) >> lastYearHours
-        historyLogService.getFromYear(_ as Long, _ as Integer) >> [firstLog,secondLog]
-
-        def sumOfHours = firstFreeHours + secondFreeHours +lastYearHours
-        sumOfHours = sumOfHours / 8
 
         when:
         def result = evidenceReportVacationLeaveParamsResolver.resolve()
 
         then:
         result.containsKey(vacationLeaveModelPrefix)
-        result.get(vacationLeaveModelPrefix) == decimalFormat.format(sumOfHours)
+        result.get(vacationLeaveModelPrefix) == decimalFormat.format(sumOfHours / 8.0)
 
 
     }
@@ -62,37 +42,16 @@ class EvidenceReportVacationLeaveParamsResolverSpec extends  Specification{
 
     def "resolve() WHEN called with year and user who not work all time in fullTime SHOULD return model that contains prefix and as value count how many free hours user have"(){
         given: "history logs with added hours"
-        def firstFreeHours = 4
-        def firstLog = Mock(HistoryLog){
-            getRequest() >> null
-            getHours() >> firstFreeHours
-            getCountForNextYear() >> false
-
-        }
-
-        def secondFreeHours = 5
-        def secondLog = Mock(HistoryLog){
-            getRequest() >> null
-            getHours() >> secondFreeHours
-            getCountForNextYear() >> false
-
-        }
-
-        and: "historyLogService"
-        def lastYearHours = 6
+        def sumOfHours = 16
+        historyLogService.countRemainingForCurrentYear(_ as Long, _ as Integer) >> sumOfHours
         historyLogService.checkIfWorkedFullTimeForTheWholeYear(_ as Long, _ as Integer) >> false
-        historyLogService.countRemainingHoursForYear(_ as Long, _ as Integer) >> lastYearHours
-        historyLogService.getFromYear(_ as Long, _ as Integer) >> [firstLog,secondLog]
 
         when:
         def result = evidenceReportVacationLeaveParamsResolver.resolve()
 
         then:
-        def sumOfHours = firstFreeHours + secondFreeHours + lastYearHours
         result.containsKey(vacationLeaveModelPrefix)
         result.get(vacationLeaveModelPrefix) == decimalFormat.format(sumOfHours)
-
-
     }
 
 
@@ -144,40 +103,5 @@ class EvidenceReportVacationLeaveParamsResolverSpec extends  Specification{
         then:
         result.containsKey(vacationLabelModelPrefix)
         result.get(vacationLabelModelPrefix) == b2b_label
-    }
-
-    def "resolve() WHEN called with year and user who work all time in fullTime SHOULD not count historyLogs with countForNextYear = true"(){
-        given: "history logs with added hours"
-        def firstFreeHours = 4
-        def firstLog = Mock(HistoryLog){
-            getRequest() >> null
-            getHours() >> firstFreeHours
-            getCountForNextYear() >> true
-        }
-
-        def secondFreeHours = 5
-        def secondLog = Mock(HistoryLog){
-            getRequest() >> null
-            getHours() >> secondFreeHours
-            getCountForNextYear() >> false
-        }
-
-        and: "historyLogService"
-        def lastYearHours = 6
-        historyLogService.checkIfWorkedFullTimeForTheWholeYear(_ as Long, _ as Integer) >> true
-        historyLogService.countRemainingHoursForYear(_ as Long, _ as Integer) >> lastYearHours
-        historyLogService.getFromYear(_ as Long, _ as Integer) >> [firstLog,secondLog]
-
-        def sumOfHours = secondFreeHours +lastYearHours
-        sumOfHours = sumOfHours / 8
-
-        when:
-        def result = evidenceReportVacationLeaveParamsResolver.resolve()
-
-        then:
-        result.containsKey(vacationLeaveModelPrefix)
-        result.get(vacationLeaveModelPrefix) == decimalFormat.format(sumOfHours)
-
-
     }
 }
