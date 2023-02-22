@@ -21,7 +21,7 @@ public class HistoryLogFilterCreator {
         var formattedStartOfDay = getFormattedDayStart(date);
         var formattedEndOfDay = getFormattedDayEnd(date);
         return Filter.newBuilder()
-                .and("user.id", Operator.EQUAL, String.valueOf(userId))
+                .and(USER_ID_FIELD_FILTER, Operator.EQUAL, String.valueOf(userId))
                 .and(CREATED_FIELD_FILTER, Operator.GREATER_OR_EQUAL, formattedStartOfDay)
                 .and(CREATED_FIELD_FILTER, Operator.LESS_OR_EQUAL, formattedEndOfDay)
                 .build();
@@ -33,7 +33,7 @@ public class HistoryLogFilterCreator {
         var formattedStartOfDay = getFormattedDayStart(startDate);
         var formattedEndOfDay = getFormattedDayEnd(endDate);
         return Filter.newBuilder()
-                .and("user.id", Operator.EQUAL, String.valueOf(userId))
+                .and(USER_ID_FIELD_FILTER, Operator.EQUAL, String.valueOf(userId))
                 .and(CREATED_FIELD_FILTER, Operator.GREATER_OR_EQUAL, formattedStartOfDay)
                 .and(CREATED_FIELD_FILTER, Operator.LESS_OR_EQUAL, formattedEndOfDay)
                 .build();

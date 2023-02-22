@@ -252,7 +252,9 @@ public class HistoryLogService {
     private float countRemainingFromPreviousYear(Long userId,
                                                 Integer year){
         var hours = 0f;
-        var logs = get(LocalDate.of(2000,1,12), LocalDate.of(year-1, 12, 31), userId);
+        var lastDayOfPrevYear = LocalDate.of(year-1, 12, 31);
+        var firstDay = LocalDate.of(0, 1,1);
+        var logs = get(firstDay, lastDayOfPrevYear, userId);
         for (var log: logs){
             var request = log.getRequest();
             if (request == null){
@@ -263,7 +265,7 @@ public class HistoryLogService {
             }
         }
         return hours;
-    } //we need to handle "next year requests"
+    }
 
     private float countForPrevYearFromRequest(HistoryLog historyLog,
                                               Request request,
@@ -271,7 +273,7 @@ public class HistoryLogService {
         var lastDayOfYear = LocalDate.of(year, 12, 31);
         if (request.getEndDate().isBefore(lastDayOfYear)){
             return -1 * request.getWorkingHours();
-        }
+        }//we need to handle "next year requests"
         else {
             var firstMonthOfRequest = request.getStartDate().getMonthValue();
             var hours = 0;
@@ -285,13 +287,12 @@ public class HistoryLogService {
     private float countForPrevYearFromLogWithoutRequest(HistoryLog historyLog,
                                                         Integer year){
         var logYear = historyLog.getCreated().getYear();
-        if (logYear > year){
+        var logIsFromPastYear = logYear < year;
+        var logIsFromNextYear = logYear > year;
+        if (logIsFromNextYear){
             return 0;
         }
-        if (!historyLog.getCountForNextYear()){
-            return historyLog.getHours();
-        }
-        if (logYear < year){
+        if (!historyLog.getCountForNextYear() || logIsFromPastYear){
             return historyLog.getHours();
         }
         return 0;
