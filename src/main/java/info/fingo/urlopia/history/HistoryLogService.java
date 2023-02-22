@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -260,7 +259,7 @@ public class HistoryLogService {
                 hours += countForPrevYearFromLogWithoutRequest(log, year);
             }
             else if (request.isNormal()){
-                hours += countForPrevYearFromRequest(log, request, year);
+                hours += countForPrevYearFromRequest(log, request, year-1);
             }
         }
         return hours;
