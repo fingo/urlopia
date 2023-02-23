@@ -53,7 +53,7 @@ export const TopBar = ({onHamburgerClick}) => {
                         <ListIcon className={listIconClass}/>
                     </button>
 
-                    <Navbar.Brand href='/calendar' className="d-none d-lg-block">
+                    <Navbar.Brand href='/#/calendar' className="d-none d-lg-block">
                         <img src={logoImg} alt="FINGO logo" className={styles.brandLogo}/>
                     </Navbar.Brand>
 
