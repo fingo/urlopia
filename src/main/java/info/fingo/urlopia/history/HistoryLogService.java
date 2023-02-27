@@ -19,9 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,17 +51,15 @@ public class HistoryLogService {
 
     public List<HistoryLogExcerptProjection> get(LocalDate date,
                                                  Long userId) {
-        var startOfDay = LocalDateTime.of(date, LocalTime.MIN);
-        var endOfDay = LocalDateTime.of(date, LocalTime.MAX);
-        var formatter = DateTimeFormatter.ofPattern(UrlopiaApplication.DATE_TIME_FORMAT);
-        var formattedStartOfDay = formatter.format(startOfDay);
-        var formattedEndOfDay = formatter.format(endOfDay);
-        var filter = Filter.newBuilder()
-                .and("user.id", Operator.EQUAL, String.valueOf(userId))
-                .and(CREATED_FILTER, Operator.GREATER_OR_EQUAL, formattedStartOfDay)
-                .and(CREATED_FILTER, Operator.LESS_OR_EQUAL, formattedEndOfDay)
-                .build();
+        var filter = HistoryLogFilterCreator.filterBy(date, userId);
         return historyLogRepository.findAll(filter, HistoryLogExcerptProjection.class);
+    }
+
+    public List<HistoryLog> get(LocalDate startDate,
+                                LocalDate endDate,
+                                Long userId) {
+        var filter = HistoryLogFilterCreator.filterBy(startDate, endDate, userId);
+        return historyLogRepository.findAll(filter);
     }
 
     public List<HistoryLogExcerptProjection> get(Long userId,
@@ -102,6 +100,13 @@ public class HistoryLogService {
                 .and(CREATED_FILTER, Operator.LESS_OR_EQUAL, yearEnd)
                 .build();
         return get(filterWithRestrictions, pageable);
+    }
+
+    private List<HistoryLog> getCountForNextYearLogs(Integer year,
+                                                     Long userId,
+                                                     Boolean countForNextYear){
+        var filter = HistoryLogFilterCreator.filterBy(year, userId, countForNextYear);
+        return historyLogRepository.findAll(filter);
     }
 
 
@@ -225,6 +230,72 @@ public class HistoryLogService {
 
     public Float countRemainingHours(Long userId) {
         return historyLogRepository.sumHours(userId);
+    }
+
+    public float countRemainingForCurrentYear(Long userId,
+                                              Integer year){
+        var currentYearLogs = getCountForNextYearLogs(year, userId, false);
+        var fromLastYear = getCountForNextYearLogs(year-1, userId, true);
+        var resultLogs = new ArrayList<HistoryLog>();
+        resultLogs.addAll(currentYearLogs);
+        resultLogs.addAll(fromLastYear);
+        var hours = 0f;
+        for (var log: resultLogs){
+            var request = log.getRequest();
+            if (request == null){
+                hours += log.getHours();
+            }
+        }
+        return hours + countRemainingFromPreviousYear(userId, year);
+    }
+
+    private float countRemainingFromPreviousYear(Long userId,
+                                                Integer year){
+        var hours = 0f;
+        var lastDayOfPrevYear = LocalDate.of(year-1, 12, 31);
+        var firstDay = LocalDate.of(0, 1,1);
+        var logs = get(firstDay, lastDayOfPrevYear, userId);
+        for (var log: logs){
+            var request = log.getRequest();
+            if (request == null){
+                hours += countForPrevYearFromLogWithoutRequest(log, year);
+            }
+            else if (request.isNormal()){
+                hours += countForPrevYearFromRequest(log, request, year-1);
+            }
+        }
+        return hours;
+    }
+
+    private float countForPrevYearFromRequest(HistoryLog historyLog,
+                                              Request request,
+                                              Integer year){
+        var lastDayOfYear = LocalDate.of(year, 12, 31);
+        if (request.getEndDate().isBefore(lastDayOfYear)){
+            return -1 * request.getWorkingHours();
+        }//we need to handle "next year requests"
+        else {
+            var firstMonthOfRequest = request.getStartDate().getMonthValue();
+            var hours = 0;
+            for (int month=firstMonthOfRequest; month<=12; month++){
+                hours += usedHoursFromMonthCalculator.countUsedHours(year, month, historyLog);
+            }
+            return -1 * hours;
+        }
+    }
+
+    private float countForPrevYearFromLogWithoutRequest(HistoryLog historyLog,
+                                                        Integer year){
+        var logYear = historyLog.getCreated().getYear();
+        var logIsFromPastYear = logYear < year;
+        var logIsFromNextYear = logYear > year;
+        if (logIsFromNextYear){
+            return 0;
+        }
+        if (!historyLog.getCountForNextYear() || logIsFromPastYear){
+            return historyLog.getHours();
+        }
+        return 0;
     }
 
     public float countRemainingHoursForYear(Long userId,

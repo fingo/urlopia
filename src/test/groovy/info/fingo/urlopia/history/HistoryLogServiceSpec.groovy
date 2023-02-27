@@ -263,6 +263,96 @@ class HistoryLogServiceSpec extends Specification {
         1 * nextLog.setPrevHistoryLog(prevLog)
     }
 
+    def "countRemainingForCurrentYear WHEN only log without request should sum it"(){
+        given:
+        def log = Mock(HistoryLog){
+            getHours() >> 100
+        }
+        def log2 = Mock(HistoryLog) {
+            getHours() >> -20
+        }
+        historyLogRepository.findAll(_ as Filter) >>> [[log, log2], [], []]
+        usedHoursFromMonthCalculator.countUsedHours(_ as Integer, _ as Integer, _ as HistoryLog) >> -20
+
+        when:
+        def result = historyLogService.countRemainingForCurrentYear(1,1)
+
+        then:
+        result == 80
+    }
+
+    def "countRemainingForCurrentYear WHEN log with request SHOULD not be added"(){
+        given:
+        def log = Mock(HistoryLog){
+            getHours() >> 100
+        }
+        def log2 = Mock(HistoryLog) {
+            getHours() >> -20
+            getRequest() >> Mock(Request)
+        }
+        historyLogRepository.findAll(_ as Filter) >>> [[log, log2], [], []]
+
+        when:
+        def result = historyLogService.countRemainingForCurrentYear(1,1)
+
+        then:
+        result == 100
+    }
+
+    def "countRemainingForCurrentYear WHEN log without request from prev year but countedOnNext SHOULD be added"(){
+        given:
+        def log = Mock(HistoryLog){
+            getHours() >> 100
+        }
+        def log2 = Mock(HistoryLog) {
+            getHours() >> -20
+        }
+        historyLogRepository.findAll(_ as Filter) >>> [[log], [log2], []]
+
+        when:
+        def result = historyLogService.countRemainingForCurrentYear(1,1)
+
+        then:
+        result == 80
+    }
+
+
+    def "countRemainingForCurrentYear WHEN remaining from prev year SHOULD be added"(){
+        given:
+        def log = Mock(HistoryLog){
+            getHours() >> 100
+        }
+        def log2 = Mock(HistoryLog) {
+            getHours() >> -20
+            getRequest() >> Mock(Request) {
+                isNormal() >> true
+                getEndDate() >> LocalDate.MAX
+                getStartDate() >> LocalDate.of(2022,12,1)
+            }
+        }
+        historyLogRepository.findAll(_ as Filter) >>> [[log], [], [log2]]
+        usedHoursFromMonthCalculator.countUsedHours(_ as Integer, _ as Integer, _ as HistoryLog) >> 20
+
+        when:
+        def result = historyLogService.countRemainingForCurrentYear(1,1)
+
+        then:
+        result == 80
+    }
+
+
+
+    def "countRemainingForCurrentYear WHEN no logs SHOULD return 0"(){
+        given:
+        historyLogRepository.findAll(_ as Filter) >> []
+
+        when:
+        def result = historyLogService.countRemainingForCurrentYear(1,1)
+
+        then:
+        result == 0
+    }
+
     def "delete WHEN event is missing SHOULD throw exception"(){
         given:
         def nextLog = Mock(HistoryLog)
