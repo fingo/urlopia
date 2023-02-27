@@ -80,6 +80,15 @@ public class UserService {
                     return NoSuchUserException.invalidEmail();
                 });
     }
+    public User getByFirstNameAndLastName(String firstName,
+                                          String lastName) {
+        return userRepository
+                .findFirstByFirstNameAndLastName(firstName, lastName)
+                .orElseThrow(() -> {
+                    log.error("There is no user with firstName: {} lastName: {}", firstName, lastName);
+                    return NoSuchUserException.invalidEmail();
+                });
+    }
 
     public User getAllUsersLeader() {
         return allUsersLeaderProvider.getAllUsersLeader();
