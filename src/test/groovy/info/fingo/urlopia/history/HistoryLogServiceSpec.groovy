@@ -8,6 +8,7 @@ import info.fingo.urlopia.holidays.WorkingDaysCalculator
 import info.fingo.urlopia.request.Request
 import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserRepository
+import org.springframework.cglib.core.Local
 import spock.lang.Specification
 
 import java.time.LocalDate
@@ -299,25 +300,26 @@ class HistoryLogServiceSpec extends Specification {
         result == 100
     }
 
-    def "countRemainingForCurrentYear WHEN log without request from prev year but countedOnNext SHOULD be added"(){
+    def "countRemainingForCurrentYear WHEN log without request from prev year SHOULD be added"(){
         given:
         def log = Mock(HistoryLog){
             getHours() >> 100
         }
         def log2 = Mock(HistoryLog) {
             getHours() >> -20
+            getCreated() >> LocalDateTime.of(1,1,1,1,1,1)
         }
         historyLogRepository.findAll(_ as Filter) >>> [[log], [log2], []]
 
         when:
-        def result = historyLogService.countRemainingForCurrentYear(1,1)
+        def result = historyLogService.countRemainingForCurrentYear(1,2)
 
         then:
         result == 80
     }
 
 
-    def "countRemainingForCurrentYear WHEN remaining from prev year SHOULD be added"(){
+    def "countRemainingForCurrentYear WHEN remaining from prev year from accepted request SHOULD be added"(){
         given:
         def log = Mock(HistoryLog){
             getHours() >> 100
@@ -328,9 +330,10 @@ class HistoryLogServiceSpec extends Specification {
                 isNormal() >> true
                 getEndDate() >> LocalDate.MAX
                 getStartDate() >> LocalDate.of(2022,12,1)
+                getStatus() >> Request.Status.ACCEPTED
             }
         }
-        historyLogRepository.findAll(_ as Filter) >>> [[log], [], [log2]]
+        historyLogRepository.findAll(_ as Filter) >>> [[log], [log2], []]
         usedHoursFromMonthCalculator.countUsedHours(_ as Integer, _ as Integer, _ as HistoryLog) >> 20
 
         when:
@@ -338,6 +341,77 @@ class HistoryLogServiceSpec extends Specification {
 
         then:
         result == 80
+    }
+
+    def "countRemainingForCurrentYear WHEN remaining from prev year from not accepted request SHOULD not be added"(){
+        given:
+        def log = Mock(HistoryLog){
+            getHours() >> 100
+        }
+        def log2 = Mock(HistoryLog) {
+            getHours() >> -20
+            getRequest() >> Mock(Request) {
+                isNormal() >> true
+                getEndDate() >> LocalDate.MAX
+                getStartDate() >> LocalDate.of(2022,12,1)
+                getStatus() >> status
+            }
+        }
+        historyLogRepository.findAll(_ as Filter) >>> [[log], [log2], []]
+        usedHoursFromMonthCalculator.countUsedHours(_ as Integer, _ as Integer, _ as HistoryLog) >> 20
+
+        when:
+        def result = historyLogService.countRemainingForCurrentYear(1,1)
+
+        then:
+        result == 100
+
+        where:
+        status << [Request.Status.CANCELED, Request.Status.PENDING, Request.Status.REJECTED]
+    }
+
+    def "countRemainingForCurrentYear WHEN remaining from prev year without request SHOULD be added"(){
+        given:
+        def log = Mock(HistoryLog){
+            getHours() >> 100
+        }
+        def log2 = Mock(HistoryLog) {
+            getHours() >> -20
+            getCreated() >> LocalDateTime.of(1,1,1,1,1,1)
+        }
+        historyLogRepository.findAll(_ as Filter) >>> [[log], [log2], []]
+        usedHoursFromMonthCalculator.countUsedHours(_ as Integer, _ as Integer, _ as HistoryLog) >> 20
+
+        when:
+        def result = historyLogService.countRemainingForCurrentYear(1,2)
+
+        then:
+        result == 80
+    }
+
+    def "countRemainingForCurrentYear WHEN remaining from prev year with special request SHOULD not be added"(){
+        given:
+        def log = Mock(HistoryLog){
+            getHours() >> 100
+        }
+        def log2 = Mock(HistoryLog) {
+            getHours() >> -20
+            getCreated() >> LocalDateTime.of(1,1,1,1,1,1)
+            getRequest() >> Mock(Request) {
+                isNormal() >> false
+                getEndDate() >> LocalDate.MAX
+                getStartDate() >> LocalDate.of(2022,12,1)
+                getStatus() >> Request.Status.ACCEPTED
+            }
+        }
+        historyLogRepository.findAll(_ as Filter) >>> [[log], [log2], []]
+        usedHoursFromMonthCalculator.countUsedHours(_ as Integer, _ as Integer, _ as HistoryLog) >> 20
+
+        when:
+        def result = historyLogService.countRemainingForCurrentYear(1,2)
+
+        then:
+        result == 100
     }
 
 
