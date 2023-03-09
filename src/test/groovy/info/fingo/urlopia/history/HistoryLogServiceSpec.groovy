@@ -8,7 +8,6 @@ import info.fingo.urlopia.holidays.WorkingDaysCalculator
 import info.fingo.urlopia.request.Request
 import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserRepository
-import org.springframework.cglib.core.Local
 import spock.lang.Specification
 
 import java.time.LocalDate
