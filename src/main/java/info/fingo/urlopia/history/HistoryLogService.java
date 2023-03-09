@@ -268,7 +268,7 @@ public class HistoryLogService {
                                               Integer year){
         var lastDayOfYear = LocalDate.of(year, 12, 31);
         if (request.getEndDate().isBefore(lastDayOfYear)){
-            return -1 * request.getWorkingHours();
+            return historyLog.getHours();
         }
         else {
             var firstMonthOfRequest = request.getStartDate().getMonthValue();
