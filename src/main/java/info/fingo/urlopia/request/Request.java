@@ -176,10 +176,6 @@ public class Request {
         return workingDays;
     }
 
-    public float getWorkingHours(){
-        return workingDays * requester.getWorkTime();
-    }
-
     public void setWorkingDays(Integer workingDays) {
         this.workingDays = workingDays;
     }
