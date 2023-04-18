@@ -16,6 +16,8 @@ public enum SpecialAbsenceReason {
     EXCUSED_UNPAID("Nieobecność usprawiedliwiona niepłatna"),
     CHILDCARE("Urlop wychowawczy"),
     CHILDCARE_FOR_14_YEARS_OLD("Opieka nad dzieckiem do lat 14"),
+    CHILDCARE_UNPAID("Urlop opiekuńczy bezpłatny"),
+    FORCE_MAJEURE_LEAVE("Wystąpienie siły wyższej"),
     WRONG("Nieznany powód nieobecności"),
     QUARANTINE_OR_ISOLATION("Kwarantanna lub izolacja"),
     OTHER("Inny powód nieobecności");
