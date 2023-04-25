@@ -15,6 +15,8 @@ public interface UserRepository extends BaseRepository<User>, JpaRepository<User
 
     Optional<User> findFirstByAdName(String adName);
 
+    Optional<User> findFirstByFirstNameAndLastName(String firstName, String lastName);
+
     @Query("SELECT u.principalName FROM User u")
     List<String> findAllPrincipalNames();
 
