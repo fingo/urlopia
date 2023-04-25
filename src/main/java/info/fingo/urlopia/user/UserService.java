@@ -152,15 +152,20 @@ public class UserService {
     }
 
     public Long getCurrentUserId(){
-        var currentPrincipal = SecurityContextHolder.getContext().getAuthentication();
-        var principalName = (String) currentPrincipal.getPrincipal();
-        var user = userRepository.findFirstByPrincipalName(principalName);
+        var principal = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Temporary fix while domain migration is on
+        var split = principal.split(";");
+        var firstName = split[0];
+        var lastName = split.length > 1 ? split[1] : "";
+
+        var user = userRepository.findFirstByFirstNameAndLastName(firstName, lastName);
         if (user.isPresent()){
             return user.get().getId();
         }
+
         throw UnauthorizedException.unauthorized();
     }
-
 
     public boolean isCurrentUserAdmin() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
