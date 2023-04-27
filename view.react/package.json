@@ -51,8 +51,8 @@
     "build": "tsc && vite build",
     "serve": "vite preview",
     "test": "react-scripts test",
-    "lint": "eslint ./src --ext .js --ext .jsx",
-    "lint-fix": "eslint ./src --ext .js --ext .jsx --fix"
+    "lint": "eslint ./src --ext .js --ext .jsx --ext .tsx",
+    "lint-fix": "eslint ./src --ext .js --ext .jsx --fix --ext .tsx"
   },
   "eslintConfig": {
     "extends": [
@@ -64,7 +64,11 @@
     ],
     "rules": {
       "simple-import-sort/imports": "error",
-      "simple-import-sort/exports": "error"
+      "simple-import-sort/exports": "error",
+      "testing-library/no-unnecessary-act": "off",
+      "testing-library/prefer-presence-queries": "off",
+      "testing-library/no-node-access": "off",
+      "testing-library/no-wait-for-multiple-assertions": "off"
     }
   },
   "browserslist": {
