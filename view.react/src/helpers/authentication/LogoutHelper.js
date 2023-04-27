@@ -8,7 +8,7 @@ export const logout = () => {
 }
 
 export const isNoAuthMode = () =>{
-    const currentAuthMode = process.env.REACT_APP_AUTH_MODE || '';
+    const currentAuthMode = import.meta.env.VITE_AUTH_MODE || '';
     return 'NO-AUTH' === currentAuthMode;
 }
 

@@ -1,7 +1,7 @@
 export const msalConfig = {
     auth: {
-        clientId: process.env.REACT_APP_OAUTH_CLIENT_ID || '',
-        authority: `https://login.microsoftonline.com/${process.env.REACT_APP_OAUTH_TENANT_ID}`,
+        clientId: import.meta.env.VITE_OAUTH_CLIENT_ID || '',
+        authority: `https://login.microsoftonline.com/${import.meta.env.VITE_OAUTH_TENANT_ID}`,
         redirectUri: `${window.location.origin}/login_check`,
     },
     cache: {
@@ -12,5 +12,5 @@ export const msalConfig = {
 
 // Add scopes here for ID token to be used at Microsoft identity platform endpoints.
 export const loginRequest = {
-    scopes: [`${process.env.REACT_APP_OAUTH_CLIENT_ID}/.default`]
+    scopes: [`${import.meta.env.VITE_OAUTH_CLIENT_ID}/.default`]
 };
