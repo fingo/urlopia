@@ -105,7 +105,7 @@ export const DashboardCalendar = () => {
                     {extra}
                     <span className={styles.mainNumber}>{format(day, "d")}</span>
                     <span className={styles.absentUsersLabel}>
-                        <strong>{absentUsersCounter === 0 ? `-` : `${absentUsersCounter} NB`}</strong>
+                        <strong>{absentUsersCounter === 0 ? `-` : `${absentUsersCounter} nb`}</strong>
                     </span>
                 </>
             )
@@ -140,14 +140,61 @@ export const DashboardCalendar = () => {
 
     }
 
+    const customStyles = {
+        control: (defaultStyles) => ({
+            ...defaultStyles,
+            backgroundColor: "#F2EFEA",
+            border: "none",
+            borderBottom: "1px solid #002900",
+            boxShadow: "none",
+            borderRadius: "0",
+            color: "#002900",
+            padding: "13px 0 11px 16px",
+            "&:hover": {
+                borderBottom: "1px solid #78A612",
+                backgroundColor: "#FFF",
+                transition: "all 0.6s ease-in-out",
+            }
+        }),
+        valueContainer: (provided, state) => ({
+            ...provided,
+            padding: '0',
+            height: "20px"
+        }),
+        input: (provided, state) => ({
+            ...provided,
+            margin: '0px',
+            padding: '0px'
+        }),
+        indicatorsContainer: (provided, state) => ({
+            ...provided,
+            height: '20px',
+        }),
+        dropdownIndicator: base => ({
+            ...base,
+            color: "#002900",
+            "&:hover": {
+                "pointer-events": "none",
+
+            }
+        }),
+        placeholder: (defaultStyles) => ({
+            ...defaultStyles,
+            color: "#002900",
+            fontSize: "14px",
+            letterSpacing: "0.2px",
+            margin: "0"
+        }),
+    };
+
     return (
         <>
+            <div className={styles.filterTitle}>Nieobecni</div>
             <div className={styles.filterSection}>
                 <div className={styles.filter}>
-                    <Form.Label className={styles.label}>Pracownicy:</Form.Label>
                     <Select
                         className={styles.selection}
-                        placeholder='Wszyscy pracownicy...'
+                        placeholder='PRACOWNICY'
                         isMulti
                         name="users"
                         options={usersOptions}
@@ -157,14 +204,14 @@ export const DashboardCalendar = () => {
                             saveSelectedUsersFilter(items)
                         }}
                         noOptionsMessage={() => 'Brak użytkowników do wyboru!'}
+                        styles={customStyles}
                     />
                 </div>
 
                 <div className={styles.filter}>
-                    <Form.Label className={styles.label}>Zespoły:</Form.Label>
                     <Select
                         className={styles.selection}
-                        placeholder='Wszystkie zespoły...'
+                        placeholder='ZESPOŁY'
                         isMulti
                         name="teams"
                         options={teamsOptions}
@@ -174,6 +221,7 @@ export const DashboardCalendar = () => {
                             saveSelectedTeamsFilter(items)
                         }}
                         noOptionsMessage={() => 'Brak zespołów do wyboru!'}
+                        styles={customStyles}
                     />
                 </div>
             </div>
@@ -190,6 +238,11 @@ export const DashboardCalendar = () => {
                     showSelectionPreview={false}
                     disabledDay={day => !isFetched || shouldBeDisabled(day)}
                     onShownDateChange={item => setCurrentMonth(item)}
+                    months={2}
+                    direction="horizontal"
+                    showMonthAndYearPickers={false}
+                    monthDisplayFormat="LLLL yyyy"
+                    weekdayDisplayFormat="EEEEEE"
                 />
             </div>
 
