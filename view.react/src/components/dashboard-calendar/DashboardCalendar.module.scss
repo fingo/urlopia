@@ -21,7 +21,7 @@
         width: calc((100% - 48px) / 7 );
         border-radius: 4px;
         border: 1px solid transparent;
-        
+
         .rdrDayNumber {
           color: transparent;
 
@@ -29,7 +29,7 @@
             font-size: 16px;
           }
         }
-  
+
         .rdrSelected {
           border-radius: 0;
           left: 0;
@@ -37,7 +37,7 @@
           width: 101%;
           height: 101%;
         }
-  
+
         .rdrSelected + .rdrDayNumber {
           color: transparent;
         }
@@ -46,7 +46,7 @@
           border: 1px solid #78A612;
           transition: all 0.6s ease-in-out;
         }
-  
+
         &:not(.rdrDayPassive) {
           .rdrSelected ~ .rdrDayNumber {
             span {
@@ -58,7 +58,7 @@
 
       .rdrDay.rdrDayToday {
         background-color: #002900;
-        
+
         .rdrDayNumber {
           span {
             color: #fff;
@@ -118,20 +118,43 @@
       width: 100%;
 
       .rdrNextPrevButton {
-        background-color: unset;
+        width: 48px;
+        height: 48px;
+        background: #FFF;
+        transform: perspective(1px) translateZ(0);
+        transition-property: transform;
+        transition-duration: 0.6s;
+        transition-timing-function: ease-in-out;
+
+        &:before {
+          content: "";
+          position: absolute;
+          z-index: -1;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(120, 166, 18, 0.1);
+          border-radius: 24px;
+          transform: scale(0);
+          transition-property: transform;
+          transition-duration: 0.6s;
+          transition-timing-function: ease-in-out;
+        }
+
+        &:hover:before {
+          transform: scale(1);
+        }
 
         i {
-          border: solid #002900;
-          border-width: 0 3px 3px 0;
-          display: inline-block;
-          padding: 5px;
-
-          &:hover {
-            display: inline-block;
-            border-width: 0 3px 3px 0;
-            border-color: #78A612;
-            padding: 6px;
-          }
+          margin: 0 auto;
+          width: 16px;
+          height: 16px;
+          border-style: none;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
         }
       }
 
@@ -140,11 +163,15 @@
       }
 
       .rdrPprevButton {
-        transform: rotate(135deg);
+        i {
+          background-image: url('../../assets/left-arrow.svg');
+        }
       }
 
       .rdrNextButton {
-        transform: rotate(-45deg);
+        i {
+          background-image: url('../../assets/right-arrow.svg');
+        }
       }
     }
   }
@@ -197,21 +224,11 @@
   top: 0.3rem;
 }
 
-.filterTitle {
-  font-size: 34px;
-  line-height: 56px;
-  font-family: 'Poppins', sans-serif;
-  color: #002900;
-  font-weight: 600;
-  letter-spacing: 0.01px;
-}
-
 .filterSection {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  margin: 1rem 0;
 }
 
 .filter {

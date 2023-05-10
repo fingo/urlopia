@@ -3,7 +3,6 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {format, lastDayOfMonth, startOfMonth} from "date-fns";
 import pl from "date-fns/locale/pl";
 import {useEffect, useState} from "react";
-import {Form} from "react-bootstrap";
 import {ExclamationTriangleFill as ExclamationIcon} from "react-bootstrap-icons";
 import Calendar from "react-date-range/dist/components/Calendar";
 import Select from "react-select";
@@ -189,7 +188,6 @@ export const DashboardCalendar = () => {
 
     return (
         <>
-            <div className={styles.filterTitle}>Nieobecni</div>
             <div className={styles.filterSection}>
                 <div className={styles.filter}>
                     <Select
