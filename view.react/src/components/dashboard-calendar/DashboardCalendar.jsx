@@ -10,8 +10,6 @@ import Select from "react-select";
 import useGetCalendarQuery from "../../api/queryHooks/queries/Calendar/useGetCalendarQuery";
 import {getCurrentUser} from "../../api/services/session.service";
 import {usePresence} from "../../contexts/presence-context/presenceContext";
-import {getLastDayFromCalendarMonthView} from "../../helpers/calendar/CalendarEndDateHelper";
-import {getFirstDayFromCalendarMonthView} from "../../helpers/calendar/CalendarStartDateHelper";
 import {formatDate} from "../../helpers/DateFormatterHelper";
 import {filterAbsentUsers} from "../../helpers/FilterAbsentUsersBySelectedTeamsHelper";
 import {sendGetRequest} from "../../helpers/RequestHelper";
@@ -50,11 +48,9 @@ export const DashboardCalendar = () => {
     const [selectedUsers, setSelectedUsers] = useState(() => getSelectedUsersFilter());
 
     const firstDay = formatDate(currentMonth);
-    const lastDay = formatDate(lastDayOfMonth(currentMonth));
-    const firstDayFromCalendarMonthView = getFirstDayFromCalendarMonthView(firstDay)
-    const lastDayFromCalendarMonthView = getLastDayFromCalendarMonthView(lastDay)
+    const lastDayNextMonth = formatDate(lastDayOfMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)));
 
-    const { data, isFetched } = useGetCalendarQuery({startDate: firstDayFromCalendarMonthView, endDate: lastDayFromCalendarMonthView})
+    const { data, isFetched } = useGetCalendarQuery({startDate: firstDay, endDate: lastDayNextMonth})
 
     const calendarResponse = data?.calendar;
 
