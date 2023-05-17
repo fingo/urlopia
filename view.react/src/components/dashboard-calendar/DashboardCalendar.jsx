@@ -224,7 +224,7 @@ export const DashboardCalendar = () => {
                 <Calendar
                     locale={pl}
                     onChange={(item) => handleDateChange(item)}
-                    date={selectedDate}
+                    date={currentMonth}
                     className={styles.calendar}
                     dayContentRenderer={customDayContent}
                     color="transparent"
