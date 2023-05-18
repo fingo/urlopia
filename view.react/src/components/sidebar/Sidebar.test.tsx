@@ -8,28 +8,28 @@ import {mockLocalStorage} from "../../helpers/TestHelper";
 import {Sidebar} from "./Sidebar";
 import { vi } from 'vitest';
 
-vi.mock("../../contexts/vacation-days-context/actions/fetchPendingDays", () => {
-    const originalModule = vi.requireActual("../../contexts/vacation-days-context/actions/fetchPendingDays");
+vi.mock("../../contexts/vacation-days-context/actions/fetchPendingDays", async () => {
+    const originalModule = await vi.importActual("../../contexts/vacation-days-context/actions/fetchPendingDays");
 
     return {
         __esModule: true,
         ...originalModule,
-        fetchPendingDays: () => {}
+        fetchPendingDays: vi.fn()
     };
 })
 
-vi.mock("../../contexts/vacation-days-context/actions/fetchVacationDays", () => {
-    const originalModule = vi.requireActual("../../contexts/vacation-days-context/actions/fetchVacationDays");
+vi.mock("../../contexts/vacation-days-context/actions/fetchVacationDays", async () => {
+    const originalModule = await vi.importActual("../../contexts/vacation-days-context/actions/fetchVacationDays");
 
     return {
         __esModule: true,
         ...originalModule,
-        fetchVacationDays: () => {}
+        fetchVacationDays: vi.fn()
     };
 })
 
 
-describe("Sidebar", () => {
+describe.only("Sidebar", () => {
     const sessionStorageMock = mockLocalStorage()
 
     beforeEach(() => {
