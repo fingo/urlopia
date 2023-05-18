@@ -1,4 +1,5 @@
 import {render, screen} from "@testing-library/react";
+import { vi } from 'vitest';
 
 import {CompanyRequestsListWrapper} from "../../components/company-requests-list/company-requests-list-wrapper/CompanyRequestsListWrapper";
 import {CreateAbsenceRequestFormWrapper} from "../../components/create-absence-request-form/create-absence-request-form-wrapper/CreateAbsenceRequestFormWrapper";
@@ -8,10 +9,10 @@ import {USER_DATA_KEY} from "../../constants/session.keystorage";
 import {mockLocalStorage} from "../../helpers/TestHelper";
 import {AbsenceRequestsPage} from "./AbsenceRequestsPage";
 
-jest.mock("../../components/user-requests-list/user-requests-list-wrapper/UserRequestsListWrapper")
-jest.mock("../../components/team-requests-list/team-requests-list-wrapper/TeamRequestsListWrapper")
-jest.mock("../../components/company-requests-list/company-requests-list-wrapper/CompanyRequestsListWrapper")
-jest.mock("../../components/create-absence-request-form/create-absence-request-form-wrapper/CreateAbsenceRequestFormWrapper")
+vi.mock("../../components/user-requests-list/user-requests-list-wrapper/UserRequestsListWrapper")
+vi.mock("../../components/team-requests-list/team-requests-list-wrapper/TeamRequestsListWrapper")
+vi.mock("../../components/company-requests-list/company-requests-list-wrapper/CompanyRequestsListWrapper")
+vi.mock("../../components/create-absence-request-form/create-absence-request-form-wrapper/CreateAbsenceRequestFormWrapper")
 
 describe("AbsenceRequestPage", () => {
     const sessionStorageMock = mockLocalStorage()
