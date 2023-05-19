@@ -4,18 +4,18 @@ import { Form } from "react-bootstrap";
 
 import { ColumnType } from "./Table.types";
 
-interface IFilterRowProps<T> {
-  columns: ColumnType<T>[];
+interface IFilterRowProps<DataType extends object> {
+  columns: ColumnType<DataType>[];
   filters: {
-    [key: string]: string;
+    [key in keyof DataType]?: string;
   };
-  setFilter: (name: string, value: string) => void;
+  setFilter: (name: keyof DataType, value: string) => void;
 }
-export const FilterRow = <T,>({
+export const FilterRow = <DataType extends object>({
   columns,
   filters,
   setFilter,
-}: IFilterRowProps<T>) => {
+}: IFilterRowProps<DataType>) => {
   return (
     <TableBody>
       <TableRow>
@@ -23,7 +23,7 @@ export const FilterRow = <T,>({
           (column) =>
             !column.hidden && (
               <TableCell
-                key={column.name}
+                key={column.name.toString()}
                 style={{ textAlign: column.headerAlign ?? "left" }}
                 hidden={column.hideHeader}
               >

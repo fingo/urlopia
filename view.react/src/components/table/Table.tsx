@@ -9,17 +9,17 @@ import { getKeyFieldValue } from "./TableHelpers";
 import useFilter from "./useFilter";
 import useSort from "./useSort";
 
-interface ITableProps<T> {
-  keyField: string;
-  data: RowType<T>[];
-  columns: ColumnType<T>[];
-  expandRow?: IExpandRow<T>;
+interface ITableProps<DataType extends object> {
+  keyField: keyof DataType;
+  data: RowType<DataType>[];
+  columns: ColumnType<DataType>[];
+  expandRow?: IExpandRow<DataType>;
   wrapperClasses?: string;
   hover?: boolean;
   striped?: boolean;
 }
 
-const Table = <T,>({
+const Table = <DataType extends object>({
   keyField,
   data,
   columns,
@@ -27,7 +27,7 @@ const Table = <T,>({
   wrapperClasses = "",
   hover = false,
   striped = false,
-}: ITableProps<T>) => {
+}: ITableProps<DataType>) => {
   const { filteredData, filters, setFilter } = useFilter({ data, columns });
   const {
     orderBy,
@@ -47,7 +47,7 @@ const Table = <T,>({
                 (column) =>
                     !column.hidden && (
                         <HeaderCell
-                            key={column.name}
+                            key={column.name.toString()}
                             orderBy={orderBy}
                             setOrderBy={setOrderBy}
                             column={column}

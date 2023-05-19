@@ -3,7 +3,7 @@ import React from "react";
 
 import { ColumnType, IExpandRow, RowType } from "./Table.types";
 
-const getColumnStyle = <T,>(column: ColumnType<T>, row: RowType<T>) => {
+const getColumnStyle = <DataType extends object, Property extends keyof DataType>(column: ColumnType<DataType, Property>, row: RowType<DataType>) => {
   if (column.style === undefined) {
     return;
   }
@@ -27,23 +27,23 @@ const getRowStyle = (expandRow: boolean, striped: boolean) => {
   };
 };
 
-interface IRowProps<T> {
+interface IRowProps<DataType extends object> {
   keyFieldValue: string;
-  columns: ColumnType<T>[];
-  row: RowType<T>;
-  expandRow?: IExpandRow<T>;
+  columns: ColumnType<DataType>[];
+  row: RowType<DataType>;
+  expandRow?: IExpandRow<DataType>;
   striped: boolean;
   hover: boolean;
 }
 
-export const Row = <T,>({
+export const Row = <DataType extends object>({
   keyFieldValue,
   columns,
   row,
   expandRow,
   striped,
   hover,
-}: IRowProps<T>) => {
+}: IRowProps<DataType>) => {
   const onClick = () => {
     expandRow?.onExpand(
       row,
@@ -69,7 +69,7 @@ export const Row = <T,>({
           return (
             !column.hidden && (
               <TableCell
-                key={column.name}
+                key={column.name.toString()}
                 style={{ ...baseStyle, ...passedStyle }}
               >
                 {column.formatter

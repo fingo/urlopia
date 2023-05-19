@@ -1,11 +1,11 @@
-import { ColumnType, RowType } from "./Table.types";
+import { ColumnType,RowType } from "./Table.types";
 
-export const getStringValue = <T>(
-  value: T,
-  column: ColumnType<T>,
-  row: RowType<T>
+export const getStringValue = <DataType extends object, Property extends keyof DataType>(
+  value: DataType[Property],
+  column: ColumnType<DataType, Property>,
+  row: RowType<DataType>
 ) => {
-  let stringValue: string | T | JSX.Element = value;
+  let stringValue: string | DataType[Property] | JSX.Element = value;
 
   const filteredValue = column.filterValue?.(value, row);
   const formattedValue = column.formatter?.(value, row);
@@ -25,7 +25,7 @@ export const getStringValue = <T>(
   return stringValue.toString();
 };
 
-export const getKeyFieldValue = <T,>(row: RowType<T>, keyField: string) => {
+export const getKeyFieldValue = <DataType extends object>(row: RowType<DataType>, keyField: keyof DataType) => {
   const key = row[keyField];
 
   if (key?.toString() === undefined) {

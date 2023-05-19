@@ -2,7 +2,7 @@ import { TableCell, TableSortLabel, TableSortLabelProps } from "@mui/material";
 import React from "react";
 import { ArrowDown, ArrowDownUp } from "react-bootstrap-icons";
 
-import { ColumnType, OrderByType } from "./Table.types";
+import { ColumnType,OrderByType } from "./Table.types";
 
 interface ISortLabelProps extends TableSortLabelProps {
   disabled?: boolean;
@@ -20,16 +20,16 @@ const SortLabelWrapper = ({
   return <TableSortLabel {...rest}>{children}</TableSortLabel>;
 };
 
-interface IHeaderCellProps<T> {
-  column: ColumnType<T>;
-  orderBy: OrderByType;
-  setOrderBy: React.Dispatch<React.SetStateAction<OrderByType>>;
+interface IHeaderCellProps<DataType extends object, Property extends keyof DataType> {
+  column: ColumnType<DataType, Property>;
+  orderBy: OrderByType<DataType>;
+  setOrderBy: React.Dispatch<React.SetStateAction<OrderByType<DataType>>>;
 }
-export const HeaderCell = <T,>({
+export const HeaderCell = <DataType extends object, Property extends keyof DataType>({
   column,
   orderBy,
   setOrderBy,
-}: IHeaderCellProps<T>) => {
+}: IHeaderCellProps<DataType, Property>) => {
   const getCurrentColumnDir = () => {
     if (!column.sort || orderBy.field !== column.name) {
       return;
