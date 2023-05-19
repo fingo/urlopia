@@ -42,7 +42,7 @@ public class JwtFilter extends OncePerRequestFilter {
                                                     HttpServletResponse response) {
         try{
             var accessToken = jwtTokenValidator.validateAuthorizationHeader(header);
-            var principal = accessToken.getPrincipal();
+            var principal = accessToken.getFirstName() + ";" + accessToken.getLastName();
             var authorities = accessToken.getAuthorities();
             return new UsernamePasswordAuthenticationToken(principal, null, authorities);
         }catch (InvalidTokenException | NoSuchUserException exception){
