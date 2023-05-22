@@ -29,7 +29,7 @@ vi.mock("../../contexts/vacation-days-context/actions/fetchVacationDays", async 
 })
 
 
-describe.only("Sidebar", () => {
+describe("Sidebar", () => {
     const sessionStorageMock = mockLocalStorage()
 
     beforeEach(() => {
