@@ -1,6 +1,6 @@
 import {faUmbrellaBeach} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {format, lastDayOfMonth, startOfMonth} from "date-fns";
+import {addMonths, format, lastDayOfMonth, startOfMonth} from "date-fns";
 import pl from "date-fns/locale/pl";
 import {useEffect, useState} from "react";
 import {ExclamationTriangleFill as ExclamationIcon} from "react-bootstrap-icons";
@@ -10,7 +10,6 @@ import Select from "react-select";
 import useGetCalendarQuery from "../../api/queryHooks/queries/Calendar/useGetCalendarQuery";
 import {getCurrentUser} from "../../api/services/session.service";
 import {usePresence} from "../../contexts/presence-context/presenceContext";
-import {formatDate} from "../../helpers/DateFormatterHelper";
 import {filterAbsentUsers} from "../../helpers/FilterAbsentUsersBySelectedTeamsHelper";
 import {sendGetRequest} from "../../helpers/RequestHelper";
 import {sortedTeams} from "../../helpers/sorts/TeamSortHelper"
@@ -47,8 +46,8 @@ export const DashboardCalendar = () => {
     const [usersOptions, setUsersOptions] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState(() => getSelectedUsersFilter());
 
-    const firstDay = formatDate(currentMonth);
-    const lastDayNextMonth = formatDate(lastDayOfMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)));
+    const firstDay = format(currentMonth, 'yyyy-MM-dd');
+    const lastDayNextMonth = format(lastDayOfMonth(addMonths(currentMonth, 1)), 'yyyy-MM-dd');
 
     const { data, isFetched } = useGetCalendarQuery({startDate: firstDay, endDate: lastDayNextMonth})
 
@@ -69,22 +68,22 @@ export const DashboardCalendar = () => {
     };
 
     const shouldBeDisabled = day => {
-        return calendarResponse && calendarResponse[formatDate(day)] && !calendarResponse[formatDate(day)].workingDay;
+        return calendarResponse && calendarResponse[format(day, 'yyyy-MM-dd')] && !calendarResponse[format(day, 'yyyy-MM-dd')].workingDay;
     };
 
     const customDayContent = (day) => {
         if (calendarResponse) {
-            if (!calendarResponse[formatDate(day)] || !calendarResponse[formatDate(day)].workingDay) {
+            if (!calendarResponse[format(day, 'yyyy-MM-dd')] || !calendarResponse[format(day, 'yyyy-MM-dd')].workingDay) {
                 return <span className={styles.mainNumber}>{format(day, "d")}</span>;
             }
 
-            const thisDay = calendarResponse[formatDate(day)];
+            const thisDay = calendarResponse[format(day, 'yyyy-MM-dd')];
             let extra = null;
 
             if (thisDay?.currentUserInformation.absent) {
                 extra = <FontAwesomeIcon icon={faUmbrellaBeach} className={styles.absenceIcon}/>;
             } else if (getCurrentUser().ec
-                && !presenceState.myConfirmations.confirmations[formatDate(day)]
+                && !presenceState.myConfirmations.confirmations[format(day, 'yyyy-MM-dd')]
                 && day.getTime() <= new Date().getTime()
                 && !thisDay?.currentUserInformation.presenceConfirmation.confirmed) {
                 extra = <ExclamationIcon className={styles.exclamationIcon}/>;
@@ -245,8 +244,8 @@ export const DashboardCalendar = () => {
                 <CalendarDayInfo
                     show={show}
                     onHide={() => setShow(false)}
-                    date={formatDate(selectedDate)}
-                    absentUsers={sortedUsers(filteredAbsentUsers(calendarResponse[formatDate(selectedDate)].absentUsers),
+                    date={format(selectedDate, 'yyyy-MM-dd')}
+                    absentUsers={sortedUsers(filteredAbsentUsers(calendarResponse[format(selectedDate, 'yyyy-MM-dd')].absentUsers),
                         "userName")}
                 />
             }
