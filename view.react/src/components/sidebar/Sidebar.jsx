@@ -11,7 +11,6 @@ import {useVacationDays} from "../../contexts/vacation-days-context/vacationDays
 import {AttentionIcon, TextWithIcon} from "../../helpers/icons/Icons";
 import {formatHoursToDays} from "../../helpers/RemainingDaysFormatterHelper";
 import {Link} from "./link/Link";
-import {LinkGroup} from "./link-group/LinkGroup";
 import styles from './Sidebar.module.scss';
 
 export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
@@ -58,51 +57,81 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
 
     const leaveLabel = isUserEC ? "Pozostały urlop: " : "Pozostała przerwa: "
 
+    const [click, setClick] = useState(false);
+    const handleClick = () => setClick(!click);
+
+    const slickBarClasses = classNames(styles.nav, {
+        [styles['nav--clicked']]: click
+      });
+
     return (
         <>
             <Container fluid className={styles.main}>
-                <div className={styles.days}>
-                    {
-                        workTime === 8 ?
-                            <>
-                                <p>{leaveLabel}<strong>{remainingDays}d</strong> {remainingHours}h </p>
-                                <p>Złożone wnioski: <strong>{pendingDays}d</strong> {pendingHours}h</p>
-                            </>
-                            :
-                            <>
-                                <p>{leaveLabel} <strong>{remainingHours}h ({remainingHoursAsDays}d)</strong></p>
-                                <p>Złożone wnioski: <strong>{pendingHours}h ({pendingHoursAsDays}d)</strong></p>
-                            </>
-                    }
-                </div>
-                <Nav className={styles.nav}>
-                    <Link to="/calendar" onClick={onClickLinkOrOutside}>Kalendarz</Link>
-                    <Link to="/requests" onClick={onClickLinkOrOutside}>
+                <Nav className={slickBarClasses} clicked={click}>
+                    <button clicked={click} onClick={() => handleClick()}>
+                        <img src={require('../../assets/sidebar/rightArrow.svg').default} alt="rightArrow_icon"/>
+                    </button>
+                    <Link 
+                        onClick={onClickLinkOrOutside}
+                        exact
+                        activeClassName="active"
+                        to="/calendar"
+                    >
+                        <img src={require('../../assets/sidebar/calendar.svg').default} alt="calendar_icon"/>
+                        <span>Kalendarz</span>
+                    </Link>
+                    <Link 
+                        onClick={onClickLinkOrOutside}
+                        exact
+                        activeClassName="active"
+                        to="/requests"
+                    >
+                        <img src={require('../../assets/sidebar/application.svg').default} alt="application_icon"/>
                         <TextWithIcon
                             text={isUserEC ? "Wnioski urlopowe" : "Wnioski o przerwę"}
                             icon={<AttentionIcon />}
                             showIcon={acceptancesPresent}
                         />
                     </Link>
-                    <Link to="/history" onClick={onClickLinkOrOutside}>Historia użytkownika</Link>
+                    <Link 
+                        onClick={onClickLinkOrOutside}
+                        exact
+                        activeClassName="active"
+                        to="/requests"
+                    >
+                        <img src={require('../../assets/sidebar/requests.svg').default} alt="requests_icon"/>
+                        <span>Historia użytkownika</span>
+                    </Link>
                     {isUserALeader &&
-                        <Link to="/acceptances/history" onClick={onClickLinkOrOutside}>Historia akceptacji</Link>
+                        <Link to="/acceptances/history" onClick={onClickLinkOrOutside}>
+                            <img src={require('../../assets/sidebar/acceptanceHistory.svg').default} alt="acceptanceHistory_icon"/>
+                            <span>Historia akceptacji</span>
+                        </Link>
                     }
                     {isUserAnAdmin && (
                         <>
-                            <LinkGroup name="Konfiguracja aplikacji">
-                                <Link to="/workers" onClick={onClickLinkOrOutside}>Pracownicy</Link>
-                                <Link to="/associates" onClick={onClickLinkOrOutside}>Współpracownicy</Link>
-                                <Link to="/holidays" onClick={onClickLinkOrOutside}>Dni świąteczne</Link>
-                            </LinkGroup>
-                            <Link to="/reports" onClick={onClickLinkOrOutside}>Raporty</Link>
-                            <Link to="/automaticVacationDays" onClick={onClickLinkOrOutside}>Dni na nowy rok</Link>
+                            <Link to="/associates" onClick={onClickLinkOrOutside}>
+                                <img src={require('../../assets/sidebar/associates.svg').default} alt="associates_icon"/>
+                                <span>Pracownicy</span>
+                            </Link>
+                            <Link to="/workers" onClick={onClickLinkOrOutside}>
+                                <img src={require('../../assets/sidebar/workers.svg').default} alt="workers_icon"/>
+                                <span>Pracownicy</span>
+                            </Link>
+                            <Link to="/holidays" onClick={onClickLinkOrOutside}>
+                                <img src={require('../../assets/sidebar/holidays.svg').default} alt="holidays_icon"/>
+                                <span>Dni świąteczne</span>
+                            </Link>
+                            <Link to="/reports" onClick={onClickLinkOrOutside}>
+                                <img src={require('../../assets/sidebar/reports.svg').default} alt="reports_icon"/>
+                                <span>Raporty</span>
+                            </Link>
+                            <Link to="/automaticVacationDays" onClick={onClickLinkOrOutside}>
+                                <img src={require('../../assets/sidebar/automaticVacationDays.svg').default} alt="automaticVacationDays_icon"/>
+                                <span>Dni na nowy rok</span>
+                            </Link>
                         </>
                     )}
-
-                    <div className={styles.versionContainer}>
-                        {`${version} ${commitId}`}
-                    </div>
                 </Nav>
             </Container>
 

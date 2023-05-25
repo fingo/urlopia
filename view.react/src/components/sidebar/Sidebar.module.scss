@@ -1,6 +1,35 @@
 @import "src/global-styles/color-variables";
 @import 'src/global-styles/bootstrap-breakpoints.scss';
 
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  100% {
+    opacity: 1;
+  }
+
+  0% {
+    opacity: 0;
+  }
+}
+
+@keyframes rotateButton {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
+
 .main {
   z-index: 6;
   font-size: 1.2rem;
@@ -12,25 +41,71 @@
 
   a {
     color: $GREY-COLOR;
-    margin-bottom: 1rem;
   }
 }
 
 .nav {
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  background-color: white;
-  padding: 2rem;
-  height: 70%;
-  width: 105%;
+  color: var(--white);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 6rem;
+    left: 0px;
+    transition: all 0.5s ease 0s;
+    white-space: nowrap;
+    text-transform: uppercase;
+    margin-left: 2rem;
+
+    button {
+      background-color: white;
+      border: none;
+      position: relative;
+      transition: transform 0.3s ease-in-out;
+      transform: translateX(0);
+    }
+
+  &--clicked {
+
+    button {
+      position: relative;
+      transform: translateX(1000%) rotate(-180deg);
+      transition: transform 0.3s ease-in-out;
+    }
+
+    a {
+      span {
+        width: 100%;
+        overflow: hidden;
+        animation: fadeIn 1s ease-in-out;
+      }
+    }
+  }
+
+  span {
+    overflow: hidden;
+    margin-left: 0px;
+    animation: fadeOut 1s ease-in-out;
+    width: 0;
+  }
 
   a {
     text-decoration: none;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--white);
+    width: 100%;
+    margin-bottom: 38px;
+    cursor: pointer;
+    display: flex;
 
     &:hover {
       color: $HOVER-COLOR;
+    }
+
+    span {
+      padding-left: 18px;
     }
   }
 }
@@ -41,6 +116,7 @@
   font-size: 1.6rem;
   color: $BLACK-COLOR;
   padding: 2rem 0 0 2rem;
+  
   p {
     margin: 0;
   }
