@@ -86,7 +86,7 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                         activeClassName="active"
                         to="/requests"
                     >
-                        <img src={require('../../assets/sidebar/application.svg').default} alt="application_icon"/>
+                        <img src={require('../../assets/sidebar/requests.svg').default} alt="requests_icon"/>
                         <TextWithIcon
                             text={isUserEC ? "Wnioski urlopowe" : "Wnioski o przerwę"}
                             icon={<AttentionIcon />}
@@ -97,9 +97,9 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                         onClick={onClickLinkOrOutside}
                         exact
                         activeClassName="active"
-                        to="/requests"
+                        to="/history"
                     >
-                        <img src={require('../../assets/sidebar/requests.svg').default} alt="requests_icon"/>
+                        <img src={require('../../assets/sidebar/history.svg').default} alt="history_icon"/>
                         <span>Historia użytkownika</span>
                     </Link>
                     {isUserALeader &&

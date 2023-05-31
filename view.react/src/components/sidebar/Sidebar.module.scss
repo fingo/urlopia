@@ -21,15 +21,6 @@
   }
 }
 
-@keyframes rotateButton {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(180deg);
-  }
-}
-
 .main {
   z-index: 6;
   font-size: 1.2rem;
@@ -41,71 +32,120 @@
 
   a {
     color: $GREY-COLOR;
+    padding-bottom: 12px;
+    margin-top: 18px;
   }
 }
 
 .nav {
-  color: var(--white);
-    list-style: none;
-    display: flex;
-    align-items: center;
     position: absolute;
     top: 6rem;
-    left: 0px;
-    transition: all 0.5s ease 0s;
+    left: 0;
     white-space: nowrap;
     text-transform: uppercase;
     margin-left: 2rem;
 
     button {
-      background-color: white;
+      background-color: transparent;
       border: none;
       position: relative;
       transition: transform 0.3s ease-in-out;
       transform: translateX(0);
+      padding: 12px;
+
+      &:before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 1px solid #9CD71E;
+        border-radius: 50px;
+        transform: scale(0);
+        transition-property: transform;
+        transition-duration: 0.3s;
+        transition-timing-function: ease-in-out;
+      }
+
+      &:hover:before {
+        transform: scale(1);
+      }
+
+      img {
+        display: block;
+        height: 100%;
+        width: auto;
+      }
     }
 
   &--clicked {
-
     button {
       position: relative;
-      transform: translateX(1000%) rotate(-180deg);
+      transform: translateX(600%) rotate(-180deg);
       transition: transform 0.3s ease-in-out;
     }
 
     a {
       span {
         width: 100%;
-        overflow: hidden;
-        animation: fadeIn 1s ease-in-out;
+        padding-left: 18px;
+        opacity: 1;
       }
     }
   }
 
   span {
+    transition: opacity 0.3s ease-in-out;
     overflow: hidden;
     margin-left: 0px;
-    animation: fadeOut 1s ease-in-out;
+    opacity: 0;
     width: 0;
+    font-size: 16px;
   }
 
   a {
     text-decoration: none;
     display: flex;
     align-items: center;
-    text-decoration: none;
-    color: var(--white);
+    color: #002900;
     width: 100%;
-    margin-bottom: 38px;
-    cursor: pointer;
-    display: flex;
+    position: relative;
+    justify-content: center;
 
-    &:hover {
-      color: $HOVER-COLOR;
+    &:before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 3px;
+      top: 100%;
+      left: 0;
+      background: #78A612;
+      visibility: hidden;
+      border-radius: 5px;
+      transform: scaleX(0);
+      transition: .3s linear;
     }
 
-    span {
-      padding-left: 18px;
+    &:hover::before,
+    &:focus::before {
+      visibility: visible;
+      transform: scaleX(1);
+    }
+
+    &:hover {
+      img {
+        transform: scale(1.2);
+        transition: .3s linear;
+      }
+    }
+
+    &:not(:hover) {
+      img {
+        transform: scale(1);
+        transition: .2s linear;
+      }
     }
   }
 }

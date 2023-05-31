@@ -1,5 +1,20 @@
 @import "src/global-styles/color-variables";
 
 .activeLink {
-  color: $BASE-COLOR !important;
+  &:after {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: -32px;
+    background: #78A612;
+    border-radius: 5px;
+    transition: .3s linear;
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+  }
+
+  span {
+    font-weight: 700;
+  }
 }
