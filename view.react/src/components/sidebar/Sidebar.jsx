@@ -1,3 +1,13 @@
+import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
+import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
+import CalendarMonthSharpIcon from '@mui/icons-material/CalendarMonthSharp';
+import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
+import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
+import EventRepeatOutlinedIcon from '@mui/icons-material/EventRepeatOutlined';
+import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
+import PeopleOutlineRoundedIcon from '@mui/icons-material/PeopleOutlineRounded';
+import WatchLaterRoundedIcon from '@mui/icons-material/WatchLaterRounded';
+import WorkHistoryOutlinedIcon from '@mui/icons-material/WorkHistoryOutlined';
 import classNames from "classnames";
 import PropTypes from 'prop-types';
 import {useEffect, useState} from "react";
@@ -69,7 +79,7 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
             <Container fluid className={styles.main}>
                 <Nav className={slickBarClasses} clicked={click}>
                     <button clicked={click} onClick={() => handleClick()}>
-                        <img src={require('../../assets/sidebar/rightArrow.svg').default} alt="rightArrow_icon"/>
+                        <ArrowForwardIosRoundedIcon />
                     </button>
                     <Link 
                         onClick={onClickLinkOrOutside}
@@ -77,7 +87,7 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                         activeClassName="active"
                         to="/calendar"
                     >
-                        <img src={require('../../assets/sidebar/calendar.svg').default} alt="calendar_icon"/>
+                        <CalendarMonthSharpIcon />
                         <span>Kalendarz</span>
                     </Link>
                     <Link 
@@ -86,7 +96,7 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                         activeClassName="active"
                         to="/requests"
                     >
-                        <img src={require('../../assets/sidebar/requests.svg').default} alt="requests_icon"/>
+                        <EmailRoundedIcon />
                         <TextWithIcon
                             text={isUserEC ? "Wnioski urlopowe" : "Wnioski o przerwę"}
                             icon={<AttentionIcon />}
@@ -99,35 +109,35 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                         activeClassName="active"
                         to="/history"
                     >
-                        <img src={require('../../assets/sidebar/history.svg').default} alt="history_icon"/>
+                        <WatchLaterRoundedIcon />
                         <span>Historia użytkownika</span>
                     </Link>
                     {isUserALeader &&
                         <Link to="/acceptances/history" onClick={onClickLinkOrOutside}>
-                            <img src={require('../../assets/sidebar/acceptanceHistory.svg').default} alt="acceptanceHistory_icon"/>
+                            <WorkHistoryOutlinedIcon />
                             <span>Historia akceptacji</span>
                         </Link>
                     }
                     {isUserAnAdmin && (
                         <>
                             <Link to="/associates" onClick={onClickLinkOrOutside}>
-                                <img src={require('../../assets/sidebar/associates.svg').default} alt="associates_icon"/>
+                            <PeopleOutlineRoundedIcon />
                                 <span>Pracownicy</span>
                             </Link>
                             <Link to="/workers" onClick={onClickLinkOrOutside}>
-                                <img src={require('../../assets/sidebar/workers.svg').default} alt="workers_icon"/>
+                                <GroupAddOutlinedIcon />
                                 <span>Pracownicy</span>
                             </Link>
                             <Link to="/holidays" onClick={onClickLinkOrOutside}>
-                                <img src={require('../../assets/sidebar/holidays.svg').default} alt="holidays_icon"/>
+                                <EventAvailableOutlinedIcon />
                                 <span>Dni świąteczne</span>
                             </Link>
                             <Link to="/reports" onClick={onClickLinkOrOutside}>
-                                <img src={require('../../assets/sidebar/reports.svg').default} alt="reports_icon"/>
+                                <BarChartOutlinedIcon />
                                 <span>Raporty</span>
                             </Link>
                             <Link to="/automaticVacationDays" onClick={onClickLinkOrOutside}>
-                                <img src={require('../../assets/sidebar/automaticVacationDays.svg').default} alt="automaticVacationDays_icon"/>
+                                <EventRepeatOutlinedIcon />
                                 <span>Dni na nowy rok</span>
                             </Link>
                         </>

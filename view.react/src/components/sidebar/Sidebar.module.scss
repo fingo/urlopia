@@ -1,26 +1,6 @@
 @import "src/global-styles/color-variables";
 @import 'src/global-styles/bootstrap-breakpoints.scss';
 
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeOut {
-  100% {
-    opacity: 1;
-  }
-
-  0% {
-    opacity: 0;
-  }
-}
-
 .main {
   z-index: 6;
   font-size: 1.2rem;
@@ -52,6 +32,9 @@
       transition: transform 0.3s ease-in-out;
       transform: translateX(0);
       padding: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
       &:before {
         content: "";
@@ -72,25 +55,19 @@
       &:hover:before {
         transform: scale(1);
       }
-
-      img {
-        display: block;
-        height: 100%;
-        width: auto;
-      }
     }
 
   &--clicked {
     button {
       position: relative;
-      transform: translateX(600%) rotate(-180deg);
+      transform: translateX(450%) rotate(-180deg);
       transition: transform 0.3s ease-in-out;
     }
 
     a {
       span {
         width: 100%;
-        padding-left: 18px;
+        padding-left: 12px;
         opacity: 1;
       }
     }
@@ -135,14 +112,14 @@
     }
 
     &:hover {
-      img {
+      svg {
         transform: scale(1.2);
         transition: .3s linear;
       }
     }
 
     &:not(:hover) {
-      img {
+      svg {
         transform: scale(1);
         transition: .2s linear;
       }
