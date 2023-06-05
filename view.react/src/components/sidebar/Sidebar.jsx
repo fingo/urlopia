@@ -76,13 +76,13 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                     }
                     {isUserAnAdmin && (
                         <>
-                            <Link to="/associates" onClick={onClickLinkOrOutside}>
-                            <PeopleOutlineRoundedIcon />
-                                <span>Współpracownicy</span>
-                            </Link>
                             <Link to="/workers" onClick={onClickLinkOrOutside}>
                                 <GroupAddOutlinedIcon />
                                 <span>Pracownicy</span>
+                            </Link>
+                            <Link to="/associates" onClick={onClickLinkOrOutside}>
+                            <PeopleOutlineRoundedIcon />
+                                <span>Współpracownicy</span>
                             </Link>
                             <Link to="/holidays" onClick={onClickLinkOrOutside}>
                                 <EventAvailableOutlinedIcon />
