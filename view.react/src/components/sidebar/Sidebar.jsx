@@ -34,9 +34,9 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
         <>
             <Container fluid className={styles.main}>
                 <Nav className={slickBarClasses}>
-                    <button onClick={() => handleClick()}>
+                    {/* <button onClick={() => handleClick()}>
                         <ArrowForwardIosRoundedIcon />
-                    </button>
+                    </button> */}
                     <Link 
                         onClick={onClickLinkOrOutside}
                         exact
