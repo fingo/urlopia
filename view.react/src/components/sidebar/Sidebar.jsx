@@ -78,7 +78,7 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                         <>
                             <Link to="/associates" onClick={onClickLinkOrOutside}>
                             <PeopleOutlineRoundedIcon />
-                                <span>Pracownicy</span>
+                                <span>Współpracownicy</span>
                             </Link>
                             <Link to="/workers" onClick={onClickLinkOrOutside}>
                                 <GroupAddOutlinedIcon />
