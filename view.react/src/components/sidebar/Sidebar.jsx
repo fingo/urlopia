@@ -1,4 +1,4 @@
-import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
+// import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
 import CalendarMonthSharpIcon from '@mui/icons-material/CalendarMonthSharp';
 import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
@@ -10,7 +10,7 @@ import WatchLaterRoundedIcon from '@mui/icons-material/WatchLaterRounded';
 import WorkHistoryOutlinedIcon from '@mui/icons-material/WorkHistoryOutlined';
 import classNames from "classnames";
 import PropTypes from 'prop-types';
-import {useState} from "react";
+// import {useState} from "react";
 import {Container, Nav} from 'react-bootstrap';
 
 import {getCurrentUser} from "../../api/services/session.service";
@@ -23,17 +23,17 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
     const {ec: isUserEC} = getCurrentUser();
     const overlayClass = classNames(styles.overlay, 'd-lg-none');
 
-    const [click, setClick] = useState(false);
-    const handleClick = () => setClick(!click);
+    // const [click, setClick] = useState(false);
+    // const handleClick = () => setClick(!click);
 
-    const slickBarClasses = classNames(styles.nav, {
-        [styles['nav--clicked']]: click
-      });
+    // const slickBarClasses = classNames(styles.nav, {
+    //     [styles['nav--clicked']]: click
+    //   });
 
     return (
         <>
             <Container fluid className={styles.main}>
-                <Nav className={slickBarClasses}>
+                <Nav >
                     {/* <button onClick={() => handleClick()}>
                         <ArrowForwardIosRoundedIcon />
                     </button> */}
