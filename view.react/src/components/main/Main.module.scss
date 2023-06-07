@@ -1,7 +1,7 @@
 @import 'src/global-styles/bootstrap-breakpoints';
 
 @include media-breakpoint-up(lg) {
-  .mainContent {
-    padding: 0 3rem 0 2rem;
+  .sidebarRowClass {
+    overflow: hidden;
   }
 }
