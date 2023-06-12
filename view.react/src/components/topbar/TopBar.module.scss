@@ -1,13 +1,37 @@
 @import "src/global-styles/color-variables";
 
 .topBar {
-  background-color: $BASE-COLOR;
+  background-color: white;
   width: 100%;
+}
+
+.topBarLogo {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: column;
+  background-color: #78A612;
+  border-radius: 50%;
+  height: 640px;
+  margin-top: -456px;
+}
+
+.topBarName {
+  font-size: 60px;
+  line-height: 90px;
+  font-weight: 275;
+  color: white;
+}
+
+.fullWidth {
+  width: 100%;
+  align-items: center;
 }
 
 .mobileRightSide {
   padding: 0.5rem;
   display: flex;
+  align-items: center;
 }
 
 .hamburger {
@@ -29,27 +53,29 @@
 }
 
 .settingsIcon {
-  color: $WHITESMOKE_COLOR;
+  color: #002900;
 
   &:hover {
-    color: $HOVER-COLOR;
+    color: #78a612;
   }
 }
 
 .icon {
-  color: white;
+  color: #002900;
   font-size: 1.5rem;
-  margin: 0 0.5rem;
+  margin: 0 2rem;
+  transition: transform 0.3s ease-in-out;
 
   &:hover {
-    color: $HOVER-COLOR;
+    color: #78a612;
+    transform: scale(1.2);
   }
 }
 
 .brandLogo {
   width: 100px;
   height: 45.5px;
-  margin-left: 30px;
+  margin-bottom: 40px;
 }
 
 .appLogo {

@@ -20,7 +20,7 @@ export const NoAuthUsersDropdown = () => {
             <InputLabel
                 id="no-auth-user-selector-label"
                 sx = {{
-                    color: "white",
+                    color: "#002900",
                     fontSize: '1.3rem',
                     "&.Mui-focused": {
                         color: "white",
@@ -33,13 +33,12 @@ export const NoAuthUsersDropdown = () => {
                 onChange={handleChange}
                 sx = {{
                     fontSize: '1.3rem',
-                    color: 'white',
-                    minWidth: '200px',
+                    color: '#002900',
                     "&:after": {
                         borderBottomColor: "white",
                     },
                     "& .MuiSvgIcon-root": {
-                        color: "white",
+                        color: "#002900",
                     },
                     boxShadow: 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 },
                     "&.Mui-focused": {
