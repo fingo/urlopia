@@ -3,7 +3,7 @@ import classNames from "classnames";
 import PropTypes from 'prop-types';
 import {useEffect, useState} from "react";
 import {Col,Container, Navbar, Row} from 'react-bootstrap';
-import {GearFill as GearIcon, List as ListIcon, Power as PowerIcon} from "react-bootstrap-icons";
+import {GearFill as GearIcon, List as ListIcon} from "react-bootstrap-icons";
 
 import {getFullUserName, getUserTeams} from "../../api/services/session.service";
 import logoImg from '../../assets/logo.svg';
