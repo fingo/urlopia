@@ -14,6 +14,7 @@ import {useState} from "react";
 import {Container, Nav} from 'react-bootstrap';
 
 import {getCurrentUser} from "../../api/services/session.service";
+import {useAppInfo} from "../../contexts/app-info-context/appInfoContext";
 import {AttentionIcon, TextWithIcon} from "../../helpers/icons/Icons";
 import {Link} from "./link/Link";
 import styles from './Sidebar.module.scss';
@@ -23,17 +24,20 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
     const {ec: isUserEC} = getCurrentUser();
     const overlayClass = classNames(styles.overlay, 'd-lg-none');
 
+    const [appInfoState, ] = useAppInfo()
+    const {version, commitId} = appInfoState.appInfo
+
     const [click, setClick] = useState(false);
     const handleClick = () => setClick(!click);
 
-    const slickBarClasses = classNames(styles.nav, {
-        [styles['nav--clicked']]: click
+    const sidebarClasses = classNames(styles.nav, {
+        [styles['nav--open']]: click
       });
 
     return (
         <>
             <Container fluid className={styles.main}>
-                <Nav className={slickBarClasses}>
+                <Nav className={sidebarClasses}>
                     <button onClick={() => handleClick()}>
                         <ArrowForwardIosRoundedIcon />
                     </button>
@@ -100,9 +104,11 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                     )}
                 </Nav>
             </Container>
-
+            <div className={styles.versionContainer}>
+                {`${version} ${commitId}`}
+            </div>
             <div className={overlayClass}
-                 onClick={onClickLinkOrOutside}/>
+                onClick={onClickLinkOrOutside}/>
         </>
     );
 }
