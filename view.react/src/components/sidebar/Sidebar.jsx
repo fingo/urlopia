@@ -41,7 +41,8 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                     <button onClick={() => handleClick()}>
                         <ArrowForwardIosRoundedIcon />
                     </button>
-                    <Link 
+                    <Link
+                        testId="CalendarLink"
                         onClick={onClickLinkOrOutside}
                         exact
                         activeClassName="active"
@@ -50,7 +51,8 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                         <CalendarMonthSharpIcon />
                         <span>Kalendarz</span>
                     </Link>
-                    <Link 
+                    <Link
+                        testId="RequestsLink"
                         onClick={onClickLinkOrOutside}
                         exact
                         activeClassName="active"
@@ -63,7 +65,8 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                             showIcon={acceptancesPresent}
                         />
                     </Link>
-                    <Link 
+                    <Link
+                        testId="UsersHistoryLink"
                         onClick={onClickLinkOrOutside}
                         exact
                         activeClassName="active"
@@ -80,19 +83,19 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                     }
                     {isUserAnAdmin && (
                         <>
-                            <Link to="/associates" onClick={onClickLinkOrOutside}>
+                            <Link to="/associates" onClick={onClickLinkOrOutside} testId="ContractorsLink">
                             <PeopleOutlineRoundedIcon />
                                 <span>Współpracownicy</span>
                             </Link>
-                            <Link to="/workers" onClick={onClickLinkOrOutside}>
+                            <Link to="/workers" onClick={onClickLinkOrOutside} testId="EmployeesLink">
                                 <GroupAddOutlinedIcon />
                                 <span>Pracownicy</span>
                             </Link>
-                            <Link to="/holidays" onClick={onClickLinkOrOutside}>
+                            <Link to="/holidays" onClick={onClickLinkOrOutside} testId="HolidaysLink">
                                 <EventAvailableOutlinedIcon />
                                 <span>Dni świąteczne</span>
                             </Link>
-                            <Link to="/reports" onClick={onClickLinkOrOutside}>
+                            <Link to="/reports" onClick={onClickLinkOrOutside} testId="ReportsLink">
                                 <BarChartOutlinedIcon />
                                 <span>Raporty</span>
                             </Link>
