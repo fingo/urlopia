@@ -1,9 +1,8 @@
 import {faUmbrellaBeach} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {format, lastDayOfMonth, startOfMonth} from "date-fns";
+import {addMonths, format, lastDayOfMonth, startOfMonth} from "date-fns";
 import pl from "date-fns/locale/pl";
 import {useEffect, useState} from "react";
-import {Form} from "react-bootstrap";
 import {ExclamationTriangleFill as ExclamationIcon} from "react-bootstrap-icons";
 import Calendar from "react-date-range/dist/components/Calendar";
 import Select from "react-select";
@@ -11,9 +10,6 @@ import Select from "react-select";
 import useGetCalendarQuery from "../../api/queryHooks/queries/Calendar/useGetCalendarQuery";
 import {getCurrentUser} from "../../api/services/session.service";
 import {usePresence} from "../../contexts/presence-context/presenceContext";
-import {getLastDayFromCalendarMonthView} from "../../helpers/calendar/CalendarEndDateHelper";
-import {getFirstDayFromCalendarMonthView} from "../../helpers/calendar/CalendarStartDateHelper";
-import {formatDate} from "../../helpers/DateFormatterHelper";
 import {filterAbsentUsers} from "../../helpers/FilterAbsentUsersBySelectedTeamsHelper";
 import {sendGetRequest} from "../../helpers/RequestHelper";
 import {sortedTeams} from "../../helpers/sorts/TeamSortHelper"
@@ -50,12 +46,10 @@ export const DashboardCalendar = () => {
     const [usersOptions, setUsersOptions] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState(() => getSelectedUsersFilter());
 
-    const firstDay = formatDate(currentMonth);
-    const lastDay = formatDate(lastDayOfMonth(currentMonth));
-    const firstDayFromCalendarMonthView = getFirstDayFromCalendarMonthView(firstDay)
-    const lastDayFromCalendarMonthView = getLastDayFromCalendarMonthView(lastDay)
+    const firstDay = format(currentMonth, 'yyyy-MM-dd');
+    const lastDayNextMonth = format(lastDayOfMonth(addMonths(currentMonth, 1)), 'yyyy-MM-dd');
 
-    const { data, isFetched } = useGetCalendarQuery({startDate: firstDayFromCalendarMonthView, endDate: lastDayFromCalendarMonthView})
+    const { data, isFetched } = useGetCalendarQuery({startDate: firstDay, endDate: lastDayNextMonth})
 
     const calendarResponse = data?.calendar;
 
@@ -74,22 +68,22 @@ export const DashboardCalendar = () => {
     };
 
     const shouldBeDisabled = day => {
-        return calendarResponse && calendarResponse[formatDate(day)] && !calendarResponse[formatDate(day)].workingDay;
+        return calendarResponse && calendarResponse[format(day, 'yyyy-MM-dd')] && !calendarResponse[format(day, 'yyyy-MM-dd')].workingDay;
     };
 
     const customDayContent = (day) => {
         if (calendarResponse) {
-            if (!calendarResponse[formatDate(day)] || !calendarResponse[formatDate(day)].workingDay) {
+            if (!calendarResponse[format(day, 'yyyy-MM-dd')] || !calendarResponse[format(day, 'yyyy-MM-dd')].workingDay) {
                 return <span className={styles.mainNumber}>{format(day, "d")}</span>;
             }
 
-            const thisDay = calendarResponse[formatDate(day)];
+            const thisDay = calendarResponse[format(day, 'yyyy-MM-dd')];
             let extra = null;
 
             if (thisDay?.currentUserInformation.absent) {
                 extra = <FontAwesomeIcon icon={faUmbrellaBeach} className={styles.absenceIcon}/>;
             } else if (getCurrentUser().ec
-                && !presenceState.myConfirmations.confirmations[formatDate(day)]
+                && !presenceState.myConfirmations.confirmations[format(day, 'yyyy-MM-dd')]
                 && day.getTime() <= new Date().getTime()
                 && !thisDay?.currentUserInformation.presenceConfirmation.confirmed) {
                 extra = <ExclamationIcon className={styles.exclamationIcon}/>;
@@ -105,7 +99,7 @@ export const DashboardCalendar = () => {
                     {extra}
                     <span className={styles.mainNumber}>{format(day, "d")}</span>
                     <span className={styles.absentUsersLabel}>
-                        <strong>{absentUsersCounter === 0 ? `-` : `${absentUsersCounter} NB`}</strong>
+                        <strong>{absentUsersCounter === 0 ? `-` : `${absentUsersCounter} nb`}</strong>
                     </span>
                 </>
             )
@@ -140,14 +134,60 @@ export const DashboardCalendar = () => {
 
     }
 
+    const customStyles = {
+        control: (defaultStyles) => ({
+            ...defaultStyles,
+            backgroundColor: "#F2EFEA",
+            border: "none",
+            borderBottom: "1px solid #002900",
+            boxShadow: "none",
+            borderRadius: "0",
+            color: "#002900",
+            padding: "13px 0 11px 16px",
+            "&:hover": {
+                borderBottom: "1px solid #78A612",
+                backgroundColor: "#FFF",
+                transition: "all 0.6s ease-in-out",
+            }
+        }),
+        valueContainer: (provided, state) => ({
+            ...provided,
+            padding: '0',
+            height: "20px"
+        }),
+        input: (provided, state) => ({
+            ...provided,
+            margin: '0px',
+            padding: '0px'
+        }),
+        indicatorsContainer: (provided, state) => ({
+            ...provided,
+            height: '20px',
+        }),
+        dropdownIndicator: base => ({
+            ...base,
+            color: "#002900",
+            "&:hover": {
+                "pointer-events": "none",
+
+            }
+        }),
+        placeholder: (defaultStyles) => ({
+            ...defaultStyles,
+            color: "#002900",
+            fontSize: "14px",
+            letterSpacing: "0.2px",
+            margin: "0"
+        }),
+    };
+
     return (
         <>
             <div className={styles.filterSection}>
                 <div className={styles.filter}>
-                    <Form.Label className={styles.label}>Pracownicy:</Form.Label>
                     <Select
                         className={styles.selection}
-                        placeholder='Wszyscy pracownicy...'
+                        placeholder='PRACOWNICY'
                         isMulti
                         name="users"
                         options={usersOptions}
@@ -157,14 +197,14 @@ export const DashboardCalendar = () => {
                             saveSelectedUsersFilter(items)
                         }}
                         noOptionsMessage={() => 'Brak użytkowników do wyboru!'}
+                        styles={customStyles}
                     />
                 </div>
 
                 <div className={styles.filter}>
-                    <Form.Label className={styles.label}>Zespoły:</Form.Label>
                     <Select
                         className={styles.selection}
-                        placeholder='Wszystkie zespoły...'
+                        placeholder='ZESPOŁY'
                         isMulti
                         name="teams"
                         options={teamsOptions}
@@ -174,6 +214,7 @@ export const DashboardCalendar = () => {
                             saveSelectedTeamsFilter(items)
                         }}
                         noOptionsMessage={() => 'Brak zespołów do wyboru!'}
+                        styles={customStyles}
                     />
                 </div>
             </div>
@@ -182,7 +223,7 @@ export const DashboardCalendar = () => {
                 <Calendar
                     locale={pl}
                     onChange={(item) => handleDateChange(item)}
-                    date={selectedDate}
+                    date={currentMonth}
                     className={styles.calendar}
                     dayContentRenderer={customDayContent}
                     color="transparent"
@@ -190,6 +231,11 @@ export const DashboardCalendar = () => {
                     showSelectionPreview={false}
                     disabledDay={day => !isFetched || shouldBeDisabled(day)}
                     onShownDateChange={item => setCurrentMonth(item)}
+                    months={2}
+                    direction="horizontal"
+                    showMonthAndYearPickers={false}
+                    monthDisplayFormat="LLLL yyyy"
+                    weekdayDisplayFormat="EEEEEE"
                 />
             </div>
 
@@ -198,8 +244,8 @@ export const DashboardCalendar = () => {
                 <CalendarDayInfo
                     show={show}
                     onHide={() => setShow(false)}
-                    date={formatDate(selectedDate)}
-                    absentUsers={sortedUsers(filteredAbsentUsers(calendarResponse[formatDate(selectedDate)].absentUsers),
+                    date={format(selectedDate, 'yyyy-MM-dd')}
+                    absentUsers={sortedUsers(filteredAbsentUsers(calendarResponse[format(selectedDate, 'yyyy-MM-dd')].absentUsers),
                         "userName")}
                 />
             }
