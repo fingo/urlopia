@@ -3,18 +3,18 @@ import { useMemo, useState } from "react";
 import { ColumnType, RowType } from "./Table.types";
 import { getStringValue } from "./TableHelpers";
 
-interface IUseFiltersProps<T> {
-  data: RowType<T>[];
-  columns: ColumnType<T>[];
+interface IUseFiltersProps<DataType extends object> {
+  data: RowType<DataType>[];
+  columns: ColumnType<DataType>[];
 }
 
-const useFilter = <T,>({ data, columns }: IUseFiltersProps<T>) => {
-  const [filters, setFilters] = useState<{ [key: string]: string }>({});
+const useFilter = <DataType extends object>({ data, columns }: IUseFiltersProps<DataType>) => {
+  const [filters, setFilters] = useState<{ [key in keyof DataType]?: string }>({});
 
   const filteredData = useMemo(
     () =>
       data.filter((row) =>
-        Object.entries(filters).every(([fieldName, filter]) => {
+        (Object.entries(filters) as [keyof DataType, string][]).every(([fieldName, filter]) => {
           const columnIndex = columns.findIndex(
             (column) => column.name === fieldName
           );
@@ -34,7 +34,7 @@ const useFilter = <T,>({ data, columns }: IUseFiltersProps<T>) => {
   return {
     filteredData,
     filters,
-    setFilter: (name: string, value: string) => {
+    setFilter: (name: keyof DataType, value: string) => {
       setFilters((prev) => {
         return {
           ...prev,

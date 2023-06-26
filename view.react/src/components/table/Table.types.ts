@@ -10,31 +10,32 @@ type AlignType =
 
 export type OrderType = "asc" | "desc";
 
-export type RowType<Cell> = { [key: string]: Cell };
+export type RowType<DataType extends object> = DataType;
 
-export interface IExpandRow<T> {
-  onExpand: (row: RowType<T>, isExpand: boolean) => void;
+export interface IExpandRow<DataType extends object> {
+  onExpand: (row: RowType<DataType>, isExpand: boolean) => void;
   expanded: string[];
-  renderer: (row: RowType<T>) => JSX.Element;
+  renderer: (row: RowType<DataType>) => JSX.Element;
 }
 
-type OnSortType = (field: string, order: OrderType) => void;
-export type OrderByType = {
-  field: string | undefined;
+export type OrderByType<DataType extends object> = {
+  field: keyof DataType | undefined;
   order: OrderType | undefined;
 };
 
-export interface ColumnType<Cell, Row = RowType<Cell>> {
-  name: string;
+export type ColumnsType<DataType extends object> = { [Property in keyof DataType]: {
+  name: Property;
   text?: string;
   headerAlign?: AlignType;
   align?: AlignType;
   sort?: boolean;
-  onSort?: OnSortType;
-  style?: CSSProperties | ((cell: Cell, row: Row) => CSSProperties);
-  formatter?: (cell: Cell, row: Row) => JSX.Element | string;
-  filterValue?: (cell: Cell, row: Row) => string;
+  onSort?: (field: Property, order: OrderType) => void;
+  style?: CSSProperties | ((cell: DataType[Property], row: DataType) => CSSProperties);
+  formatter?: (cell: DataType[Property], row: DataType) => JSX.Element | string;
+  filterValue?: (cell: DataType[Property], row: DataType) => string;
   hidden?: boolean;
   hideHeader?: boolean;
   filter?: boolean;
-}
+} }
+
+export type ColumnType<DataType extends object, Property extends keyof DataType = keyof DataType> = ColumnsType<DataType>[Property]
