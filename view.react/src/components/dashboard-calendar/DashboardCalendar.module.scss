@@ -1,61 +1,203 @@
 @import '../../global-styles/bootstrap-breakpoints';
 @import '../../global-styles/color-variables';
+@import url('https://fonts.cdnfonts.com/css/poppins');
 
 .calendarWrapper {
-  display: flex;
-  justify-content: center;
   margin-bottom: 1rem;
 }
 
 .calendar {
   overflow: auto;
-  border: 1px solid $CALENDAR-BORDER-COLOR;
   font-size: 1.125rem;
+  position: relative;
+  font-family: 'Poppins', sans-serif;
 
   :global {
-    .rdrDay {
-      border: 1px solid $CALENDAR-BORDER-COLOR;
+    .rdrDays{
+      row-gap: 8px;
+      column-gap: 8px;
 
-      .rdrDayNumber {
-        color: transparent;
-      }
+      .rdrDay {
+        width: calc((100% - 48px) / 7 );
+        border-radius: 4px;
+        border: 1px solid transparent;
 
-      .rdrSelected {
-        border-radius: 0;
-        left: 0;
-        top: 0;
-        width: 101%;
-        height: 101%;
-      }
+        .rdrDayNumber {
+          color: transparent;
 
-      .rdrSelected + .rdrDayNumber {
-        color: transparent;
-      }
-
-      &:hover {
-        background-color: $CALENDAR-HOVER-COLOR;
-      }
-
-      &:not(.rdrDayPassive) {
-        .rdrSelected ~ .rdrDayNumber {
           span {
-            color: $CALENDAR-NUMBER-BLACK-COLOR;
+            font-size: 16px;
           }
+        }
+
+        .rdrSelected {
+          border-radius: 0;
+          left: 0;
+          top: 0;
+          width: 101%;
+          height: 101%;
+        }
+
+        .rdrSelected + .rdrDayNumber {
+          color: transparent;
+        }
+  
+        &:hover {
+          border: 1px solid #78A612;
+          transition: all 0.6s ease-in-out;
+        }
+
+        &:not(.rdrDayPassive) {
+          .rdrSelected ~ .rdrDayNumber {
+            span {
+              color: $CALENDAR-NUMBER-BLACK-COLOR;
+            }
+          }
+        }
+      }
+
+      .rdrDay.rdrDayToday {
+        background-color: #002900;
+
+        .rdrDayNumber {
+          span {
+            color: #fff;
+
+            &:after {
+              content: unset;
+            }
+          }
+        }
+      }
+    }
+
+    .rdrDay:not(.rdrDayDisabled, .rdrDayPassive) {
+      .rdrDayNumber {
+        span {
+          color: #002900;
+
+          strong {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+
+    .rdrWeekDays {
+      column-gap: 8px;
+    }
+
+    .rdrWeekDay {
+      color: #002900;
+      font-size: 14px;
+    }
+
+    .rdrMonths {
+      overflow: hidden;
+
+      .rdrMonth {
+        padding: 0;
+
+        &:first-child {
+          margin-right: 56px;
+        }
+
+        .rdrMonthName {
+          text-align: center;
+          text-transform: capitalize;
+          font-size: 20px;
+          font-weight: 400;
+          color: #002900;
+        }
+      }
+    }
+
+    .rdrMonthAndYearWrapper {
+      position: absolute;
+      display: flex;
+      width: 100%;
+
+      .rdrNextPrevButton {
+        width: 48px;
+        height: 48px;
+        background: #FFF;
+        transform: perspective(1px) translateZ(0);
+        transition-property: transform;
+        transition-duration: 0.6s;
+        transition-timing-function: ease-in-out;
+
+        &:before {
+          content: "";
+          position: absolute;
+          z-index: -1;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(120, 166, 18, 0.1);
+          border-radius: 24px;
+          transform: scale(0);
+          transition-property: transform;
+          transition-duration: 0.6s;
+          transition-timing-function: ease-in-out;
+        }
+
+        &:hover:before {
+          transform: scale(1);
+        }
+
+        i {
+          margin: 0 auto;
+          width: 16px;
+          height: 16px;
+          border-style: none;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+
+      .rdrMonthAndYearPickers {
+        display: none;
+      }
+
+      .rdrPprevButton {
+        i {
+          background-image: url('../../assets/left-arrow.svg');
+        }
+      }
+
+      .rdrNextButton {
+        i {
+          background-image: url('../../assets/right-arrow.svg');
         }
       }
     }
   }
 }
 
+.rdrNextPrevButton {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto 0;
+}
+
+.rdrWeekDays {
+  column-gap: 8;
+}
+
+.rdrDays {
+  display: grid;
+}
+
 .mainNumber {
   position: absolute;
   bottom: 0.3rem;
   left: 0.5rem;
-
-  &::after {
-    bottom: 1rem !important;
-    background: $CALENDAR-CURRENT-DAY-INDICATOR-COLOR !important;
-  }
+  width: 22px;
 }
 
 .absentUsersLabel {
@@ -68,16 +210,16 @@
 }
 
 .exclamationIcon,
-.absenceIcon {
-  color: red;
-  font-size: 0.9rem;
-  position: absolute;
-  top: 0.2rem;
-  right: 0.5rem;
+  .absenceIcon {
+    color: #ECA725;
+    font-size: 0.9rem;
+    position: absolute;
+    top: 0.2rem;
+    right: 0.5rem;
 }
 
 .absenceIcon {
-  color: green;
+  color: #78A612;
   font-size: 0.8rem;
   top: 0.3rem;
 }
@@ -87,7 +229,6 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  margin: 1rem 0;
 }
 
 .filter {
@@ -110,11 +251,19 @@
 @include media-breakpoint-up(md) {
   .filterSection {
     flex-direction: row;
-    justify-content: space-between;
   }
 
   .filter {
-    width: 45%;
+    width: 348px;
+    margin-right: 56px;
+
+    input {
+      outline-color: #719ECE;
+    }
+
+    span {
+      display: none;
+    }
   }
 
   .filter + .filter {
