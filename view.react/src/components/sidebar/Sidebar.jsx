@@ -28,7 +28,6 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
     const {version, commitId} = appInfoState.appInfo
 
     const [isOpen, setIsOpen] = useState(false);
-    const handleClick = () => setIsOpen(!isOpen);
 
     const sidebarClasses = classNames(styles.nav, {
         [styles['nav--open']]: isOpen
@@ -38,7 +37,7 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
         <>
             <Container fluid className={styles.main}>
                 <Nav className={sidebarClasses}>
-                    <button onClick={() => handleClick()}>
+                    <button onClick={() => setIsOpen(!isOpen)}>
                         <ArrowForwardIosRoundedIcon />
                     </button>
                     <Link
