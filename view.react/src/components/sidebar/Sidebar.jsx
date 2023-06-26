@@ -27,11 +27,11 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
     const [appInfoState, ] = useAppInfo()
     const {version, commitId} = appInfoState.appInfo
 
-    const [click, setClick] = useState(false);
-    const handleClick = () => setClick(!click);
+    const [isOpen, setIsOpen] = useState(false);
+    const handleClick = () => setIsOpen(!isOpen);
 
     const sidebarClasses = classNames(styles.nav, {
-        [styles['nav--open']]: click
+        [styles['nav--open']]: isOpen
       });
 
     return (
