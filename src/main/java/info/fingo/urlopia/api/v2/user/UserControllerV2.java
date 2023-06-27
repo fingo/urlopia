@@ -1,5 +1,6 @@
 package info.fingo.urlopia.api.v2.user;
 
+import info.fingo.urlopia.api.v2.automatic.vacation.days.AutomaticVacationDayService;
 import info.fingo.urlopia.config.authentication.oauth.OAuthUserIdInterceptor;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.history.HistoryLogInput;
@@ -24,8 +25,7 @@ public class UserControllerV2 {
    private final UserService userService;
    private final NormalRequestService normalRequestService;
    private final HistoryLogService historyLogService;
-
-
+   private final AutomaticVacationDayService automaticVacationDayService;
 
    @RolesAllowed({"ROLES_ADMIN", "ROLES_LEADER", "ROLES_WORKER"})
    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -50,6 +50,14 @@ public class UserControllerV2 {
       var authenticatedId = (Long) httpRequest.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
       var remainingDaysInfo = historyLogService.countRemainingDays(authenticatedId);
       return VacationDaysOutput.fromWorkTimeResponse(remainingDaysInfo);
+   }
+
+   @RolesAllowed("ROLES_WORKER")
+   @GetMapping(value = "/me/automatic-vacation-days", produces = MediaType.APPLICATION_JSON_VALUE)
+   public AutomaticVacationDayOutput getAutomaticVacationDays(HttpServletRequest httpRequest) {
+      var authenticatedId = (Long) httpRequest.getAttribute(OAuthUserIdInterceptor.USER_ID_ATTRIBUTE);
+      var automaticVacationDay = automaticVacationDayService.getAutomaticVacationDayFor(authenticatedId);
+      return AutomaticVacationDayOutput.from(automaticVacationDay);
    }
 
    @RolesAllowed("ROLES_ADMIN")
