@@ -26,7 +26,7 @@ public class AutomaticVacationDayService {
     }
 
     public AutomaticVacationDayDTO update(UpdateUserConfig updateUserConfig) {
-        var automaticVacationDay = getAutomaticVacationDayFrom(updateUserConfig.userId());
+        var automaticVacationDay = getAutomaticVacationDayFor(updateUserConfig.userId());
         var updated = updateExisted(automaticVacationDay, updateUserConfig);
         return AutomaticVacationDayDTO.from(updated);
     }
@@ -49,21 +49,21 @@ public class AutomaticVacationDayService {
     }
 
     public AutomaticVacationDay resetPropositionFor(Long userId){
-        var avd = getAutomaticVacationDayFrom(userId);
+        var avd = getAutomaticVacationDayFor(userId);
         avd.setNextYearHoursProposition(0d);
         return automaticVacationDaysRepository.save(avd);
     }
 
-    private boolean hasNotEmptyProposition(AutomaticVacationDay automaticVacationDay){
-        return automaticVacationDay.getNextYearHoursProposition() != 0;
-    }
-
-    private AutomaticVacationDay getAutomaticVacationDayFrom(Long userId) {
+    public AutomaticVacationDay getAutomaticVacationDayFor(Long userId) {
         var optionalAutomaticVacationDay = automaticVacationDaysRepository.findByUserId(userId);
         if (optionalAutomaticVacationDay.isEmpty()) {
             throw new AutomaticVacationDaysNotFoundException();
         }
         return optionalAutomaticVacationDay.get();
+    }
+
+    private boolean hasNotEmptyProposition(AutomaticVacationDay automaticVacationDay){
+        return automaticVacationDay.getNextYearHoursProposition() != 0;
     }
 
     private void addHours(AutomaticVacationDay automaticVacationDay) {

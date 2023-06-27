@@ -190,5 +190,15 @@ class AutomaticVacationDayServiceSpec extends Specification{
         result.getNextYearHoursProposition() == 0
     }
 
+    def "getAutomaticVacationDayFor WHEN automaticVacationDay for given user does not exist SHOULD throw error"() {
+        given:
+        automaticVacationDaysRepository.findByUserId(_ as Long) >> Optional.empty()
+
+        when:
+        def result = automaticVacationDayService.getAutomaticVacationDayFor(1L)
+
+        then:
+        thrown(AutomaticVacationDaysNotFoundException)
+    }
 
 }
