@@ -1,12 +1,14 @@
 package info.fingo.urlopia.api.v2.user
 
+import info.fingo.urlopia.api.v2.automatic.vacation.days.AutomaticVacationDayService
+import info.fingo.urlopia.api.v2.automatic.vacation.days.model.AutomaticVacationDay
 import info.fingo.urlopia.config.persistance.filter.Filter
 import info.fingo.urlopia.history.HistoryLogInput
 import info.fingo.urlopia.history.HistoryLogService
 import info.fingo.urlopia.history.WorkTimeResponse
-import info.fingo.urlopia.request.normal.DayHourTime
 import info.fingo.urlopia.request.normal.NormalRequestService
 import info.fingo.urlopia.team.TeamExcerptProjection
+import info.fingo.urlopia.user.User
 import info.fingo.urlopia.user.UserExcerptProjection
 import info.fingo.urlopia.user.UserService
 import org.springframework.data.domain.Sort
@@ -18,6 +20,7 @@ class UserControllerV2Spec extends Specification{
     private UserService userService
     private NormalRequestService normalRequestService;
     private HistoryLogService historyLogService;
+    private AutomaticVacationDayService automaticVacationDayService
     private UserControllerV2 userControllerV2
     private List<UserExcerptProjection> usersData
     private List<UserOutput> userOutputs
@@ -27,7 +30,8 @@ class UserControllerV2Spec extends Specification{
         userService = Mock(UserService)
         normalRequestService = Mock(NormalRequestService)
         historyLogService = Mock(HistoryLogService)
-        userControllerV2 = new UserControllerV2(userService,normalRequestService,historyLogService)
+        automaticVacationDayService = Mock(AutomaticVacationDayService)
+        userControllerV2 = new UserControllerV2(userService,normalRequestService,historyLogService,automaticVacationDayService)
 
         def team1Name = "team1"
         listName = List.of(team1Name)
@@ -208,6 +212,36 @@ class UserControllerV2Spec extends Specification{
 
         then:
         result == vacationDaysOutput
+    }
+
+    def "getAutomaticVacationDays() WHEN called SHOULD call service and return saved value"() {
+        given: "authId with mocked request"
+        def authId = 5L
+        var httpRequest = Mock(HttpServletRequest){
+            getAttribute(_ as String) >> authId
+        }
+
+        and: "valid AutomaticVacationDay mock"
+        def hours = 160
+        def days = 20
+        def user = Mock(User){
+            getEc() >> false
+        }
+        def automaticVacationDayResponse = Mock(AutomaticVacationDay){
+            getNextYearHoursProposition() >> hours
+            getNextYearDaysBase() >> days
+            getUser() >> user
+        }
+        automaticVacationDayService.getAutomaticVacationDayFor(_ as Long) >> automaticVacationDayResponse
+
+        and: "valid automaticVacationDaysOutput mapped from AutomaticVacationDay"
+        def automaticVacationDaysOutput = new AutomaticVacationDayOutput(hours, days, false)
+
+        when:
+        def result = userControllerV2.getAutomaticVacationDays(httpRequest)
+
+        then:
+        result == automaticVacationDaysOutput
     }
 
     def "addVacationHours() WHEN called SHOULD called service and return updated value"() {

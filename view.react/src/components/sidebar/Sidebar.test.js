@@ -118,15 +118,15 @@ describe("Sidebar", () => {
                 </Router>
             );
         })
-
+        // console.log(screen.debug());
         // then
-        expect(screen.queryByText('Kalendarz').href).toMatch(/calendar/)
-        expect(screen.queryByText(linkWithText('Wnioski urlopowe')).href).toMatch(/requests/)
-        expect(screen.queryByText('Historia użytkownika').href).toMatch(/history/)
-        expect(screen.queryByText('Pracownicy').href).toMatch(/workers/)
-        expect(screen.queryByText('Współpracownicy').href).toMatch(/associates/)
-        expect(screen.queryByText('Dni świąteczne').href).toMatch(/holidays/)
-        expect(screen.queryByText('Raporty').href).toMatch(/reports/)
+        expect(screen.getByTestId('CalendarLink').href).toMatch(/calendar/)
+        expect(screen.getByTestId('RequestsLink').href).toMatch(/requests/)
+        expect(screen.getByTestId('UsersHistoryLink').href).toMatch(/history/)
+        expect(screen.getByTestId('EmployeesLink').href).toMatch(/workers/)
+        expect(screen.getByTestId('ContractorsLink').href).toMatch(/associates/)
+        expect(screen.getByTestId('HolidaysLink').href).toMatch(/holidays/)
+        expect(screen.getByTestId('ReportsLink').href).toMatch(/reports/)
     })
     it("should show correct links when user is not an admin and is not EC", () => {
         // given
@@ -213,13 +213,13 @@ describe("Sidebar", () => {
         })
 
         // then
-        expect(screen.queryByText('Kalendarz').href).toMatch(/calendar/)
-        expect(screen.queryByText(linkWithText('Wnioski o przerwę')).href).toMatch(/requests/)
-        expect(screen.queryByText('Historia użytkownika').href).toMatch(/history/)
-        expect(screen.queryByText('Pracownicy').href).toMatch(/workers/)
-        expect(screen.queryByText('Współpracownicy').href).toMatch(/associates/)
-        expect(screen.queryByText('Dni świąteczne').href).toMatch(/holidays/)
-        expect(screen.queryByText('Raporty').href).toMatch(/reports/)
+        expect(screen.getByTestId('CalendarLink').href).toMatch(/calendar/)
+        expect(screen.getByTestId('RequestsLink').href).toMatch(/requests/)
+        expect(screen.getByTestId('UsersHistoryLink').href).toMatch(/history/)
+        expect(screen.getByTestId('EmployeesLink').href).toMatch(/workers/)
+        expect(screen.getByTestId('ContractorsLink').href).toMatch(/associates/)
+        expect(screen.getByTestId('HolidaysLink').href).toMatch(/holidays/)
+        expect(screen.getByTestId('ReportsLink').href).toMatch(/reports/)
     })
 })
 

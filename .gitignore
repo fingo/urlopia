@@ -8,3 +8,5 @@ clone_guide
 /urlopia.log
 application-developer.properties
 .env-local
+bin
+data

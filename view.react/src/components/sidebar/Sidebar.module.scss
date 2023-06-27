@@ -10,27 +10,119 @@
   width: fit-content;
   max-height: 100%;
 
-  a {
+  a { 
     color: $GREY-COLOR;
-    margin-bottom: 1rem;
+    padding-bottom: 12px;
+    margin-top: 18px;
   }
 }
 
 .nav {
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  background-color: white;
-  padding: 2rem;
-  height: 70%;
-  width: 105%;
+    position: absolute;
+    top: 6rem;
+    left: 0;
+    white-space: nowrap;
+    text-transform: uppercase;
+    margin-left: 2rem;
+
+    button {
+      background-color: transparent;
+      border: none;
+      position: relative;
+      transition: transform 0.3s ease-in-out;
+      transform: translateX(0);
+      padding: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      &:before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 1px solid #9CD71E;
+        border-radius: 50px;
+        transform: scale(0);
+        transition-property: transform;
+        transition-duration: 0.3s;
+        transition-timing-function: ease-in-out;
+      }
+
+      &:hover:before {
+        transform: scale(1);
+      }
+    }
+
+  &--open {
+    button {
+      position: relative;
+      transform: translateX(450%) rotate(-180deg);
+      transition: transform 0.3s ease-in-out;
+    }
+
+    a {
+      span {
+        width: 100%;
+        padding-left: 12px;
+        opacity: 1;
+      }
+    }
+  }
+
+  span {
+    transition: opacity 0.3s ease-in-out;
+    overflow: hidden;
+    margin-left: 0px;
+    opacity: 0;
+    width: 0;
+    font-size: 16px;
+  }
 
   a {
     text-decoration: none;
+    display: flex;
+    align-items: center;
+    color: #002900;
+    width: 100%;
+    position: relative;
+    justify-content: center;
+
+    &:before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 3px;
+      top: 100%;
+      left: 0;
+      background: #78A612;
+      visibility: hidden;
+      border-radius: 5px;
+      transform: scaleX(0);
+      transition: .3s linear;
+    }
+
+    &:hover::before,
+    &:focus::before {
+      visibility: visible;
+      transform: scaleX(1);
+    }
 
     &:hover {
-      color: $HOVER-COLOR;
+      svg {
+        transform: scale(1.2);
+        transition: .3s linear;
+      }
+    }
+
+    &:not(:hover) {
+      svg {
+        transform: scale(1);
+        transition: .2s linear;
+      }
     }
   }
 }
@@ -41,6 +133,7 @@
   font-size: 1.6rem;
   color: $BLACK-COLOR;
   padding: 2rem 0 0 2rem;
+  
   p {
     margin: 0;
   }
@@ -59,7 +152,8 @@
   font-size: 0.9rem;
   color: #cccccc;
   position: absolute;
-  bottom: 10%;
+  bottom: 1%;
+  left: 1%;
 }
 
 @include media-breakpoint-up(lg) {
