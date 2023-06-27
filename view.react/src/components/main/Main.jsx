@@ -61,14 +61,14 @@ export const Main = () => {
             <Container fluid>
                 <VacationDaysProvider>
                     <UsersVacationsProvider>
-                        <Row>
+                        <Row className={styles.sidebarRowClass}>
                             <Col xs={3} xl={2} className={sidebarColClass}>
                                 <Sidebar
                                     onClickLinkOrOutside={handleClickOutsideSidebar}
                                     acceptancesPresent={acceptancesPresent}
                                 />
                             </Col>
-                            <Col xs={12} lg={9} xl={10} className={styles.mainContent}>
+                            <Col xs={12} className={styles.mainContent}>
                                 <RequestProvider>
                                     {isUserALeader &&
                                         <AcceptanceLoader setAcceptancesPresent={setAcceptancesPresent}/>}

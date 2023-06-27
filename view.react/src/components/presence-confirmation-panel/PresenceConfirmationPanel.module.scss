@@ -5,12 +5,26 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 1px solid $DIVIDER-COLOR;
-  border-radius: 6px;
-  padding: 1rem 0.5rem;
-  margin: 0.5rem auto;
-  min-width: fit-content;
-  max-width: 70%;
+  justify-content: end;
+  border: 1px solid #78A612;
+  border-radius: 50px;
+  border-radius: 50%;
+  height: 1080px;
+  padding-bottom: 40px;
+  margin-top: -654px;
+}
+
+.mainContentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  font-size: 2rem;
+  line-height: 1;
+  padding-bottom: 2rem;
+  color: #002900;
 }
 
 .flexContainer {
@@ -22,7 +36,8 @@
 .inputWrapper {
   display: flex;
   flex-direction: column;
-  margin: 0 10px;
+  margin: 10px;
+  justify-content: center;
 }
 
 .timePickersContainer {
@@ -30,48 +45,61 @@
 }
 
 .dash {
-  border: 1px solid black;
-  width: 1.5rem;
-  transform: translateY(0.8rem);
-  background-color: black;
+  border: 1px solid #002900;
+  width: 1rem;
+  background-color: #002900;
 }
 
 .presenceConfirmationButton {
-  border: 1px solid $GREY-COLOR;
   border-radius: 4px;
-  background-color: white;
-  margin: 0 10px;
+  background-color: #002900;
+  padding: 19px 24px;
+  font-size: 23px;
+  transition: background-color 0.3s ease-in-out;
+  border: none;
+  color: white;
+  margin-top: 20px;
+  line-height: 1;
 
   &:hover {
-    background-color: $WHITESMOKE_COLOR;
+    background-color: #78A612;
   }
 }
 
 .dateTimePickerInput {
-  width: 7rem;
-  background-color: white;
+  width: 8rem;
+  height: 44px;
+  background-color: #F2EFEA;
   color: black;
-  border: 1px solid grey;
-  border-radius: 4px;
+  border-radius: 2px;
+  border: none;
+  border-bottom: 1px solid #002900;
+  transition: background-color 0.3s ease-in-out;
 
   &:hover {
-    background-color: $WHITESMOKE_COLOR;
+    background-color: #FFF;
+    border-bottom: 2px solid #78A612;
   }
-}
-
-.lineBreak {
-  margin-top: 24px;
 }
 
 @include media-breakpoint-down(lg) {
   .container {
     flex-direction: column;
   }
+
   .timePickersContainer {
     margin-top: 0.6rem;
+    flex-direction: column;
+    align-items: center;
   }
+
   .presenceConfirmationButton {
     margin-top: 1.2rem;
+  }
+
+  .timePickersContainer {
+    flex-direction: column;
+    align-items: center;
   }
 }
 
