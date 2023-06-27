@@ -7,9 +7,10 @@ export const Link = ({
     to,
     onClick,
     children,
+    testId,
 }) => {
     return (
-        <NavLink to={to} activeClassName={styles.activeLink} onClick={onClick}>
+        <NavLink to={to} activeClassName={styles.activeLink} onClick={onClick} data-testid={testId}>
             {children}
         </NavLink>
     )
@@ -18,6 +19,7 @@ export const Link = ({
 Link.propTypes = {
     to: PropTypes.string.isRequired,
     onClick: PropTypes.func,
+    testId:PropTypes.string,
 }
 
 Link.defaultProps = {
