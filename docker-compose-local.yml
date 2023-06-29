@@ -16,7 +16,7 @@ services:
     image: openjdk:17-jdk
     volumes:
       - ./build/libs:/urlopia
-      - ./entrypoint.sh:/entrypoint.sh
+      - ./local-entrypoint.sh:/entrypoint.sh
     entrypoint: ["/bin/sh", "/entrypoint.sh"]
     environment:
       TZ: Europe/Warsaw
