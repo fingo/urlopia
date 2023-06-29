@@ -163,7 +163,7 @@ export const WorkersTable = ({isEC}) => {
     if (fetching) {
         return (
             <div className={spinner}>
-                <BeatLoader color='deepskyblue' size={50}/>
+                <BeatLoader color='#78A612' size={50}/>
                 <h1>Pobieram dane...</h1>
             </div>
         );
@@ -205,7 +205,7 @@ export const WorkersTable = ({isEC}) => {
                         />
                         :
                         <div className={spinner}>
-                            <BeatLoader color='deepskyblue' size={50}/>
+                            <BeatLoader color='#78A612' size={50}/>
                             <h1>Pobieram dane...</h1>
                         </div>
                 }

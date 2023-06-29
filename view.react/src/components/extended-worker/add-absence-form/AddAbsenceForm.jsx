@@ -26,7 +26,7 @@ export const AddAbsenceForm = ({show, onHide, userId, fullName}) => {
             startDate: new Date(),
             endDate: new Date(),
             key: KEY,
-            color: 'deepskyblue',
+            color: '#78A612',
         }]
     );
     const [selectedReason, setSelectedReason] = useState(DEFAULT_REASON);

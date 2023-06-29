@@ -10,7 +10,7 @@ interface ISpinnerProps {
 export const Spinner = ({waitMessage} :ISpinnerProps) => {
     return(
         <div className={styles.spinner}>
-            <BeatLoader color='deepskyblue' size={50}/>
+            <BeatLoader color='#78A612' size={50}/>
             <h1>{waitMessage}</h1>
         </div>
         )
