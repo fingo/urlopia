@@ -118,7 +118,7 @@ export const UserRequestsList = ({
                     </>
                     :
                     <div className={spinner}>
-                        <BeatLoader color='deepskyblue' size={50}/>
+                        <BeatLoader color='#78A612' size={50}/>
                         <h1>Pobieram dane...</h1>
                     </div>
             }

@@ -38,7 +38,7 @@ export const CreateAbsenceRequestForm = ({
             startDate: new Date(),
             endDate: new Date(),
             key: KEY,
-            color: 'deepskyblue',
+            color: '#78A612',
         }]
     );
     const {ec: isUserEC} = getCurrentUser();
