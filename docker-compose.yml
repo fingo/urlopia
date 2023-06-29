@@ -15,9 +15,9 @@ services:
   backend:
     image: openjdk:17-jdk
     volumes:
-      - ./build/libs/urlopia-4.1.1.jar:/urlopia.jar
+      - ./build/libs:/urlopia
       - ./entrypoint.sh:/entrypoint.sh
-    entrypoint: ["/bin/sh","/entrypoint.sh"]
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
     environment:
       TZ: Europe/Warsaw
     ports:
