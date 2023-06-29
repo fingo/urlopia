@@ -1,8 +1,6 @@
 {
-  "dependencies": {
-    "@emotion/react": "^11.11.0",
-    "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^5.11.16",
-    "@mui/material": "^5.13.3"
+  "dependencies": {},
+  "scripts": {
+    "compose:up": "docker-compose -f docker-compose-local.yml up"
   }
 }
