@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  db:
+    image: postgres
+    restart: always
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: urlopia
+      POSTGRES_PASSWORD: urlopia123
+      POSTGRES_DB: urlopiadb
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  backend:
+    image: openjdk:17-jdk
+    volumes:
+      - ./build/libs:/urlopia
+      - ./entrypoint.sh:/entrypoint.sh
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    environment:
+      TZ: Europe/Warsaw
+    ports:
+      - "8080:8080"

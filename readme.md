@@ -259,3 +259,14 @@ To create a slack app:
    i.e. `{your-domain}/api/v2/slack/events`) and verify if slack is able to communicate with it
 
 If everything's good you should now be able to interact with the `@Urlopia` bot in your slack workspace
+
+## Docker compose
+There's a ready-to-go docker-compose configuration that can mostly help with front-end development. 
+
+Feel free to update it to extend the backend support.
+
+In order to run the app follow these steps:
+1. Update the configuration files for both backend (src/main/resources/application.properties) and frontend (view.react/.env).
+2. Build the jar file with gradle and java: `gradlew build`.
+3. run the backend dependencies (postgresql database & tomcat server with the app) `docker-compose up -d`.
+4. Install frontend dependencies with npm `npm install` and start the app `npm start`.
