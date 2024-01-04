@@ -21,7 +21,7 @@
     "@types/react": "^18.0.20",
     "@types/react-dom": "^18.0.6",
     "animate.css": "^4.1.1",
-    "axios": "^0.21.1",
+    "axios": "^1.6.4",
     "bootstrap": "^5.0.2",
     "classnames": "^2.3.1",
     "date-fns": "^2.23.0",
