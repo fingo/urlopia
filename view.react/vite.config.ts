@@ -26,6 +26,6 @@ export default defineConfig({
         setupFiles: './src/setupTests.js'
     },
     build: {
-        outDir: 'build/static'
+        outDir: 'build'
     }
 });
