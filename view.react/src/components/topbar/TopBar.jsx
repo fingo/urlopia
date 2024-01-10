@@ -1,12 +1,12 @@
+import LogoutIcon from '@mui/icons-material/Logout';
 import classNames from "classnames";
 import PropTypes from 'prop-types';
 import {useEffect, useState} from "react";
-import {Container, Navbar} from 'react-bootstrap';
-import {GearFill as GearIcon, List as ListIcon, Power as PowerIcon} from "react-bootstrap-icons";
+import {Col,Container, Navbar, Row} from 'react-bootstrap';
+import {GearFill as GearIcon, List as ListIcon} from "react-bootstrap-icons";
 
 import {getFullUserName, getUserTeams} from "../../api/services/session.service";
 import logoImg from '../../assets/logo.svg';
-import UrlopiaLogo from '../../assets/logo-urlopia.png';
 import {fetchWorkingHoursPreferences} from "../../contexts/user-preferences-context/actions/fetchWorkingHoursPreferences";
 import {useUserPreferences} from "../../contexts/user-preferences-context/userPreferencesContext";
 import { isNoAuthMode, logout } from "../../helpers/authentication/LogoutHelper";
@@ -45,31 +45,35 @@ export const TopBar = ({onHamburgerClick}) => {
             />
             <Navbar className={styles.topBar} variant="dark" expand="lg" collapseOnSelect sticky='top'>
                 <Container fluid className='px-0'>
-                    <button
-                        type="button"
-                        className={listBtnClass}
-                        onClick={onHamburgerClick}
-                    >
-                        <ListIcon className={listIconClass}/>
-                    </button>
-
-                    <Navbar.Brand href='/#/calendar' className="d-none d-lg-block">
-                        <img src={logoImg} alt="FINGO logo" className={styles.brandLogo}/>
-                    </Navbar.Brand>
-
-                    <img src={UrlopiaLogo} alt={"Urlopia"} className={styles.appLogo}/>
-                    <div className={styles.mobileRightSide}>
-                        {
-                            isNoAuth && <NoAuthUsersDropdown />
-                        }
-                        <button type="button" className={styles.settingsButton} onClick={() => setShowModal(true)}>
-                            <GearIcon className={styles.settingsIcon} size={20}/>
-                        </button>
-                        <TeamDropdown userName={userName} teams={teams}/>
-                        <button type="button" className={styles.button} onClick={handleLogout}>
-                            <PowerIcon className={styles.icon}/>
-                        </button>
-                    </div>
+                    <Row className={styles.fullWidth}>
+                                 <button
+                                type="button"
+                                className={listBtnClass}
+                                onClick={onHamburgerClick}
+                            >
+                                <ListIcon className={listIconClass}/>
+                            </button>
+                            <Col xs={{ span: 4, offset: 4 }}>
+                                <div className={styles.topBarLogo}>
+                                    <div className={styles.topBarName}>Urlopia</div>
+                                    <img src={logoImg} alt="FINGO logo" className={styles.brandLogo}/>
+                                </div>
+                            </Col>
+                            <Col xs={{ span: 3, offset: 1 }}>
+                                <div className={styles.mobileRightSide}>
+                                    {
+                                        isNoAuth && <NoAuthUsersDropdown />
+                                    }
+                                    <button type="button" className={styles.settingsButton} onClick={() => setShowModal(true)}>
+                                        <GearIcon className={styles.settingsIcon} size={20}/>
+                                    </button>
+                                    <TeamDropdown userName={userName} teams={teams}/>
+                                    <button type="button" className={styles.button} onClick={handleLogout}>
+                                        <LogoutIcon className={styles.icon}/>
+                                    </button>
+                                </div>
+                            </Col>
+                            </Row>
                 </Container>
             </Navbar>
         </>
