@@ -34,7 +34,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 There is option to configure no-auth mode. If this is chosen there is no msal components and any form of authentication.
 This should be run only with backend with `ad.configuration.enabled = false` properties [check details](../readme.md#application-without-active-directory)
 
-To activate this mode set `REACT_APP_AUTH_MODE` environment variables to `NO-AUTH`. 
+To activate this mode set `VITE_AUTH_MODE` environment variables to `NO-AUTH`. 
 Important! This mode required to have in database active user with id = 1 (this is default user, before any is selected)
 
 In this mode permissions are still used -> you can switch users without authentication, but they still have to be active

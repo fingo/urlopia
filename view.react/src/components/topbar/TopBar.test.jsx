@@ -5,6 +5,17 @@ import {USER_DATA_KEY} from "../../constants/session.keystorage";
 import {UserPreferencesProvider} from "../../contexts/user-preferences-context/userPreferencesContext";
 import {mockLocalStorage} from "../../helpers/TestHelper";
 import {TopBar} from "./TopBar";
+import {vi} from "vitest";
+
+vi.mock("../../contexts/user-preferences-context/actions/fetchWorkingHoursPreferences", async () => {
+    const originalModule = await vi.importActual("../../contexts/user-preferences-context/actions/fetchWorkingHoursPreferences");
+
+    return {
+        __esModule: true,
+        ...originalModule,
+        fetchWorkingHoursPreferences: vi.fn()
+    };
+})
 
 describe("TopBar", () => {
     const sessionStorageMock = mockLocalStorage()

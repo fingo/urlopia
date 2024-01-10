@@ -41,7 +41,7 @@
         .rdrSelected + .rdrDayNumber {
           color: transparent;
         }
-  
+
         &:hover {
           border: 1px solid #78A612;
           transition: all 0.6s ease-in-out;
@@ -225,8 +225,6 @@
 }
 
 .filterSection {
-  display: flex;
-  flex-direction: column;
   align-items: center;
   width: 100%;
 }

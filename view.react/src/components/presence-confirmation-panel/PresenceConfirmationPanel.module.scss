@@ -5,13 +5,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: end;
-  border: 1px solid #78A612;
-  border-radius: 50px;
-  border-radius: 50%;
-  height: 1080px;
-  padding-bottom: 40px;
-  margin-top: -654px;
+  margin: 3.5rem 0 3.5rem 0;
 }
 
 .mainContentContainer {
@@ -53,8 +47,8 @@
 .presenceConfirmationButton {
   border-radius: 4px;
   background-color: #002900;
-  padding: 19px 24px;
-  font-size: 23px;
+  padding: 15px;
+  font-size: 16px;
   transition: background-color 0.3s ease-in-out;
   border: none;
   color: white;

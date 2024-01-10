@@ -35,9 +35,9 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
 
     return (
         <>
-            <Container fluid className={styles.main}>
+            <div className={styles.main}>
                 <Nav className={sidebarClasses}>
-                    <button onClick={() => setIsOpen(!isOpen)}>
+                    <button onClick={() =>  (setIsOpen(!isOpen))}>
                         <ArrowForwardIosRoundedIcon />
                     </button>
                     <Link
@@ -105,7 +105,7 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                         </>
                     )}
                 </Nav>
-            </Container>
+            </div>
             <div className={styles.versionContainer}>
                 {`${version} ${commitId}`}
             </div>

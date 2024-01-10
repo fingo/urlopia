@@ -182,8 +182,8 @@ export const DashboardCalendar = () => {
     };
 
     return (
-        <>
-            <div className={styles.filterSection}>
+        <div className="d-flex flex-column">
+            <div className={`${styles.filterSection} d-flex flex-row justify-content-center`}>
                 <div className={styles.filter}>
                     <Select
                         className={styles.selection}
@@ -219,7 +219,7 @@ export const DashboardCalendar = () => {
                 </div>
             </div>
 
-            <div className={styles.calendarWrapper}>
+            <div className={` ${styles.calendarWrapper} d-flex flex-row justify-content-center`}>
                 <Calendar
                     locale={pl}
                     onChange={(item) => handleDateChange(item)}
@@ -249,6 +249,6 @@ export const DashboardCalendar = () => {
                         "userName")}
                 />
             }
-        </>
+        </div>
     );
 };

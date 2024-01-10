@@ -1,5 +1,6 @@
 import {render, screen} from "@testing-library/react";
 import {MemoryRouter} from "react-router-dom";
+import { vi } from 'vitest';
 
 import {USER_DATA_KEY} from "../constants/session.keystorage";
 import {mockLocalStorage} from "../helpers/TestHelper";
@@ -12,13 +13,13 @@ import {ReportsPage, URL as ReportsURL} from '../pages/reports-page/ReportsPage'
 import {URL as WorkersURL, WorkersPage} from '../pages/workers-page/WorkersPage';
 import {MainContentRouting} from "./MainContentRouting";
 
-jest.mock('../pages/absence-requests-page/AbsenceRequestsPage');
-jest.mock('../pages/associates-page/AssociatesPage');
-jest.mock('../pages/calendar-page/CalendarPage');
-jest.mock('../pages/history-page/HistoryPage');
-jest.mock('../pages/holidays-page/HolidaysPage');
-jest.mock('../pages/reports-page/ReportsPage');
-jest.mock('../pages/workers-page/WorkersPage');
+vi.mock('../pages/absence-requests-page/AbsenceRequestsPage');
+vi.mock('../pages/associates-page/AssociatesPage');
+vi.mock('../pages/calendar-page/CalendarPage');
+vi.mock('../pages/history-page/HistoryPage');
+vi.mock('../pages/holidays-page/HolidaysPage');
+vi.mock('../pages/reports-page/ReportsPage');
+vi.mock('../pages/workers-page/WorkersPage');
 
 describe("MainContentRouting", () => {
     const sessionStorageMock = mockLocalStorage()
