@@ -77,7 +77,7 @@ export const PresenceConfirmationPanel = ({userId, onConfirmation}) => {
     const [chosenDate, setChosenDate] = useState(TODAY)
     const [chosenStartTime, setChosenStartTime] = useState(() => getStartTimeValue(userPreferences, chosenDate))
     const [chosenEndTime, setChosenEndTime] = useState(() => getEndTimeValue(userPreferences, chosenDate))
-    
+
     useEffect(() => {
         setChosenStartTime(() => getStartTimeValue(userPreferences, chosenDate))
         setChosenEndTime(() => getEndTimeValue(userPreferences, chosenDate))
@@ -128,58 +128,54 @@ export const PresenceConfirmationPanel = ({userId, onConfirmation}) => {
     }
 
     return (
-        <Row>
-            <Col xs={{ span: 7, offset: 5 }}>
-                <div className={styles.mainContainer}>
-                    <Col xs={10} lg={5} className={styles.mainContentContainer}>
-                        <div className={styles.header}>Rejestracja godzin obecności</div>
-                        <div className={styles.flexContainer}>
-                            <InputWrapper>
-                                <DatePicker
-                                    withWeekend={false}
-                                    customInput={<DateTimePickerInput />}
-                                    chosenDate={chosenDate}
-                                    onChange={date => setChosenDate(date)}
-                                />
-                            </InputWrapper>
-                            <div className={styles.timePickersContainer}>
-                                <InputWrapper>
-                                    <TimePicker
-                                        customInput={<DateTimePickerInput />}
-                                        chosenTime={chosenStartTime}
-                                        onChange={date => setChosenStartTime(date)}
-                                    />
-                                </InputWrapper>
-                                <InputWrapper>
-                                    <LineBreak/>
-                                    <div className={styles.dash} />
-                                </InputWrapper>
-                                <InputWrapper>
-                                    <TimePicker
-                                        customInput={<DateTimePickerInput />}
-                                        chosenTime={chosenEndTime}
-                                        onChange={date => setChosenEndTime(date)}
-                                    />
-                                </InputWrapper>
-                            </div>
-                        </div>
-                        <ConfirmationLabel
-                            fetching={fetching}
-                            confirmation={getConfirmation(chosenDate)}
-                            isOwnPresence={ownPresence}
-                            isOnVacation={isUserOnVacation()}
-                            isNotWorking={isNotWorking(userPreferences, chosenDate)}
+        <div className={styles.mainContainer}>
+            <Col xs={10} lg={5} className={styles.mainContentContainer}>
+                <div className={styles.header}>Rejestracja godzin obecności</div>
+                <div className={styles.flexContainer}>
+                    <InputWrapper>
+                        <DatePicker
+                            withWeekend={false}
+                            customInput={<DateTimePickerInput />}
+                            chosenDate={chosenDate}
+                            onChange={date => setChosenDate(date)}
                         />
-                        <button
-                                className={styles.presenceConfirmationButton}
-                                onClick={() => handlePresenceConfirmation()}
-                            >
-                                {getConfirmation(chosenDate) ? "zaktualizuj godziny obecności" : "zgłoś obecność"}
-                            </button>
-                    </Col>
+                    </InputWrapper>
+                    <div className={styles.timePickersContainer}>
+                        <InputWrapper>
+                            <TimePicker
+                                customInput={<DateTimePickerInput />}
+                                chosenTime={chosenStartTime}
+                                onChange={date => setChosenStartTime(date)}
+                            />
+                        </InputWrapper>
+                        <InputWrapper>
+                            <LineBreak/>
+                            <div className={styles.dash} />
+                        </InputWrapper>
+                        <InputWrapper>
+                            <TimePicker
+                                customInput={<DateTimePickerInput />}
+                                chosenTime={chosenEndTime}
+                                onChange={date => setChosenEndTime(date)}
+                            />
+                        </InputWrapper>
+                    </div>
                 </div>
+                <ConfirmationLabel
+                    fetching={fetching}
+                    confirmation={getConfirmation(chosenDate)}
+                    isOwnPresence={ownPresence}
+                    isOnVacation={isUserOnVacation()}
+                    isNotWorking={isNotWorking(userPreferences, chosenDate)}
+                />
+                <button
+                        className={styles.presenceConfirmationButton}
+                        onClick={() => handlePresenceConfirmation()}
+                    >
+                        {getConfirmation(chosenDate) ? "zaktualizuj godziny obecności" : "zgłoś obecność"}
+                    </button>
             </Col>
-        </Row>
+        </div>
     )
 }
 

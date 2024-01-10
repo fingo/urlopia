@@ -62,19 +62,17 @@ export const Main = () => {
                 <VacationDaysProvider>
                     <UsersVacationsProvider>
                         <Row>
-                            <Col xs={3} lg={2} xl={2} className={sidebarColClass}>
+                            <Col xs={12} lg={12} xl={12} className='d-flex'>
                                 <Sidebar
-                                    onClickLinkOrOutside={handleClickOutsideSidebar}
-                                    acceptancesPresent={acceptancesPresent}
+                                  onClickLinkOrOutside={handleClickOutsideSidebar}
+                                  acceptancesPresent={acceptancesPresent}
                                 />
-                            </Col>
-                            <Col xs={9} lg={9} xl={10} className={styles.mainContent}>
                                 <RequestProvider>
                                     {isUserALeader &&
                                         <AcceptanceLoader setAcceptancesPresent={setAcceptancesPresent}/>}
-                                    <MainContentRouting
-                                        acceptancesPresent={acceptancesPresent}
-                                    />
+                                    <div className={styles.mainContent}>
+                                        <MainContentRouting acceptancesPresent={acceptancesPresent}/>
+                                    </div>
                                 </RequestProvider>
                             </Col>
                         </Row>
