@@ -12,7 +12,6 @@ const initialState = {
 }
 
 export const VacationDaysProvider = ({children}) => {
-    console.log('creating provide instance: VacationDaysProvider')
     const [state, dispatch] = useReducer(vacationDaysReducer, initialState);
     const value = [state, dispatch];
     return <VacationDaysContext.Provider value={value}>{children}</VacationDaysContext.Provider>;

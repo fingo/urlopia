@@ -4,7 +4,6 @@ import {
 } from "../constants";
 
 export const fetchPendingDays = (dispatch) => {
-    console.log('fetchPendingDays data')
     dispatch({type: `${FETCH_MY_PENDING_DAYS_ACTION_PREFIX}_request`})
     sendGetRequest(FETCH_MY_PENDING_DAYS_URL)
         .then(data => {

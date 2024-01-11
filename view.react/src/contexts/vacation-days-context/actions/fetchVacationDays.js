@@ -5,8 +5,6 @@ import {
 
 
 export const fetchVacationDays = (dispatch) => {
-    console.log('fetchVacationDays data')
-
     dispatch({type: `${FETCH_MY_VACATION_DAYS_ACTION_PREFIX}_request`})
     sendGetRequest(FETCH_MY_VACATION_DAYS_URL)
         .then(data => dispatch({
