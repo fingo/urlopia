@@ -11,7 +11,7 @@ import WorkHistoryOutlinedIcon from '@mui/icons-material/WorkHistoryOutlined';
 import classNames from "classnames";
 import PropTypes from 'prop-types';
 import {useState} from "react";
-import {Container, Nav} from 'react-bootstrap';
+import {Nav} from 'react-bootstrap';
 
 import {getCurrentUser} from "../../api/services/session.service";
 import {useAppInfo} from "../../contexts/app-info-context/appInfoContext";

@@ -57,9 +57,9 @@ export const Main = () => {
 
     return (
         <UserPreferencesProvider>
-            <TopBar onHamburgerClick={handleHamburgerClick}/>
-            <Container fluid>
-                <VacationDaysProvider>
+            <VacationDaysProvider>
+                <TopBar onHamburgerClick={handleHamburgerClick}/>
+                <Container fluid>
                     <UsersVacationsProvider>
                         <Row>
                             <Col xs={12} lg={12} xl={12} className='d-flex'>
@@ -77,8 +77,8 @@ export const Main = () => {
                             </Col>
                         </Row>
                     </UsersVacationsProvider>
-                </VacationDaysProvider>
-            </Container>
+                </Container>
+            </VacationDaysProvider>
         </UserPreferencesProvider>
     );
 }
