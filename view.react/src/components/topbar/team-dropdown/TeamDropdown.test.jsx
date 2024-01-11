@@ -3,6 +3,7 @@ import {act, fireEvent, render, screen} from "@testing-library/react";
 import {TeamDropdown} from "./TeamDropdown";
 import {VacationDaysProvider} from "../../../contexts/vacation-days-context/vacationDaysContext";
 
+
 const testUserName = 'Kacper Bartek';
 const testTeams = [
     {name: 'ABC', leader: 'Piotr Nowak'},
@@ -12,6 +13,7 @@ test('shows user name', async () => {
     render(<VacationDaysProvider><TeamDropdown userName={testUserName} teams={testTeams}/></VacationDaysProvider>);
 
     const userNameLabel = screen.getByText(testUserName, { exact: false });
+
     expect(userNameLabel).toBeInTheDocument();
 });
 
@@ -24,8 +26,8 @@ test('not shows teams before clicking on user name', async () => {
 
 test('shows teams after clicking on user name', async () => {
     render(<VacationDaysProvider><TeamDropdown userName={testUserName} teams={testTeams}/></VacationDaysProvider>);
-
     const userNameLabel = screen.getByText(testUserName, { exact: false });
+
     expect(userNameLabel).toBeInTheDocument();
 
     await act(async () => {
@@ -38,7 +40,6 @@ test('shows teams after clicking on user name', async () => {
 
 test('hide teams after clicking user name when teams component is displayed', async () => {
     render(<VacationDaysProvider><TeamDropdown userName={testUserName} teams={testTeams}/></VacationDaysProvider>);
-
     const userNameLabel = screen.getByText(testUserName, { exact: false });
     expect(userNameLabel).toBeInTheDocument();
 

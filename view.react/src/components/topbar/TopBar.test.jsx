@@ -8,6 +8,7 @@ import {TopBar} from "./TopBar";
 import {vi} from "vitest";
 import {VacationDaysProvider} from "../../contexts/vacation-days-context/vacationDaysContext";
 
+
 vi.mock("../../contexts/user-preferences-context/actions/fetchWorkingHoursPreferences", async () => {
     const originalModule = await vi.importActual("../../contexts/user-preferences-context/actions/fetchWorkingHoursPreferences");
 
@@ -49,15 +50,14 @@ describe("TopBar", () => {
 
     it('should show teams dropdown after clicking on user name', async () => {
         render(<UserPreferencesProvider><VacationDaysProvider><TopBar /></VacationDaysProvider></UserPreferencesProvider>);
-
         const userNameLabel = screen.getByText(sampleFullName, { exact: false });
         expect(userNameLabel).toBeInTheDocument();
 
         await act(async () => {
             fireEvent.click(userNameLabel);
         });
-
         const teamName = screen.getByText(sampleTeams[0].name, { exact: false });
+
         const teamLeader = screen.getByText(`Lider: ${sampleTeams[0].leader}`);
 
         expect(teamName).toBeInTheDocument();
