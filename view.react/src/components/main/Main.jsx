@@ -21,14 +21,9 @@ import {Sidebar} from "../sidebar/Sidebar";
 import {TopBar} from "../topbar/TopBar";
 import styles from './Main.module.scss';
 export const Main = () => {
-
-
     const [, setUser] = useState({isLeader: false, isAdmin: false})
     const {isLeader: isUserALeader} = getCurrentUser();
-
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [acceptancesPresent, setAcceptancesPresent] = useState(false);
-
     const [, appInfoDispatch] = useAppInfo()
 
     useEffect(() => {
@@ -41,32 +36,19 @@ export const Main = () => {
             })
     }, []);
 
-
     useEffect(() => {
         fetchAppInfo(appInfoDispatch)
     }, [appInfoDispatch])
 
-    const handleHamburgerClick = () => {
-        setIsSidebarOpen(!isSidebarOpen);
-    }
-
-    const handleClickOutsideSidebar = () => {
-        setIsSidebarOpen(false);
-    }
-    const sidebarColClass = classNames('m-0', 'p-0', {'d-none d-lg-block': !isSidebarOpen});
-
     return (
         <UserPreferencesProvider>
             <VacationDaysProvider>
-                <TopBar onHamburgerClick={handleHamburgerClick}/>
+                <TopBar />
                 <Container fluid>
                     <UsersVacationsProvider>
                         <Row>
                             <Col xs={12} lg={12} xl={12} className='d-flex'>
-                                <Sidebar
-                                  onClickLinkOrOutside={handleClickOutsideSidebar}
-                                  acceptancesPresent={acceptancesPresent}
-                                />
+                                <Sidebar acceptancesPresent={acceptancesPresent} />
                                 <RequestProvider>
                                     {isUserALeader &&
                                         <AcceptanceLoader setAcceptancesPresent={setAcceptancesPresent}/>}

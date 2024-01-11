@@ -19,7 +19,7 @@ import {AttentionIcon, TextWithIcon} from "../../helpers/icons/Icons";
 import {Link} from "./link/Link";
 import styles from './Sidebar.module.scss';
 
-export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
+export const Sidebar = ({acceptancesPresent}) => {
     const {isAdmin: isUserAnAdmin, isLeader: isUserALeader} = getCurrentUser();
     const {ec: isUserEC} = getCurrentUser();
     const overlayClass = classNames(styles.overlay, 'd-lg-none');
@@ -42,7 +42,6 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                     </button>
                     <Link
                         testId="CalendarLink"
-                        onClick={onClickLinkOrOutside}
                         exact
                         activeClassName="active"
                         to="/calendar"
@@ -52,7 +51,6 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                     </Link>
                     <Link
                         testId="RequestsLink"
-                        onClick={onClickLinkOrOutside}
                         exact
                         activeClassName="active"
                         to="/requests"
@@ -66,7 +64,6 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                     </Link>
                     <Link
                         testId="UsersHistoryLink"
-                        onClick={onClickLinkOrOutside}
                         exact
                         activeClassName="active"
                         to="/history"
@@ -75,30 +72,30 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
                         <span>Historia użytkownika</span>
                     </Link>
                     {isUserALeader &&
-                        <Link to="/acceptances/history" onClick={onClickLinkOrOutside}>
+                        <Link to="/acceptances/history">
                             <WorkHistoryOutlinedIcon />
                             <span>Historia akceptacji</span>
                         </Link>
                     }
                     {isUserAnAdmin && (
                         <>
-                            <Link to="/associates" onClick={onClickLinkOrOutside} testId="ContractorsLink">
+                            <Link to="/associates" testId="ContractorsLink">
                             <PeopleOutlineRoundedIcon />
                                 <span>Współpracownicy</span>
                             </Link>
-                            <Link to="/workers" onClick={onClickLinkOrOutside} testId="EmployeesLink">
+                            <Link to="/workers" testId="EmployeesLink">
                                 <GroupAddOutlinedIcon />
                                 <span>Pracownicy</span>
                             </Link>
-                            <Link to="/holidays" onClick={onClickLinkOrOutside} testId="HolidaysLink">
+                            <Link to="/holidays" testId="HolidaysLink">
                                 <EventAvailableOutlinedIcon />
                                 <span>Dni świąteczne</span>
                             </Link>
-                            <Link to="/reports" onClick={onClickLinkOrOutside} testId="ReportsLink">
+                            <Link to="/reports" testId="ReportsLink">
                                 <BarChartOutlinedIcon />
                                 <span>Raporty</span>
                             </Link>
-                            <Link to="/automaticVacationDays" onClick={onClickLinkOrOutside}>
+                            <Link to="/automaticVacationDays">
                                 <EventRepeatOutlinedIcon />
                                 <span>Dni na nowy rok</span>
                             </Link>
@@ -109,18 +106,14 @@ export const Sidebar = ({onClickLinkOrOutside, acceptancesPresent}) => {
             <div className={styles.versionContainer}>
                 {`${version} ${commitId}`}
             </div>
-            <div className={overlayClass}
-                onClick={onClickLinkOrOutside}/>
         </>
     );
 }
 
 Sidebar.propTypes = {
-    onClickLinkOrOutside: PropTypes.func,
     newAcceptancesPresent: PropTypes.bool
 }
 
 Sidebar.defaultProps = {
-    onClickLinkOrOutside: () => null,
     newAcceptancesPresent: false
 }

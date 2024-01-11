@@ -1,5 +1,3 @@
-import classNames from "classnames";
-import PropTypes from 'prop-types';
 import {useEffect, useState} from "react";
 import {Container, Navbar} from 'react-bootstrap';
 import {GearFill as GearIcon, List as ListIcon, Power as PowerIcon} from "react-bootstrap-icons";
@@ -15,7 +13,7 @@ import { NoAuthUsersDropdown } from "./noauth-users-dropdown/NoAuthUsersDropdown
 import {TeamDropdown} from "./team-dropdown/TeamDropdown";
 import styles from './TopBar.module.scss';
 
-export const TopBar = ({onHamburgerClick}) => {
+export const TopBar = () => {
     const userName = getFullUserName();
     const teams = getUserTeams();
 
@@ -27,14 +25,9 @@ export const TopBar = ({onHamburgerClick}) => {
         fetchWorkingHoursPreferences(userPreferencesDispatch)
     }, [userPreferencesDispatch])
 
-    const handleLogout = () => {
-        logout()
-    }
-
+    const handleLogout = () => logout();
     const isNoAuth = isNoAuthMode();
 
-    const listBtnClass = classNames('d-lg-none', styles.button);
-    const listIconClass = classNames(styles.hamburger, styles.icon);
     return (
         <>
             <PreferencesModal
@@ -45,23 +38,13 @@ export const TopBar = ({onHamburgerClick}) => {
             />
             <Navbar className={styles.topBar} variant="dark" expand="lg" collapseOnSelect sticky='top'>
                 <Container fluid className='px-0'>
-                    <button
-                        type="button"
-                        className={listBtnClass}
-                        onClick={onHamburgerClick}
-                    >
-                        <ListIcon className={listIconClass}/>
-                    </button>
-
                     <Navbar.Brand href='/#/calendar' className="d-none d-lg-block">
                         <img src={logoImg} alt="FINGO logo" className={styles.brandLogo}/>
                     </Navbar.Brand>
 
                     <img src={UrlopiaLogo} alt={"Urlopia"} className={styles.appLogo}/>
                     <div className={styles.mobileRightSide}>
-                        {
-                            isNoAuth && <NoAuthUsersDropdown />
-                        }
+                        {isNoAuth && <NoAuthUsersDropdown />}
                         <button type="button" className={styles.settingsButton} onClick={() => setShowModal(true)}>
                             <GearIcon className={styles.settingsIcon} size={20}/>
                         </button>
@@ -74,8 +57,4 @@ export const TopBar = ({onHamburgerClick}) => {
             </Navbar>
         </>
     );
-}
-
-TopBar.propTypes = {
-    onHamburgerClick: PropTypes.func.isRequired,
 }

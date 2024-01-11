@@ -6,6 +6,7 @@ import {UserPreferencesProvider} from "../../contexts/user-preferences-context/u
 import {mockLocalStorage} from "../../helpers/TestHelper";
 import {TopBar} from "./TopBar";
 import {vi} from "vitest";
+import {VacationDaysProvider} from "../../contexts/vacation-days-context/vacationDaysContext";
 
 vi.mock("../../contexts/user-preferences-context/actions/fetchWorkingHoursPreferences", async () => {
     const originalModule = await vi.importActual("../../contexts/user-preferences-context/actions/fetchWorkingHoursPreferences");
@@ -35,28 +36,28 @@ describe("TopBar", () => {
     })
 
     it('should show logo',() => {
-        render(<Router><UserPreferencesProvider><TopBar onHamburgerClick={() => null}/></UserPreferencesProvider></Router>);
+        render(<Router><UserPreferencesProvider><VacationDaysProvider><TopBar /></VacationDaysProvider></UserPreferencesProvider></Router>);
         const displayedImage = document.querySelector("img");
         expect((displayedImage.src)).toContain('logo.svg');
     });
 
     it('should show correct user name', () => {
-        render(<UserPreferencesProvider><TopBar onHamburgerClick={() => null}/></UserPreferencesProvider>);
-        const userName = screen.getByText(sampleFullName);
+        render(<UserPreferencesProvider><VacationDaysProvider><TopBar /></VacationDaysProvider></UserPreferencesProvider>);
+        const userName = screen.getByText(sampleFullName, { exact: false });
         expect(userName).toBeInTheDocument();
     });
 
     it('should show teams dropdown after clicking on user name', async () => {
-        render(<UserPreferencesProvider><TopBar onHamburgerClick={() => null}/></UserPreferencesProvider>);
+        render(<UserPreferencesProvider><VacationDaysProvider><TopBar /></VacationDaysProvider></UserPreferencesProvider>);
 
-        const userNameLabel = screen.getByText(sampleFullName);
+        const userNameLabel = screen.getByText(sampleFullName, { exact: false });
         expect(userNameLabel).toBeInTheDocument();
 
         await act(async () => {
             fireEvent.click(userNameLabel);
         });
 
-        const teamName = screen.getByText(sampleTeams[0].name);
+        const teamName = screen.getByText(sampleTeams[0].name, { exact: false });
         const teamLeader = screen.getByText(`Lider: ${sampleTeams[0].leader}`);
 
         expect(teamName).toBeInTheDocument();
