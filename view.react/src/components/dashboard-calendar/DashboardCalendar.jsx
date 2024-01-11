@@ -153,7 +153,6 @@ export const DashboardCalendar = () => {
         valueContainer: (provided, state) => ({
             ...provided,
             padding: '0',
-            height: "20px"
         }),
         input: (provided, state) => ({
             ...provided,
@@ -162,7 +161,6 @@ export const DashboardCalendar = () => {
         }),
         indicatorsContainer: (provided, state) => ({
             ...provided,
-            height: '20px',
         }),
         dropdownIndicator: base => ({
             ...base,
