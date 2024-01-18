@@ -57,7 +57,7 @@ export const Sidebar = ({acceptancesPresent}) => {
                         to="/requests"
                     >
                         <Badge 
-                            invisible={acceptancesPresent}
+                            invisible={!acceptancesPresent}
                             anchorOrigin={{
                                 vertical: "top",
                                 horizontal: "left",
