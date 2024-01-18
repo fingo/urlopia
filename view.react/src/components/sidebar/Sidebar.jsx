@@ -8,6 +8,7 @@ import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
 import PeopleOutlineRoundedIcon from '@mui/icons-material/PeopleOutlineRounded';
 import WatchLaterRoundedIcon from '@mui/icons-material/WatchLaterRounded';
 import WorkHistoryOutlinedIcon from '@mui/icons-material/WorkHistoryOutlined';
+import { Badge } from '@mui/material';
 import classNames from "classnames";
 import PropTypes from 'prop-types';
 import {useState} from "react";
@@ -47,7 +48,7 @@ export const Sidebar = ({acceptancesPresent}) => {
                         to="/calendar"
                     >
                         <CalendarMonthSharpIcon />
-                        <span>Kalendarz</span>
+                        <span className={styles['text']}>Kalendarz</span>
                     </Link>
                     <Link
                         testId="RequestsLink"
@@ -55,12 +56,19 @@ export const Sidebar = ({acceptancesPresent}) => {
                         activeClassName="active"
                         to="/requests"
                     >
-                        <EmailRoundedIcon />
-                        <TextWithIcon
-                            text={isUserEC ? "Wnioski urlopowe" : "Wnioski o przerwę"}
-                            icon={<AttentionIcon />}
-                            showIcon={acceptancesPresent}
-                        />
+                        <Badge 
+                            invisible={acceptancesPresent}
+                            anchorOrigin={{
+                                vertical: "top",
+                                horizontal: "left",
+                            }} 
+                            variant="dot"
+                            size="small"
+                            color="warning"
+                        >
+                            <EmailRoundedIcon />
+                        </Badge>
+                        <span className={styles['text']}>{isUserEC ? "Wnioski urlopowe" : "Wnioski o przerwę"}</span>
                     </Link>
                     <Link
                         testId="UsersHistoryLink"
@@ -69,35 +77,35 @@ export const Sidebar = ({acceptancesPresent}) => {
                         to="/history"
                     >
                         <WatchLaterRoundedIcon />
-                        <span>Historia użytkownika</span>
+                        <span className={styles['text']}>Historia użytkownika</span>
                     </Link>
                     {isUserALeader &&
                         <Link to="/acceptances/history">
                             <WorkHistoryOutlinedIcon />
-                            <span>Historia akceptacji</span>
+                            <span className={styles['text']}>Historia akceptacji</span>
                         </Link>
                     }
                     {isUserAnAdmin && (
                         <>
                             <Link to="/associates" testId="ContractorsLink">
                             <PeopleOutlineRoundedIcon />
-                                <span>Współpracownicy</span>
+                                <span className={styles['text']}>Współpracownicy</span>
                             </Link>
                             <Link to="/workers" testId="EmployeesLink">
                                 <GroupAddOutlinedIcon />
-                                <span>Pracownicy</span>
+                                <span className={styles['text']}>Pracownicy</span>
                             </Link>
                             <Link to="/holidays" testId="HolidaysLink">
                                 <EventAvailableOutlinedIcon />
-                                <span>Dni świąteczne</span>
+                                <span className={styles['text']}>Dni świąteczne</span>
                             </Link>
                             <Link to="/reports" testId="ReportsLink">
                                 <BarChartOutlinedIcon />
-                                <span>Raporty</span>
+                                <span className={styles['text']}>Raporty</span>
                             </Link>
                             <Link to="/automaticVacationDays">
                                 <EventRepeatOutlinedIcon />
-                                <span>Dni na nowy rok</span>
+                                <span className={styles['text']}>Dni na nowy rok</span>
                             </Link>
                         </>
                     )}

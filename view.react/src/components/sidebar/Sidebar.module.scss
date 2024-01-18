@@ -1,5 +1,5 @@
 @import "src/global-styles/color-variables";
-@import 'src/global-styles/bootstrap-breakpoints.scss';
+@import "src/global-styles/bootstrap-breakpoints.scss";
 
 .main {
   z-index: 6;
@@ -17,43 +17,43 @@
 }
 
 .nav {
-    flex-direction: column;
-    white-space: nowrap;
-    text-transform: uppercase;
-    margin-left: 2rem;
+  flex-direction: column;
+  white-space: nowrap;
+  text-transform: uppercase;
+  margin-left: 2rem;
 
-    button {
-      width: fit-content;
-      background-color: transparent;
-      border: none;
-      position: relative;
-      transition: transform 0.3s ease-in-out;
-      transform: translateX(0);
-      padding: 12px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+  button {
+    width: fit-content;
+    background-color: transparent;
+    border: none;
+    position: relative;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(0);
+    padding: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-      &:before {
-        content: "";
-        position: absolute;
-        z-index: -1;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border: 1px solid #9CD71E;
-        border-radius: 50px;
-        transform: scale(0);
-        transition-property: transform;
-        transition-duration: 0.3s;
-        transition-timing-function: ease-in-out;
-      }
-
-      &:hover:before {
-        transform: scale(1);
-      }
+    &:before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border: 1px solid #9cd71e;
+      border-radius: 50px;
+      transform: scale(0);
+      transition-property: transform;
+      transition-duration: 0.3s;
+      transition-timing-function: ease-in-out;
     }
+
+    &:hover:before {
+      transform: scale(1);
+    }
+  }
 
   &--open {
     button {
@@ -63,7 +63,7 @@
     }
 
     a {
-      span {
+      .text {
         width: 100%;
         padding-left: 12px;
         opacity: 1;
@@ -71,7 +71,7 @@
     }
   }
 
-  span {
+  .text {
     transition: opacity 0.3s ease-in-out;
     overflow: hidden;
     margin-left: 0px;
@@ -96,11 +96,11 @@
       height: 3px;
       top: 100%;
       left: 0;
-      background: #78A612;
+      background: #78a612;
       visibility: hidden;
       border-radius: 5px;
       transform: scaleX(0);
-      transition: .3s linear;
+      transition: 0.3s linear;
     }
 
     &:hover::before,
@@ -112,14 +112,14 @@
     &:hover {
       svg {
         transform: scale(1.2);
-        transition: .3s linear;
+        transition: 0.3s linear;
       }
     }
 
     &:not(:hover) {
       svg {
         transform: scale(1);
-        transition: .2s linear;
+        transition: 0.2s linear;
       }
     }
   }
@@ -142,7 +142,7 @@
   position: fixed;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   cursor: pointer;
 }
 
