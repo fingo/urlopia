@@ -1,6 +1,6 @@
-@import '../../global-styles/bootstrap-breakpoints';
-@import '../../global-styles/color-variables';
-@import url('https://fonts.cdnfonts.com/css/poppins');
+@import "../../global-styles/bootstrap-breakpoints";
+@import "../../global-styles/color-variables";
+@import url("https://fonts.cdnfonts.com/css/poppins");
 
 .calendarWrapper {
   margin-bottom: 1rem;
@@ -10,15 +10,15 @@
   overflow: auto;
   font-size: 1.125rem;
   position: relative;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 
   :global {
-    .rdrDays{
+    .rdrDays {
       row-gap: 8px;
       column-gap: 8px;
 
       .rdrDay {
-        width: calc((100% - 48px) / 7 );
+        width: calc((100% - 48px) / 7);
         border-radius: 4px;
         border: 1px solid transparent;
 
@@ -43,17 +43,19 @@
         }
 
         &:hover {
-          border: 1px solid #78A612;
+          border: 1px solid #78a612;
           transition: all 0.6s ease-in-out;
         }
 
-        &:not(.rdrDayPassive) {
+        /* TODO: Should be unnecessary, lets check and remove         
+        
+          &:not(.rdrDayPassive) {
           .rdrSelected ~ .rdrDayNumber {
             span {
               color: $CALENDAR-NUMBER-BLACK-COLOR;
             }
           }
-        }
+        } */
       }
 
       .rdrDay.rdrDayToday {
@@ -120,7 +122,7 @@
       .rdrNextPrevButton {
         width: 48px;
         height: 48px;
-        background: #FFF;
+        background: #fff;
         transform: perspective(1px) translateZ(0);
         transition-property: transform;
         transition-duration: 0.6s;
@@ -164,13 +166,13 @@
 
       .rdrPprevButton {
         i {
-          background-image: url('../../assets/left-arrow.svg');
+          background-image: url("../../assets/left-arrow.svg");
         }
       }
 
       .rdrNextButton {
         i {
-          background-image: url('../../assets/right-arrow.svg');
+          background-image: url("../../assets/right-arrow.svg");
         }
       }
     }
@@ -210,16 +212,16 @@
 }
 
 .exclamationIcon,
-  .absenceIcon {
-    color: #ECA725;
-    font-size: 0.9rem;
-    position: absolute;
-    top: 0.2rem;
-    right: 0.5rem;
+.absenceIcon {
+  color: #eca725;
+  font-size: 0.9rem;
+  position: absolute;
+  top: 0.2rem;
+  right: 0.5rem;
 }
 
 .absenceIcon {
-  color: #78A612;
+  color: #78a612;
   font-size: 0.8rem;
   top: 0.3rem;
 }
@@ -256,7 +258,7 @@
     margin-right: 56px;
 
     input {
-      outline-color: #719ECE;
+      outline-color: #719ece;
     }
 
     span {
