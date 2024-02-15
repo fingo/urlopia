@@ -26,6 +26,10 @@ public class NoSuchUserException extends BaseCustomException {
         return new NoSuchUserException(ERROR_MESSAGE.formatted("email"));
     }
 
+    public static NoSuchUserException accountName() {
+        return new NoSuchUserException(ERROR_MESSAGE.formatted("account name"));
+    }
+
     public static NoSuchUserException inactiveAccount(String mail) {
         return new NoSuchUserException(INACTIVE_ACCOUNT_MESSAGE.formatted(mail));
     }

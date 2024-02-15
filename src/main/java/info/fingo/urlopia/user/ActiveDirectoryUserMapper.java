@@ -20,29 +20,18 @@ public class ActiveDirectoryUserMapper {
     @Value("${ad.groups.admin}")
     private String adminGroup;
 
-    public User mapToUser(SearchResult searchResult,
-                           User user) {
-        user.setPrincipalName(
-                ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.PRINCIPAL_NAME));
-        user.setAdName(
-                ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.DISTINGUISHED_NAME));
-        user.setMail(
-                ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.MAIL));
-        user.setFirstName(
-                ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.FIRST_NAME));
-        user.setLastName(
-                ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.LAST_NAME));
-        user.setLeader(
-                isLeader(searchResult));
-        user.setB2b(
-                isB2B(searchResult));
-        user.setEc(
-                isEC(searchResult));
-        user.setActive(
-                !ActiveDirectoryUtils.isDisabled(searchResult));
-        user.setAdmin(
-                isAdmin(searchResult));
-
+    public User mapToUser(SearchResult searchResult, User user) {
+        user.setAccountName(ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.ACCOUNT_NAME));
+        user.setPrincipalName(ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.PRINCIPAL_NAME));
+        user.setAdName(ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.DISTINGUISHED_NAME));
+        user.setMail(ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.MAIL));
+        user.setFirstName(ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.FIRST_NAME));
+        user.setLastName(ActiveDirectoryUtils.pickAttribute(searchResult, Attribute.LAST_NAME));
+        user.setLeader(isLeader(searchResult));
+        user.setB2b(isB2B(searchResult));
+        user.setEc(isEC(searchResult));
+        user.setActive(!ActiveDirectoryUtils.isDisabled(searchResult));
+        user.setAdmin(isAdmin(searchResult));
         return user;
     }
 

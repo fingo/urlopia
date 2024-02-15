@@ -17,6 +17,9 @@ public class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
+    private String accountName;
+
+    @Column(nullable = false, unique = true)
     private String principalName;
 
     @Column(nullable = false, unique = true)
@@ -109,6 +112,10 @@ public class User {
         this.mail = mail;
     }
 
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
+
     public void setPrincipalName(String principalName) {
         this.principalName = principalName;
     }
@@ -147,6 +154,10 @@ public class User {
 
     public void setWorkTime(Float workTime) {
         this.workTime = workTime;
+    }
+
+    public String getAccountName() {
+        return accountName;
     }
 
     public String getPrincipalName() {

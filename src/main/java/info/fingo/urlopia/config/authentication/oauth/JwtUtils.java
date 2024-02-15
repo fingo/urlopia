@@ -12,16 +12,7 @@ import java.util.Base64;
 @Component
 @RequiredArgsConstructor
 public class JwtUtils {
-
     private static final String PRINCIPAL_KEY = "unique_name";
-    private static final String FIRST_NAME_KEY = "given_name";
-    private static final String LAST_NAME_KEY = "family_name";
-
-
-    public static String getPrincipalNameFromDecodedToken(DecodedJWT decodedToken){
-        var payloadAsJson = decodeTokenPayloadToJsonObject(decodedToken);
-        return payloadAsJson.getAsJsonPrimitive(PRINCIPAL_KEY).getAsString();
-    }
 
     public static JsonObject decodeTokenPayloadToJsonObject(DecodedJWT decodedJWT) {
         try {
@@ -34,15 +25,9 @@ public class JwtUtils {
         }
     }
 
-    //TEMPORARY FIX
-
-    public static String getFirstNameFromDecodedToken(DecodedJWT decodedToken){
+    public static String getAccountNameFromDecodedToken(DecodedJWT decodedToken) {
         var payloadAsJson = decodeTokenPayloadToJsonObject(decodedToken);
-        return payloadAsJson.getAsJsonPrimitive(FIRST_NAME_KEY).getAsString();
-    }
-
-    public static String getLastNameFromDecodedToken(DecodedJWT decodedToken){
-        var payloadAsJson = decodeTokenPayloadToJsonObject(decodedToken);
-        return payloadAsJson.getAsJsonPrimitive(LAST_NAME_KEY).getAsString();
+        var principal = payloadAsJson.getAsJsonPrimitive(PRINCIPAL_KEY).getAsString();
+        return principal.substring(0, principal.indexOf("@"));
     }
 }

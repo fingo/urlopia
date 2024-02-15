@@ -28,14 +28,10 @@ public class ActiveDirectoryTeamMapper {
         return this.mapToTeam(adTeam, new Team());
     }
 
-    Team mapToTeam(SearchResult adTeam,
-                   Team team) {
-        team.setAdName(
-                ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.DISTINGUISHED_NAME));
-        team.setName(
-                normalizeName(ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.NAME)));
-        team.setLeader(
-                findUser(ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.MANAGED_BY)));
+    Team mapToTeam(SearchResult adTeam, Team team) {
+        team.setAdName(ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.DISTINGUISHED_NAME));
+        team.setName(normalizeName(ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.NAME)));
+        team.setLeader(findUser(ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.MANAGED_BY)));
         return team;
     }
 

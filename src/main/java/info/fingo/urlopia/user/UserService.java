@@ -72,21 +72,12 @@ public class UserService {
                 });
     }
 
-    public User getByPrincipal(String principal) {
+    public User getFirstByAccountName(String accountName) {
         return userRepository
-                .findFirstByPrincipalName(principal)
+                .findFirstByAccountName(accountName)
                 .orElseThrow(() -> {
-                    log.error("There is no user with principal: {}", Anonymizer.anonymizeMail(principal));
-                    return NoSuchUserException.invalidEmail();
-                });
-    }
-    public User getByFirstNameAndLastName(String firstName,
-                                          String lastName) {
-        return userRepository
-                .findFirstByFirstNameAndLastName(firstName, lastName)
-                .orElseThrow(() -> {
-                    log.error("There is no user with firstName: {} lastName: {}", firstName, lastName);
-                    return NoSuchUserException.invalidEmail();
+                    log.error("There is no user with account name: {}", accountName);
+                    return NoSuchUserException.accountName();
                 });
     }
 
@@ -161,14 +152,9 @@ public class UserService {
     }
 
     public Long getCurrentUserId(){
-        var principal = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var accountName = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // Temporary fix while domain migration is on
-        var split = principal.split(";");
-        var firstName = split[0];
-        var lastName = split.length > 1 ? split[1] : "";
-
-        var user = userRepository.findFirstByFirstNameAndLastName(firstName, lastName);
+        var user = userRepository.findFirstByAccountName(accountName);
         if (user.isPresent()){
             return user.get().getId();
         }
