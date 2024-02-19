@@ -13,6 +13,8 @@ public interface UserRepository extends BaseRepository<User>, JpaRepository<User
 
     Optional<User> findFirstByPrincipalName(String principalName);
 
+    Optional<User> findFirstByAccountName(String accountName);
+
     Optional<User> findFirstByAdName(String adName);
 
     Optional<User> findFirstByFirstNameAndLastName(String firstName, String lastName);

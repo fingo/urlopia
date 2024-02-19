@@ -84,7 +84,7 @@ class UserServiceSpec extends Specification {
         }
         SecurityContextHolder.setContext(mockedContext)
 
-        userRepository.findFirstByFirstNameAndLastName(_ as String, _ as String) >> Optional.empty()
+        userRepository.findFirstByAccountName(_ as String) >> Optional.empty()
 
         when:
         userService.getCurrentUserId()
@@ -106,7 +106,7 @@ class UserServiceSpec extends Specification {
         def user = Mock(User){
             getId() >> 1
         }
-        userRepository.findFirstByFirstNameAndLastName(_ as String, _ as String) >> Optional.of(user)
+        userRepository.findFirstByAccountName(_ as String) >> Optional.of(user)
 
         when:
         userService.getCurrentUserId()

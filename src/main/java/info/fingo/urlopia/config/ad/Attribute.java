@@ -13,8 +13,8 @@ public enum Attribute {
     DISTINGUISHED_NAME("distinguishedName"),
     CREATED_TIME("whenCreated"),
     CHANGED_TIME("whenChanged"),
-    USER_ACCOUNT_CONTROL("userAccountControl");
-
+    USER_ACCOUNT_CONTROL("userAccountControl"),
+    ACCOUNT_NAME("sAMAccountName");
 
     private String key;
 

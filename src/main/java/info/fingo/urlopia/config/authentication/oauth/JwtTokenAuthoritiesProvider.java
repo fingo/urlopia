@@ -16,13 +16,8 @@ public class JwtTokenAuthoritiesProvider {
     private final UserAuthoritiesProvider userAuthoritiesProvider;
 
     public Set<SimpleGrantedAuthority> getAuthoritiesFromJWT(DecodedJWT decodedToken){
-//        var principal = JwtUtils.getPrincipalNameFromDecodedToken(decodedToken); TODO: go back to checking @ / sth else than name and surname
-//        var user = userService.getByPrincipal(principal);
-
-        var firstName = JwtUtils.getFirstNameFromDecodedToken(decodedToken);
-        var lastName = JwtUtils.getLastNameFromDecodedToken(decodedToken);
-        var user = userService.getByFirstNameAndLastName(firstName, lastName);
-
+        var accountName = JwtUtils.getAccountNameFromDecodedToken(decodedToken);
+        var user = userService.getFirstByAccountName(accountName);
         return userAuthoritiesProvider.getAuthoritiesFromUser(user);
     }
 }

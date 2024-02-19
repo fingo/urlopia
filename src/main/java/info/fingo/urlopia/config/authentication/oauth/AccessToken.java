@@ -15,20 +15,9 @@ public class AccessToken {
     private final String value;
     private final JwtTokenAuthoritiesProvider jwtTokenAuthoritiesProvider;
 
-
-    public String getPrincipal() {
+    public String getAccountName() {
         var decodedToken = decodeToken(value);
-        return JwtUtils.getPrincipalNameFromDecodedToken(decodedToken);
-    }
-
-    public String getFirstName() {
-        var decodedToken = decodeToken(value);
-        return JwtUtils.getFirstNameFromDecodedToken(decodedToken);
-    }
-
-    public String getLastName() {
-        var decodedToken = decodeToken(value);
-        return JwtUtils.getLastNameFromDecodedToken(decodedToken);
+        return JwtUtils.getAccountNameFromDecodedToken(decodedToken);
     }
 
     public Set<SimpleGrantedAuthority> getAuthorities() {

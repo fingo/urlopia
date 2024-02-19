@@ -27,14 +27,10 @@ public class OAuthUserIdInterceptor implements HandlerInterceptor {
         var token = request.getHeader("Authorization");
         try{
             var accessToken = jwtTokenValidator.validateAuthorizationHeader(token);
-//            var principal = accessToken.getPrincipal(); TODO: go back to checking @ / sth else than name and surname
-//            var user = userService.getByPrincipal(principal);
-
-            var firstName = accessToken.getFirstName();
-            var lastName = accessToken.getLastName();
-            var user = userService.getByFirstNameAndLastName(firstName, lastName);
+            var user = userService.getFirstByAccountName(accessToken.getAccountName());
             request.setAttribute(USER_ID_ATTRIBUTE, user.getId());
-        } catch (RuntimeException ignored){
+        } catch (RuntimeException ignored) {
+            // Ignored
         }
         return true;
     }

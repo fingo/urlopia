@@ -42,9 +42,9 @@ public class JwtFilter extends OncePerRequestFilter {
                                                     HttpServletResponse response) {
         try{
             var accessToken = jwtTokenValidator.validateAuthorizationHeader(header);
-            var principal = accessToken.getFirstName() + ";" + accessToken.getLastName();
+            var accountName = accessToken.getAccountName();
             var authorities = accessToken.getAuthorities();
-            return new UsernamePasswordAuthenticationToken(principal, null, authorities);
+            return new UsernamePasswordAuthenticationToken(accountName, null, authorities);
         }catch (InvalidTokenException | NoSuchUserException exception){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return null;
