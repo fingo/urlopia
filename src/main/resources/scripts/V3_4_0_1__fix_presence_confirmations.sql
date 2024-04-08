@@ -14,6 +14,10 @@ BEGIN
             GROUP BY date, user_id
         );
 
+        -- Drop pkey constraint for id column
+        ALTER TABLE presence_confirmations
+        DROP CONSTRAINT IF EXISTS presence_confirmations_pkey;
+
         -- Add composite pkey
         ALTER TABLE presence_confirmations
         ADD CONSTRAINT pk_presence_confirmations PRIMARY KEY (date, user_id);
