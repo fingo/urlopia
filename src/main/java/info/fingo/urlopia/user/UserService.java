@@ -38,8 +38,7 @@ public class UserService {
     private final HistoryLogService historyLogService;
     private final AutomaticVacationDayService automaticVacationDayService;
     private final AllUsersLeaderProvider allUsersLeaderProvider;
-
-
+    private final ActiveDirectoryUserLeaderProvider userLeaderProvider;
 
     public List<UserExcerptProjection> get(Filter filter,
                                            Sort sort) {
@@ -83,6 +82,10 @@ public class UserService {
 
     public User getAllUsersLeader() {
         return allUsersLeaderProvider.getAllUsersLeader();
+    }
+
+    public User getAcceptanceLeaderForUser(User user) {
+        return userLeaderProvider.getUserLeader(user);
     }
 
     // *** ACTIONS ***

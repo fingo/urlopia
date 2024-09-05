@@ -39,6 +39,12 @@ public class ActiveDirectorySearcher {
         return this;
     }
 
+    public ActiveDirectorySearcher principalName(String principalName) {
+        var value = String.format("(userPrincipalName=%s)", principalName);
+        filter.append(value);
+        return this;
+    }
+
     public ActiveDirectorySearcher mail(String mail) {
         var value = String.format("(mail=%s)", mail);
         filter.append(value);
@@ -69,11 +75,14 @@ public class ActiveDirectorySearcher {
     }
 
     public List<SearchResult> search() {
-        var filter = this.filter.append(")").toString();
-        List<SearchResult> result = new LinkedList<>();
-
         var controls = new SearchControls();
         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        return search(controls);
+    }
+
+    public List<SearchResult> search(SearchControls controls) {
+        var filter = this.filter.append(")").toString();
+        List<SearchResult> result = new LinkedList<>();
 
         // connecting to AD and getting data
         DirContext ad = null;
