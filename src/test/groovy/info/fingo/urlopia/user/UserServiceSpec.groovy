@@ -17,8 +17,9 @@ class UserServiceSpec extends Specification {
     def historyLogService = Mock(HistoryLogService)
     def automaticVacationDayService = Mock(AutomaticVacationDayService)
     def allUsersLeaderProvider = Mock(AllUsersLeaderProvider)
+    def userLeaderProvider = Mock(ActiveDirectoryUserLeaderProvider)
 
-    def userService = new UserService(userRepository, historyLogService, automaticVacationDayService, allUsersLeaderProvider)
+    def userService = new UserService(userRepository, historyLogService, automaticVacationDayService, allUsersLeaderProvider, userLeaderProvider)
     def filter = Mock(Filter)
 
     def "get() SHOULD return list of users"() {
