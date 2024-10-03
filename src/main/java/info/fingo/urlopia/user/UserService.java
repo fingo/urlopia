@@ -19,9 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -171,9 +169,17 @@ public class UserService {
         return authorities.contains(ADMIN_AUTHORITY);
     }
 
+    public User getTeamLeader(User user, Team team) {
+        var teamLeader = team.getLeader();
+        return user.equals(teamLeader)
+                ? userLeaderProvider.getUserLeader(user)
+                : team.getLeader();
+    }
+
     private Set<User> getLeaders(User user) {
         return user.getTeams().stream()
-                .map(Team::getLeader)
+                .map(team -> getTeamLeader(user, team))
+                .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableSet());
     }
 }

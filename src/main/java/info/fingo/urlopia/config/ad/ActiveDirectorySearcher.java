@@ -12,6 +12,7 @@ import javax.naming.directory.SearchResult;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ConditionalOnProperty(name = "ad.configuration.enabled", havingValue = "true", matchIfMissing = true)
 public class ActiveDirectorySearcher {
@@ -28,7 +29,15 @@ public class ActiveDirectorySearcher {
     }
 
     public ActiveDirectorySearcher objectClass(ActiveDirectoryObjectClass objectClass) {
-        var value = String.format("(objectClass=%s)", objectClass.name());
+        var value = String.format("(objectClass=%s)", objectClass.getKey());
+        filter.append(value);
+        return this;
+    }
+
+    public ActiveDirectorySearcher objectClasses(List<ActiveDirectoryObjectClass> objectClasses) {
+        var value = objectClasses.stream()
+                .map(objClass -> String.format("(objectClass=%s)", objClass.getKey()))
+                .collect(Collectors.joining("", "(|", ")"));
         filter.append(value);
         return this;
     }
@@ -59,6 +68,12 @@ public class ActiveDirectorySearcher {
 
     public ActiveDirectorySearcher distinguishedName(String distinguishedName) {
         var value = String.format("(distinguishedName=%s)", distinguishedName);
+        filter.append(value);
+        return this;
+    }
+
+    public ActiveDirectorySearcher excludeDistinguishedName(String distinguishedName) {
+        var value = String.format("(!(distinguishedName=%s))", distinguishedName);
         filter.append(value);
         return this;
     }

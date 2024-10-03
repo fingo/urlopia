@@ -6,6 +6,7 @@ import info.fingo.urlopia.api.v2.history.DetailsChangeEventInput
 import info.fingo.urlopia.config.persistance.filter.Filter
 import info.fingo.urlopia.history.HistoryLogService
 import info.fingo.urlopia.team.AllUsersLeaderProvider
+import info.fingo.urlopia.team.Team
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContext
@@ -141,5 +142,38 @@ class UserServiceSpec extends Specification {
 
         then:
         thrown(NoSuchUserException)
+    }
+
+    def "getTeamLeader() WHEN user is not a team leader SHOULD return a team leader"() {
+        given:
+        def userOne = Mock(User)
+        def userTwo = Mock(User)
+        def team = Mock(Team)
+
+        and:
+        team.getLeader() >> userTwo
+
+        when:
+        def teamLeader = userService.getTeamLeader(userOne, team)
+
+        then:
+        teamLeader == userTwo
+    }
+
+    def "getTeamLeader() WHEN user is a team leader SHOULD return ad leader"() {
+        given:
+        def user = Mock(User)
+        def adUser = Mock(User)
+        def team = Mock(Team)
+
+        and:
+        team.getLeader() >> user
+        userLeaderProvider.getUserLeader(user) >> adUser
+
+        when:
+        def teamLeader = userService.getTeamLeader(user, team)
+
+        then:
+        teamLeader == adUser
     }
 }

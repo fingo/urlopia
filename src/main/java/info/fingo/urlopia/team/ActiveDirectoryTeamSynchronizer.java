@@ -1,9 +1,7 @@
 package info.fingo.urlopia.team;
 
-import info.fingo.urlopia.config.ad.ActiveDirectory;
-import info.fingo.urlopia.config.ad.ActiveDirectoryObjectClass;
-import info.fingo.urlopia.config.ad.ActiveDirectoryUtils;
-import info.fingo.urlopia.config.ad.Attribute;
+import info.fingo.urlopia.config.ad.*;
+import info.fingo.urlopia.config.ad.tree.ActiveDirectoryTree;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
 import org.slf4j.Logger;
@@ -21,11 +19,8 @@ import java.util.stream.Collectors;
 public class ActiveDirectoryTeamSynchronizer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ActiveDirectoryTeamSynchronizer.class);
 
-    @Value("${ad.groups.users}")
-    private String usersGroup;
-
-    @Value("${ad.identifiers.team}")
-    private List<String> teamIdentifiers;
+    @Value("${ad.containers.main}")
+    private String mainContainer;
 
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
@@ -44,20 +39,15 @@ public class ActiveDirectoryTeamSynchronizer {
 
     public void addNewTeams() {
         var dbTeams = teamRepository.findAllAdNames();
-        pickTeamsFromAD().stream()
-                .filter(adTeam ->
-                        !isTeamAUsersGroup(
-                                adTeam))
+        var adTeams = pickTeamsFromAD();
+        var adTeamsTree = buildTree(adTeams);
+        adTeams.stream()
                 .filter(adTeam ->
                         !dbTeams.contains(
                                 adNameOf(adTeam)))
-                .map(teamMapper::mapToTeam)
+                .map(adTeam -> teamMapper.mapToTeam(adTeam, adTeamsTree))
                 .forEach(teamRepository::save);
         LOGGER.info("Synchronisation succeed: find new teams");
-    }
-
-    private boolean isTeamAUsersGroup(SearchResult adTeam) {
-        return adNameOf(adTeam).equals(usersGroup);
     }
 
     private String adNameOf(SearchResult searchResult) {
@@ -76,10 +66,12 @@ public class ActiveDirectoryTeamSynchronizer {
     }
 
     public void synchronize() {
-        pickTeamsFromAD().forEach(adTeam -> {
+        var adTeams = pickTeamsFromAD();
+        var adTeamsTree = buildTree(adTeams);
+        adTeams.forEach(adTeam -> {
             var adName = adNameOf(adTeam);
             teamRepository.findFirstByAdName(adName).ifPresent(team -> {
-                var updatedTeam = teamMapper.mapToTeam(adTeam, team);
+                var updatedTeam = teamMapper.mapToTeam(adTeam, team, adTeamsTree);
                 teamRepository.save(updatedTeam);
             });
         });
@@ -87,11 +79,16 @@ public class ActiveDirectoryTeamSynchronizer {
     }
 
     public void assignUsersToTeams() {
-        this.pickTeamsFromAD().forEach(adTeam -> {
+        var adTeamsAndUsers = pickTeamsAndUsersFromAD();
+        var adTree = buildTree(adTeamsAndUsers);
+        var adTeams = adTeamsAndUsers.stream()
+                .filter(ActiveDirectoryUtils::isOU)
+                .toList();
+        adTeams.forEach(adTeam -> {
             var adName = adNameOf(adTeam);
             teamRepository.findFirstByAdName(adName).ifPresent(team -> {
-                var membersAsString = ActiveDirectoryUtils.pickAttribute(adTeam, Attribute.MEMBER);
-                var members = splitMembers(membersAsString);
+                var membersDn = getTeamMembersDn(adTree, adName);
+                var members = getMembers(membersDn);
                 team.setUsers(members);
                 teamRepository.save(team);
             });
@@ -99,9 +96,31 @@ public class ActiveDirectoryTeamSynchronizer {
         LOGGER.info("Synchronisation succeed: assign users to teams");
     }
 
-    private Set<User> splitMembers(String members) {
-        var groups = ActiveDirectoryUtils.split(members);
-        return Arrays.stream(groups)
+    private ActiveDirectoryTree buildTree(List<SearchResult> adTeamsAndUsers) {
+        // Sort objects to make sure that all of them are placed inside tree, because tree impl allows replacements
+        var sortedObjects = adTeamsAndUsers.stream()
+                .sorted(Comparator.comparingLong(o -> {
+                    var distinguishedName = ActiveDirectoryUtils.pickAttribute(o, Attribute.DISTINGUISHED_NAME);
+                    return distinguishedName.length();
+                }))
+                .toList();
+        var adTree = new ActiveDirectoryTree(mainContainer);
+        for (var obj : sortedObjects) {
+            adTree.put(obj);
+        }
+        return adTree;
+    }
+
+    private List<String> getTeamMembersDn(ActiveDirectoryTree tree,
+                                          String teamDn) {
+        return tree.searchDirectChildrenObjectsOf(teamDn).stream()
+                .filter(ActiveDirectoryUtils::isPerson)
+                .map(teamMember -> ActiveDirectoryUtils.pickAttribute(teamMember, Attribute.DISTINGUISHED_NAME))
+                .toList();
+    }
+
+    private Set<User> getMembers(List<String> membersDn) {
+        return membersDn.stream()
                 .map(userRepository::findFirstByAdName)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -109,16 +128,19 @@ public class ActiveDirectoryTeamSynchronizer {
     }
 
     private List<SearchResult> pickTeamsFromAD() {
-        return teamIdentifiers.stream()
-                .map(this::pickTeamsFromAD)
-                .flatMap(Collection::stream)
-                .toList();
+        return activeDirectory.newSearch()
+                .excludeDistinguishedName(mainContainer)
+                .objectClass(ActiveDirectoryObjectClass.ORGANIZATIONAL_UNIT)
+                .search();
     }
 
-    private List<SearchResult> pickTeamsFromAD(String teamIdentifier) {
+    private List<SearchResult> pickTeamsAndUsersFromAD() {
         return activeDirectory.newSearch()
-                .objectClass(ActiveDirectoryObjectClass.Group)
-                .name(String.format("*%s", teamIdentifier))
+                .excludeDistinguishedName(mainContainer)
+                .objectClasses(List.of(
+                        ActiveDirectoryObjectClass.ORGANIZATIONAL_UNIT,
+                        ActiveDirectoryObjectClass.PERSON
+                ))
                 .search();
     }
 }
