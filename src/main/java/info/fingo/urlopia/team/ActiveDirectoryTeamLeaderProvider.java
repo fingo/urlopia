@@ -42,7 +42,6 @@ public class ActiveDirectoryTeamLeaderProvider {
     }
 
     private Optional<User> getUser(String userDN) {
-        System.out.println("repo:" + userDN);
         return userRepository.findFirstByAdName(userDN);
     }
 }
