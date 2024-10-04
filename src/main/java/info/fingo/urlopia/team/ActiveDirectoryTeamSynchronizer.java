@@ -42,9 +42,7 @@ public class ActiveDirectoryTeamSynchronizer {
         var adTeams = pickTeamsFromAD();
         var adTeamsTree = buildTree(adTeams);
         adTeams.stream()
-                .filter(adTeam ->
-                        !dbTeams.contains(
-                                adNameOf(adTeam)))
+                .filter(adTeam -> !dbTeams.contains(adNameOf(adTeam)))
                 .map(adTeam -> teamMapper.mapToTeam(adTeam, adTeamsTree))
                 .forEach(teamRepository::save);
         LOGGER.info("Synchronisation succeed: find new teams");

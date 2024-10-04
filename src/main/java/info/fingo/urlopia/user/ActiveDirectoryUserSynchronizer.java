@@ -42,9 +42,13 @@ public class ActiveDirectoryUserSynchronizer {
         LOGGER.info("Synchronisation succeed: find new users");
     }
 
-    private void saveNewUser(User user){
-        userRepository.save(user);
-        automaticVacationDayService.addForNewUser(user);
+    private void saveNewUser(User user) {
+        try {
+            userRepository.save(user);
+            automaticVacationDayService.addForNewUser(user);
+        } catch (Exception exception) {
+            LOGGER.error("Exception when saving a new user", exception);
+        }
     }
 
     public void deactivateDeletedUsers() {

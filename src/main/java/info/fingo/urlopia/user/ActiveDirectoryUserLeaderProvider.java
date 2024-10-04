@@ -44,7 +44,7 @@ public class ActiveDirectoryUserLeaderProvider {
         // Step 2: Find first existing and valid OU manager.
         for (var ouDn : organizationalUnits) {
             var controls = new SearchControls();
-            controls.setSearchScope(SearchControls.OBJECT_SCOPE);
+            controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             var ouSearch = activeDirectory.newSearch().distinguishedName(ouDn).search(controls);
             for (var result : ouSearch) {
                 var attributes = result.getAttributes();
