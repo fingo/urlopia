@@ -8,7 +8,6 @@ import info.fingo.urlopia.config.authentication.UserAuthoritiesProvider;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.history.UserDetailsChangeEvent;
-import info.fingo.urlopia.team.AllUsersLeaderProvider;
 import info.fingo.urlopia.team.Team;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +37,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final HistoryLogService historyLogService;
     private final AutomaticVacationDayService automaticVacationDayService;
-    private final AllUsersLeaderProvider allUsersLeaderProvider;
     private final ActiveDirectoryUserLeaderProvider userLeaderProvider;
 
     public List<UserExcerptProjection> get(Filter filter,
@@ -76,10 +77,6 @@ public class UserService {
                     log.error("There is no user with account name: {}", accountName);
                     return NoSuchUserException.accountName();
                 });
-    }
-
-    public User getAllUsersLeader() {
-        return allUsersLeaderProvider.getAllUsersLeader();
     }
 
     public User getAcceptanceLeaderForUser(User user) {

@@ -64,21 +64,19 @@ public class NormalRequestService implements RequestTypeService {
         this.validateRequest(request);
 
         request = requestRepository.save(request);
-        this.createAcceptances(user, request);
-
         publisher.publishEvent(new NormalRequestCreated(request));
+        log.info("New normal request with id: %d has been created".formatted(request.getId()));
 
-        var loggerInfo = "New normal request with id: %d has been created"
-                .formatted(request.getId());
-        log.info(loggerInfo);
-        var requestId = request.getId();
+        var leader = userService.getAcceptanceLeaderForUser(user);
+        if (leader != null) {
+            this.acceptanceService.create(request, leader);
+        } else {
+            this.accept(request);
+        }
 
         return requestRepository
-                .findById(requestId)
-                .orElseThrow(() -> {
-                    log.error("Request with id: {} does not exist", requestId);
-                    return new NoSuchElementException();
-                });
+                .findById(request.getId())
+                .orElseThrow(NoSuchElementException::new);
     }
 
     private void ensureUserOwnRequiredHoursNumber(User user, float requiredHours) {
@@ -161,11 +159,6 @@ public class NormalRequestService implements RequestTypeService {
         return requests.stream()
                 .filter(Request::isAffecting)
                 .anyMatch(request -> request.isOverlapping(newRequest));
-    }
-
-    private void createAcceptances(User user, Request request) {
-        var leader = userService.getAcceptanceLeaderForUser(user);
-        this.acceptanceService.create(request, leader);
     }
 
     @Override

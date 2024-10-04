@@ -5,7 +5,6 @@ import info.fingo.urlopia.api.v2.exceptions.UnauthorizedException
 import info.fingo.urlopia.api.v2.history.DetailsChangeEventInput
 import info.fingo.urlopia.config.persistance.filter.Filter
 import info.fingo.urlopia.history.HistoryLogService
-import info.fingo.urlopia.team.AllUsersLeaderProvider
 import info.fingo.urlopia.team.Team
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -17,10 +16,9 @@ class UserServiceSpec extends Specification {
     def userRepository = Mock(UserRepository)
     def historyLogService = Mock(HistoryLogService)
     def automaticVacationDayService = Mock(AutomaticVacationDayService)
-    def allUsersLeaderProvider = Mock(AllUsersLeaderProvider)
     def userLeaderProvider = Mock(ActiveDirectoryUserLeaderProvider)
 
-    def userService = new UserService(userRepository, historyLogService, automaticVacationDayService, allUsersLeaderProvider, userLeaderProvider)
+    def userService = new UserService(userRepository, historyLogService, automaticVacationDayService, userLeaderProvider)
     def filter = Mock(Filter)
 
     def "get() SHOULD return list of users"() {

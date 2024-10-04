@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -181,7 +182,7 @@ public class Request {
     }
 
     public Set<Acceptance> getAcceptances() {
-        return acceptances;
+        return acceptances == null ? Collections.emptySet() : acceptances;
     }
 
     @Transient
