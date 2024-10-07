@@ -176,6 +176,8 @@ class NormalRequestServiceSpec extends Specification{
         and: "request mock with repo with endDate before startDate"
         def request = Mock(Request){
             getRequester() >> user
+            getStatus() >> Request.Status.PENDING
+            getAcceptances() >> Collections.emptySet()
             getId() >> 2
         }
         requestRepository.findByRequesterId(userId) >> [request]
