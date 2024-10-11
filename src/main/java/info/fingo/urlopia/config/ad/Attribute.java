@@ -14,7 +14,8 @@ public enum Attribute {
     CREATED_TIME("whenCreated"),
     CHANGED_TIME("whenChanged"),
     USER_ACCOUNT_CONTROL("userAccountControl"),
-    ACCOUNT_NAME("sAMAccountName");
+    ACCOUNT_NAME("sAMAccountName"),
+    OBJECT_CLASS("objectClass");
 
     private String key;
 

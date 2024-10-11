@@ -18,7 +18,7 @@ public class JwtUtils {
         try {
             String payloadAsString = decodedJWT.getPayload();
             return new Gson().fromJson(
-                    new String(Base64.getDecoder().decode(payloadAsString), StandardCharsets.UTF_8),
+                    new String(Base64.getUrlDecoder().decode(payloadAsString), StandardCharsets.UTF_8),
                     JsonObject.class);
         } catch (RuntimeException exception) {
             throw new InvalidTokenException("Invalid JWT or JSON format of each of the jwt parts", exception);

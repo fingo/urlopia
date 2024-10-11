@@ -12,6 +12,7 @@ import javax.naming.directory.SearchResult;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ConditionalOnProperty(name = "ad.configuration.enabled", havingValue = "true", matchIfMissing = true)
 public class ActiveDirectorySearcher {
@@ -28,13 +29,27 @@ public class ActiveDirectorySearcher {
     }
 
     public ActiveDirectorySearcher objectClass(ActiveDirectoryObjectClass objectClass) {
-        var value = String.format("(objectClass=%s)", objectClass.name());
+        var value = String.format("(objectClass=%s)", objectClass.getKey());
+        filter.append(value);
+        return this;
+    }
+
+    public ActiveDirectorySearcher objectClasses(List<ActiveDirectoryObjectClass> objectClasses) {
+        var value = objectClasses.stream()
+                .map(objClass -> String.format("(objectClass=%s)", objClass.getKey()))
+                .collect(Collectors.joining("", "(|", ")"));
         filter.append(value);
         return this;
     }
 
     public ActiveDirectorySearcher memberOf(String group) {
         var value = String.format("(memberOf=%s)", group);
+        filter.append(value);
+        return this;
+    }
+
+    public ActiveDirectorySearcher principalName(String principalName) {
+        var value = String.format("(userPrincipalName=%s)", principalName);
         filter.append(value);
         return this;
     }
@@ -57,6 +72,12 @@ public class ActiveDirectorySearcher {
         return this;
     }
 
+    public ActiveDirectorySearcher excludeDistinguishedName(String distinguishedName) {
+        var value = String.format("(!(distinguishedName=%s))", distinguishedName);
+        filter.append(value);
+        return this;
+    }
+
     public ActiveDirectorySearcher isDisabled(){
         var builder = new StringBuilder("(|");
         for (var disableKey: ActiveDirectoryUtils.DISABLED_STATUS){
@@ -69,11 +90,14 @@ public class ActiveDirectorySearcher {
     }
 
     public List<SearchResult> search() {
-        var filter = this.filter.append(")").toString();
-        List<SearchResult> result = new LinkedList<>();
-
         var controls = new SearchControls();
         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        return search(controls);
+    }
+
+    public List<SearchResult> search(SearchControls controls) {
+        var filter = this.filter.append(")").toString();
+        List<SearchResult> result = new LinkedList<>();
 
         // connecting to AD and getting data
         DirContext ad = null;

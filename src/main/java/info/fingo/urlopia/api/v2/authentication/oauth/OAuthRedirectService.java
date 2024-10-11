@@ -32,14 +32,12 @@ public class OAuthRedirectService {
         Set<TeamInfo> teams = new HashSet<>();
         for (var team : user.getTeams()) {
             var teamName = team.getName();
-            var allUsersLeader = userService.getAllUsersLeader();
-            var leader = user.equals(team.getLeader()) ? allUsersLeader : team.getLeader();
-
-            if (leader != null) {
-                var leaderName = leader.getFirstName() + " " + leader.getLastName();
-                var teamInfo = new TeamInfo(teamName, leaderName);
-                teams.add(teamInfo);
-            }
+            var leader = userService.getTeamLeader(user, team);
+            var leaderName = leader != null
+                    ? leader.getFirstName() + " " + leader.getLastName()
+                    : "-";
+            var teamInfo = new TeamInfo(teamName, leaderName);
+            teams.add(teamInfo);
         }
         return teams;
     }

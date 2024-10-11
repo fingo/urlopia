@@ -5,6 +5,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchResult;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +42,41 @@ public class ActiveDirectoryUtils {
         var accountStatus = pickAttribute(searchResult,
                 info.fingo.urlopia.config.ad.Attribute.USER_ACCOUNT_CONTROL);
         return DISABLED_STATUS.contains(accountStatus);
+    }
+
+    public static String getRelativeDN(String distinguishedName,
+                                       String base) {
+        if (distinguishedName.equals(base)) {
+            return "";
+        } else if(distinguishedName.endsWith(base) && !base.isBlank()) {
+            return distinguishedName.substring(0, distinguishedName.length() - base.length() - 1); // -1 for comma
+        } else {
+            return distinguishedName;
+        }
+    }
+
+    public static String getParentDN(String distinguishedName) {
+        var dnParts = Arrays.stream(distinguishedName.split(",")).toList();
+        if (dnParts.size() == 1) {
+            return "";
+        } else {
+            return String.join(",", dnParts.subList(1, dnParts.size()));
+        }
+    }
+
+    public static boolean isOU(SearchResult object) {
+        return isObjectClass(object, ActiveDirectoryObjectClass.ORGANIZATIONAL_UNIT);
+    }
+
+    public static boolean isPerson(SearchResult object) {
+        return isObjectClass(object, ActiveDirectoryObjectClass.PERSON);
+    }
+
+    public static boolean isObjectClass(SearchResult object, ActiveDirectoryObjectClass objectClass) {
+        var objectClasses = pickAttribute(object, info.fingo.urlopia.config.ad.Attribute.OBJECT_CLASS);
+        return Arrays.stream(objectClasses.split(","))
+                .map(String::trim)
+                .anyMatch(oc -> oc.equalsIgnoreCase(objectClass.getKey()));
     }
 
 }

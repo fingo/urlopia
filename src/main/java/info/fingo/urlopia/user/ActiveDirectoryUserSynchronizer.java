@@ -11,7 +11,6 @@ import info.fingo.urlopia.history.UserDetailsChangeEvent;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -26,9 +25,6 @@ import java.util.stream.Stream;
 public class ActiveDirectoryUserSynchronizer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActiveDirectoryUserSynchronizer.class);
-
-    @Value("${ad.groups.users}")
-    private String usersGroup;
 
     private final UserRepository userRepository;
     private final HistoryLogService historyLogService;
@@ -46,9 +42,13 @@ public class ActiveDirectoryUserSynchronizer {
         LOGGER.info("Synchronisation succeed: find new users");
     }
 
-    private void saveNewUser(User user){
-        userRepository.save(user);
-        automaticVacationDayService.addForNewUser(user);
+    private void saveNewUser(User user) {
+        try {
+            userRepository.save(user);
+            automaticVacationDayService.addForNewUser(user);
+        } catch (Exception exception) {
+            LOGGER.error("Exception when saving a new user", exception);
+        }
     }
 
     public void deactivateDeletedUsers() {
@@ -101,15 +101,13 @@ public class ActiveDirectoryUserSynchronizer {
 
     private List<SearchResult> pickUsersFromActiveDirectory() {
         return activeDirectory.newSearch()
-                .objectClass(ActiveDirectoryObjectClass.Person)
-                .memberOf(usersGroup)
+                .objectClass(ActiveDirectoryObjectClass.PERSON)
                 .search();
     }
 
-    private List<SearchResult> pickDisabledUsersFromActiveDirectory(){
+    private List<SearchResult> pickDisabledUsersFromActiveDirectory() {
         return activeDirectory.newSearch()
-                .objectClass(ActiveDirectoryObjectClass.Person)
-                .memberOf(usersGroup)
+                .objectClass(ActiveDirectoryObjectClass.PERSON)
                 .isDisabled()
                 .search();
     }

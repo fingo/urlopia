@@ -3,17 +3,15 @@ package info.fingo.urlopia.request.normal;
 import info.fingo.urlopia.acceptance.AcceptanceService;
 import info.fingo.urlopia.acceptance.StatusNotSupportedException;
 import info.fingo.urlopia.api.v2.user.PendingDaysOutput;
-import info.fingo.urlopia.api.v2.user.VacationDaysOutput;
-import info.fingo.urlopia.request.absence.BaseRequestInput;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.holidays.WorkingDaysCalculator;
 import info.fingo.urlopia.request.*;
+import info.fingo.urlopia.request.absence.BaseRequestInput;
 import info.fingo.urlopia.request.absence.InvalidDatesOrderException;
 import info.fingo.urlopia.request.normal.events.NormalRequestAccepted;
 import info.fingo.urlopia.request.normal.events.NormalRequestCanceled;
 import info.fingo.urlopia.request.normal.events.NormalRequestCreated;
 import info.fingo.urlopia.request.normal.events.NormalRequestRejected;
-import info.fingo.urlopia.team.TeamService;
 import info.fingo.urlopia.user.NoSuchUserException;
 import info.fingo.urlopia.user.User;
 import info.fingo.urlopia.user.UserRepository;
@@ -27,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.stream.DoubleStream;
 
 @Service("normalRequestService")
@@ -67,21 +64,19 @@ public class NormalRequestService implements RequestTypeService {
         this.validateRequest(request);
 
         request = requestRepository.save(request);
-        this.createAcceptances(user, request);
-
         publisher.publishEvent(new NormalRequestCreated(request));
+        log.info("New normal request with id: %d has been created".formatted(request.getId()));
 
-        var loggerInfo = "New normal request with id: %d has been created"
-                .formatted(request.getId());
-        log.info(loggerInfo);
-        var requestId = request.getId();
+        var leader = userService.getAcceptanceLeaderForUser(user);
+        if (leader != null) {
+            this.acceptanceService.create(request, leader);
+        } else {
+            this.accept(request);
+        }
 
         return requestRepository
-                .findById(requestId)
-                .orElseThrow(() -> {
-                    log.error("Request with id: {} does not exist", requestId);
-                    return new NoSuchElementException();
-                });
+                .findById(request.getId())
+                .orElseThrow(NoSuchElementException::new);
     }
 
     private void ensureUserOwnRequiredHoursNumber(User user, float requiredHours) {
@@ -164,15 +159,6 @@ public class NormalRequestService implements RequestTypeService {
         return requests.stream()
                 .filter(Request::isAffecting)
                 .anyMatch(request -> request.isOverlapping(newRequest));
-    }
-
-    private void createAcceptances(User user, Request request) {
-        var allUsersLeader = userService.getAllUsersLeader();
-        user.getTeams().stream()
-                .map(team -> user.equals(team.getLeader()) ? allUsersLeader : team.getLeader())
-                .filter(Objects::nonNull)
-                .distinct()
-                .forEach(leader -> this.acceptanceService.create(request, leader));
     }
 
     @Override

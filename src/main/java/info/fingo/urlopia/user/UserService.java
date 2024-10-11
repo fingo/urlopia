@@ -8,7 +8,6 @@ import info.fingo.urlopia.config.authentication.UserAuthoritiesProvider;
 import info.fingo.urlopia.config.persistance.filter.Filter;
 import info.fingo.urlopia.history.HistoryLogService;
 import info.fingo.urlopia.history.UserDetailsChangeEvent;
-import info.fingo.urlopia.team.AllUsersLeaderProvider;
 import info.fingo.urlopia.team.Team;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,9 +37,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final HistoryLogService historyLogService;
     private final AutomaticVacationDayService automaticVacationDayService;
-    private final AllUsersLeaderProvider allUsersLeaderProvider;
-
-
+    private final ActiveDirectoryUserLeaderProvider userLeaderProvider;
 
     public List<UserExcerptProjection> get(Filter filter,
                                            Sort sort) {
@@ -81,8 +79,8 @@ public class UserService {
                 });
     }
 
-    public User getAllUsersLeader() {
-        return allUsersLeaderProvider.getAllUsersLeader();
+    public User getAcceptanceLeaderForUser(User user) {
+        return userLeaderProvider.getUserLeader(user);
     }
 
     // *** ACTIONS ***
@@ -168,9 +166,17 @@ public class UserService {
         return authorities.contains(ADMIN_AUTHORITY);
     }
 
+    public User getTeamLeader(User user, Team team) {
+        var teamLeader = team.getLeader();
+        return user.equals(teamLeader)
+                ? userLeaderProvider.getUserLeader(user)
+                : team.getLeader();
+    }
+
     private Set<User> getLeaders(User user) {
         return user.getTeams().stream()
-                .map(Team::getLeader)
+                .map(team -> getTeamLeader(user, team))
+                .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableSet());
     }
 }
