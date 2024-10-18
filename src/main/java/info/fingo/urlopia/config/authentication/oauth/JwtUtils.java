@@ -28,6 +28,6 @@ public class JwtUtils {
     public static String getAccountNameFromDecodedToken(DecodedJWT decodedToken) {
         var payloadAsJson = decodeTokenPayloadToJsonObject(decodedToken);
         var principal = payloadAsJson.getAsJsonPrimitive(PRINCIPAL_KEY).getAsString();
-        return principal.substring(0, principal.indexOf("@"));
+        return principal.contains("@") ? principal.substring(0, principal.indexOf("@")) : principal;
     }
 }

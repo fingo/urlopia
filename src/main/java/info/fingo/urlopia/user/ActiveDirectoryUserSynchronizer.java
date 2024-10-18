@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "ad.configuration.enabled", havingValue = "true", matchIfMissing = true)
 public class ActiveDirectoryUserSynchronizer {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ActiveDirectoryUserSynchronizer.class);
 
     private final UserRepository userRepository;
@@ -32,11 +31,10 @@ public class ActiveDirectoryUserSynchronizer {
     private final ActiveDirectoryUserMapperWrapper userMapper;
     private final AutomaticVacationDayService automaticVacationDayService;
 
-
     public void addNewUsers() {
-        var dbUsers = userRepository.findAllPrincipalNames();
+        var dbUsers = userRepository.findAllAccountNames();
         pickUsersFromActiveDirectory().stream()
-                .filter(user -> !dbUsers.contains(ActiveDirectoryUtils.pickAttribute(user, Attribute.PRINCIPAL_NAME)))
+                .filter(user -> !dbUsers.contains(ActiveDirectoryUtils.pickAttribute(user, Attribute.ACCOUNT_NAME)))
                 .map(userMapper::mapNewUser)
                 .forEach(this::saveNewUser);
         LOGGER.info("Synchronisation succeed: find new users");
@@ -52,23 +50,23 @@ public class ActiveDirectoryUserSynchronizer {
     }
 
     public void deactivateDeletedUsers() {
-        var adUsers = pickUsersFromActiveDirectory().stream()
-                .map(user -> ActiveDirectoryUtils.pickAttribute(user, Attribute.PRINCIPAL_NAME))
+        var existingAccountNames = pickUsersFromActiveDirectory().stream()
+                .map(user -> ActiveDirectoryUtils.pickAttribute(user, Attribute.ACCOUNT_NAME))
                 .toList();
 
         userRepository.findAll().stream()
-                .filter(user -> !adUsers.contains(user.getPrincipalName()))
+                .filter(user -> !existingAccountNames.contains(user.getAccountName()))
                 .forEach(this::deactivateUser);
         LOGGER.info("Synchronisation succeed: deactivate deleted users");
     }
 
     public void deactivateDisabledUsers() {
-        var disabledUsers = pickDisabledUsersFromActiveDirectory().stream()
-                .map(user -> ActiveDirectoryUtils.pickAttribute(user, Attribute.PRINCIPAL_NAME))
+        var disabledAccountNames = pickDisabledUsersFromActiveDirectory().stream()
+                .map(user -> ActiveDirectoryUtils.pickAttribute(user, Attribute.ACCOUNT_NAME))
                 .toList();
 
         userRepository.findAll().stream()
-                .filter(user -> disabledUsers.contains(user.getPrincipalName()))
+                .filter(user -> disabledAccountNames.contains(user.getAccountName()))
                 .forEach(this::deactivateUser);
         LOGGER.info("Synchronisation succeed: deactivate disabled users");
     }
@@ -91,9 +89,9 @@ public class ActiveDirectoryUserSynchronizer {
 
     private void synchronize(Stream<SearchResult> adUsers) {
         adUsers.forEach(adUser -> {
-            var principalName = ActiveDirectoryUtils.pickAttribute(adUser, Attribute.PRINCIPAL_NAME);
+            var accountName = ActiveDirectoryUtils.pickAttribute(adUser, Attribute.ACCOUNT_NAME);
             userRepository
-                    .findFirstByPrincipalName(principalName)
+                    .findFirstByAccountName(accountName)
                     .map(user -> userMapper.updateUser(adUser, user))
                     .ifPresent(userRepository::save);
         });
