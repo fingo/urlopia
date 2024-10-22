@@ -4,6 +4,8 @@ package info.fingo.urlopia.config.authentication.oauth;
 import info.fingo.urlopia.api.v2.authentication.oauth.OAuthRedirectService;
 import info.fingo.urlopia.user.NoSuchUserException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,6 +23,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "ad.configuration.enabled", havingValue = "true", matchIfMissing = true)
 public class JwtFilter extends OncePerRequestFilter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtFilter.class);
     private final JwtTokenValidator jwtTokenValidator;
 
     @Override
@@ -46,6 +49,7 @@ public class JwtFilter extends OncePerRequestFilter {
             var authorities = accessToken.getAuthorities();
             return new UsernamePasswordAuthenticationToken(accountName, null, authorities);
         }catch (InvalidTokenException | NoSuchUserException exception){
+            LOGGER.warn("Invalid authentication token", exception);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return null;
         }
