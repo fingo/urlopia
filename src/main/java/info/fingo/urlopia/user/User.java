@@ -19,7 +19,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String accountName;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String principalName;
 
     @Column(nullable = false, unique = true)
