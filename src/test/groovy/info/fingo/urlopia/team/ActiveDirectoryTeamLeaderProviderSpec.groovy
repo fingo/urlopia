@@ -52,7 +52,7 @@ class ActiveDirectoryTeamLeaderProviderSpec extends Specification {
 
         and:
         def user = Mock(User)
-        userRepository.findFirstByAdName(managedBy.substring(managedBy.indexOf(':') + 2)) >> Optional.of(user)
+        userRepository.findFirstByAdNameAndActiveTrue(managedBy.substring(managedBy.indexOf(':') + 2)) >> Optional.of(user)
 
         when:
         var teamDN = childTeamDN.substring(childTeamDN.indexOf(':') + 2)
@@ -100,7 +100,7 @@ class ActiveDirectoryTeamLeaderProviderSpec extends Specification {
 
         and:
         def user = Mock(User)
-        userRepository.findFirstByAdName(managedBy.substring(managedBy.indexOf(':') + 2)) >> Optional.of(user)
+        userRepository.findFirstByAdNameAndActiveTrue(managedBy.substring(managedBy.indexOf(':') + 2)) >> Optional.of(user)
 
         when:
         var teamDN = childTeamDN.substring(childTeamDN.indexOf(':') + 2)
@@ -143,7 +143,7 @@ class ActiveDirectoryTeamLeaderProviderSpec extends Specification {
 
         and:
         def user = Mock(User)
-        userRepository.findFirstByAdName(_ as String) >> Optional.of(user)
+        userRepository.findFirstByAdNameAndActiveTrue(_ as String) >> Optional.of(user)
 
         when:
         var teamDN = childTeamDN.substring(childTeamDN.indexOf(':') + 2)
