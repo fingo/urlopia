@@ -12,7 +12,6 @@ import java.util.Optional;
 public class ActiveDirectoryUtils {
     public static final List<String> DISABLED_STATUS = List.of("514", "546");
 
-
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     private ActiveDirectoryUtils() {
@@ -39,8 +38,7 @@ public class ActiveDirectoryUtils {
     }
 
     public static boolean isDisabled(SearchResult searchResult){
-        var accountStatus = pickAttribute(searchResult,
-                info.fingo.urlopia.config.ad.Attribute.USER_ACCOUNT_CONTROL);
+        var accountStatus = pickAttribute(searchResult, info.fingo.urlopia.config.ad.Attribute.USER_ACCOUNT_CONTROL);
         return DISABLED_STATUS.contains(accountStatus);
     }
 
