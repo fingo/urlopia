@@ -72,7 +72,7 @@ public class SlackPresenceConfirmationEventHandler {
                                  String latestMessageTimestamp) {
         try {
             var userEmail = getUserEmail(userSlackId);
-            var user = userService.get(userEmail);
+            var user = userService.getByMail(userEmail);
             confirmUserTodayPresence(user, eventMessage);
             addReactionToLatestMessage(channel, latestMessageTimestamp, SUCCESS_EMOJI_NAME);
         } catch (NoSuchUserException | SlackBotException ex) {

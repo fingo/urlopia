@@ -90,7 +90,7 @@ class SlackPresenceConfirmationEventHandlerSpec extends Specification {
         }
         sampleMentionEvent.getText() >> "<@FPA12L32>"
         sampleMentionEvent.getUser() >> sampleUserSlackId
-        userService.get(sampleUserMail) >> sampleUser
+        userService.getByMail(sampleUserMail) >> sampleUser
 
         when:
         handler.handleMention(sampleMentionPayload, sampleContext)
@@ -118,7 +118,7 @@ class SlackPresenceConfirmationEventHandlerSpec extends Specification {
         }
         sampleMentionEvent.getText() >> testText
         sampleMentionEvent.getUser() >> sampleUserSlackId
-        userService.get(sampleUserMail) >> sampleUser
+        userService.getByMail(sampleUserMail) >> sampleUser
 
         when:
         handler.handleMention(sampleMentionPayload, sampleContext)
@@ -165,7 +165,7 @@ class SlackPresenceConfirmationEventHandlerSpec extends Specification {
         }
         sampleMentionEvent.getText() >> testText
         sampleMentionEvent.getUser() >> sampleUserSlackId
-        userService.get(sampleUserMail) >> sampleUser
+        userService.getByMail(sampleUserMail) >> sampleUser
 
         when:
         handler.handleMention(sampleMentionPayload, sampleContext)
@@ -207,7 +207,7 @@ class SlackPresenceConfirmationEventHandlerSpec extends Specification {
         }
         sampleMentionEvent.getText() >> "<@FPA12L32>"
         sampleMentionEvent.getUser() >> sampleUserSlackId
-        userService.get(_ as String) >> {throw NoSuchUserException.invalidEmail()}
+        userService.getByMail(_ as String) >> {throw NoSuchUserException.invalidEmail()}
 
         when:
         handler.handleMention(sampleMentionPayload, sampleContext)
@@ -229,7 +229,7 @@ class SlackPresenceConfirmationEventHandlerSpec extends Specification {
         }
         sampleMessageEvent.getText() >> "<@FPA12L32>"
         sampleMessageEvent.getUser() >> sampleUserSlackId
-        userService.get(sampleUserMail) >> sampleUser
+        userService.getByMail(sampleUserMail) >> sampleUser
 
         when:
         handler.handleDirectMessage(sampleMessagePayload, sampleContext)
@@ -257,7 +257,7 @@ class SlackPresenceConfirmationEventHandlerSpec extends Specification {
         }
         sampleMessageEvent.getText() >> testText
         sampleMessageEvent.getUser() >> sampleUserSlackId
-        userService.get(sampleUserMail) >> sampleUser
+        userService.getByMail(sampleUserMail) >> sampleUser
 
         when:
         handler.handleDirectMessage(sampleMessagePayload, sampleContext)
@@ -304,7 +304,7 @@ class SlackPresenceConfirmationEventHandlerSpec extends Specification {
         }
         sampleMessageEvent.getText() >> testText
         sampleMessageEvent.getUser() >> sampleUserSlackId
-        userService.get(sampleUserMail) >> sampleUser
+        userService.getByMail(sampleUserMail) >> sampleUser
 
         when:
         handler.handleDirectMessage(sampleMessagePayload, sampleContext)
@@ -346,7 +346,7 @@ class SlackPresenceConfirmationEventHandlerSpec extends Specification {
         }
         sampleMessageEvent.getText() >> "<@FPA12L32>"
         sampleMessageEvent.getUser() >> sampleUserSlackId
-        userService.get(_ as String) >> {throw NoSuchUserException.invalidEmail()}
+        userService.getByMail(_ as String) >> {throw NoSuchUserException.invalidEmail()}
 
         when:
         handler.handleDirectMessage(sampleMessagePayload, sampleContext)
