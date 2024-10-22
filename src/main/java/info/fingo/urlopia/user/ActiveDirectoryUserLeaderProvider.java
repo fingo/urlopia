@@ -91,7 +91,7 @@ public class ActiveDirectoryUserLeaderProvider {
             var principalNameAttribute = attributes.get(Attribute.PRINCIPAL_NAME.getKey());
             var principalName = principalNameAttribute != null ? (String) principalNameAttribute.get() : "";
             if (!principalName.isBlank()) {
-                return this.userRepository.findFirstByPrincipalName(principalName);
+                return this.userRepository.findFirstByPrincipalNameAndActiveTrue(principalName);
             }
         }
         return Optional.empty();
