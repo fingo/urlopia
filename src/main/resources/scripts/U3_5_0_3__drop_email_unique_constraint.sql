@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX users_mail_key ON users (mail);
