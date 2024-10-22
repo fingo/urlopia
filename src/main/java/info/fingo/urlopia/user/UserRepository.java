@@ -15,7 +15,7 @@ public interface UserRepository extends BaseRepository<User>, JpaRepository<User
 
     Optional<User> findFirstByAccountName(String accountName);
 
-    Optional<User> findFirstByAdName(String adName);
+    Optional<User> findFirstByAdNameAndActiveTrue(String adName);
 
     @Query("SELECT u.accountName FROM User u")
     List<String> findAllAccountNames();

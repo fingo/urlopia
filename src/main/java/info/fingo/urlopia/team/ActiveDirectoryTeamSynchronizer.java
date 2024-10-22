@@ -119,7 +119,7 @@ public class ActiveDirectoryTeamSynchronizer {
 
     private Set<User> getMembers(List<String> membersDn) {
         return membersDn.stream()
-                .map(userRepository::findFirstByAdName)
+                .map(userRepository::findFirstByAdNameAndActiveTrue)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
