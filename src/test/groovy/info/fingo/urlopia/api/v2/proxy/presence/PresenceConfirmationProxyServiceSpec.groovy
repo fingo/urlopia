@@ -27,7 +27,7 @@ class PresenceConfirmationProxyServiceSpec extends Specification {
 
         and:
         def presenceConfirmationProxyInput = new PresenceConfirmationProxyInput(sampleProxyToken, sampleEmail, "")
-        userService.get(sampleEmail) >> sampleUser
+        userService.getByMail(sampleEmail) >> sampleUser
 
         when:
         presenceConfirmationProxyService.confirmPresence(presenceConfirmationProxyInput)
@@ -53,7 +53,7 @@ class PresenceConfirmationProxyServiceSpec extends Specification {
 
         and:
         def presenceConfirmationProxyInput = new PresenceConfirmationProxyInput(sampleProxyToken, sampleEmail, testHours)
-        userService.get(sampleEmail) >> sampleUser
+        userService.getByMail(sampleEmail) >> sampleUser
 
         when:
         presenceConfirmationProxyService.confirmPresence(presenceConfirmationProxyInput)
@@ -96,7 +96,7 @@ class PresenceConfirmationProxyServiceSpec extends Specification {
 
         and:
         def presenceConfirmationProxyInput = new PresenceConfirmationProxyInput(sampleProxyToken, sampleEmail, testHours)
-        userService.get(sampleEmail) >> sampleUser
+        userService.getByMail(sampleEmail) >> sampleUser
 
         when:
         presenceConfirmationProxyService.confirmPresence(presenceConfirmationProxyInput)

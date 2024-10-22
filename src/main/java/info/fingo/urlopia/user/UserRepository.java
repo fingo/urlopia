@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface UserRepository extends BaseRepository<User>, JpaRepository<User, Long> {
 
-    Optional<User> findFirstByMail(String mail);
+    Optional<User> findFirstByMailAndActiveTrue(String mail);
 
     Optional<User> findFirstByPrincipalName(String principalName);
 

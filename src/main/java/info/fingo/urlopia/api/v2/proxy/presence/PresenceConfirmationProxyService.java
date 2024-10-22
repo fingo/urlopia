@@ -23,7 +23,7 @@ public class PresenceConfirmationProxyService {
     private final PresenceConfirmationService presenceConfirmationService;
 
     public void confirmPresence(PresenceConfirmationProxyInput proxyInput) {
-        var user = userService.get(proxyInput.email());
+        var user = userService.getByMail(proxyInput.email());
 
         var startTime = DEFAULT_START_TIME;
         var endTime = startTime.plusMinutes(Math.round(60 * user.getWorkTime()));

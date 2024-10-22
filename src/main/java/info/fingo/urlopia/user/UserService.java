@@ -61,9 +61,9 @@ public class UserService {
                 });
     }
 
-    public User get(String userMail) {
+    public User getByMail(String userMail) {
         return userRepository
-                .findFirstByMail(userMail)
+                .findFirstByMailAndActiveTrue(userMail)
                 .orElseThrow(() -> {
                     log.error("There is no user with email: {}", Anonymizer.anonymizeMail(userMail));
                     return NoSuchUserException.invalidEmail();

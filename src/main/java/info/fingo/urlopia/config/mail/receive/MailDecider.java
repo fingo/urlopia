@@ -64,7 +64,7 @@ public class MailDecider {
     private void parse(Mail mail){
         var senderMail = mail.getSenderAddress();
         try{
-            var sender = userService.get(senderMail);
+            var sender = userService.getByMail(senderMail);
             mailParser.clear();
             mailParser.parseSubject(mail);
 
