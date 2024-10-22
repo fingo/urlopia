@@ -70,7 +70,9 @@ public class ActiveDirectoryUserLeaderProvider {
     private List<String> extractOrganizationalUnitsDNs(String distinguishedName) {
         var result = new ArrayList<String>();
 
-        var components = distinguishedName.split(",");
+        var commasIgnoringEscapedRegex = "(?<!\\\\),";
+        var components = distinguishedName.split(commasIgnoringEscapedRegex);
+
         for (var i = 0; i < components.length; i++) {
             var component = components[i].trim();
             if (component.startsWith("OU=")) {

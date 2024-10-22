@@ -48,7 +48,8 @@ public class ActiveDirectoryTree {
         if (relativeDn.isBlank()) {
             return Optional.of(root);
         }
-        var dnParts = Arrays.stream(relativeDn.split(",")).toList();
+        var commasIgnoringEscapedRegex = "(?<!\\\\),";
+        var dnParts = Arrays.stream(relativeDn.split(commasIgnoringEscapedRegex)).toList();
         return searchNode(root, dnParts);
     }
 

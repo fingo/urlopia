@@ -56,7 +56,8 @@ public class ActiveDirectoryUtils {
     }
 
     public static String getParentDN(String distinguishedName) {
-        var dnParts = Arrays.stream(distinguishedName.split(",")).toList();
+        var commasIgnoringEscapedRegex = "(?<!\\\\),";
+        var dnParts = Arrays.stream(distinguishedName.split(commasIgnoringEscapedRegex)).toList();
         if (dnParts.size() == 1) {
             return "";
         } else {

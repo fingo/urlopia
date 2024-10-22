@@ -41,7 +41,8 @@ public class ActiveDirectoryNode {
     }
 
     private static String getRDN(String distinguishedName) {
-        return distinguishedName.split(",", 2)[0];
+        var commasIgnoringEscapedRegex = "(?<!\\\\),";
+        return distinguishedName.split(commasIgnoringEscapedRegex, 2)[0];
     }
 
     public List<SearchResult> getDirectChildrenObjects() {
