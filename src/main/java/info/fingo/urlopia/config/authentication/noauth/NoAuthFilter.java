@@ -48,9 +48,9 @@ public class NoAuthFilter extends OncePerRequestFilter {
     private Authentication getAuthenticationForUser(User user,
                                                     HttpServletResponse response) {
         try{
-            var principal = user.getPrincipalName();
+            var accountName = user.getAccountName();
             var authorities = userAuthoritiesProvider.getAuthoritiesFromUser(user);
-            return new UsernamePasswordAuthenticationToken(principal, null, authorities);
+            return new UsernamePasswordAuthenticationToken(accountName, null, authorities);
         }catch (InvalidTokenException | NoSuchUserException exception){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return null;
