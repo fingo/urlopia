@@ -37,6 +37,6 @@ ALTER TABLE users_teams ADD CONSTRAINT users_teams_user_id_fkey FOREIGN KEY (use
 ALTER TABLE users_teams DROP CONSTRAINT users_teams_team_id_fkey;
 ALTER TABLE users_teams ADD CONSTRAINT users_teams_team_id_fkey FOREIGN KEY (team_id) REFERENCES teams(name) ON DELETE CASCADE;
 
-WITH CTE AS (SELECT id, ROW_NUMBER() OVER (PARTITION BY account_name ORDER BY id) AS rn FROM users WHERE active = TRUE)
+WITH CTE AS (SELECT id, ROW_NUMBER() OVER (PARTITION BY account_name ORDER BY id) AS rn FROM users)
 DELETE FROM users
 WHERE id IN (SELECT id FROM CTE WHERE rn > 1);
