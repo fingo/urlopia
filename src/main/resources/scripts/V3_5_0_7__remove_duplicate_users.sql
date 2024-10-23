@@ -1,6 +1,9 @@
 ALTER TABLE acceptances DROP CONSTRAINT acceptances_leader_id_fkey;
 ALTER TABLE acceptances ADD CONSTRAINT acceptances_leader_id_fkey FOREIGN KEY (leader_id) REFERENCES users(id) ON DELETE CASCADE;
 
+ALTER TABLE acceptances DROP CONSTRAINT acceptances_request_id_fkey;
+ALTER TABLE acceptances ADD CONSTRAINT acceptances_request_id_fkey FOREIGN KEY (request_id) REFERENCES requests(id) ON DELETE CASCADE;
+
 ALTER TABLE automatic_vacation_days DROP CONSTRAINT automatic_vacation_days_user_id_fkey;
 ALTER TABLE automatic_vacation_days ADD CONSTRAINT automatic_vacation_days_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
@@ -9,6 +12,12 @@ ALTER TABLE history_logs ADD CONSTRAINT history_logs_user_id_fkey FOREIGN KEY (u
 
 ALTER TABLE history_logs DROP CONSTRAINT history_logs_decider_id_fkey;
 ALTER TABLE history_logs ADD CONSTRAINT history_logs_decider_id_fkey FOREIGN KEY (decider_id) REFERENCES users(id) ON DELETE SET NULL;
+
+ALTER TABLE history_logs DROP CONSTRAINT history_logs_prev_history_log_id_fkey;
+ALTER TABLE history_logs ADD CONSTRAINT history_logs_prev_history_log_id_fkey FOREIGN KEY (prev_history_log_id) REFERENCES history_logs(id) ON DELETE SET NULL;
+
+ALTER TABLE history_logs DROP CONSTRAINT history_logs_request_id_fkey;
+ALTER TABLE history_logs ADD CONSTRAINT history_logs_request_id_fkey FOREIGN KEY (request_id) REFERENCES requests(id) ON DELETE SET NULL;
 
 ALTER TABLE presence_confirmations DROP CONSTRAINT presence_confirmations_user_id_fkey;
 ALTER TABLE presence_confirmations ADD CONSTRAINT presence_confirmations_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
@@ -25,6 +34,9 @@ ALTER TABLE user_working_hours_preference ADD CONSTRAINT user_working_hours_pref
 ALTER TABLE users_teams DROP CONSTRAINT users_teams_user_id_fkey;
 ALTER TABLE users_teams ADD CONSTRAINT users_teams_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
-WITH CTE AS (SELECT id, ROW_NUMBER() OVER (PARTITION BY account_name ORDER BY id) AS rn FROM users)
+ALTER TABLE users_teams DROP CONSTRAINT users_teams_team_id_fkey;
+ALTER TABLE users_teams ADD CONSTRAINT users_teams_team_id_fkey FOREIGN KEY (team_id) REFERENCES teams(name) ON DELETE CASCADE;
+
+WITH CTE AS (SELECT id, ROW_NUMBER() OVER (PARTITION BY account_name ORDER BY id) AS rn FROM users WHERE active = TRUE)
 DELETE FROM users
 WHERE id IN (SELECT id FROM CTE WHERE rn > 1);
