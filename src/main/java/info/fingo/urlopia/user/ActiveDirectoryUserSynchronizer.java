@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import javax.naming.directory.SearchResult;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
@@ -33,6 +34,11 @@ public class ActiveDirectoryUserSynchronizer {
 
     public void addNewUsers() {
         var dbUsers = userRepository.findAllAccountNames();
+        LOGGER.info("Existing account names: {}", dbUsers.stream().sorted().collect(Collectors.joining(", ")));
+
+        var adUsers = pickUsersFromActiveDirectory();
+        LOGGER.info("AD account names: {}", adUsers.stream().map(user -> ActiveDirectoryUtils.pickAttribute(user, Attribute.ACCOUNT_NAME)).sorted().collect(Collectors.joining(", ")));
+
         pickUsersFromActiveDirectory().stream()
                 .filter(user -> !dbUsers.contains(ActiveDirectoryUtils.pickAttribute(user, Attribute.ACCOUNT_NAME)))
                 .map(userMapper::mapNewUser)
