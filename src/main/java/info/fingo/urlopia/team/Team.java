@@ -15,7 +15,7 @@ public class Team {
     @Column(nullable = false)
     private String adName;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private User leader;
 
     @ManyToMany(cascade = CascadeType.PERSIST)

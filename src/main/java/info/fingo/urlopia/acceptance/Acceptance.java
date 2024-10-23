@@ -18,7 +18,7 @@ public class Acceptance {
     @JoinColumn(nullable = false)
     private Request request;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private User leader;
 

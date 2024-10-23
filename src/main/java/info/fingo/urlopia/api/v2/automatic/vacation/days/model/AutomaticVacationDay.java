@@ -30,7 +30,7 @@ public class AutomaticVacationDay {
     @Column(nullable = false)
     private Double nextYearHoursProposition = 0.0;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private User user;
 
