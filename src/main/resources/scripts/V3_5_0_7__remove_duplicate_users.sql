@@ -8,7 +8,7 @@ ALTER TABLE history_logs DROP CONSTRAINT history_logs_user_id_fkey;
 ALTER TABLE history_logs ADD CONSTRAINT history_logs_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
 ALTER TABLE history_logs DROP CONSTRAINT history_logs_decider_id_fkey;
-ALTER TABLE history_logs ADD CONSTRAINT history_logs_user_id_fkey FOREIGN KEY (decider_id) REFERENCES users(id) ON DELETE SET NULL;
+ALTER TABLE history_logs ADD CONSTRAINT history_logs_decider_id_fkey FOREIGN KEY (decider_id) REFERENCES users(id) ON DELETE SET NULL;
 
 ALTER TABLE presence_confirmations DROP CONSTRAINT presence_confirmations_user_id_fkey;
 ALTER TABLE presence_confirmations ADD CONSTRAINT presence_confirmations_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
