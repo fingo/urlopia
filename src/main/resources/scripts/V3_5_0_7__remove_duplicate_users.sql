@@ -1,0 +1,3 @@
+WITH CTE AS (SELECT id, ROW_NUMBER() OVER (PARTITION BY account_name ORDER BY id) AS rn FROM users)
+DELETE FROM users
+WHERE id IN (SELECT id FROM CTE WHERE rn > 1);
