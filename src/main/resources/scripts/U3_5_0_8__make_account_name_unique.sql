@@ -1,1 +1,1 @@
-ALTER TABLE users DROP CONSTRAINT IF EXISTS users_account_name_unique;
+DROP INDEX IF EXISTS users_account_name_unique_index;
