@@ -23,11 +23,11 @@ public class HistoryLog {   // TODO: Think about removing all relations from log
     @Column(nullable = false)
     private LocalDateTime created;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private User decider;       // TODO: change to list of deciders
 
     @ManyToOne

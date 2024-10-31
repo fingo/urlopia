@@ -27,7 +27,7 @@ public class Request {
     @Column(nullable = false)
     private LocalDateTime modified;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private User requester;
 
