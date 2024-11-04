@@ -43,37 +43,37 @@ public class ActiveDirectorySearcher {
     }
 
     public ActiveDirectorySearcher memberOf(String group) {
-        var value = String.format("(memberOf=%s)", group);
+        var value = String.format("(memberOf=%s)", escapeSpecialCharacters(group));
         filter.append(value);
         return this;
     }
 
     public ActiveDirectorySearcher principalName(String principalName) {
-        var value = String.format("(userPrincipalName=%s)", principalName);
+        var value = String.format("(userPrincipalName=%s)", escapeSpecialCharacters(principalName));
         filter.append(value);
         return this;
     }
 
     public ActiveDirectorySearcher mail(String mail) {
-        var value = String.format("(mail=%s)", mail);
+        var value = String.format("(mail=%s)", escapeSpecialCharacters(mail));
         filter.append(value);
         return this;
     }
 
     public ActiveDirectorySearcher name(String name) {
-        var value = String.format("(name=%s)", name);
+        var value = String.format("(name=%s)", escapeSpecialCharacters(name));
         filter.append(value);
         return this;
     }
 
     public ActiveDirectorySearcher distinguishedName(String distinguishedName) {
-        var value = String.format("(distinguishedName=%s)", distinguishedName);
+        var value = String.format("(distinguishedName=%s)", escapeSpecialCharacters(distinguishedName));
         filter.append(value);
         return this;
     }
 
     public ActiveDirectorySearcher excludeDistinguishedName(String distinguishedName) {
-        var value = String.format("(!(distinguishedName=%s))", distinguishedName);
+        var value = String.format("(!(distinguishedName=%s))", escapeSpecialCharacters(distinguishedName));
         filter.append(value);
         return this;
     }
@@ -87,6 +87,11 @@ public class ActiveDirectorySearcher {
         builder.append(")");
         filter.append(builder);
         return this;
+    }
+
+    // Based on https://learn.microsoft.com/en-us/archive/technet-wiki/5392.active-directory-ldap-syntax-filters#Special_Characters
+    private String escapeSpecialCharacters(String query) {
+        return query.replaceAll("\\\\", "\\\\5C");
     }
 
     public List<SearchResult> search() {
