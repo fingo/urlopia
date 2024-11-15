@@ -172,6 +172,7 @@ class NormalRequestServiceSpec extends Specification{
             getTeams() >> Set.of(team)
         }
         userRepository.findById(userId) >> Optional.of(user)
+        userService.getAcceptanceLeaderForUser(user) >> team.getLeader()
 
         and: "request mock with repo with endDate before startDate"
         def request = Mock(Request){

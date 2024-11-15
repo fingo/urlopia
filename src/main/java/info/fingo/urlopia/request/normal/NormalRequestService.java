@@ -68,11 +68,11 @@ public class NormalRequestService implements RequestTypeService {
         log.info("New normal request with id: %d has been created".formatted(request.getId()));
 
         var leader = userService.getAcceptanceLeaderForUser(user);
-        if (leader != null) {
-            this.acceptanceService.create(request, leader);
-        } else {
-            this.accept(request);
+        if (leader == null) {
+            throw new LeaderNotFoundException();
         }
+
+        this.acceptanceService.create(request, leader);
 
         return requestRepository
                 .findById(request.getId())

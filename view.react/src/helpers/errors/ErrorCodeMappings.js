@@ -17,6 +17,7 @@ const loginErrorCodeMappings = {
 const requestsErrorCodeMappings = {
     "END_DATE_IS_BEFORE_START_DATE": "Data końcowa nie powinna być przed datą początkową",
     "NOT_ENOUGH_DAYS": "Nie posiadasz wystarczającej liczby dni urlopowych",
+    "LEADER_NOT_FOUND": "Nie została znaleziona osoba wymagana do akceptacji wniosku",
     "REQUEST_OVERLAPPING": "Wybrany termin pokrywa się z terminem jednej z wcześniej utworzonych okoliczności",
 }
 

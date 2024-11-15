@@ -41,19 +41,34 @@ public class ActiveDirectoryUserLeaderProvider {
         var userDN = userSearch.stream().findFirst().map(NameClassPair::getNameInNamespace).orElse("");
         var organizationalUnits = extractOrganizationalUnitsDNs(userDN);
 
+        LOGGER.info("Starting search of the '{}' manager", userDN);
+
         // Step 2: Find first existing and valid OU manager.
         for (var ouDn : organizationalUnits) {
+            LOGGER.info("Looking for a manager in the '{}' group", ouDn);
             var controls = new SearchControls();
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
             var ouSearch = activeDirectory.newSearch().distinguishedName(ouDn).search(controls);
+            if (ouSearch.isEmpty()) {
+                LOGGER.warn("No search results for '{}' OU", ouDn);
+            }
+
             for (var result : ouSearch) {
-                var attributes = result.getAttributes();
-                var managedBy = attributes.get(Attribute.MANAGED_BY.getKey());
-                var managedByDN = managedBy != null ? (String) managedBy.get() : "";
-                if (!managedByDN.isBlank() && !managedByDN.equals(userDN)) {
+                var managedBy = result.getAttributes().get(Attribute.MANAGED_BY.getKey());
+                if (managedBy == null) {
+                    LOGGER.warn("Missing managedBy attribute for '{}' OU", ouDn);
+                    continue;
+                }
+
+                var managedByDN = (String) managedBy.get();
+                if (!managedByDN.equals(userDN)) {
                     var manager = getManagerDetails(managedByDN);
                     if (manager.isPresent()) {
+                        LOGGER.info("Manager of '{}' OU found: '{}'", ouDn, managedByDN);
                         return manager.get();
+                    } else {
+                        LOGGER.warn("Manager of '{}' OU has not been found", ouDn);
                     }
                 }
             }
