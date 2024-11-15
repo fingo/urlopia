@@ -81,7 +81,11 @@ public class MailParser {
 
     public void parseReply(Mail mail) {
         var emailLines = splitByLines(mail.getContent());
-        reply = emailLines[0];
+        reply = Arrays.stream(emailLines)
+                .map(String::trim)
+                .filter(line -> !line.isBlank() && !line.startsWith(">")) // Remove empty lines and quotes
+                .reduce((first, second) -> second) // Get last line
+                .orElse("");
     }
 
     private void convertDate() {

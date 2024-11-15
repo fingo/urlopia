@@ -134,6 +134,8 @@ public class MailReceiver extends Thread {
     @Override
     public void run() {
         if (isEnabled){
+            log.info("Initializing MailReceiver");
+
             // Configuring the inbox
             performConfiguration();
 
@@ -159,6 +161,8 @@ public class MailReceiver extends Thread {
             } catch (MessagingException e) {
                 log.error("MessagingException during closing the store", e);
             }
+        } else {
+            log.warn("MailReceiver has been disabled");
         }
     }
 

@@ -86,8 +86,7 @@ public class MailDecider {
     private void updateAcceptance(Long deciderId) {
         var acceptanceId = mailParser.getId();
         var decision = mailParser.getReply().toLowerCase();
-        var loggerInfo = "Decision for acceptance with id: %d is: %s"
-                .formatted(acceptanceId, decision);
+        var loggerInfo = "Decision for acceptance with id: %d is: %s".formatted(acceptanceId, decision);
         log.info(loggerInfo);
         if (mailParser.isAcceptedByMail(decision)) {
             acceptanceService.accept(acceptanceId, deciderId);
