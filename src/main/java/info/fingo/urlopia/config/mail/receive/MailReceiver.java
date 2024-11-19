@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import javax.mail.*;
+import javax.mail.Folder;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Store;
 import javax.mail.event.MessageCountEvent;
 import javax.mail.event.MessageCountListener;
 import java.util.Properties;
@@ -25,9 +27,6 @@ import java.util.concurrent.TimeUnit;
 public class MailReceiver extends Thread {
 
     private final MailDecider mailDecider;
-
-    @Autowired
-    private Environment env;
 
     @Value("${mail.receiver.host}")
     private String host;
@@ -44,7 +43,7 @@ public class MailReceiver extends Thread {
     @Value("${mail.receiver.idle.time}")
     private int keepAliveFreq;    //time unit: milliseconds
 
-    @Value("${mail.receiver.enabled}")
+    @Value("${mail.receiver.enabled:true}")
     private boolean isEnabled;
 
     private Store store;
@@ -137,7 +136,6 @@ public class MailReceiver extends Thread {
 
     @Override
     public void run() {
-        log.info("{}={}", "mail.receiver.enabled", env.getProperty("mail.receiver.enabled"));
         if (isEnabled){
             log.info("Initializing MailReceiver");
 
