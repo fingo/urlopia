@@ -43,9 +43,6 @@ public class MailReceiver extends Thread {
     @Value("${mail.receiver.idle.time}")
     private int keepAliveFreq;    //time unit: milliseconds
 
-    @Value("${mail.receiver.enabled:true}")
-    private boolean isEnabled;
-
     private Store store;
     private IMAPFolder inbox;
 
@@ -136,7 +133,7 @@ public class MailReceiver extends Thread {
 
     @Override
     public void run() {
-        if (isEnabled){
+        if (!host.isBlank()){
             log.info("Initializing MailReceiver");
 
             // Configuring the inbox
