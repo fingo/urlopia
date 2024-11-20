@@ -9,7 +9,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import javax.mail.*;
+import javax.mail.Folder;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Store;
 import javax.mail.event.MessageCountEvent;
 import javax.mail.event.MessageCountListener;
 import java.util.Properties;
@@ -39,9 +42,6 @@ public class MailReceiver extends Thread {
 
     @Value("${mail.receiver.idle.time}")
     private int keepAliveFreq;    //time unit: milliseconds
-
-    @Value("${mail.receiver.enabled}")
-    private boolean isEnabled;
 
     private Store store;
     private IMAPFolder inbox;
@@ -133,7 +133,9 @@ public class MailReceiver extends Thread {
 
     @Override
     public void run() {
-        if (isEnabled){
+        if (!host.isBlank()){
+            log.info("Initializing MailReceiver");
+
             // Configuring the inbox
             performConfiguration();
 
@@ -159,6 +161,8 @@ public class MailReceiver extends Thread {
             } catch (MessagingException e) {
                 log.error("MessagingException during closing the store", e);
             }
+        } else {
+            log.warn("MailReceiver has been disabled");
         }
     }
 
