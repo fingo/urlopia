@@ -24,6 +24,8 @@ import java.util.TimeZone;
 @RequiredArgsConstructor
 public class HolidayService {
 
+    private static final int FREE_CHRISTMAS_EVE_STARTING_YEAR = 2025;
+
     private final HolidayRepository holidayRepository;
 
     public List<HolidayResponse> getAllHolidaysInYear(int year, Filter filter) {
@@ -115,6 +117,9 @@ public class HolidayService {
         holidays.add(new Holiday("Święto Wojska Polskiego", LocalDate.of(year, 8, 15)));
         holidays.add(new Holiday("Wszystkich Świętych", LocalDate.of(year, 11, 1)));
         holidays.add(new Holiday("Święto Niepodległości", LocalDate.of(year, 11, 11)));
+        if (year >= FREE_CHRISTMAS_EVE_STARTING_YEAR) {
+            holidays.add(new Holiday("Wigilia Bożego Narodzenia", LocalDate.of(year, 12, 24)));
+        }
         holidays.add(new Holiday("Boże Narodzenie", LocalDate.of(year, 12, 25)));
         holidays.add(new Holiday("Boże Narodzenie", LocalDate.of(year, 12, 26)));
 
